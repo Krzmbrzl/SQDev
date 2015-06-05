@@ -13,4 +13,4 @@ To get it to work you have to perform the following steps:<br>
 -press next<br>
 -press finish<br>
 <br>
-For further help see the wiki (https://github.com/Krzmbrzl/SQF-EclipsePlugin/wiki)
+For further help and/or information see the wiki (https://github.com/Krzmbrzl/SQF-EclipsePlugin/wiki)
