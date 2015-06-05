@@ -1,0 +1,160 @@
+grammar raven.SQF hidden(WS, ML_COMMENT, SL_COMMENT)
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate sQF "http://www.SQF.raven"
+
+Model:
+	elements += Code*
+;
+
+Code:
+	dec=Declaration ";"
+	| control=ControlStructure ";"
+	| method=Method ";"
+;
+
+	Declaration:
+		name = ID "=" brCon=BracketContent
+	;
+	
+		BracketContent:
+			decCon=DecContent (comp+=COMPARATOR content+=DecContent)*
+		;
+	
+			DecContent:
+				(neg=("!"|"not"))? singleContent=VarContent (op+=OPERATOR nextCon+=VarContent)*
+			;
+		
+				VarContent:
+					(unOP=("+"|"-"))? num = NUMBER
+					| string = STRING
+					| (unOP=("+"|"-"))? (reference = [Declaration] | forEachVar="_x") (sel="select" index=NUMBER)? //TODO: Implement objects
+					| "+"? arrayContent=ArrayLiteral (execute="call" methodName=MethodName)?
+					| (unOP=("+"|"-"))? embraced = "(" embrCon=BracketContent ")"
+					| bool = Boolean
+					| param = "_this" ("select" index=NUMBER)?
+				//TODO	| method = Method
+				;
+				
+					ArrayLiteral:
+						con = "[" (content = VarContent ("," nextContent += VarContent)*)? "]"
+					;
+					
+					
+	ControlStructure:
+		ifStat=ifType
+		| whileStat=WhileType
+		| forStat=ForType
+		| forEachStat=ForeachType
+		| switchStat=SwitchType
+	;
+	
+		ifType:
+			"if" "(" condition=BooleanContent ")" ("then" ("{" thenCode+=Code* "}" ("else" "{" elseCode+=Code* "}")?
+															| "[""{" thenCode+=Code* "}"",""{" elseCode+=Code* "}""]")
+													|"exitWith" "{" exitCode+=Code* "}")
+		;
+		
+		WhileType:
+			"while" "{" condition=BooleanContent "}" "do" "{" loopCode+=Code* "}"
+		;
+		
+		ForType:
+			"for" ("[""{"begin=Declaration"}"",""{"condition=BooleanContent"}"",""{"end=Declaration"}""]"
+				   | forVarDeclaration "from" from=NUMBER "to" to=NUMBER ("step" step=NUMBER)?)
+				   		"do" "{" loopCode+=Code* "}"
+		;
+		
+			forVarDeclaration:
+				name=STRING
+			;
+		
+		ForeachType:
+			"{" code+=Code* "}" "forEach" (array=[Declaration] | arrayLiteral=ArrayLiteral)
+		;
+		
+		SwitchType:
+			"switch" "(" var=[Declaration] ")" "do" "{" ("case" value+=ANYTHING ":" "{" caseCode+=Code* "}" ";")*
+				("default" "{" defaultCode+=Code* "}" ";")? "}"
+		;
+		
+	Method:
+		 params=ArrayLiteral execute="spawn" methodName=MethodName
+	;
+		
+		
+	
+AbstractDeclarationReference returns Declaration:
+	declaration=Declaration
+	| loopDeclaration=forVarDeclaration
+//TODO	| object=Object
+;		
+		
+
+
+//////////Types/////////////
+OPERATOR:
+	"+"
+	| "-"
+	| "*"
+	| "/"
+	| "mod"
+	| "^"
+;
+
+Object:
+	name=ID
+;
+
+ANYTHING:
+	bool=Boolean
+	| num=NUMBER
+	| string=STRING
+	| reference=[Declaration]
+;
+
+Boolean:
+	bool = ("true"|"false")
+	| command = BoolCommand
+;
+
+BooleanContent:
+	boolCon=BracketContent
+;
+
+MethodName:
+	ref=[Declaration]
+;
+
+terminal COMPARATOR:
+	"=="
+	| "<"
+	| ">"
+	| "<="
+	| ">="
+	| "!="
+	| "isEqualTo"
+;
+
+terminal NUMBER: ('0'..'9')+("."("0".."9")+)?;
+terminal ID  		: '^'?('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+terminal STRING	: 
+			'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"' |
+			"'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"
+		; 
+terminal ML_COMMENT	: '/*' -> '*/';
+terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS			: (' '|'\t'|'\r'|'\n')+;
+
+////////Commands//////////
+BoolCommand:
+	"isServer"
+	| "isPlayer"
+;
+
+/*
+ * TODO
+ * Rechenoperationen bei Deklarationen evtl nicht immer passend (Arrays)
+ */
