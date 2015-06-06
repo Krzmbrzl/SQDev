@@ -1,7 +1,7 @@
 # SQF-EclipsePlugin
 This plugin will create support for SQF in eclipse. <br>
 To get it to work you have to perform the following steps:<br>
--install eclipse (https://www.eclipse.org/downloads/packages/eclipse-ide-java-developers/lunasr2)<br>
+-install eclipse (https://www.eclipse.org/downloads/packages/eclipse-ide-java-and-dsl-developers/lunasr2)<br>
 -download a version of the plugin (https://github.com/Krzmbrzl/SQF-EclipsePlugin/releases)<br>
 -start eclipse<br>
 -Navigate to Help -> Install New Software<br>
