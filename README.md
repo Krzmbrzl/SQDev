@@ -1,21 +1,6 @@
 # SQF-EclipsePlugin
-This plugin will create support for SQF in eclipse. <br>
-To get it to work you have to perform the following steps:<br>
--install eclipse (https://www.eclipse.org/downloads/packages/eclipse-ide-java-and-dsl-developers/lunasr2)<br>
--download a version of the plugin (https://github.com/Krzmbrzl/SQF-EclipsePlugin/releases)<br>
--start eclipse<br>
--Navigate to Help -> Install New Software<br>
--click the Add button<br>
--type "SQF" in the name-field<br>
--click on archive and navigate to the extracted zip-file and select it<br>
--press ok<br>
--select sqf<br>
--press next<br>
--eclipse will complain that it needs to install a few additional plugins and list them. Just keep on clicking "next"<br>
--eclipse will ask you if you want to install unsigned software. Accept it<br>
--hit finish<br>
--restart eclipse<br>
+This plugin will bring you full eclipse support for SQF which includes a live parser, content assist and many other cool Features. <br>
+It is still WIP so it is still far away from a final version. Nevertheless you can already download and test it. If you encounter any bugs please create an [issue](https://github.com/Krzmbrzl/SQF-EclipsePlugin/issues) and tag it with the prefix "Bug:". <br>
+If you have any ideas how to improve the plugin or you wish yourself a new feature you can as well create an [issue](https://github.com/Krzmbrzl/SQF-EclipsePlugin/issues) with the prefix "FeatureRequest:". <br>
 <br>
--visit the wiki to see how to use it :) <br>
-<br>
-For further help and/or information see the wiki (https://github.com/Krzmbrzl/SQF-EclipsePlugin/wiki)
+For any further information about the installation, the usage or the plugin itself visit the [wiki](https://github.com/Krzmbrzl/SQF-EclipsePlugin/wiki)
