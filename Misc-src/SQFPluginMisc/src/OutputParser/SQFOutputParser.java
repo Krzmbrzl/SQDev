@@ -3,8 +3,11 @@ package OutputParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectOutputStream.PutField;
 import java.util.ArrayList;
 
 import org.antlr.v4.runtime.*;
@@ -18,12 +21,19 @@ import SQFBaseParser.SQFCommandParser;
 public class SQFOutputParser {
 	public static void main(String[] args) {
 		String antlrInput = "";
-		String commandFilePath = "NotSet";
+		String commandFilePath = "";
+		String outputDirectoryPath = "";
 		
 		for(String argument : args) {
+			//The path to the file that should be parsed/processed
 			if(argument.startsWith("/cF=") || argument.startsWith("/cf=")) {
 				argument = argument.substring(4);
 				commandFilePath = argument;
+			}
+			if(argument.startsWith("/op=") || argument.startsWith("/oP=")) {
+				//The path to the directory where the output of the serialization shouldbe stored
+				argument = argument.substring(4);
+				outputDirectoryPath = argument;
 			}
 		}
 		
@@ -78,9 +88,9 @@ public class SQFOutputParser {
 		
 		for(int i=0; i<SQFCommandVisitor.syntaxLists.size(); i++) {
 			syntax currentCommand = SQFCommandVisitor.syntaxLists.get(i);
-			
+
 			for(int k=0; k<currentCommand.getSyntaxList().size(); k++) {
-				String syntax = currentCommand.getSyntaxList().get(k);
+				String syntax = currentCommand.getSyntaxList().get(k);	
 				
 				if(!archive.contains(syntax)) {
 					
@@ -94,6 +104,8 @@ public class SQFOutputParser {
 		}
 		
 		System.out.println("number of variants: " + archive.size() + "\n");
+		
+		archive.store(outputDirectoryPath);
 		
 		
 		String[] parameter = archive.getParameter(); //TODO: i=241 k=0 passt überhaupt net

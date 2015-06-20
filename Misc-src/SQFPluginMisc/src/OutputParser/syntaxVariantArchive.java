@@ -1,5 +1,12 @@
 package OutputParser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import SQF.Functions;
@@ -122,7 +129,11 @@ public class syntaxVariantArchive {
 	public int size() {
 		return this.syntaxVariantArchive_list.size();
 	}
-
+	
+	/**
+	 * @return Returns an array of strings which are all the parameter used in the different syntaxVariants
+	 * stored in this archive
+	 */
 	public String[] getParameter() {
 		ArrayList<String> parameter = new ArrayList<String>();
 
@@ -215,5 +226,86 @@ public class syntaxVariantArchive {
 		//willbe executed if nothing was found
 		System.out.println(syntax + " konnte nicht gefunden werden!");
 		return -1;
+	}
+	
+	/**
+	 * This function will store all the synaxVariants stored in this archive into the given directory.
+	 * Therefor it will create a file for every entry in this archive in the directory.
+	 * If the directory and/or the files don't exist yet, they will be created
+	 * 
+	 * @param directory The path to the directory the syntaxVariants shall be stored
+	 */
+	public void store(String directory) {
+		File directoryFile = new File(directory);
+		
+		if(!directoryFile.exists()) {
+			directoryFile.mkdirs();
+		}
+		
+		int count = this.syntaxVariantArchive_list.size();
+		
+		for(int i=0; i< count; i++) {
+			syntaxVariant currentSynVar = this.syntaxVariantArchive_list.get(i);
+			
+			String fileName = "/syntaxVariant" + i + ".ser";
+			String filePath = directory + fileName;
+			
+			File outputFile = new File(directory + fileName);
+			
+			if(!outputFile.exists()) {
+				try {
+					outputFile.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			try {
+				FileOutputStream fileOut = new FileOutputStream(filePath);
+				ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
+				
+				objOut.writeObject(currentSynVar);
+				
+				objOut.close();
+			} catch (FileNotFoundException e) {
+				System.err.println("source: syntaxVariantArchive -> storeInFile()");
+				e.printStackTrace();
+				System.out.println();
+			} catch (IOException e) {
+				System.err.println("source: syntaxVariantArchive -> storeInFile()");
+				e.printStackTrace();
+				System.out.println();
+			}
+		}
+	}
+	
+	public void load(String directory) {
+		File directoryFile = new File(directory);
+		
+		if(!directoryFile.exists()) {
+			System.err.println("Directory '" + directory + "' does not exist");
+			return;
+		}
+		
+		File[] files = directoryFile.listFiles();
+		
+		for(File currentFile : files) {
+			try {
+				FileInputStream fileIn = new FileInputStream(currentFile);
+				ObjectInputStream objIn = new ObjectInputStream(fileIn);
+				
+				syntaxVariant currentObject = (syntaxVariant) objIn.readObject();
+				
+				this.add(currentObject);
+				
+				objIn.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

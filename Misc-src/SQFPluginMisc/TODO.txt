@@ -14,3 +14,5 @@ textLogFormat -> generell
 
 
 -> "with" fest als Struktur implementieren
+
+TestCases checken

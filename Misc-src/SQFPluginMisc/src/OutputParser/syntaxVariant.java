@@ -2,7 +2,9 @@ package OutputParser;
 
 import java.util.ArrayList;
 
-public class syntaxVariant {
+public class syntaxVariant implements java.io.Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private String syntaxVariant_syntax;
 	private ArrayList<String> syntaxVariant_commands;
 	
