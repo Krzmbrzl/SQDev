@@ -393,7 +393,7 @@ public class ArmACommands {
 																// html-tags
 
 										inputLineA = inputLineA.replaceAll(
-												"number", "DOUBLE");
+												"number", "NUMBER");
 										inputLineA = inputLineA.replaceAll(
 												"boolean", "BOOLEAN");
 

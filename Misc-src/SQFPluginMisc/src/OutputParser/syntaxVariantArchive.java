@@ -113,10 +113,6 @@ public class syntaxVariantArchive {
 	 */
 	public void add(String syntax) {
 		syntaxVariant synVar = new syntaxVariant();
-		
-		if(this.size() == 21) {
-			String dummy = "";
-		}
 
 		synVar.setSyntax(syntax);
 
@@ -163,17 +159,60 @@ public class syntaxVariantArchive {
 			if (syntax.indexOf("/") >= 0) {
 				syntax = syntax.replaceAll("/", " ");
 			}
+			
+			//replace some parameter names which are the same
+			if(syntax.indexOf("number") >= 0) {
+				syntax = syntax.replaceAll("number", "NUMBER");
+			}
+			if(syntax.indexOf("object") >= 0) {
+				syntax = syntax.replaceAll("object", "OBJECT");
+			}
+			if(syntax.indexOf("string") >= 0) {
+				syntax = syntax.replaceAll("string", "STRING");
+			}
+			if(syntax.indexOf("anything") >= 0) {
+				syntax = syntax.replaceAll("anything", "ANYTHING");
+			}
+			if(syntax.indexOf("boolean") >= 0) {
+				syntax = syntax.replaceAll("boolean", "BOOLEAN");
+			}
+			if(syntax.indexOf("bool") >= 0) {
+				syntax = syntax.replaceAll("bool", "BOOLEAN");
+			}
+			if(syntax.indexOf("positionasl") >= 0) {
+				syntax = syntax.replaceAll("positionasl", "PositionASL");
+			}
+			if(syntax.indexOf("positionatl") >= 0) {
+				syntax = syntax.replaceAll("positionatl", "PositionATL");
+			}
+			if(syntax.indexOf("any") >= 0) {
+				syntax = syntax.replaceAll("any", "ANYTHING");
+			}
+			if(syntax.indexOf("position2d") >= 0) {
+				syntax = syntax.replaceAll("position2d", "Position2D");
+			}
+			if(syntax.indexOf("position3d") >= 0) {
+				syntax = syntax.replaceAll("position3d", "Position3D");
+			}
+			if(syntax.indexOf("scripthandle") >= 0) {
+				syntax = syntax.replaceAll("scripthandle", "ScriptHandle");
+			}
+			if(syntax.indexOf("editorOBJECT") >= 0) {
+				syntax = syntax.replaceAll("editorOBJECT", "EditorObject");
+			}
+
 
 			String[] aSyntax = Functions.getElements(syntax);
 
 			for (String current : aSyntax) {
 				// if this parameter wasn't found before store it in parameter
 				
-				if(current.toLowerCase().equals("addmagazine")) {
-					String dummy = "";
+				if(!current.substring(0,1).toUpperCase().equals(current.substring(0,1))) {
+					//if string starts with a lowercase letter
+					current = current.substring(0,1).toUpperCase() + current.substring(1);
 				}
 				
-				if (!parameter.contains(current) && !current.equals("commandNameKeyword")) {
+				if (!parameter.contains(current) && !current.equals("CommandNameKeyword")) {
 					parameter.add(current);
 				}
 			}

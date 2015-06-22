@@ -943,7 +943,7 @@ public class Functions {
 			}
 		}
 
-		String fragment1 = string.substring(0, posA - 1).toLowerCase();
+		String fragment1 = string.substring(0, posA).toLowerCase(); //TODO -1
 		String fragment2 = string.substring(posB).toLowerCase();
 
 		String commandM = string.substring(posA, posB);
@@ -2682,7 +2682,7 @@ public class Functions {
 		String[] correctParams = { ";", "teammember", "side", "object",
 				"string", "waypoint", "anything", "location", "group", "code",
 				"display", "control", "task", "config", "array", "position",
-				"color", "double", "boolean", "namespace", "scripthandle" };
+				"color", "double", "boolean", "namespace", "scripthandle", "number" };
 
 		// Wenn auch nur ein Element gleich ist, dann ist was beim
 		// überschreiben der Parameter schief gegangen

@@ -1,12 +1,6 @@
 findCover -> optional parameter
-addMagazine -> syntax Variant format 
-createUnit -> syntax Variant format
-createVehicle -> syntax Variant format
 name -> Parameter überschreiben
-setFog -> syntax Variant format
-setSkill -> syntax Variant format
 setVehicleVarName -> Parameter überschreiben
-synchronizeWaypoint -> syntax Variant format
 test -> Parameter überschreiben
 textLogFormat -> generell
 
@@ -16,3 +10,5 @@ textLogFormat -> generell
 -> "with" fest als Struktur implementieren
 
 TestCases checken
+
+Parameter mit doppelpunkt fixen

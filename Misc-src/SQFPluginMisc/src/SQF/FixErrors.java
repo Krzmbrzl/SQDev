@@ -152,6 +152,7 @@ public class FixErrors {
 																				// sind
 																				// mit
 																				// "StructuredText"
+								inputLineA = inputLineA.replaceAll("number", "NUMBER");
 								inputLineA = inputLineA.replaceAll(
 										"structuredtext", "STRING");
 								inputLineA = inputLineA.replaceAll(" *:", ":");
