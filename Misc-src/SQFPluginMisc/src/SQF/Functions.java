@@ -445,9 +445,6 @@ public class Functions {
 			count++;
 		}
 
-		if (isIn(Syntax, "number", true)) {
-			Syntax = replaceWith(Syntax, "number", "DOUBLE");
-		}
 		return Syntax;
 	}
 
@@ -1397,7 +1394,7 @@ public class Functions {
 		aElements = replaceWith(aElements, "number", "DOUBLE");
 
 		while (isIn(aElements, "[Array]", false)) {
-			aElements[whichPosition(aElements, "[Array]", false, true)] = "Array";
+			aElements[whichPosition(aElements, "[Array]", false, true)] = "array";
 		}
 
 		string = "[" + ArrayToString(aElements) + "]";
@@ -1405,7 +1402,7 @@ public class Functions {
 		string = seperateElements(string);
 
 		if (!hasMatched) {
-			string = "Array"; // Wenn kein parameter identifiziert werden
+			string = "array"; // Wenn kein parameter identifiziert werden
 								// konntem, handeklt es sich einfach um einen
 								// beliebigen Array
 		}
@@ -1749,7 +1746,7 @@ public class Functions {
 			String[] retValue = getArrayContentFrom(array,
 					whichPosition(array, "return", false, true));
 			array = cutFrom(array, "return", false);
-			String[] parArray = { "parameters:", "HatGarKeine" };
+			String[] parArray = { "parameters:", "hatGarKeine" };
 			array = meltArrays(array, parArray); // Schreibt sinnlosen
 													// Parameterteil in
 													// SyntaxArray rein damit
@@ -2807,11 +2804,6 @@ public class Functions {
 				}
 			}
 		}
-		for (String element : newSyntax) {
-			if (element.indexOf("-") >= 0) {
-				System.out.println();
-			}
-		}
 
 		if (isIn(newSyntax, "-", false)) {
 			ArmACommands.NoParameter++;
@@ -2839,6 +2831,10 @@ public class Functions {
 			element = fragment1 + fragment2;
 
 			newSyntax[pos] = element;
+		}
+		
+		if(isIn(newSyntax, ":", false)) {
+			throw new NotProperlyProcessedException("Syntax contains a column!");
 		}
 	}
 

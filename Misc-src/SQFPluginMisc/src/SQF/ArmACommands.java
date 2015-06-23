@@ -348,7 +348,11 @@ public class ArmACommands {
 										// Abschnitt gefunden.
 										// Alle Infos stehen in inputLineA.
 										// Verarbeite Informationen ...
-
+										
+										if(command.equals("lineIntersects")) {
+											String dummy = "";
+										}
+										
 										inputLineA = Functions.markCommand(
 												inputLineA, command); // schreibt
 																		// den

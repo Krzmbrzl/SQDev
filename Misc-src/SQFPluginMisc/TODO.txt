@@ -9,6 +9,6 @@ textLogFormat -> generell
 
 -> "with" fest als Struktur implementieren
 
-TestCases checken
+es gibt noch Einzelfälle, bei denen ein "-" als return-Wert geschrieben wird
 
 Parameter mit doppelpunkt fixen

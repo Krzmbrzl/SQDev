@@ -3,17 +3,13 @@ package OutputParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.ObjectOutputStream.PutField;
 import java.util.ArrayList;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import SQF.Functions;
 import SQFBaseParser.SQFCommandBaseVisitor;
 import SQFBaseParser.SQFCommandLexer;
 import SQFBaseParser.SQFCommandParser;
@@ -93,11 +89,6 @@ public class SQFOutputParser {
 				String syntax = currentCommand.getSyntaxList().get(k);	
 				
 				if(!archive.contains(syntax)) {
-					
-					if(syntax.equals("object addmagazine [string, double] ")) {
-						String dummy ="";
-					}
-					
 					archive.add(syntax);
 				}
 			}
@@ -108,7 +99,7 @@ public class SQFOutputParser {
 		archive.store(outputDirectoryPath);
 		
 		
-		String[] parameter = archive.getParameter(); //TODO: i=241 k=0 passt überhaupt net
+		String[] parameter = archive.getParameter();
 		System.out.println(parameter.length + "\n");
 		
 		for(String current : parameter) {

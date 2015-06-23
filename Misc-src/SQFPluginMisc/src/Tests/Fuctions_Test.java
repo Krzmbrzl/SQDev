@@ -155,15 +155,15 @@ public class Fuctions_Test {
 
 	@Test
 	public void correctSyntaxTest() {
-		String[] test1 = { "abs", "Syntax:", "Number", "=", "ABS", "n",
-				"Parameters:", "n:", "Number", "Return", "Value:", "Number" };
-		String[] result1 = { "abs", "Variable", "=", "ABS", "DOUBLE" };
+		String[] test1 = { "abs", "syntax:", "number", "=", "ABS", "n",
+				"parameters:", "n:", "number", "return", "value:", "number" };
+		String[] result1 = { "abs", "number", "=", "ABS", "number" };
 		assertArrayEquals(result1, Functions.correctSyntax(test1, "abs"));
 
-		String[] test2 = { "activateAddons", "Syntax:", "ACTIVATEADDONS",
-				"[addon1, ...]", "Parameters:", "[addon1, ...]:", "Array",
-				"activateAddons:", "Depp", "Return", "Value:", "Nothing" };
-		String[] result2 = { "activateAddons", "ACTIVATEADDONS", "Array" };
+		String[] test2 = { "activateAddons", "syntax:", "ACTIVATEADDONS",
+				"[addon1, ...]", "parameters:", "[addon1, ...]:", "array",
+				"activateAddons:", "depp", "return", "value:", "nothing" };
+		String[] result2 = { "activateAddons", "ACTIVATEADDONS", "array" };
 		assertArrayEquals(result2,
 				Functions.correctSyntax(test2, "activateAddons"));
 	}
@@ -369,8 +369,8 @@ public class Fuctions_Test {
 																	// keine
 																	// Deklaration)
 
-		String[] test3 = { "Array", "=", "Mo" };
-		String[] result3 = { "Array", "=", "Mo" };
+		String[] test3 = { "array", "=", "Mo" };
+		String[] result3 = { "array", "=", "Mo" };
 		assertArrayEquals(result3, Functions.changeToVar(test3)); // Es wird bei
 																	// "Array"
 																	// belassen,
@@ -384,7 +384,7 @@ public class Fuctions_Test {
 	@Test
 	public void markCommandTest() {
 		String test = "commandLalala<nbissle Html> völlig ohne<Belang><b>taratata</b><b>command</b>lololo<tralala>";
-		String result = "commandLalala<nbissle Html> völlig ohne<Belang><b>taratata</b<B>COMMAND</B>lololo<tralala>";
+		String result = "commandlalala<nbissle html> völlig ohne<belang><b>taratata</b><B>COMMAND</B>lololo<tralala>";
 
 		assertEquals(result, Functions.markCommand(test, "command"));
 	}
@@ -500,17 +500,17 @@ public class Fuctions_Test {
 
 	@Test
 	public void containsAlternativeSyntaxPartTest() {
-		String[] array1 = { "Syntax:", "Eins", "Zwei", "Alternative", "Syntax",
-				"Drei" };
+		String[] array1 = { "syntax:", "eins", "zwei", "alternative", "syntax:",
+				"drei" };
 		assertTrue(Functions.containsAlternativeSyntax(array1));
 
-		String[] array2 = { "Hier", "ist", "keine", "andere", "Syntax", "drin" };
+		String[] array2 = { "hier", "ist", "keine", "andere", "syntax", "drin" };
 		assertFalse(Functions.containsAlternativeSyntax(array2));
 
-		String[] array3 = { "Syntax:", "Test", "Eins", "ZWei", "Drei" };
+		String[] array3 = { "syntax:", "test", "eins", "zwei", "drei" };
 		assertFalse(Functions.containsAlternativeSyntax(array3));
 
-		String[] array4 = { "Syntax:", "test", "unit", "Alternative", "Syntax",
+		String[] array4 = { "syntax:", "test", "unit", "alternative", "syntax:",
 				"object" };
 		assertTrue(Functions.containsAlternativeSyntax(array4));
 
@@ -518,12 +518,12 @@ public class Fuctions_Test {
 
 	@Test
 	public void getAlternativeSyntaxPartTest() {
-		String[] array1 = { "Syntax:", "Eins", "Zwei", "Alternative", "Syntax",
-				"Drei" };
-		String[] result1 = { "Drei" };
+		String[] array1 = { "syntax:", "eins", "zwei", "alternative", "syntax",
+				"drei" };
+		String[] result1 = { "drei" };
 		assertArrayEquals(result1, Functions.getAlternativeSyntaxPart(array1));
 
-		String[] array2 = { "Syntax:", "test", "unit", "Alternative", "Syntax",
+		String[] array2 = { "syntax:", "test", "unit", "alternative", "syntax",
 				"object" };
 		String[] result2 = { "object" };
 		assertArrayEquals(result2, Functions.getAlternativeSyntaxPart(array2));
@@ -544,14 +544,14 @@ public class Fuctions_Test {
 
 	@Test
 	public void CheckHasParametersTest() {
-		String[] array1 = { "eins", "zwei", "Return", "Value", "Nothing" };
-		String[] result1 = { "eins", "zwei", "Parameters:", "HatGarKeine",
-				"Return", "Value", "Nothing" };
+		String[] array1 = { "eins", "zwei", "return", "value", "nothing" };
+		String[] result1 = { "eins", "zwei", "parameters:", "hatGarKeine",
+				"return", "value", "nothing" };
 		assertArrayEquals(result1, Functions.checkHasParameters(array1));
 
-		String[] array2 = { "test", "Return", "Value", "Nothing" };
-		String[] result2 = { "test", "Parameters:", "HatGarKeine", "Return",
-				"Value", "Nothing" };
+		String[] array2 = { "test", "return", "value", "nothing" };
+		String[] result2 = { "test", "parameters:", "hatGarKeine", "return",
+				"value", "nothing" };
 		assertArrayEquals(result2, Functions.checkHasParameters(array2));
 	}
 
@@ -630,14 +630,14 @@ public class Fuctions_Test {
 	public void checkSpecialParameterTest() {
 		String[] syntax1 = { "command", "param1", "param2" };
 		String[] parameter1 = { "miau", "don't care", "param2:",
-				"(optional, TKOH only):", "jkdv" };
+				"(optional, tkoh only):", "jkdv" };
 		String[] result1 = { "command", "param1" };
 		assertArrayEquals(result1,
 				Functions.checkSpecialParameter(syntax1, parameter1, false));
 
 		String[] syntax2 = { "command", "[param1, param2]" };
 		String[] parameter2 = { "Tada", "test", "param1:", "parameter",
-				"param2:", "(optional, TKOH only):" };
+				"param2:", "(optional, tkoh only):" };
 		String[] result2 = { "command", "[param1]" };
 		assertArrayEquals(result2,
 				Functions.checkSpecialParameter(syntax2, parameter2, false));
