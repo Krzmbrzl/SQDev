@@ -940,7 +940,7 @@ public class Functions {
 			}
 		}
 
-		String fragment1 = string.substring(0, posA).toLowerCase(); //TODO -1
+		String fragment1 = string.substring(0, posA).toLowerCase(); // TODO -1
 		String fragment2 = string.substring(posB).toLowerCase();
 
 		String commandM = string.substring(posA, posB);
@@ -2047,97 +2047,179 @@ public class Functions {
 				 * Außerdem an den parameterNamen noch nen Doppelpunkt dran
 				 * hängen, damit correctsyntax den au als parameter erkennt
 				 */
+				while (isIn(Parameter, "optional", false)) {
+					int optionalPos = whichPosition(Parameter, "optional",
+							false, true);
+					int paraPos = optionalPos - 1;
+					boolean directMatch = false;
+					String parameter = null;
 
-				boolean found = true;
-				boolean directMatch = false;
-
-				if (isIn(Parameter, "(optional):", true)) {
-					directMatch = true;
-				}
-
-				while (found) {
-					int pos = whichPosition(Parameter, "optional", false, true);
-
-					Parameter[pos] = "HierStandMalDassDesFreiwilligWäre";
-
-					int paramPos = pos - 1;
-
-					String element = Parameter[paramPos];
-					element = removeDots(element);
-
-					while (!isIn(Syntax, element, true) && paramPos >= 0) {
-						paramPos = paramPos - 1;
-						element = Parameter[paramPos];
-
-						element = removeDots(element, false, true);
+					if (Parameter[optionalPos].equals("(optional):")) {
+						directMatch = true;
 					}
 
-					if (isIn(Syntax, element, true) && paramPos >= 0) {
+					if (directMatch) {
+						// direct matches must be handled sepaerately because
+						// the parameterName might not end with a colomn
+						paraPos = optionalPos - 1;
 
-						if (!element.endsWith(":")) { // hänge ggf noch einen
-														// Doppelpunkt an den
-														// Parameter dran, damit
-														// correctSyntax das
-														// element auch
-														// verwerten kann
-							element = element + ":";
-							Parameter[paramPos] = element;
+						String parameterName = Parameter[paraPos];
+
+						if (parameterName.endsWith(":")) {
+							parameterName = parameterName.substring(0,
+									parameterName.length() - 1);
+						} else {
+							// add column in Parameter for correctSyntax
+							String newParameterName = parameterName + ":";
+							Parameter[paraPos] = newParameterName;
 						}
 
-						// Der adder dient zur Neutralisation des Unterschiedes
-						// bei einem directMatch und einem indirectMatch
-						int adder = 0;
-
-						if (!directMatch && paramPos == pos - 1) {
-							// it's a direct match when the optional keyword
-							// stands after the parameter name
-							directMatch = true;
+						if (isIn(Syntax, parameterName, true)) {
+							parameter = Parameter[optionalPos + 1];
 						}
-
-						if (directMatch) {
-							adder = 1;
-						}
-
-						String paramElement = Parameter[paramPos + 1 + adder];
-
-						String nextElement = Parameter[paramPos + 2 + adder];
-						int nextPos = paramPos + 2 + adder;
-
-						while (nextElement.equals("or")) {
-							String nextParam = Parameter[nextPos + 1];
-
-							paramElement = paramElement + "/" + nextParam; // schreibe
-																			// die
-																			// amdere
-																			// Syntax
-																			// auch
-																			// mit
-																			// rein
-							nextPos = nextPos + 2;
-							nextElement = Parameter[nextPos];
-						}
-
-						paramElement = "(" + paramElement + ")?"; // kennzeichnen
-																	// als
-																	// optional
-
-						Parameter[paramPos + 1] = paramElement; // setze die
-																// Syntax an
-						// die stelle, an der
-						// correctsyntax das
-						// ganze auch abliest
-
 					} else {
-						Error("Der Command, der als optional gekennzeichnet wurde, konnte in Syntax nicht gefunden werden!");
-						break;
+						String parameterName = Parameter[paraPos];
+						boolean proceed = false;
+
+						while (proceed
+								|| (!parameterName.endsWith(":") && paraPos >= 0)) {
+							// if parameterName doesn't ends with ":" it's not
+							// likely a proper parameterName
+							paraPos = paraPos - 1;
+							parameterName = Parameter[paraPos];
+
+							if (parameterName.endsWith(":")) {
+								String testElement = parameterName.substring(0,
+										parameterName.length() - 1);
+								if (!isIn(Syntax, testElement, true)) {
+									// if Syntax does not contain testElement
+									// the
+									// lopp has to continue to find another
+									// match
+									proceed = true;
+								} else {
+									// if Syntax contains testElement the loop
+									// has
+									// to end
+									proceed = false;
+								}
+							}
+						}
+
+						if (paraPos < 0) {
+							// if the loop before didn't match try another
+							// method
+							System.out
+									.println("Couldn't find optional ParameterName with ':' \n "
+											+ "-> try alternative method");
+
+							paraPos = optionalPos - 1;
+							parameterName = Parameter[paraPos];
+							removeDots(parameterName);
+
+							while (!isIn(Parameter, parameterName, true)
+									&& paraPos >= 0) {
+								paraPos = paraPos - 1;
+								parameterName = Parameter[paraPos];
+
+							}
+						}
+						// paraPos indicates the position where the
+						// parameterName
+						// stands in Parameter
+
+						int searchPos = paraPos + 1;
+						parameter = Parameter[searchPos];
+
+						while (parameter.indexOf("optional") > 0
+								&& searchPos >= 0) {
+							// find next element that doesn't contains
+							// "optional"
+							searchPos += 1;
+							parameter = Parameter[searchPos];
+						}
 					}
 
-					if (!isIn(Parameter, "optional", false)) {
-						found = false; // beende die schleife beim nächsten
-										// durchgang, da keine weiteren
-										// optionalen parameter vorhanden sind
+					parameter = "(" + parameter + ")?";
+
+					// write the parameter after the parameterName
+					Parameter[paraPos + 1] = parameter;
+
+					if (optionalPos != (paraPos + 1)) {
+						// overwrite keyword 'optional'
+						Parameter[optionalPos] = "hierStandMalDassDesFreiwilligWäre";
 					}
+
 				}
+
+				/*
+				 * TODO boolean found = true; boolean directMatch = false;
+				 * 
+				 * if (isIn(Parameter, "(optional):", true)) { directMatch =
+				 * true; }
+				 * 
+				 * while (found) { int pos = whichPosition(Parameter,
+				 * "optional", false, true);
+				 * 
+				 * Parameter[pos] = "HierStandMalDassDesFreiwilligWäre";
+				 * 
+				 * int paramPos = pos - 1;
+				 * 
+				 * String element = Parameter[paramPos]; element =
+				 * removeDots(element);
+				 * 
+				 * while (!isIn(Syntax, element, true) && paramPos >= 0) {
+				 * paramPos = paramPos - 1; String newElement =
+				 * Parameter[paramPos];
+				 * 
+				 * if(newElement.indexOf(":") < 0) { //if there's no column,
+				 * it's no parameter continue; }
+				 * 
+				 * element = removeDots(newElement, false, true); }
+				 * 
+				 * if (isIn(Syntax, element, true) && paramPos >= 0) {
+				 * 
+				 * if (!element.endsWith(":")) { // hänge ggf noch einen //
+				 * Doppelpunkt an den // Parameter dran, damit // correctSyntax
+				 * das // element auch // verwerten kann element = element +
+				 * ":"; Parameter[paramPos] = element; }
+				 * 
+				 * // Der adder dient zur Neutralisation des Unterschiedes //
+				 * bei einem directMatch und einem indirectMatch int adder = 0;
+				 * 
+				 * if (!directMatch && paramPos == pos - 1) { // it's a direct
+				 * match when the optional keyword // stands after the parameter
+				 * name directMatch = true; }
+				 * 
+				 * if (directMatch) { adder = 1; }
+				 * 
+				 * String paramElement = Parameter[paramPos + 1 + adder];
+				 * 
+				 * String nextElement = Parameter[paramPos + 2 + adder]; int
+				 * nextPos = paramPos + 2 + adder;
+				 * 
+				 * while (nextElement.equals("or")) { String nextParam =
+				 * Parameter[nextPos + 1];
+				 * 
+				 * paramElement = paramElement + "/" + nextParam; // schreibe //
+				 * die // amdere // Syntax // auch // mit // rein nextPos =
+				 * nextPos + 2; nextElement = Parameter[nextPos]; }
+				 * 
+				 * paramElement = "(" + paramElement + ")?"; // kennzeichnen //
+				 * als // optional
+				 * 
+				 * Parameter[paramPos + 1] = paramElement; // setze die //
+				 * Syntax an // die stelle, an der // correctsyntax das // ganze
+				 * auch abliest
+				 * 
+				 * } else { Error(
+				 * "Der Command, der als optional gekennzeichnet wurde, konnte in Syntax nicht gefunden werden!"
+				 * ); break; }
+				 * 
+				 * if (!isIn(Parameter, "optional", false)) { found = false; //
+				 * beende die schleife beim nächsten // durchgang, da keine
+				 * weiteren // optionalen parameter vorhanden sind } }
+				 */
 			}
 		}
 
@@ -2679,7 +2761,8 @@ public class Functions {
 		String[] correctParams = { ";", "teammember", "side", "object",
 				"string", "waypoint", "anything", "location", "group", "code",
 				"display", "control", "task", "config", "array", "position",
-				"color", "double", "boolean", "namespace", "scripthandle", "number" };
+				"color", "double", "boolean", "namespace", "scripthandle",
+				"number" };
 
 		// Wenn auch nur ein Element gleich ist, dann ist was beim
 		// überschreiben der Parameter schief gegangen
@@ -2722,6 +2805,12 @@ public class Functions {
 					 */
 
 					int lNew = arrayNew.length;
+					int lOld = arrayOld.length;
+
+					if (lNew > lOld) {
+						// always take the shorter one as reference for the loop
+						lNew = lOld;
+					}
 
 					for (int j = 0; j < lNew; j++) {
 						String oldElement = arrayOld[j];
@@ -2832,8 +2921,8 @@ public class Functions {
 
 			newSyntax[pos] = element;
 		}
-		
-		if(isIn(newSyntax, ":", false)) {
+
+		if (isIn(newSyntax, ":", false)) {
 			throw new NotProperlyProcessedException("Syntax contains a column!");
 		}
 	}

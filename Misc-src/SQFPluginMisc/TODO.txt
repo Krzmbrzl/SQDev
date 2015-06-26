@@ -1,14 +1,3 @@
-findCover -> optional parameter
-name -> Parameter überschreiben
-setVehicleVarName -> Parameter überschreiben
-test -> Parameter überschreiben
-textLogFormat -> generell
-
 [test, ...] deuten lernen
 
-
 -> "with" fest als Struktur implementieren
-
-es gibt noch Einzelfälle, bei denen ein "-" als return-Wert geschrieben wird
-
-Parameter mit doppelpunkt fixen
