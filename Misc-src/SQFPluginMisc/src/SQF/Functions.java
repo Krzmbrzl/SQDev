@@ -1,6 +1,7 @@
 package SQF;
 
 import Exceptions.NotProperlyProcessedException;
+import Exceptions.UnexpectedInputException;
 
 /**
  * This is a collection of Functions which deal with Strings and String-Arrays
@@ -399,9 +400,15 @@ public class Functions {
 			count1++;
 		}
 
-		checkSpecialParameter(Syntax, Parameter, false); // check for optional
-															// and TKOH-only
-															// Parameters
+		try {
+			checkSpecialParameter(Syntax, Parameter, false); // check for
+																// optional,
+																// repeating
+																// and TKOH-only
+																// Parameters
+		} catch (UnexpectedInputException e) {
+			e.printStackTrace();
+		}
 
 		count = 0;
 
@@ -506,13 +513,13 @@ public class Functions {
 	 * @param useErrorReport
 	 *            indicates if the function shall give an Errormessage if it
 	 *            doesn't find a viable input
-	 * @return position The position of the element in the Array
 	 * @param giveMultiDimPos
-	 *            le the function search for nested Arrays and their content and
-	 *            therefor let it return a multidimensional position as a
+	 *            let the function search for nested Arrays and their content
+	 *            and therefor let it return a multidimensional position as a
 	 *            decimal number where the number before the comma indicates the
 	 *            position in the original array and the number aufter the comma
-	 *            the position in the nested array
+	 *            the position in the nested array (.05 if element is not stored
+	 *            as an array)
 	 * @return The multidimensional position of the element in the Array
 	 */
 
@@ -1889,10 +1896,12 @@ public class Functions {
 	 *         "correctSyntax" can process it properly (optional commands are
 	 *         changed directly in the Parameterarray so taht "correctsynatx"
 	 *         will do it automatically correct)
+	 * @throws UnexpectedInputException
 	 */
 
 	public static String[] checkSpecialParameter(String[] Syntax,
-			String[] Parameter, boolean rekursiv) {
+			String[] Parameter, boolean rekursiv)
+			throws UnexpectedInputException {
 
 		if (isIn(Parameter, "(optional, tkoh only):", true)) {
 			int paramPos = whichPosition(Parameter, "(optional, tkoh only)",
@@ -2152,74 +2161,77 @@ public class Functions {
 
 				}
 
-				/*
-				 * TODO boolean found = true; boolean directMatch = false;
-				 * 
-				 * if (isIn(Parameter, "(optional):", true)) { directMatch =
-				 * true; }
-				 * 
-				 * while (found) { int pos = whichPosition(Parameter,
-				 * "optional", false, true);
-				 * 
-				 * Parameter[pos] = "HierStandMalDassDesFreiwilligWäre";
-				 * 
-				 * int paramPos = pos - 1;
-				 * 
-				 * String element = Parameter[paramPos]; element =
-				 * removeDots(element);
-				 * 
-				 * while (!isIn(Syntax, element, true) && paramPos >= 0) {
-				 * paramPos = paramPos - 1; String newElement =
-				 * Parameter[paramPos];
-				 * 
-				 * if(newElement.indexOf(":") < 0) { //if there's no column,
-				 * it's no parameter continue; }
-				 * 
-				 * element = removeDots(newElement, false, true); }
-				 * 
-				 * if (isIn(Syntax, element, true) && paramPos >= 0) {
-				 * 
-				 * if (!element.endsWith(":")) { // hänge ggf noch einen //
-				 * Doppelpunkt an den // Parameter dran, damit // correctSyntax
-				 * das // element auch // verwerten kann element = element +
-				 * ":"; Parameter[paramPos] = element; }
-				 * 
-				 * // Der adder dient zur Neutralisation des Unterschiedes //
-				 * bei einem directMatch und einem indirectMatch int adder = 0;
-				 * 
-				 * if (!directMatch && paramPos == pos - 1) { // it's a direct
-				 * match when the optional keyword // stands after the parameter
-				 * name directMatch = true; }
-				 * 
-				 * if (directMatch) { adder = 1; }
-				 * 
-				 * String paramElement = Parameter[paramPos + 1 + adder];
-				 * 
-				 * String nextElement = Parameter[paramPos + 2 + adder]; int
-				 * nextPos = paramPos + 2 + adder;
-				 * 
-				 * while (nextElement.equals("or")) { String nextParam =
-				 * Parameter[nextPos + 1];
-				 * 
-				 * paramElement = paramElement + "/" + nextParam; // schreibe //
-				 * die // amdere // Syntax // auch // mit // rein nextPos =
-				 * nextPos + 2; nextElement = Parameter[nextPos]; }
-				 * 
-				 * paramElement = "(" + paramElement + ")?"; // kennzeichnen //
-				 * als // optional
-				 * 
-				 * Parameter[paramPos + 1] = paramElement; // setze die //
-				 * Syntax an // die stelle, an der // correctsyntax das // ganze
-				 * auch abliest
-				 * 
-				 * } else { Error(
-				 * "Der Command, der als optional gekennzeichnet wurde, konnte in Syntax nicht gefunden werden!"
-				 * ); break; }
-				 * 
-				 * if (!isIn(Parameter, "optional", false)) { found = false; //
-				 * beende die schleife beim nächsten // durchgang, da keine
-				 * weiteren // optionalen parameter vorhanden sind } }
-				 */
+			}
+
+			while (isIn(Syntax, "REPEATPARAM", false)) {
+				double pos = whichPosition(Syntax, "REPEATPARAM", false, true,
+						true);
+
+				int roughPos = (int) pos; // get position of the inner array
+											// containing 'REPEATPARAM'
+				int exactPos = (int) (pos * 10 - roughPos * 10); // get position
+																	// of
+																	// 'REPEATPARAM'
+																	// in the
+																	// inner
+																	// array
+
+				String syntaxParameterArray = Syntax[roughPos]; // select inner
+																// array
+
+				if (!syntaxParameterArray.startsWith("[")
+						&& !syntaxParameterArray.endsWith("]")) {
+					throw new UnexpectedInputException(); // if it's not
+															// surrounded by
+															// this brackets the
+															// output is not
+															// clear
+				}
+
+				syntaxParameterArray = syntaxParameterArray.substring(1,
+						syntaxParameterArray.length() - 1); // get content of
+															// the inner array
+
+				syntaxParameterArray = removeDots(syntaxParameterArray, true);
+				syntaxParameterArray = reduceSpaceBetween(syntaxParameterArray);
+
+				int brPos;
+				while ((brPos = syntaxParameterArray.indexOf("[")) >= 0
+						&& syntaxParameterArray.substring(brPos).indexOf(
+								"REPEATPARAM") >= 0) {
+					//TODO multidimensional processing
+				}
+
+				String[] syntaxParameterArrayList = getElements(syntaxParameterArray); // create
+																						// an
+																						// array
+																						// of
+																						// the
+																						// string
+
+				String parameterName = syntaxParameterArrayList[exactPos - 1]; // select
+																				// the
+																				// repeating
+																				// parameter
+
+				if (!isIn(Parameter, parameterName + ":", true)) {
+					Error("Problem with marking repeating parameter!");
+				} else {
+					int parameterPos = whichPosition(Parameter, parameterName
+							+ ":", true, true) + 1;
+					String parameter = "(" + Parameter[parameterPos] + ")*";
+					Parameter[parameterPos] = parameter;
+				}
+
+				syntaxParameterArrayList = replaceWith(
+						syntaxParameterArrayList, "REPEATPARAM", null);
+				syntaxParameterArrayList = removeNullElements(syntaxParameterArrayList);
+
+				syntaxParameterArray = ArrayToString(syntaxParameterArrayList);
+				syntaxParameterArray = "["
+						+ seperateElements(syntaxParameterArray) + "]";
+				Syntax[roughPos] = syntaxParameterArray;
+
 			}
 		}
 
@@ -2904,7 +2916,8 @@ public class Functions {
 			int compPos = whichPosition(newSyntax, ")?", false, false);
 
 			if (pos != compPos
-					&& newSyntax[pos].toLowerCase().indexOf("(handle)") < 0) {
+					&& newSyntax[pos].toLowerCase().indexOf("(handle)") < 0
+					&& newSyntax[pos].indexOf(")*") < 0) {
 				throw new NotProperlyProcessedException(
 						"invalid closure bracket ')'");
 			}
@@ -2953,6 +2966,72 @@ public class Functions {
 		}
 
 		return quantity;
+	}
+
+	/**
+	 * This function marks repeating parameter with the keyword 'REPEATINGPARAM'
+	 * in the form: repeatingParameter,REPEATINGPARAM Furthermore it deletes the
+	 * Nonsense the repeating parameter are followed by sometimes
+	 * 
+	 * @param Parameter
+	 *            The array that should be checked for those parameters
+	 * @return The same array just with the marked parameter
+	 * @throws UnexpectedInputException
+	 */
+
+	public static String[] markRepeatingParameter(String[] Parameter)
+			throws UnexpectedInputException {
+		int count = 0;
+
+		for (String element : Parameter) {
+			int startPos = element.indexOf("..");
+			while (startPos >= 0
+					&& count < whichPosition(Parameter, "parameters:", true,
+							true)) {
+				// two or three following points indicate a reapeating amount of
+				// parameter
+
+				String fragment1 = element.substring(0, startPos);
+				String fragment2 = element.substring(startPos);
+				String fragment3 = ""; // used as a puffer
+
+				if (fragment2.indexOf("]") >= 0) {
+					fragment3 = fragment2.substring(fragment2.indexOf("]"));
+					fragment2 = fragment2.substring(0, fragment2.indexOf("]"));
+				} else {
+					if (fragment2.indexOf(")") >= 0) {
+						fragment3 = fragment2.substring(fragment2.indexOf(")"));
+						fragment2 = fragment2.substring(0,
+								fragment2.indexOf(")"));
+					} else {
+						// if none of the above cases is given this function
+						// can't handle the input
+						throw new UnexpectedInputException();
+					}
+				}
+
+				// fragment2 now only contains the points and maybe some
+				// undefined parameter
+
+				while (fragment1.endsWith(" ")) {
+					fragment1 = fragment1.substring(0, fragment1.length() - 1);
+				}
+
+				if (!fragment1.endsWith(",")) {
+					fragment1 += ",";
+				}
+
+				element = fragment1 + "REPEATPARAM" + fragment3;
+
+				Parameter[count] = element;
+
+				startPos = element.indexOf(".."); // reset startPos for loop
+													// header
+			}
+			count++;
+		}
+
+		return Parameter;
 	}
 
 }

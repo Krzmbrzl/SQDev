@@ -1,3 +1,3 @@
-[test, ...] deuten lernen
+fix problems with FixError
 
--> "with" fest als Struktur implementieren
+add return-dataTypes to the dataType-List

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import Exceptions.UnexpectedInputException;
 import SQF.Functions;
 
 public class Fuctions_Test {
@@ -138,7 +139,7 @@ public class Fuctions_Test {
 
 		String test4 = "Eins [Zwei Drölf Test] Drei (Vier Aju Boak) (Miau, und)?";
 		String[] result4 = { "Eins", "[Zwei Drölf Test]", "Drei",
-				"(Vier Aju Boak)","(Miau, und)?" };
+				"(Vier Aju Boak)", "(Miau, und)?" };
 		assertArrayEquals(result4, Functions.getElements(test4)); // runde und
 																	// eckige
 																	// Klammern
@@ -500,8 +501,8 @@ public class Fuctions_Test {
 
 	@Test
 	public void containsAlternativeSyntaxPartTest() {
-		String[] array1 = { "syntax:", "eins", "zwei", "alternative", "syntax:",
-				"drei" };
+		String[] array1 = { "syntax:", "eins", "zwei", "alternative",
+				"syntax:", "drei" };
 		assertTrue(Functions.containsAlternativeSyntax(array1));
 
 		String[] array2 = { "hier", "ist", "keine", "andere", "syntax", "drin" };
@@ -510,8 +511,8 @@ public class Fuctions_Test {
 		String[] array3 = { "syntax:", "test", "eins", "zwei", "drei" };
 		assertFalse(Functions.containsAlternativeSyntax(array3));
 
-		String[] array4 = { "syntax:", "test", "unit", "alternative", "syntax:",
-				"object" };
+		String[] array4 = { "syntax:", "test", "unit", "alternative",
+				"syntax:", "object" };
 		assertTrue(Functions.containsAlternativeSyntax(array4));
 
 	}
@@ -627,7 +628,7 @@ public class Fuctions_Test {
 	}
 
 	@Test
-	public void checkSpecialParameterTest() {
+	public void checkSpecialParameterTest() throws UnexpectedInputException {
 		String[] syntax1 = { "command", "param1", "param2" };
 		String[] parameter1 = { "miau", "don't care", "param2:",
 				"(optional, tkoh only):", "jkdv" };
@@ -720,6 +721,27 @@ public class Fuctions_Test {
 		assertEquals(1, Functions.howOften(test1, "Wuff"));
 
 		assertEquals(0, Functions.howOften(test1, "Dummy"));
+	}
+
+	@Test
+	public void markRepeatingParameter() throws UnexpectedInputException {
+		String[] test1 = { "map", "insertEditorObject",
+				"[type,value,[name1,value1,...],subtype class]" };
+		String[] result1 = { "map", "insertEditorObject",
+				"[type,value,[name1,value1,REPEATPARAM],subtype class]" };
+		assertArrayEquals(result1, Functions.markRepeatingParameter(test1));
+
+		String[] test2 = { "command", "testParameter", "[test1, test2]",
+				"[test1, test2, ...]" };
+		String[] result2 = { "command", "testParameter", "[test1, test2]",
+				"[test1, test2,REPEATPARAM]" };
+		assertArrayEquals(result2, Functions.markRepeatingParameter(test2));
+
+		String[] test3 = { "teamMember", "createTask",
+				"[[type, parentTask], priority, name1, value1...nameN, valueN]" };
+		String[] result3 = { "teamMember", "createTask",
+				"[[type, parentTask], priority, name1, value1,REPEATPARAM]" };
+		assertArrayEquals(result3, Functions.markRepeatingParameter(test3));
 	}
 
 }

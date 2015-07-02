@@ -246,11 +246,17 @@ public class syntaxVariantArchive {
 		return allSyntaxes;
 	}
 	
+	/**
+	 * Returns the position of the syntaxVariant corresponding to that syntax in this archive. If the syntax can't
+	 * be found -1 is returned
+	 * @param syntax The syntax the funtion should search for
+	 * @return The position of the syntax in the archive (-1 = notFound)
+	 */
 	public int find(String syntax) {
-/*		if(syntax.indexOf("commandNameKeyword") < 0) {
+		if(syntax.indexOf("commandNameKeyword") < 0) {
 			System.err.println("ERROR: syntax must contain 'commandNameKeyword'");
 			return -2;
-		}*/
+		}
 		
 		for(int i=0; i<this.syntaxVariantArchive_list.size(); i++) {
 			syntaxVariant current = this.syntaxVariantArchive_list.get(i);
@@ -346,5 +352,13 @@ public class syntaxVariantArchive {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * @param position The index of the syntaxVariant
+	 * @return Returns the syntaxVariant with the given index in this archive
+	 */
+	public syntaxVariant get(int position) {
+		return this.syntaxVariantArchive_list.get(position);
 	}
 }

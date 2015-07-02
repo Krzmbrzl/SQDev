@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import Exceptions.NotProperlyProcessedException;
+import Exceptions.UnexpectedInputException;
 
 public class FixErrors {
 
@@ -274,6 +275,8 @@ public class FixErrors {
 																	// Elemente
 																	// aufteilen
 								String[] oldSyntax = Syntax1;
+								
+								Syntax1 = Functions.markRepeatingParameter(Syntax1);
 
 								Syntax1 = Functions.getSyntax(Syntax1, command);
 
@@ -318,6 +321,9 @@ public class FixErrors {
 			System.out.println(e);
 
 		} catch (NotProperlyProcessedException e) {
+			e.printStackTrace();
+		} catch (UnexpectedInputException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

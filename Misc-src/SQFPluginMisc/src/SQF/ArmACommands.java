@@ -122,7 +122,7 @@ public class ArmACommands {
 				in = new BufferedReader(new InputStreamReader(
 						startURL.openStream()));
 			} else {
-				//TODO
+				// TODO
 				startURL = new URL(sBaseURL
 						+ "/wiki/Category_Scripting_Commands_Arma_3.html");
 				in = new BufferedReader(new InputStreamReader(
@@ -281,13 +281,13 @@ public class ArmACommands {
 								"/wiki/call.html", "/wiki/or.html",
 								"/wiki/then.html", "/wiki/to.html",
 								"/wiki/while.html", "/wiki/case.html",
-								"/wiki/do.html" };
+								"/wiki/do.html", "/wiki/with.html" };
 						String[] controlStructures = { "/wiki/catch",
 								"/wiki/exitWith", "/wiki/from", "/wiki/if",
 								"/wiki/step", "/wiki/switch", "/wiki/and",
 								"/wiki/call", "/wiki/or", "/wiki/then",
 								"/wiki/to", "/wiki/while", "/wiki/case",
-								"/wiki/do" };
+								"/wiki/do", "/wiki/with" };
 
 						if (Functions
 								.isIn(controlStructures, sCommandURL, true)
@@ -348,11 +348,11 @@ public class ArmACommands {
 										// Abschnitt gefunden.
 										// Alle Infos stehen in inputLineA.
 										// Verarbeite Informationen ...
-										
-										if(command.equals("lineIntersects")) {
+
+										if (command.equals("lineIntersects")) {
 											String dummy = "";
 										}
-										
+
 										inputLineA = Functions.markCommand(
 												inputLineA, command); // schreibt
 																		// den
@@ -546,6 +546,14 @@ public class ArmACommands {
 																		// später
 																		// zu
 																		// vergleichen
+
+//TODO: implement										Syntax1 = Functions
+//												.markRepeatingParameter(Syntax1); // markiere
+																					// sich
+																					// wiederholende
+																					// Parameter,
+																					// für
+																					// checkSpecialParameter
 
 										Syntax1 = Functions.getSyntax(Syntax1,
 												command);

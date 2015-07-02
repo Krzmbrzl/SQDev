@@ -90,6 +90,29 @@ public class SQFOutputParser {
 				
 				if(!archive.contains(syntax)) {
 					archive.add(syntax);
+					
+					//instantly add the commandName to that syntax
+					int pos = archive.find(syntax);
+					syntaxVariant synVar = archive.get(pos); //select syntaxVariant the commandName belongs to
+					
+					String commandName = currentCommand.getCommandName(); //select commandName
+					
+					synVar.addCommand(commandName); //add the commandName to the syntaxVariant
+				}else {
+					//if archive already contains this syntax just add the corresponding command to this syntaxVariant
+					int pos = archive.find(syntax); //get pos of the syntax in the archive
+					
+					if(pos < 0) {
+						//if syntax can't be found
+						System.err.println("syntax konnte nicht gefunden werden -> wird übersprungen");
+						continue;
+					}
+					
+					syntaxVariant synVar = archive.get(pos); //select syntaxVariant the commandName belongs to
+					
+					String commandName = currentCommand.getCommandName(); //select commandName
+					
+					synVar.addCommand(commandName); //add the commandName to the syntaxVariant
 				}
 			}
 		}
@@ -98,7 +121,7 @@ public class SQFOutputParser {
 		
 		archive.store(outputDirectoryPath);
 		
-		
+		//TODO return-parameter noch in parameterliste integrieren
 		String[] parameter = archive.getParameter();
 		System.out.println(parameter.length + "\n");
 		
