@@ -11,6 +11,8 @@ import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import Exceptions.NotProperlyProcessedException;
+
 public class ArmACommands {
 
 	public static String[] ErrorMessages;
@@ -547,13 +549,14 @@ public class ArmACommands {
 																		// zu
 																		// vergleichen
 
-//TODO: implement										Syntax1 = Functions
-//												.markRepeatingParameter(Syntax1); // markiere
-																					// sich
-																					// wiederholende
-																					// Parameter,
-																					// für
-																					// checkSpecialParameter
+										// TODO: implement Syntax1 = Functions
+										// .markRepeatingParameter(Syntax1); //
+										// markiere
+										// sich
+										// wiederholende
+										// Parameter,
+										// für
+										// checkSpecialParameter
 
 										Syntax1 = Functions.getSyntax(Syntax1,
 												command);
@@ -581,6 +584,16 @@ public class ArmACommands {
 																	// everything
 																	// went
 																	// right
+										
+										if (Functions.isIn(Syntax1, "unknown",
+												true)
+												|| Functions.isIn(Syntax1,
+														"Unknown", true)) {
+											//might exist unknown parameter/commands
+											throw new NotProperlyProcessedException(
+													"unknown parameter not viable!");
+										}
+
 										Functions.printArray(Syntax1);
 
 										Syntax1[0] = command; // first element

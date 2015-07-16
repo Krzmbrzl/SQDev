@@ -2794,28 +2794,6 @@ public class Functions {
 					arrayElementsNew = reduceSpaceBetween(arrayElementsNew);
 					String[] arrayNew = getElements(arrayElementsNew);
 
-					/*
-					 * while (isIn(arrayNew, "?", true)) { double exactQPos =
-					 * whichPosition(arrayNew, "?", true, true, true); int qPos
-					 * = (int) exactQPos;
-					 * 
-					 * if (round(exactQPos * 100, 1) == (qPos * 100 + 5)) {
-					 * arrayNew[qPos] = null; arrayNew =
-					 * removeNullElements(arrayNew); } else { int innerArrayPos
-					 * = (int) ((exactQPos - qPos) * 10); String
-					 * innerArrayContent = arrayNew[qPos] .substring(1,
-					 * arrayNew[qPos].length()); innerArrayContent =
-					 * removeDots(innerArrayContent); String[] arrayElements =
-					 * getElements(innerArrayContent);
-					 * 
-					 * arrayElements[innerArrayPos] = null; arrayElements =
-					 * removeNullElements(arrayElements);
-					 * 
-					 * innerArrayContent = ArrayToString(arrayElements);
-					 * 
-					 * arrayNew[qPos] = innerArrayContent; } }
-					 */
-
 					int lNew = arrayNew.length;
 					int lOld = arrayOld.length;
 
@@ -2845,7 +2823,7 @@ public class Functions {
 					// die
 					// parameter
 					// richtig
-					// überschriben
+					// überschrieben
 					// wurden
 					throw new NotProperlyProcessedException(
 							command

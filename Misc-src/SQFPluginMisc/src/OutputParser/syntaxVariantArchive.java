@@ -200,6 +200,15 @@ public class syntaxVariantArchive {
 			if(syntax.indexOf("editorOBJECT") >= 0) {
 				syntax = syntax.replaceAll("editorOBJECT", "EditorObject");
 			}
+			if(syntax.indexOf("true") >= 0) {
+				syntax = syntax.replaceAll("true", "BOOLEAN");
+			}
+			if(syntax.indexOf("false") >= 0) {
+				syntax = syntax.replaceAll("false", "BOOLEAN");
+			}
+			if(syntax.indexOf("void") >= 0) {
+				syntax = syntax.replaceAll("void", "ANYTHING");
+			}
 
 
 			String[] aSyntax = Functions.getElements(syntax);
@@ -360,5 +369,12 @@ public class syntaxVariantArchive {
 	 */
 	public syntaxVariant get(int position) {
 		return this.syntaxVariantArchive_list.get(position);
+	}
+	
+	/**
+	 * 
+	 */
+	public void remove(int position) {
+		this.syntaxVariantArchive_list.remove(position);
 	}
 }

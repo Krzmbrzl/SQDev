@@ -1,3 +1,5 @@
 fix problems with FixError
 
-add return-dataTypes to the dataType-List
+try-catch fest implementieren
+
+commands noch nach returnValue gruppieren

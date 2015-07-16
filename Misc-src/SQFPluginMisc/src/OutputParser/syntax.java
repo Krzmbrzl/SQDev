@@ -135,6 +135,7 @@ public class syntax {
 		}
 
 		for (int i = 0; i < this.syntax_syntaxList.size(); i++) {
+			//format syntax
 			String syntax = this.syntax_syntaxList.get(i);
 
 			int startPos = syntax.indexOf(name.toLowerCase());
@@ -165,6 +166,13 @@ public class syntax {
 
 					this.syntax_syntaxList.set(i, syntax);
 				}
+			}
+			
+			//format return
+			String returnType = this.syntax_returnType;
+			
+			if(returnType.equals("NotSet")) {
+				this.setReturnType("None");
 			}
 		}
 	}
