@@ -160,55 +160,7 @@ public class syntaxVariantArchive {
 				syntax = syntax.replaceAll("/", " ");
 			}
 			
-			//replace some parameter names which are the same
-			if(syntax.indexOf("number") >= 0) {
-				syntax = syntax.replaceAll("number", "NUMBER");
-			}
-			if(syntax.indexOf("object") >= 0) {
-				syntax = syntax.replaceAll("object", "OBJECT");
-			}
-			if(syntax.indexOf("string") >= 0) {
-				syntax = syntax.replaceAll("string", "STRING");
-			}
-			if(syntax.indexOf("anything") >= 0) {
-				syntax = syntax.replaceAll("anything", "ANYTHING");
-			}
-			if(syntax.indexOf("boolean") >= 0) {
-				syntax = syntax.replaceAll("boolean", "BOOLEAN");
-			}
-			if(syntax.indexOf("bool") >= 0) {
-				syntax = syntax.replaceAll("bool", "BOOLEAN");
-			}
-			if(syntax.indexOf("positionasl") >= 0) {
-				syntax = syntax.replaceAll("positionasl", "PositionASL");
-			}
-			if(syntax.indexOf("positionatl") >= 0) {
-				syntax = syntax.replaceAll("positionatl", "PositionATL");
-			}
-			if(syntax.indexOf("any") >= 0) {
-				syntax = syntax.replaceAll("any", "ANYTHING");
-			}
-			if(syntax.indexOf("position2d") >= 0) {
-				syntax = syntax.replaceAll("position2d", "Position2D");
-			}
-			if(syntax.indexOf("position3d") >= 0) {
-				syntax = syntax.replaceAll("position3d", "Position3D");
-			}
-			if(syntax.indexOf("scripthandle") >= 0) {
-				syntax = syntax.replaceAll("scripthandle", "ScriptHandle");
-			}
-			if(syntax.indexOf("editorOBJECT") >= 0) {
-				syntax = syntax.replaceAll("editorOBJECT", "EditorObject");
-			}
-			if(syntax.indexOf("true") >= 0) {
-				syntax = syntax.replaceAll("true", "BOOLEAN");
-			}
-			if(syntax.indexOf("false") >= 0) {
-				syntax = syntax.replaceAll("false", "BOOLEAN");
-			}
-			if(syntax.indexOf("void") >= 0) {
-				syntax = syntax.replaceAll("void", "ANYTHING");
-			}
+			syntax = SQFOutputParser.format(syntax);
 
 
 			String[] aSyntax = Functions.getElements(syntax);
@@ -278,7 +230,7 @@ public class syntaxVariantArchive {
 		}
 		
 		//willbe executed if nothing was found
-		System.out.println(syntax + " konnte nicht gefunden werden!");
+		//System.out.println(syntax + " konnte nicht gefunden werden!");
 		return -1;
 	}
 	
@@ -322,11 +274,11 @@ public class syntaxVariantArchive {
 				
 				objOut.close();
 			} catch (FileNotFoundException e) {
-				System.err.println("source: syntaxVariantArchive -> storeInFile()");
+				System.err.println("source: syntaxVariantArchive -> store()");
 				e.printStackTrace();
 				System.out.println();
 			} catch (IOException e) {
-				System.err.println("source: syntaxVariantArchive -> storeInFile()");
+				System.err.println("source: syntaxVariantArchive -> store()");
 				e.printStackTrace();
 				System.out.println();
 			}

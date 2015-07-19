@@ -11,6 +11,8 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import SQF.Functions;
+import SQF.syntaxArchive;
+import SQF.syntaxArchiveList;
 import SQFBaseParser.SQFCommandBaseVisitor;
 import SQFBaseParser.SQFCommandLexer;
 import SQFBaseParser.SQFCommandParser;
@@ -133,9 +135,9 @@ public class SQFOutputParser {
 			}
 		}
 
-		System.out.println("number of variants: " + archive.size() + "\n");
+		System.out.println("number of total variants: " + archive.size() + "\n");
 
-		archive.store(outputDirectoryPath);
+//		archive.store(outputDirectoryPath);
 
 		String[] types = null;
 
@@ -199,8 +201,210 @@ public class SQFOutputParser {
 			System.out.println(current);
 		}
 
-		// System.out.println(archive.toString());
-
+//		System.out.println(archive.toString());
+		
+		System.out.println("\nSortiere nach return \n");
+		
+		syntaxArchiveList synArchiveList = new syntaxArchiveList();
+		
+		syntaxArchive numberReturner = new syntaxArchive();
+		syntaxArchive objectReturner = new syntaxArchive();
+		syntaxArchive arrayReturner = new syntaxArchive();
+		syntaxArchive stringReturner = new syntaxArchive();
+		syntaxArchive codeReturner = new syntaxArchive();
+		syntaxArchive anythingReturner = new syntaxArchive();
+		syntaxArchive booleanReturner = new syntaxArchive();
+		syntaxArchive positionReturner = new syntaxArchive();
+		syntaxArchive controlReturner = new syntaxArchive();
+		syntaxArchive groupReturner = new syntaxArchive();
+		syntaxArchive teamReturner = new syntaxArchive();
+		syntaxArchive sideReturner = new syntaxArchive();
+		syntaxArchive displayReturner = new syntaxArchive();
+		syntaxArchive positionaslReturner = new syntaxArchive();
+		syntaxArchive positionatlReturner = new syntaxArchive();
+		syntaxArchive locationReturner = new syntaxArchive();
+		syntaxArchive configReturner = new syntaxArchive();
+		syntaxArchive position2dReturner = new syntaxArchive();
+		syntaxArchive integerReturner = new syntaxArchive();
+		syntaxArchive position3dReturner = new syntaxArchive();
+		syntaxArchive colorReturner = new syntaxArchive();
+		syntaxArchive scripthandleReturner = new syntaxArchive();
+		syntaxArchive waypointReturner = new syntaxArchive();
+		syntaxArchive editorobjectReturner = new syntaxArchive();
+		syntaxArchive scriptReturner = new syntaxArchive();
+		syntaxArchive namespaceReturner = new syntaxArchive();
+		syntaxArchive exceptionReturner = new syntaxArchive();
+		syntaxArchive vector3dReturner = new syntaxArchive();
+		syntaxArchive taskReturner = new syntaxArchive();
+		syntaxArchive noneReturner = new syntaxArchive();
+		
+		for(syntax current : SQFCommandVisitor.syntaxLists) {
+			String returnType = current.getReturnType().toLowerCase();
+			returnType = format(returnType);
+			current.setReturnType(returnType); //set formatted returnType
+			
+			//sort according to the returnValues of the command
+			switch (returnType) {
+			case "NUMBER":
+				numberReturner.add(current);
+				break;
+				
+			case "OBJECT":
+				objectReturner.add(current);
+				break;
+				
+			case "Array":
+				arrayReturner.add(current);
+				break;
+				
+			case "STRING":
+				stringReturner.add(current);
+				break;
+				
+			case "Code":
+				codeReturner.add(current);
+				break;
+				
+			case "ANYTHING":
+				anythingReturner.add(current);
+				break;
+				
+			case "BOOLEAN":
+				booleanReturner.add(current);
+				break;
+			case "Position":
+				positionReturner.add(current);
+				break;
+				
+			case "Control":
+				controlReturner.add(current);
+				break;
+				
+			case "Group":
+				groupReturner.add(current);
+				break;
+				
+			case "Team":
+				teamReturner.add(current);
+				break;
+				
+			case "Side":
+				sideReturner.add(current);
+				break;
+				
+			case "Display":
+				displayReturner.add(current);
+				break;
+				
+			case "PositionASL":
+				positionaslReturner.add(current);
+				break;
+				
+			case "PositionATL":
+				positionatlReturner.add(current);
+				break;
+				
+			case "Location":
+				locationReturner.add(current);
+				break;
+				
+			case "Task":
+				taskReturner.add(current);
+				break;
+				
+			case "Config":
+				configReturner.add(current);
+				break;
+				
+			case "Position2D":
+				position2dReturner.add(current);
+				break;
+				
+			case "Integer":
+				integerReturner.add(current);
+				break;
+				
+			case "Position3D":
+				position3dReturner.add(current);
+				break;
+				
+			case "Color":
+				colorReturner.add(current);
+				break;
+				
+			case "ScriptHandle":
+				scripthandleReturner.add(current);
+				break;
+				
+			case "Waypoint":
+				waypointReturner.add(current);
+				break;
+				
+			case "EditorObject":
+				editorobjectReturner.add(current);
+				break;
+				
+			case "Script":
+				scriptReturner.add(current);
+				break;
+				
+			case "Namespace":
+				namespaceReturner.add(current);
+				break;
+				
+			case "Exception":
+				exceptionReturner.add(current);
+				break;
+				
+			case "Vector3D":
+				vector3dReturner.add(current);
+				break;
+				
+			case "None":
+				noneReturner.add(current);
+				break;
+				
+			default:
+				System.err.println("Unknown parameter '" + returnType + "'");
+				break;
+			}
+		}
+		
+		synArchiveList.add(numberReturner);
+		synArchiveList.add(objectReturner);
+		synArchiveList.add(arrayReturner);
+		synArchiveList.add(stringReturner);
+		synArchiveList.add(codeReturner);
+		synArchiveList.add(anythingReturner);
+		synArchiveList.add(booleanReturner);
+		synArchiveList.add(positionReturner);
+		synArchiveList.add(controlReturner);
+		synArchiveList.add(groupReturner);
+		synArchiveList.add(teamReturner);
+		synArchiveList.add(sideReturner);
+		synArchiveList.add(displayReturner);
+		synArchiveList.add(positionaslReturner);
+		synArchiveList.add(positionatlReturner);
+		synArchiveList.add(locationReturner);
+		synArchiveList.add(configReturner);
+		synArchiveList.add(position2dReturner);
+		synArchiveList.add(integerReturner);
+		synArchiveList.add(position3dReturner);
+		synArchiveList.add(colorReturner);
+		synArchiveList.add(scripthandleReturner);
+		synArchiveList.add(waypointReturner);
+		synArchiveList.add(editorobjectReturner);
+		synArchiveList.add(scriptReturner);
+		synArchiveList.add(namespaceReturner);
+		synArchiveList.add(exceptionReturner);
+		synArchiveList.add(vector3dReturner);
+		synArchiveList.add(taskReturner);
+		synArchiveList.add(noneReturner);
+		
+		synArchiveList.sort();
+		
+		System.out.println("Fertig sortiert");
+		
 	}
 
 	public static class SQFCommandVisitor extends SQFCommandBaseVisitor<Void> {
@@ -337,5 +541,77 @@ public class SQFOutputParser {
 		 * 
 		 * break; } } } }
 		 */
+	}
+	
+	/**
+	 * This function will format a string, so that different returnType-names get corrected and unnessecary
+	 * blanks get removed
+	 * @param string The string that shouöd be formatted
+	 * @return The formatted string
+	 */
+	public static String format(String string) {
+		//replace some parameter names which are the same
+		if(string.indexOf("number") >= 0) {
+			string = string.replaceAll("number", "NUMBER");
+		}
+		if(string.indexOf("object") >= 0) {
+			string = string.replaceAll("object", "OBJECT");
+		}
+		if(string.indexOf("string") >= 0) {
+			string = string.replaceAll("string", "STRING");
+		}
+		if(string.indexOf("anything") >= 0) {
+			string = string.replaceAll("anything", "ANYTHING");
+		}
+		if(string.indexOf("boolean") >= 0) {
+			string = string.replaceAll("boolean", "BOOLEAN");
+		}
+		if(string.indexOf("bool") >= 0) {
+			string = string.replaceAll("bool", "BOOLEAN");
+		}
+		if(string.indexOf("positionasl") >= 0) {
+			string = string.replaceAll("positionasl", "PositionASL");
+		}
+		if(string.indexOf("positionatl") >= 0) {
+			string = string.replaceAll("positionatl", "PositionATL");
+		}
+		if(string.indexOf("any") >= 0) {
+			string = string.replaceAll("any", "ANYTHING");
+		}
+		if(string.indexOf("position2d") >= 0) {
+			string = string.replaceAll("position2d", "Position2D");
+		}
+		if(string.indexOf("position3d") >= 0) {
+			string = string.replaceAll("position3d", "Position3D");
+		}
+		if(string.indexOf("scripthandle") >= 0) {
+			string = string.replaceAll("scripthandle", "ScriptHandle");
+		}
+		if(string.indexOf("editorOBJECT") >= 0) {
+			string = string.replaceAll("editorOBJECT", "EditorObject");
+		}
+		if(string.indexOf("true") >= 0) {
+			string = string.replaceAll("true", "BOOLEAN");
+		}
+		if(string.indexOf("false") >= 0) {
+			string = string.replaceAll("false", "BOOLEAN");
+		}
+		if(string.indexOf("void") >= 0) {
+			string = string.replaceAll("void", "ANYTHING");
+		}
+		if(string.indexOf("vector3d") >= 0) {
+			string = string.replaceAll("vector3d", "Vector3D");
+		}
+		
+		if(!string.substring(0,1).toUpperCase().equals(string.substring(0,1))) {
+			//if string starts with a lowercase letter
+			string = string.substring(0,1).toUpperCase() + string.substring(1);
+		}
+		
+		while(string.endsWith(" ")) {
+			string = string.substring(0, string.length() - 1);
+		}
+		
+		return string;
 	}
 }
