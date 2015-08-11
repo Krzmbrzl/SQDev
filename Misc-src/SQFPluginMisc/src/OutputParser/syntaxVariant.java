@@ -59,4 +59,11 @@ public class syntaxVariant implements java.io.Serializable{
 		
 		this.syntaxVariant_commands.add(command);
 	}
+	
+	/**
+	 * Formats the syntax of this variant
+	 */
+	public void format() {
+		this.syntaxVariant_syntax = SQFOutputParser.format(this.syntaxVariant_syntax);
+	}
 }

@@ -125,10 +125,10 @@ public class syntaxVariantArchive {
 	public int size() {
 		return this.syntaxVariantArchive_list.size();
 	}
-	
+
 	/**
-	 * @return Returns an array of strings which are all the parameter used in the different syntaxVariants
-	 * stored in this archive
+	 * @return Returns an array of strings which are all the parameter used in
+	 *         the different syntaxVariants stored in this archive
 	 */
 	public String[] getParameter() {
 		ArrayList<String> parameter = new ArrayList<String>();
@@ -159,21 +159,24 @@ public class syntaxVariantArchive {
 			if (syntax.indexOf("/") >= 0) {
 				syntax = syntax.replaceAll("/", " ");
 			}
-			
-			syntax = SQFOutputParser.format(syntax);
 
+			syntax = SQFOutputParser.format(syntax);
 
 			String[] aSyntax = Functions.getElements(syntax);
 
 			for (String current : aSyntax) {
 				// if this parameter wasn't found before store it in parameter
-				
-				if(!current.substring(0,1).toUpperCase().equals(current.substring(0,1))) {
-					//if string starts with a lowercase letter
-					current = current.substring(0,1).toUpperCase() + current.substring(1);
+
+				if (!current.substring(0, 1).toUpperCase()
+						.equals(current.substring(0, 1))) {
+					// if string starts with a lowercase letter
+					current = current.substring(0, 1).toUpperCase()
+							+ current.substring(1);
 				}
-				
-				if (!parameter.contains(current) && !current.equals("CommandNameKeyword")) {
+
+				if (!parameter.contains(current)
+						&& (!current.equals("CommandNameKeyword") && !current
+								.equals("commandNameKeyword")) && !current.equals("|")) {
 					parameter.add(current);
 				}
 			}
@@ -190,88 +193,94 @@ public class syntaxVariantArchive {
 
 		return aParameter;
 	}
-	
+
 	/**
-	 * Returns a string with all the different syntaxes (no corrsponding commands) represented
-	 *  by the stored syntaxVariants seperated with a newLine
+	 * Returns a string with all the different syntaxes (no corrsponding
+	 * commands) represented by the stored syntaxVariants seperated with a
+	 * newLine
 	 */
 	public String toString() {
 		String allSyntaxes = "";
-		
-		for(syntaxVariant currentSynVar : this.syntaxVariantArchive_list) {
+
+		for (syntaxVariant currentSynVar : this.syntaxVariantArchive_list) {
 			String currentSyntax = currentSynVar.getSyntax();
-			
+
 			allSyntaxes += currentSyntax + "\n";
 		}
-		
+
 		return allSyntaxes;
 	}
-	
+
 	/**
-	 * Returns the position of the syntaxVariant corresponding to that syntax in this archive. If the syntax can't
-	 * be found -1 is returned
-	 * @param syntax The syntax the funtion should search for
+	 * Returns the position of the syntaxVariant corresponding to that syntax in
+	 * this archive. If the syntax can't be found -1 is returned
+	 * 
+	 * @param syntax
+	 *            The syntax the funtion should search for
 	 * @return The position of the syntax in the archive (-1 = notFound)
 	 */
 	public int find(String syntax) {
-		if(syntax.indexOf("commandNameKeyword") < 0) {
-			System.err.println("ERROR: syntax must contain 'commandNameKeyword'");
+		if (syntax.indexOf("commandNameKeyword") < 0) {
+			System.err
+					.println("ERROR: syntax must contain 'commandNameKeyword'");
 			return -2;
 		}
-		
-		for(int i=0; i<this.syntaxVariantArchive_list.size(); i++) {
+
+		for (int i = 0; i < this.syntaxVariantArchive_list.size(); i++) {
 			syntaxVariant current = this.syntaxVariantArchive_list.get(i);
-			
+
 			String currentSyntax = current.getSyntax();
-			
-			if(currentSyntax.equalsIgnoreCase(syntax)) {
+
+			if (currentSyntax.equalsIgnoreCase(syntax)) {
 				return i;
 			}
 		}
-		
-		//willbe executed if nothing was found
-		//System.out.println(syntax + " konnte nicht gefunden werden!");
+
+		// willbe executed if nothing was found
+		// System.out.println(syntax + " konnte nicht gefunden werden!");
 		return -1;
 	}
-	
+
 	/**
-	 * This function will store all the synaxVariants stored in this archive into the given directory.
-	 * Therefor it will create a file for every entry in this archive in the directory.
-	 * If the directory and/or the files don't exist yet, they will be created
+	 * This function will store all the synaxVariants stored in this archive
+	 * into the given directory. Therefor it will create a file for every entry
+	 * in this archive in the directory. If the directory and/or the files don't
+	 * exist yet, they will be created
 	 * 
-	 * @param directory The path to the directory the syntaxVariants shall be stored
+	 * @param directory
+	 *            The path to the directory the syntaxVariants shall be stored
 	 */
 	public void store(String directory) {
 		File directoryFile = new File(directory);
-		
-		if(!directoryFile.exists()) {
+
+		if (!directoryFile.exists()) {
 			directoryFile.mkdirs();
 		}
-		
+
 		int count = this.syntaxVariantArchive_list.size();
-		
-		for(int i=0; i< count; i++) {
+
+		for (int i = 0; i < count; i++) {
 			syntaxVariant currentSynVar = this.syntaxVariantArchive_list.get(i);
-			
+
 			String fileName = "/syntaxVariant" + i + ".ser";
 			String filePath = directory + fileName;
-			
+
 			File outputFile = new File(directory + fileName);
-			
-			if(!outputFile.exists()) {
+
+			if (!outputFile.exists()) {
 				try {
 					outputFile.createNewFile();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-			
+
 			try {
 				FileOutputStream fileOut = new FileOutputStream(filePath);
 				ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
-				
+
 				objOut.writeObject(currentSynVar);
-				
+
 				objOut.close();
 			} catch (FileNotFoundException e) {
 				System.err.println("source: syntaxVariantArchive -> store()");
@@ -284,26 +293,27 @@ public class syntaxVariantArchive {
 			}
 		}
 	}
-	
+
 	public void load(String directory) {
 		File directoryFile = new File(directory);
-		
-		if(!directoryFile.exists()) {
+
+		if (!directoryFile.exists()) {
 			System.err.println("Directory '" + directory + "' does not exist");
 			return;
 		}
-		
+
 		File[] files = directoryFile.listFiles();
-		
-		for(File currentFile : files) {
+
+		for (File currentFile : files) {
 			try {
 				FileInputStream fileIn = new FileInputStream(currentFile);
 				ObjectInputStream objIn = new ObjectInputStream(fileIn);
-				
-				syntaxVariant currentObject = (syntaxVariant) objIn.readObject();
-				
+
+				syntaxVariant currentObject = (syntaxVariant) objIn
+						.readObject();
+
 				this.add(currentObject);
-				
+
 				objIn.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -314,19 +324,29 @@ public class syntaxVariantArchive {
 			}
 		}
 	}
-	
+
 	/**
-	 * @param position The index of the syntaxVariant
+	 * @param position
+	 *            The index of the syntaxVariant
 	 * @return Returns the syntaxVariant with the given index in this archive
 	 */
 	public syntaxVariant get(int position) {
 		return this.syntaxVariantArchive_list.get(position);
 	}
-	
+
 	/**
 	 * 
 	 */
 	public void remove(int position) {
 		this.syntaxVariantArchive_list.remove(position);
+	}
+
+	/**
+	 * Formats all syntaxes in this archive
+	 */
+	public void format() {
+		for (syntaxVariant current : this.syntaxVariantArchive_list) {
+			current.format();
+		}
 	}
 }

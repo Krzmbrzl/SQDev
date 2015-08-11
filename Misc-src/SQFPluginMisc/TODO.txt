@@ -2,4 +2,8 @@ fix problems with FixError
 
 try-catch fest implementieren
 
-commands noch nach returnValue gruppieren
+Online wieder kontrollieren was net passt
+
+Eine Anything-Regel generieren -> auf Linksrekursion achten
+
+Teilweise Probleme mit Linksrekursion durch gegenseitigen Aufruf der Regeln und durch Anything

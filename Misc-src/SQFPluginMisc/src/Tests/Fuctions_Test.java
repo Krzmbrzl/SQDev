@@ -692,6 +692,10 @@ public class Fuctions_Test {
 		String test2 = "[Tes t [Miau] und [s0]]Miau";
 		String result2 = "Miau";
 		assertEquals(result2, Functions.removeBetweenBracketElements(test2));
+		
+		String test3 = "[  [ [][[  [][[hallo]    ]]  [ ]] ]  ]Test";
+		String result3 = "Test";
+		assertEquals(result3, Functions.removeBetweenBracketElements(test3));
 	}
 
 	@Test

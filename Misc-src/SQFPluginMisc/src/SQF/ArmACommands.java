@@ -283,13 +283,13 @@ public class ArmACommands {
 								"/wiki/call.html", "/wiki/or.html",
 								"/wiki/then.html", "/wiki/to.html",
 								"/wiki/while.html", "/wiki/case.html",
-								"/wiki/do.html", "/wiki/with.html" };
+								"/wiki/do.html", "/wiki/with.html", "/wiki/else.html", "/wiki/forEach.html" };
 						String[] controlStructures = { "/wiki/catch",
 								"/wiki/exitWith", "/wiki/from", "/wiki/if",
 								"/wiki/step", "/wiki/switch", "/wiki/and",
 								"/wiki/call", "/wiki/or", "/wiki/then",
 								"/wiki/to", "/wiki/while", "/wiki/case",
-								"/wiki/do", "/wiki/with" };
+								"/wiki/do", "/wiki/with", "/wiki/else", "/wiki/forEach" };
 
 						if (Functions
 								.isIn(controlStructures, sCommandURL, true)

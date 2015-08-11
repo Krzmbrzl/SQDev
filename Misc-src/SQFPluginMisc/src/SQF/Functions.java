@@ -2148,9 +2148,12 @@ public class Functions {
 							parameter = Parameter[searchPos];
 						}
 					}
-
-					parameter = "(" + parameter + ")?";
-
+					
+					if(!parameter.startsWith("(") && !parameter.endsWith(")?")) {
+						//prevent parameter from beeing marked twice
+						parameter = "(" + parameter + ")?";
+					}
+					
 					// write the parameter after the parameterName
 					Parameter[paraPos + 1] = parameter;
 
