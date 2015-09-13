@@ -127,7 +127,12 @@ public class Functions {
 		}
 
 		while (string.indexOf(" ") > 0) {
-
+			if(string.startsWith("=>")) {
+				//ignore syntactic predicates
+				string = string.substring(2);
+				string = removeStartBlank(string);
+			}
+			
 			if (string.startsWith("[")) { // Element das in eckiger Klammer
 											// steht
 
@@ -249,6 +254,14 @@ public class Functions {
 		while (count < quantity) {
 
 			String element;
+			String synPred = "";
+			
+			if(string.startsWith("=>")) {
+				//ignore syntactic predicates for now
+				string = string.substring(2);
+				string = removeStartBlank(string);
+				synPred = "=>";
+			}
 
 			if (string.startsWith("(")) { // Elemente zwischen runden Klammern
 				String test1 = string.substring(string.indexOf(")") + 1);
@@ -278,7 +291,7 @@ public class Functions {
 			} else {
 				if (string.startsWith("[")) { // Elemente zwischen eckigen
 												// Klammern
-					Elements[count] = getBracketElements(string);
+					Elements[count] = synPred + getBracketElements(string);
 					string = removeBetweenBracketElements(string);
 					string = removeStartBlank(string);
 
@@ -291,12 +304,12 @@ public class Functions {
 																			// Ende
 						element = string.substring(0, string.indexOf(":") + 1);
 						string = string.substring(string.indexOf(":") + 1);
-						Elements[count] = element;
+						Elements[count] = synPred + element;
 						string = removeStartBlank(string);
 					} else { // Elemente mit Leerzeichen getrennt
 						element = string.substring(0, string.indexOf(" "));
 						string = string.substring(string.indexOf(" ") + 1);
-						Elements[count] = element;
+						Elements[count] = synPred + element;
 						string = removeStartBlank(string);
 					}
 				}
@@ -3013,6 +3026,22 @@ public class Functions {
 		}
 
 		return Parameter;
+	}
+	
+	/**
+	 * Finds out whether a string starts with a letter
+	 * @param string The string to be chekced
+	 * @return 
+	 */
+	public static boolean startsWithLetter(String string) {
+		if(string.isEmpty()) {
+			return false; //if string is empty it doesn't start with a letter
+		}
+		
+		char startCharacter = string.charAt(0);
+		startCharacter = Character.toLowerCase(startCharacter);
+		
+		return (startCharacter >= 'a' && startCharacter <= 'z');
 	}
 
 }
