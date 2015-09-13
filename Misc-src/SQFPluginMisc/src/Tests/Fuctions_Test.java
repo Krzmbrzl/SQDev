@@ -728,7 +728,7 @@ public class Fuctions_Test {
 	}
 
 	@Test
-	public void markRepeatingParameter() throws UnexpectedInputException {
+	public void markRepeatingParameterTest() throws UnexpectedInputException {
 		String[] test1 = { "map", "insertEditorObject",
 				"[type,value,[name1,value1,...],subtype class]" };
 		String[] result1 = { "map", "insertEditorObject",
@@ -746,6 +746,21 @@ public class Fuctions_Test {
 		String[] result3 = { "teamMember", "createTask",
 				"[[type, parentTask], priority, name1, value1,REPEATPARAM]" };
 		assertArrayEquals(result3, Functions.markRepeatingParameter(test3));
+	}
+	
+	@Test
+	public void startsWithLetterTest() {
+		String test1 = "Mama";
+		assertTrue(Functions.startsWithLetter(test1));
+		
+		String test2 = "3mama";
+		assertFalse(Functions.startsWithLetter(test2));
+		
+		String test3 = "test";
+		assertTrue(Functions.startsWithLetter(test3));
+		
+		String test4 = "{test}";
+		assertFalse(Functions.startsWithLetter(test4));
 	}
 
 }

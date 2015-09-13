@@ -567,34 +567,6 @@ public class SQFOutputParser {
 			return getSyntax(commandRule, syntax, 0);
 		}
 
-		/**
-		 * This function will get one of the possible syntx parts
-		 * 
-		 * @param commandRule
-		 *            The ANTLRParserRule containing the syntax
-		 * @param startChildIndex
-		 *            Which ChlidElement is the one to start
-		 * @return The syntax part as a String
-		 */
-		/*
-		 * public ArrayList<String> processParameter(ParseTree commandRule, int
-		 * startChildIndex) { int ChildCount = commandRule.getChildCount();
-		 * if(startChildIndex >= ChildCount) { //check that index is reachable
-		 * System.err.println("Given Index is greater than actual ChildCount!");
-		 * return null; }
-		 * 
-		 * ArrayList<String> syntaxList = new ArrayList<String>(); String syntax
-		 * = "";
-		 * 
-		 * for(int i=startChildIndex; i<ChildCount; i++) { String nextElement=
-		 * commandRule.getChild(i).getText();
-		 * 
-		 * if(nextElement.equals("=")) { //if the element equals "=" then the
-		 * content before was the return type syntax = ""; }else {
-		 * if(nextElement.equals("alternative")) {
-		 * 
-		 * break; } } } }
-		 */
 	}
 
 	/**

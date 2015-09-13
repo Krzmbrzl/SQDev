@@ -1,24 +1,22 @@
 package OutputParser;
 
-import SQF.Functions;
 
 public class deserializationTest {
 	public static void main(String[] args) {
-		String inputDirectoryPath = "NotSet";
+		ParserRule test1 = new ParserRule("test1");
+		test1.create();
 		
-		for(String argument : args) {
-			if(argument.startsWith("/i=")) {
-				//set the inputPath of the directory where the serialization is stored
-				argument = argument.substring(3);
-				inputDirectoryPath = argument;
-			}
+		ParserRule test2 = new ParserRule("test2");
+		test2.create();
+		
+		Grammar testGrammar = new Grammar();
+		testGrammar.addRule(test1);
+		testGrammar.addRule(test2);
+		
+		for(ParserRule current : testGrammar.getRules()) {
+			testGrammar.addRule(new ParserRule("depp"));
 		}
 		
-		syntaxVariantArchive archive = new syntaxVariantArchive();
-		
-		archive.load(inputDirectoryPath);
-		
-		Functions.printArray(archive.getParameter());
-		System.out.println(archive.size());
+		System.out.println(testGrammar.toString());
 	}
 }

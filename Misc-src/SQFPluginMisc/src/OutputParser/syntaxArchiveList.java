@@ -63,11 +63,12 @@ public class syntaxArchiveList {
 
 			while ((currentLine = grammarReader.readLine()) != null) {
 				if (currentLine.indexOf("////////Generated////////") >= 0) {
-					while(grammarContent.endsWith("\n")) {
-						//prevent too many newlines
-						grammarContent = grammarContent.substring(0, grammarContent.length() - 1);
+					while (grammarContent.endsWith("\n")) {
+						// prevent too many newlines
+						grammarContent = grammarContent.substring(0,
+								grammarContent.length() - 1);
 					}
-					
+
 					// skip previous generated block
 					break;
 				}
@@ -75,15 +76,20 @@ public class syntaxArchiveList {
 			}
 			grammarReader.close();
 
-			grammarContent += "\n\n\n////////Generated////////\n";
+			grammarContent += "\n\n\n////////////////Generated////////////////\n";
 
 			// write commands in suitable rules
+
+			Grammar grammar = new Grammar(grammarContent);
 
 			for (syntaxArchive currentArchive : this.list) {
 				String name = currentArchive.getName();
 
 				if (name.equals("NoneReturner")) {
 					name = "Commands";
+				}
+				if(name.equals("ScriptReturner")) {
+					String dummy = "";
 				}
 
 				ParserRule rule = new ParserRule(name);
@@ -94,23 +100,41 @@ public class syntaxArchiveList {
 						.getArchive()) {
 					rule.addSyntaxVariant(currentVariant);
 				}
-				
+
 				// System.out.println(rule.toString() + "\n"); //TODO: remove
-				
-				rule.createAssignments();
-				
+
 				if (!rule.isEmpty()) {
-					grammarContent += rule.toString();
+					grammar.addRule(rule);
 				}
 			}
+			
+			grammar.appendAnythingRule();
+			
+			grammar.createStartRuleForecasts();
+			
+			if (grammar.isLeftRecursive()) {
+				grammar.removeLeftRecursion();
+				// TODO: implement fix for left-recursion
+			}
 
-			System.out.println(grammarContent);
+			/*grammarContent = grammar.toString();
 
-			FileWriter grammarWriter = new FileWriter(grammarFile);
+			System.out.println(grammarContent);*/
 
-			grammarWriter.write(grammarContent);
+			if (!grammar.isLeftRecursive()) {
+				grammar.createAssignments(); //TODO: kills format in BaseRule
+				grammarContent = grammar.toString();
+				
+				System.out.println(grammarContent);
+				
+				FileWriter grammarWriter = new FileWriter(grammarFile);
 
-			grammarWriter.close();
+				grammarWriter.write(grammarContent);
+
+				grammarWriter.close();
+			}else {
+				System.err.println("\nGrammar is still left-recursive -> Hasn't been written in file!\n");
+			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
