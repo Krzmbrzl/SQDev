@@ -15,9 +15,21 @@ public class ParserRule {
 	private String terminalRules;
 	private String terminalRulePrefix;
 	private int counter;
+	private ArrayList<String> reachableStartRules;
 	private ArrayList<String> reachableRules;
+	private boolean isSubRule;
+	private String baseRuleName;
+	private ParserRule baseRule;
+	private ArrayList<ParserRule> subRules;
+	private int subRuleCount;
+	private int subLevel; // indicates which level of subRule this is
+	private boolean isAssociated;
+	private boolean isTerminal;
+	private ArrayList<ParserRule> appendedRules;
+	private boolean isAtomicRule;
 
-	public ParserRule(String name) {
+	public ParserRule(String name, boolean terminal) {
+		// Constructor for baseRules
 		if (name.indexOf("Returner") >= 0) {
 			name = name.substring(0, name.indexOf("Returner"));
 		}
@@ -26,7 +38,58 @@ public class ParserRule {
 		this.counter = 0;
 		this.terminalRules = "";
 		this.terminalRulePrefix = "";
+		setReachableStartRules(new ArrayList<String>());
+		defineAsSubRule(false);
+		setBaseRuleName("");
+		setSubRules(new ArrayList<ParserRule>());
+		setSubLevel(0);
+		setAsTerminal(terminal);
+		setAppendedRules(new ArrayList<ParserRule>());
 		setReachableRules(new ArrayList<String>());
+		
+		if(this.getName().contains("Atomic")) {
+			this.setAsAtomicRule(true);
+		}else {
+			this.setAsAtomicRule(false);
+		}
+		
+		this.create();
+	}
+	
+	public ParserRule(String name) {
+		this(name, false);
+	}
+
+	public ParserRule(String name, String baseRule, boolean terminal) {
+		// constructor for subRules
+		if (name.indexOf("Returner") >= 0) {
+			name = name.substring(0, name.indexOf("Returner"));
+		}
+
+		setName(name);
+		this.counter = 0;
+		this.terminalRules = "";
+		this.terminalRulePrefix = "";
+		setReachableStartRules(new ArrayList<String>());
+		this.defineAsSubRule(true);
+		this.setBaseRuleName(baseRule);
+		setSubRules(new ArrayList<ParserRule>());
+		setSubLevel(0);
+		setAsTerminal(terminal);
+		setAppendedRules(new ArrayList<ParserRule>());
+		setReachableRules(new ArrayList<String>());
+		
+		if(this.getName().contains("Atomic")) {
+			this.setAsAtomicRule(true);
+		}else {
+			this.setAsAtomicRule(false);
+		}
+		
+		this.create();
+	}
+	
+	public ParserRule(String name, String baseRule) {
+		this(name, baseRule, false);
 	}
 
 	public String getName() {
@@ -77,10 +140,15 @@ public class ParserRule {
 	}
 
 	/**
+	 * <b>DEPRECATED</b> only maintained for backward compability
 	 * @return The content of the baseRule
 	 */
 	public String getBaseRuleContent() {
-		String content = this.ruleContent;
+		return this.getRuleContent();
+		
+		/* Deprecated method content
+		 
+		 String content = this.ruleContent;
 
 		// get basic rule content
 		content = content.substring(content.indexOf(":") + 1);
@@ -88,14 +156,24 @@ public class ParserRule {
 
 		content = cleanString(content);
 
-		return content;
+		return content;*/
 	}
 
 	/**
+	 * <b> DEPRECATED</b> only maintained for backward compability
 	 * @return The content of the atomicRule
 	 */
 	public String getAtomicRuleContent() {
-		String content = this.ruleContent;
+		if(this.hasAtomicRule()) {
+			return this.getAtomicRule().getRuleContent();
+		}else {
+			//if rule doesn't have an atomicRule return an empty string
+			return "";
+		}
+		
+		/*Deprecated method content
+		 
+		 String content = this.ruleContent;
 
 		if (content.contains("terminal")) {
 			// remove terminal rules
@@ -109,10 +187,11 @@ public class ParserRule {
 
 		content = cleanString(content);
 
-		return content;
+		return content;*/
 	}
 
 	/**
+	 * <b>DEPRECATED</b><br>
 	 * Sets the content of the baseRule (takes care about formatting -> only
 	 * insert newlines)
 	 * 
@@ -120,6 +199,10 @@ public class ParserRule {
 	 *            The new content of the baseRule
 	 */
 	public void setBaseRuleContent(String content) {
+		this.setRuleContent(content);
+		
+		/* Old method content
+		
 		content = cleanString(content);
 
 		String fragment1 = ruleContent.substring(ruleContent.indexOf(":") + 1);
@@ -155,10 +238,11 @@ public class ParserRule {
 			content = content.replaceAll("\n\t\t", "\n\t");
 		}
 
-		ruleContent = fragment1 + content + fragment2;
+		ruleContent = fragment1 + content + fragment2;*/
 	}
 
 	/**
+	 * <b>DEPRECATED</b><br>
 	 * Sets the content of the atomicRule (takes care about formatting -> only
 	 * insert newlines)
 	 * 
@@ -166,11 +250,15 @@ public class ParserRule {
 	 *            The new content of the atomicRule
 	 */
 	public void setAtomicRuleContent(String content) {
-		content = cleanString(content);
-		
-		if(content.startsWith("NUMBERS")) {
-			String dummy = "";
+		if(!this.hasAtomicRule()) {
+			this.createAtomicRule();
 		}
+		
+		this.getAtomicRule().setRuleContent(content);
+		
+		/* former method content
+		
+		content = cleanString(content);
 
 		String fragment1 = ruleContent
 				.substring(ruleContent.lastIndexOf(":") + 1);
@@ -185,9 +273,9 @@ public class ParserRule {
 		// final assignmentof fragment1
 		fragment1 = ruleContent.substring(0, ruleContent.lastIndexOf(":") + 1
 				+ offset);
-		
-		if(fragment1.endsWith("\n\t\t")) {
-			//get proper format
+
+		if (fragment1.endsWith("\n\t\t")) {
+			// get proper format
 			fragment1 += "\t";
 		}
 
@@ -212,7 +300,16 @@ public class ParserRule {
 			content = content.replaceAll("\n\t\t\t\t", "\n\t\t\t");
 		}
 
-		ruleContent = fragment1 + content + fragment2;
+		ruleContent = fragment1 + content + fragment2;*/
+	}
+
+	public ArrayList<String> getReachableStartRules() {
+		ArrayList<String> copy = new ArrayList<String>(reachableStartRules);
+		return copy;
+	}
+
+	public void setReachableStartRules(ArrayList<String> ruleNames) {
+		reachableStartRules = ruleNames;
 	}
 
 	public ArrayList<String> getReachableRules() {
@@ -220,8 +317,232 @@ public class ParserRule {
 		return copy;
 	}
 
-	public void setReachableRules(ArrayList<String> ruleNames) {
-		reachableRules = ruleNames;
+	/**
+	 * Sets the reachable rules
+	 * 
+	 * @param reachableRuleNames
+	 * @param format
+	 *            if the list should be formatted
+	 */
+	public void setReachableRules(ArrayList<String> reachableRuleNames,
+			boolean format) {
+		this.reachableRules = reachableRuleNames;
+
+		if (format) {
+			this.formatReachableRules();
+		}
+	}
+
+	public void setReachableRules(ArrayList<String> reachableRuleNames) {
+		this.setReachableRules(reachableRuleNames, true);
+	}
+	
+	/**
+	 * Finds out if this rule has an atomicRule
+	 * @return
+	 */
+	public boolean hasAtomicRule() {
+		for(ParserRule currentSubRule : this.getSubRules()) {
+			if(currentSubRule.getName().equals(this.getName() + "Atomic")) {
+				return true;
+			}
+		}
+		
+		//check appended rules as well
+		for(ParserRule currentAppendedRule : this.getAppendedRules()) {
+			if(currentAppendedRule.getName().equals(this.getName() + "Atomic")) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public ParserRule getAtomicRule() {
+		if(!this.hasAtomicRule()) {
+			System.err.println("\nRule '" + this.getName() + "' doesn't have a atomicRule!\n");
+			return null;
+		}
+		
+		for(ParserRule currentSubRule : this.getSubRules()) {
+			if(currentSubRule.getName().equals(this.getName() + "Atomic")) {
+				return currentSubRule;
+			}
+		}
+		
+		//try to search in the appended rules
+		for(ParserRule currentAppendedRule : this.getAppendedRules()) {
+			if(currentAppendedRule.getName().equals(this.getName() + "Atomic")) {
+				return currentAppendedRule;
+			}
+		}
+		
+		System.err.println("\nInternal Error in ParserRule.getAtomicRule()\n");
+		return null;
+	}
+	
+	public String getBaseRuleName() {
+		return baseRuleName;
+	}
+
+	public void setBaseRuleName(String baseRuleName) {
+		this.baseRuleName = baseRuleName;
+	}
+
+	public ParserRule getBaseRule() {
+		return baseRule;
+	}
+
+	public void setBaseRule(ParserRule baseRule) {
+		this.baseRule = baseRule;
+	}
+
+	public ArrayList<ParserRule> getSubRules() {
+		return this.subRules;
+	}
+
+	public void addSubRule(ParserRule subRule) {
+		this.subRules.add(subRule);
+	}
+
+	public void setSubRules(ArrayList<ParserRule> rules) {
+		this.subRules = rules;
+		//update counter
+		this.setSubRuleCount(rules.size());
+	}
+	
+	/**
+	 * @return Returns a list containing all the subRules of this rule
+	 */
+	public ArrayList<ParserRule> getAllSubRules() {
+		ArrayList<ParserRule> subRules = new ArrayList<ParserRule>();
+		
+		if(!this.isAssociated()) {
+			//if the rule is not yet associated the subRules aren't set
+			System.err.println("Can't get subRules for rule '" + this.getName()
+					+ "' because the rule has not yet been associated!");
+			
+			return subRules;
+		}
+		
+		if (this.hasSubRules()) {
+			for (ParserRule currentSubRule : this.getSubRules()) {
+				// add respective subRule
+				subRules.add(currentSubRule);
+
+				// check currentSubRules for other subRules
+
+				if (currentSubRule.hasSubRules()) {
+					for (ParserRule currentNextLevelSubRule : currentSubRule
+							.getAllSubRules()) {
+						subRules.add(currentNextLevelSubRule);
+					}
+				}
+			}
+		}
+
+		return subRules;
+	}
+
+	public boolean isAssociated() {
+		return isAssociated;
+	}
+
+	public void setAsAssociated(boolean isAssociated) {
+		this.isAssociated = isAssociated;
+	}
+
+	public boolean isSubRule() {
+		return isSubRule;
+	}
+
+	public boolean hasSubRules() {
+		if (this.getSubRules() == null || this.getSubRules().isEmpty()) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	public boolean hasBaseRule() {
+		if(this.getBaseRule() != null || !this.getBaseRuleName().isEmpty()) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	public boolean isTerminal() {
+		return isTerminal;
+	}
+
+	public void setAsTerminal(boolean isTerminal) {
+		if(isTerminal) {
+			//reset certain values a terminal rule can't have
+			this.setSubRules(new ArrayList<ParserRule>());
+		}
+		this.isTerminal = isTerminal;
+	}
+
+	public void defineAsSubRule(boolean isSubRule) {
+		this.isSubRule = isSubRule;
+	}
+
+	public int getSubRuleCount() {
+		return subRuleCount;
+	}
+
+	public void setSubRuleCount(int subRuleCount) {
+		this.subRuleCount = subRuleCount;
+	}
+
+	public int getSubLevel() {
+		return subLevel;
+	}
+
+	public void setSubLevel(int subLevel) {
+		if (subLevel < 0) {
+			System.err.println("subLevel can't be < 0! " + "(in rule '"
+					+ this.getName() + "' -> ParserRule.setSubLevel()");
+		} else {
+			this.subLevel = subLevel;
+		}
+	}
+
+	public void increaseSubLevel() {
+		this.setSubLevel(this.getSubLevel() + 1);
+	}
+
+	public void decreaseSubLevel() {
+		if (this.getSubLevel() == 0) {
+			// prevent subLevel from beeing less zero
+			System.err.println("subLevel can't be < 0! " + "(in rule '"
+					+ this.getName() + "' -> ParserRule.decreaseSubLevel()");
+		} else {
+			this.setSubLevel(this.getSubLevel() - 1);
+		}
+	}
+
+	public ArrayList<ParserRule> getAppendedRules() {
+		return new ArrayList<ParserRule>(this.appendedRules);
+	}
+
+	public void setAppendedRules(ArrayList<ParserRule> appendedRules) {
+		this.appendedRules = appendedRules;
+	}
+	
+	public void appendRule(ParserRule rule) {
+		ArrayList<ParserRule> newAppendedRules = new ArrayList<ParserRule>(this.getAppendedRules());
+		newAppendedRules.add(rule);
+		this.setAppendedRules(newAppendedRules);
+	}
+
+	public boolean isAtomicRule() {
+		return isAtomicRule;
+	}
+
+	public void setAsAtomicRule(boolean isAtomicRule) {
+		this.isAtomicRule = isAtomicRule;
 	}
 
 	/**
@@ -231,17 +552,64 @@ public class ParserRule {
 		this.setCounter(this.getCounter() + 1);
 	}
 
-	public String toString() {
+/*	public String toString() {
 		String content = ruleContent + "\n\n" + terminalRules + "\n\n\n";
 		return content;
+	}*/
+	
+	public String toString() {
+		String ruleContent;
+		
+		String formatter = "";
+		
+		for(int i=0; i<this.getSubLevel(); i++) {
+			formatter += "\t";
+		}
+		
+		ruleContent = formatter;
+		
+		if(this.isTerminal()) {
+			ruleContent += "terminal " + this.getName().toUpperCase() + ":\n";
+		}else {
+			ruleContent += this.getName() + ":\n";
+		}
+		
+		ruleContent += this.getRuleContent();
+		
+		ruleContent += "\n" + formatter + ";";
+		
+		return ruleContent;
 	}
 
 	/**
 	 * This creates the basic ruleStructure with an atomic-rule
 	 */
-	public void create() {
+	public void create_OLD() {
 		ruleContent = this.ruleName + ":\n" + "\t" + this.ruleName
 				+ "Atomic\n;" + "\n\t\t" + this.ruleName + "Atomic:\n\t\t;";
+	}
+	public void create() {
+		if(this.getRuleContent() == null) {
+			this.setRuleContent("\n");
+		}
+	}
+	
+	/**
+	 * creates an empty atomic rule, sets this rule as the baseRule and appends it to this rule
+	 */
+	public void createAtomicRule() {
+		if(this.hasAtomicRule()) {
+			return;
+		}
+		
+		ParserRule atomic = new ParserRule(this.getName() + "Atomic", this.getName());
+		
+		this.appendRule(atomic);
+		
+		//add atomic rule call to base rule
+		if(!this.containsLine(this.getAtomicRule().getName())) {
+			this.addLineToRuleContent(this.getAtomicRule().getName());
+		}
 	}
 
 	/**
@@ -295,6 +663,9 @@ public class ParserRule {
 
 			ArrayList<String> keywordList = synVar.getCommands();
 			this.addTerminalRule(commandRuleName, keywordList);
+		}else {
+			//decrease counter because no terminal rule was created
+			this.setCounter(this.getCounter() - 1);
 		}
 
 		boolean isAtomic = isAtomic(newFragment);
@@ -325,6 +696,7 @@ public class ParserRule {
 				isAtomic = isAtomic(currentElement);
 
 				if (!isAtomic) {
+					//process as a baseRule syntax
 					startElements[i] = null;
 					String newSyntax = currentElement
 							+ " "
@@ -342,12 +714,14 @@ public class ParserRule {
 				// only proceed if there is an atomic part left
 				if (startElements.length > 1 || elements[1].equals("*")
 						|| elements[1].equals("?")) {
+					//if there are still multiple startRuleCalls or the rule call is optional
 					String starter = "";
 					for (String current : startElements) {
 						// write the ruleCalls together again
 						starter += " | " + current;
 					}
-
+					
+					//add respective brackets and reformat
 					starter = "(" + starter.substring(3) + ")";
 					elements[0] = starter;
 					newFragment = Functions.ArrayToString(elements);
@@ -356,6 +730,9 @@ public class ParserRule {
 					newFragment = newFragment.replace(") *", ")*");
 					newFragment = newFragment.replace(") ?", ")?");
 				} else {
+					//if there is just a single ruleCall left
+					
+					//reformat
 					elements[0] = startElements[0];
 					newFragment = Functions.ArrayToString(elements);
 					newFragment = newFragment.replace("[", "(");
@@ -389,7 +766,22 @@ public class ParserRule {
 
 		// if syntax is atomic write it in the atomic rule
 		if (isAtomic) {
-			String atomicMainFragment = this.getAtomicRuleContent();
+			if(!this.hasAtomicRule() && !this.isAtomicRule() && !this.isTerminal()) {
+				//create atomicRule
+				this.createAtomicRule();
+			}
+			
+			if(this.isAtomicRule() || this.isTerminal()) {
+				//add syntax
+				this.addLineToRuleContent(newFragment);
+			}else {
+				//write snytax in the respective atomicRule
+				ParserRule atomicRule = this.getAtomicRule();
+				
+				atomicRule.addSyntax(newFragment);
+			}
+			
+			/*String atomicMainFragment = this.getAtomicRuleContent();
 
 			if (atomicMainFragment.isEmpty()) {
 				// if there are no rules in atomic yet
@@ -399,32 +791,42 @@ public class ParserRule {
 				atomicMainFragment += "\n| " + newFragment;
 			}
 
-			this.setAtomicRuleContent(atomicMainFragment);
+			this.setAtomicRuleContent(atomicMainFragment);*/
 
 		} else {
 			System.out.println(newFragment);
 			// if syntax is left-recursive it has to go in the rule header after
 			// the atomic
-			String mainContent = this.getBaseRuleContent();
-
+			//String mainContent = this.getRuleContent();
+			
+			//replace startRuleCall with the atomicRuleCall
 			newFragment = newFragment.substring(newFragment.indexOf(" ") + 1);
 
 			// can be used zero or more times -> numberAtomic can be used
-			// without it; add syntactic predicate o avoid ambiguity
+			// without it; add syntactic predicate to avoid ambiguity
 			newFragment = "=>(" + newFragment + ")*";
-
+			
+			if(!this.hasAtomicRule()) {
+				this.createAtomicRule();
+			}
+			
+			newFragment = this.getAtomicRule().getName() + " " + newFragment;
+			
+			this.addLineToRuleContent(newFragment);
+			
+			/* deprecated
 			if (mainContent.indexOf(")*") >= 0) {
 				// if it already contains a non-atomic rule
-				
-				String synPred = ""; //eventually store syntactic predicate
-				
+
+				String synPred = ""; // eventually store syntactic predicate
+
 				String fragment1 = mainContent.substring(0,
 						mainContent.indexOf("("));
 				String fragment2 = mainContent.substring(mainContent
 						.indexOf("("));
-				
-				if(fragment1.endsWith("=>")) {
-					//remove syntactic predicate
+
+				if (fragment1.endsWith("=>")) {
+					// remove syntactic predicate
 					fragment1 = fragment1.substring(0, fragment1.length() - 2);
 					synPred = "=>";
 				}
@@ -453,8 +855,27 @@ public class ParserRule {
 				mainContent += " " + newFragment;
 			}
 
-			this.setBaseRuleContent(mainContent);
+			this.setRuleContent(mainContent);*/
 		}
+	}
+	
+	/**
+	 * Adds a line to the rule content
+	 * @param line The line that should be added
+	 */
+	public void addLineToRuleContent(String line) {
+		String newRuleContent = this.getRuleContent();
+		
+		newRuleContent += "\n\t| " + line;
+		
+		newRuleContent = cleanString(newRuleContent);
+		
+		if(newRuleContent.startsWith("|")) {
+			newRuleContent = newRuleContent.substring(1);
+			newRuleContent = cleanString(newRuleContent);
+		}
+		
+		this.setRuleContent(newRuleContent);
 	}
 
 	/**
@@ -492,7 +913,37 @@ public class ParserRule {
 	 *            List of keywords this rule shall contain
 	 */
 	public void addTerminalRule(String name, ArrayList<String> keywordList) {
-		String terminalRuleContent = this.getTerminalRules();
+		//create rulefor the terminals
+		ParserRule newTerminalRule = new ParserRule(name, this.getName(), true);
+		newTerminalRule.create(); //TODO: create rules with instantiation
+		this.appendRule(newTerminalRule);
+		
+		String terminalRuleContent = "";
+
+		int counter = 0; // counts keywords in a row
+
+		for (String currentKeyword : keywordList) {
+			terminalRuleContent += '"' + currentKeyword + '"' + " | ";
+
+			if (counter == 5) {
+				// start new Line for readability
+				terminalRuleContent = terminalRuleContent.substring(0,
+						terminalRuleContent.length() - 3); // remove " | "
+				terminalRuleContent += "\n\t| "; // start newLine
+
+				counter = -1; // reset counter -> gets counted to zero right
+								// below
+			}
+
+			counter++;
+		}
+		
+		// remove last " | "
+		terminalRuleContent = terminalRuleContent.substring(0, terminalRuleContent.length() - 3);
+		
+		newTerminalRule.addSyntax(terminalRuleContent);
+		
+		/*String terminalRuleContent = this.getTerminalRules();
 
 		if (!terminalRuleContent.isEmpty()) {
 			// seperate different rules
@@ -533,6 +984,7 @@ public class ParserRule {
 		terminalRuleContent += "\n;";
 
 		this.setTerminalRules(terminalRuleContent);
+		*/
 	}
 
 	/**
@@ -613,13 +1065,13 @@ public class ParserRule {
 	}
 
 	/**
-	 * Adds a statement for every segment of the rule so that Xtext can refer to
-	 * it. <br>
-	 * Assumes that there are no assignments already
+	 * Adds a statement for every ruleCall in this rule so that Xtext can refer
+	 * to it. <br>
+	 * Assumes that there are no assignments yet
 	 */
 	public void createAssignments() {
 		this.setBaseRuleContent(createAssignments(this.getBaseRuleContent()));
-		this.setAtomicRuleContent(createAssignments(this.getAtomicRuleContent()));
+		//this.setAtomicRuleContent(createAssignments(this.getAtomicRuleContent()));
 	}
 
 	public static String createAssignments(String content) {
@@ -638,9 +1090,11 @@ public class ParserRule {
 				content = content.replace(")", "]");
 			}
 		}
-		
-		//seperate this from the other elements
+
+		// seperate this from the other elements
 		content = content.replace("\n\t|", " \n\t|");
+		content = content.replace("\n", " \n ");
+		content = content.replace("\t", " \t ");
 
 		String[] contentElements = Functions.getElements(content);
 
@@ -651,8 +1105,9 @@ public class ParserRule {
 
 			if (toCheck.equals("*") || toCheck.equals("|")
 					|| toCheck.startsWith("{") || toCheck.startsWith("\"")
-					|| (toCheck.contains("=") && !toCheck.contains("=>")) || toCheck.equals("?")
-					|| toCheck.startsWith("//") || toCheck.equals("=>")) {
+					|| (toCheck.contains("=") && !toCheck.contains("=>"))
+					|| toCheck.equals("?") || toCheck.startsWith("//")
+					|| toCheck.equals("=>") || toCheck.isEmpty()) {
 				// These elements don't need an assignmnet or already have one
 				continue;
 			}
@@ -662,7 +1117,8 @@ public class ParserRule {
 				continue;
 			}
 
-			if (currentElement.startsWith("[[") || currentElement.startsWith("[=>[")) {
+			if (currentElement.startsWith("[[")
+					|| currentElement.startsWith("[=>[")) {
 				String giveAway = currentElement.substring(1,
 						currentElement.length() - 1);
 				giveAway = createAssignments(giveAway, usedNames);
@@ -675,7 +1131,8 @@ public class ParserRule {
 				continue;
 			}
 
-			if (currentElement.startsWith("[") || currentElement.startsWith("=>[")) {
+			if (currentElement.startsWith("[")
+					|| currentElement.startsWith("=>[")) {
 				String nextElement = "";
 				if (contentElements.length > (k + 1)) {
 					nextElement = contentElements[k + 1];
@@ -685,21 +1142,22 @@ public class ParserRule {
 				if (nextElement.startsWith("*")) {
 					connector = "+=";
 				}
-				
+
 				int startIndex = currentElement.indexOf("[");
 				String giveAway = currentElement.substring(startIndex + 1,
 						currentElement.length() - 1);
 				giveAway = createAssignments(giveAway, usedNames);
-				
+
 				String synPred = "";
-				
-				if(startIndex > 0) {
-					//if it should start with a syntactic predicate
+
+				if (startIndex > 0) {
+					// if it should start with a syntactic predicate
 					synPred = "=>";
 				}
-				
+
 				// finished processing -> can maintain round brackets
-				currentElement = synPred + "(" + giveAway.replace("=", connector) + ")";
+				currentElement = synPred + "("
+						+ giveAway.replace("=", connector) + ")";
 			} else {
 				// name consists of the first 3 letters of the element and a
 				// number
@@ -724,6 +1182,11 @@ public class ParserRule {
 					// There should only be one atomic call in a rule so no
 					// number is necessary
 					assignmentName = "atomic";
+				}
+				
+				if(usedNames.contains(assignmentName) && assignmentName.equals("atomic")) {
+					//prevent cutting the word "atomic"
+					assignmentName = "atomic1";
 				}
 
 				while (usedNames.contains(assignmentName)) {
@@ -754,6 +1217,7 @@ public class ParserRule {
 
 				currentElement = assignmentName + "=" + currentElement;
 			}
+			
 			contentElements[k] = currentElement;
 		}
 
@@ -774,6 +1238,9 @@ public class ParserRule {
 		if (content.indexOf(") ?") >= 0) {
 			content = content.replace(") ?", ")?");
 		}
+		
+		content = content.replace(" \n ", "\n");
+		content = content.replace(" \t ", "\t");
 
 		return content;
 	}
@@ -807,17 +1274,9 @@ public class ParserRule {
 	 *         and atomicRule is empty)
 	 */
 	public boolean isEmpty() {
-		String baseContent = this.getBaseRuleContent();
-		String atomicContent = this.getAtomicRuleContent();
-		String atomicName = this.getName() + "Atomic";
-		String atomicNameWithAssignment = "atomic=" + atomicName;
-
-		if ((baseContent.equals(atomicName) || baseContent
-				.equals(atomicNameWithAssignment)) && atomicContent.isEmpty()) {
-			// if baseRule only contains the call for the atomic rule and the
-			// atomic rule is empty the complete rule is empty
+		if(this.getRuleContent().isEmpty()) {
 			return true;
-		} else {
+		}else {
 			return false;
 		}
 	}
@@ -886,7 +1345,7 @@ public class ParserRule {
 	 *            The names which should be added
 	 */
 	public void addReachableRules(ArrayList<String> newRuleNames) {
-		ArrayList<String> reachableRuleNames = this.getReachableRules();
+		ArrayList<String> reachableRuleNames = this.getReachableStartRules();
 
 		for (String name : newRuleNames) {
 			if (!reachableRuleNames.contains(name)) {
@@ -894,7 +1353,7 @@ public class ParserRule {
 			}
 		}
 
-		this.setReachableRules(reachableRuleNames);
+		this.setReachableStartRules(reachableRuleNames);
 	}
 
 	/**
@@ -938,7 +1397,7 @@ public class ParserRule {
 			currentContent = currentContent.replace("|", " | ");
 			currentContent = Functions.reduceSpaceBetween(currentContent);
 
-			while (!currentContent.isEmpty()) {
+			while (!cleanString(currentContent).isEmpty()) {
 				String firstElement = Grammar.getFirstElement(currentContent);
 				firstElement = cleanString(firstElement);
 
@@ -946,9 +1405,9 @@ public class ParserRule {
 					firstElement = firstElement.substring(1);
 					firstElement = ParserRule.cleanString(firstElement);
 				}
-
+				
 				if (!Functions.startsWithLetter(firstElement)) {
-					if (!firstElement.startsWith("(")) {
+					if (!firstElement.startsWith("(") && !firstElement.startsWith("\"")) {
 						// if it's not a normal bracket
 
 						switch (firstElement.charAt(0)) {
@@ -1058,7 +1517,12 @@ public class ParserRule {
 	 * @return
 	 */
 	public boolean isLeftRecursive() {
-		ArrayList<String> reachableRuleNames = this.getReachableRules();
+		if(this.isTerminal) {
+			//a terminal rule can't be left-recursive
+			return false;
+		}
+		
+		ArrayList<String> reachableRuleNames = this.getReachableStartRules();
 
 		if (reachableRuleNames.isEmpty()) {
 			System.err
@@ -1099,9 +1563,9 @@ public class ParserRule {
 	 * Prevent that an AtomicRuleCall is listed in this.reachableRules if it's
 	 * mainRule is listed, too.
 	 */
-	public void formatReachableRules() {
+	public void formatReachableStartRules() {
 		ArrayList<String> newReachableRuleNames = new ArrayList<String>();
-		ArrayList<String> reachableRuleNames = this.getReachableRules();
+		ArrayList<String> reachableRuleNames = this.getReachableStartRules();
 
 		for (String currentName : reachableRuleNames) {
 			if (!currentName.contains("Atomic")) {
@@ -1118,7 +1582,7 @@ public class ParserRule {
 			}
 		}
 
-		this.setReachableRules(newReachableRuleNames);
+		this.setReachableStartRules(newReachableRuleNames);
 	}
 
 	/**
@@ -1138,5 +1602,298 @@ public class ParserRule {
 		}
 
 		return quantity;
+	}
+
+	/**
+	 * @param checkBaseRule
+	 *            Whether or not rule calls in the baseRule should be included
+	 * @param checkAtomicRule
+	 *            Wheter or not rule calls in the atomicRule should be included
+	 * @param dontCheckForDuplicates
+	 *            Should the function add duplicates to the list?
+	 * @return A list of the names of all reachable rules
+	 */
+	public ArrayList<String> getRuleCalls(boolean checkBaseRule,
+			boolean checkAtomicRule, boolean dontCheckForDuplicates) {
+		ArrayList<String> reachableRuleNames = new ArrayList<String>();
+
+		int startLoopIndex = 0;
+		int endLoopIndex = 2;
+
+		if (!checkBaseRule) {
+			startLoopIndex = 1;
+		}
+		if (!checkAtomicRule) {
+			endLoopIndex = 1;
+		}
+
+		for (int i = startLoopIndex; i < endLoopIndex; i++) {
+			String content;
+
+			if (i == 0) {
+				content = this.getBaseRuleContent();
+			} else {
+				content = this.getAtomicRuleContent();
+			}
+
+			content = cleanString(content);
+
+			while (!content.isEmpty()) {
+				int index = content.indexOf("\n");
+
+				if (index < 0) {
+					index = content.length();
+				}
+
+				// get current line
+				String currentLine = content.substring(0, index);
+
+				// remove current line from content
+				content = content.substring(index);
+				content = cleanString(content);
+
+				if (content.startsWith("|")) {
+					content = content.substring(1);
+					content = cleanString(content);
+				}
+
+				// remove any special characters from current line
+				currentLine = currentLine.replace("|", " ");
+				currentLine = currentLine.replace("(", " ");
+				currentLine = currentLine.replace(")", " ");
+				currentLine = currentLine.replace("*", " ");
+				currentLine = currentLine.replace("?", " ");
+				currentLine = Functions.reduceSpaceBetween(currentLine);
+
+				String[] aElements = Functions.getElements(currentLine);
+
+				for (String currentElement : aElements) {
+					// process each element
+
+					if (currentElement.contains("=")) {
+						// remove assignment
+						currentElement = currentElement
+								.substring(currentElement.indexOf("=") + 1);
+					}
+
+					if (isValidRuleName(currentElement)
+							&& !isTerminalRuleName(currentElement)) {
+						// if this is a normal rule call
+						if (!reachableRuleNames.contains(currentElement)) {
+							reachableRuleNames.add(currentElement);
+						} else {
+							if (dontCheckForDuplicates) {
+								reachableRuleNames.add(currentElement);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return reachableRuleNames;
+	}
+
+	/**
+	 * @param checkBaseRule
+	 *            Whether or not rule calls in the baseRule should be included
+	 * @param checkAtomicRule
+	 *            Wheter or not rule calls in the atomicRule should be included
+	 * @return A list of the names of all reachable rules
+	 */
+	public ArrayList<String> getRuleCalls(boolean checkBaseRule,
+			boolean checkAtomicRule) {
+		return getRuleCalls(checkBaseRule, checkAtomicRule, false);
+	}
+
+	/**
+	 * @param checkBaseRule
+	 *            Whether or not rule calls in the baseRule should be included
+	 * @return A list of the names of all reachable rules
+	 */
+	public ArrayList<String> getRuleCalls(boolean checkBaseRule) {
+		return getRuleCalls(checkBaseRule, true, false);
+	}
+
+	/**
+	 * @return A list of the names of all reachable rules
+	 */
+	public ArrayList<String> getRuleCalls() {
+		return getRuleCalls(true, true, false);
+	}
+
+	/**
+	 * Prevent atomicRule calls from beeing listed if their baseRule is
+	 * registered as well
+	 */
+	public void formatReachableRules() {
+		ArrayList<String> newReachableRuleNames = new ArrayList<String>();
+
+		for (String currentName : this.getReachableRules()) {
+			if (currentName.contains("Atomic")) {
+				// check if base rule is also included
+				String baseName = currentName.substring(0,
+						currentName.indexOf("Atomic"));
+
+				if (!this.getReachableRules().contains(baseName)) {
+					// only add if baseRuleis not included
+					newReachableRuleNames.add(currentName);
+				}
+			} else {
+				newReachableRuleNames.add(currentName);
+			}
+		}
+
+		this.setReachableRules(newReachableRuleNames, false); // prevent
+																// recursion
+																// loop
+	}
+
+	/**
+	 * Indicate if the rule is recursive according to the registered
+	 * reachableRules
+	 * 
+	 * @return
+	 */
+	public boolean isRecursive() {
+		if (this.getReachableRules().contains(this.getName())) {
+			return true;
+		} else {
+			// TODO: implement atomic recursion
+			return false;
+		}
+	}
+	
+	/**
+	 * Formats the content of the rule according to it's subLevel
+	 */
+	public void format() {
+		if(this.isEmpty()) {
+			return;
+		}
+		
+		String content = this.getRuleContent();
+		
+		content = cleanString(content);
+		
+		while(content.contains("\t\t")) {
+			//remove previous formatting
+			content = content.replace("\t\t", "\t");
+		}
+		
+		String formatter = "\t";
+		
+		for(int i=0; i<this.getSubLevel(); i++) {
+			formatter += "\t";
+		}
+		
+		content = content.replace("\t", formatter);
+		
+		content = formatter + content;
+		
+		this.setRuleContent(content);
+	}
+	
+	/**
+	 * Checks if the rule contains a line with the given content
+	 * @param line The line content
+	 * @return
+	 */
+	public boolean containsLine(String line) {
+		line = cleanString(line);
+		
+		for(String currentLine : this.getLines()) {
+			if(line.equals(currentLine)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * @return An array containing the lines of the ruleContent
+	 */
+	public String[] getLines() {
+		String content = this.getRuleContent();
+		
+		int quantity = Functions.howOften(content, "\n") + 1;
+		
+		String[] lines = new String[quantity];
+		
+		for(int i=0; i<quantity; i++) {
+			int index = content.indexOf("\n") + 1;
+			
+			if(index == 0) {
+				index = content.length();
+			}
+			
+			String currentLine = content.substring(0, index);
+			
+			currentLine = cleanString(currentLine);
+			
+			if(currentLine.startsWith("|")) {
+				currentLine = currentLine.substring(1);
+				currentLine = cleanString(currentLine);
+			}
+			
+			content = content.substring(index);
+			
+			lines[i] = currentLine;
+		}
+		
+		return lines;
+	}
+
+	/**
+	 * Check whether the given name is the name of a terminal rule
+	 * 
+	 * @param name
+	 *            The name to be checked
+	 * @return
+	 */
+	public static boolean isTerminalRuleName(String name) {
+		if (name.startsWith("\"")) {
+			// implicit terminal keyword definition
+			return true;
+		}
+
+		if (!Functions.startsWithLetter(name)) {
+			// check that given name starts with a letter
+			System.err
+					.println("Name mustn't start with another character than a letter!"
+							+ "\n\t->" + name + "\n\t-> returned false");
+			return false;
+		}
+
+		if (name.toUpperCase().equals(name)) {
+			// if name is written in capital letters it's a terminal
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks whether the given name is a valid rule name
+	 * 
+	 * @param name
+	 *            The name that should be checked
+	 * @return
+	 */
+	public static boolean isValidRuleName(String name) {
+		if (!Functions.startsWithLetter(name)) {
+			// a rule name has to start with a letter
+			return false;
+		}
+
+		if (name.contains("|") || name.contains("(") || name.contains(")")
+				|| name.contains("*") || name.contains("?")
+				|| name.contains("=")) {
+			// a rule name may not contain one of those characters
+			return false;
+		}
+
+		return true;
 	}
 }

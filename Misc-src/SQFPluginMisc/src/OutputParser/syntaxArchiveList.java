@@ -88,9 +88,6 @@ public class syntaxArchiveList {
 				if (name.equals("NoneReturner")) {
 					name = "Commands";
 				}
-				if(name.equals("ScriptReturner")) {
-					String dummy = "";
-				}
 
 				ParserRule rule = new ParserRule(name);
 				rule.create();
@@ -108,13 +105,22 @@ public class syntaxArchiveList {
 				}
 			}
 			
+			/*grammar.sort();
+			
+			System.out.println(grammar);*/
+			
 			grammar.appendAnythingRule();
 			
 			grammar.createStartRuleForecasts();
+			grammar.createRuleForecast();
+			
+			if(grammar.isRecursive()) {
+				String dummy = "";
+				//TODO: implement algorithm to deal with recursive rule calls
+			}
 			
 			if (grammar.isLeftRecursive()) {
 				grammar.removeLeftRecursion();
-				// TODO: implement fix for left-recursion
 			}
 
 			/*grammarContent = grammar.toString();

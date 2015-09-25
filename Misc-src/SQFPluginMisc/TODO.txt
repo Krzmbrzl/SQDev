@@ -6,47 +6,13 @@ Online wieder kontrollieren was net passt
 
 Eine Anything-Regel generieren -> auf Linksrekursion achten
 
-Teilweise Probleme mit Linksrekursion durch gegenseitigen Aufruf der Regeln und durch Anything -> auch über mehrere Regelaufrufe möglich
-
 Deklarationsreferenzen implementieren
 
+check ParserRule.createAssignments()
 
+Grammar.sort() has to process subAtomic rules
 
-
-
-
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:119:1: [fatal] rule ruleMain has non-LL(*) decision due to recursive rule invocations reachable from alts 2,5.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:491:1: [fatal] rule ruleVarContent has non-LL(*) decision due to recursive rule invocations reachable from alts 1,6.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-warning(200): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:2124:2: Decision can match input such as "RULE_NUMBERCOMMANDNAMEKEYWORDS_9" using multiple alternatives: 1, 2
-As a result, alternative(s) 2 were disabled for that input
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:2975:7: [fatal] rule ruleNumberAtomic has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:3030:2: [fatal] rule ruleNumberAtomic has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:3161:7: [fatal] rule ruleNumberAtomic has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:3216:2: [fatal] rule ruleNumberAtomic has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:2145:1: [fatal] rule ruleNumberAtomic has non-LL(*) decision due to recursive rule invocations reachable from alts 23,24.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-warning(200): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:3990:2: Decision can match input such as "RULE_OBJECTCOMMANDNAMEKEYWORDS_9" using multiple alternatives: 1, 2
-As a result, alternative(s) 2 were disabled for that input
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:4009:2: [fatal] rule ruleObject has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-warning(200): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:4046:3: Decision can match input such as "RULE_OBJECTCOMMANDNAMEKEYWORDS_10" using multiple alternatives: 1, 2
-As a result, alternative(s) 2 were disabled for that input
-warning(205): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:3954:2: ANTLR could not analyze this decision in rule ruleObject; often this is because of recursive rule references visible from the left edge of alternatives.  ANTLR will re-analyze the decision with a fixed lookahead of k=1.  Consider using "options {k=1;}" for that decision and possibly adding a syntactic predicate.
-error(10):  internal error: org.antlr.tool.Grammar.createLookaheadDFA(Grammar.java:1279): could not even do k=1 for decision 44; reason: timed out (>100000ms)
- 
-
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:4491:2: [fatal] rule ruleObjectAtomic has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:4602:2: [fatal] rule ruleObjectAtomic has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf/src-gen/raven/parser/antlr/internal/InternalSQF.g:4067:1: [fatal] rule ruleObjectAtomic has non-LL(*) decision due to recursive rule invocations reachable from alts 4,7.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:1976:1: [fatal] rule rule__Main__Alternatives has non-LL(*) decision due to recursive rule invocations reachable from alts 4,5.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:2042:1: [fatal] rule rule__VarContent__Alternatives has non-LL(*) decision due to recursive rule invocations reachable from alts 1,6.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:2387:1: [fatal] rule rule__NumberAtomic__Alternatives has non-LL(*) decision due to recursive rule invocations reachable from alts 20,23.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:2635:1: [fatal] rule rule__NumberAtomic__Alternatives_19_0 has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:2657:1: [fatal] rule rule__NumberAtomic__Alternatives_19_2 has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:2723:1: [fatal] rule rule__NumberAtomic__Alternatives_21_0 has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-error(211): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:2745:1: [fatal] rule rule__NumberAtomic__Alternatives_21_2 has non-LL(*) decision due to recursive rule invocations reachable from alts 1,2.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
-warning(200): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:2770:28: Decision can match input such as "RULE_OBJECTCOMMANDNAMEKEYWORDS_9" using multiple alternatives: 1, 2
-As a result, alternative(s) 2 were disabled for that input
-warning(205): ../raven.sqf.ui/src-gen/raven/ui/contentassist/antlr/internal/InternalSQF.g:2776:28: ANTLR could not analyze this decision in rule rule__Object__Alternatives_1; often this is because of recursive rule references visible from the left edge of alternatives.  ANTLR will re-analyze the decision with a fixed lookahead of k=1.  Consider using "options {k=1;}" for that decision and possibly adding a syntactic predicate.
-error(10):  internal error: org.antlr.tool.Grammar.createLookaheadDFA(Grammar.java:1279): could not even do k☺=1 for decision 24; reason: timed out (>100000ms)
+null-ruleContents
 
 
 
