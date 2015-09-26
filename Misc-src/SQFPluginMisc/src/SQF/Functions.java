@@ -3043,5 +3043,13 @@ public class Functions {
 		
 		return (startCharacter >= 'a' && startCharacter <= 'z');
 	}
+	
+	public static void printUnescaped(String string) {
+		string = string.replace("\n", "\\n");
+		string = string.replace("\t", "\\t");
+		string = string.replace("\r", "\\r");
+		
+		System.out.println(string);
+	}
 
 }
