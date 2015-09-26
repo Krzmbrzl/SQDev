@@ -100,14 +100,14 @@ public class syntaxArchiveList {
 
 				// System.out.println(rule.toString() + "\n"); //TODO: remove
 
-				if (!rule.isEmpty()) {
 					grammar.addRule(rule);
-				}
 			}
 			
 			/*grammar.sort();
 			
 			System.out.println(grammar);*/
+			
+			grammar.sort();
 			
 			grammar.appendAnythingRule();
 			
@@ -126,7 +126,12 @@ public class syntaxArchiveList {
 			/*grammarContent = grammar.toString();
 
 			System.out.println(grammarContent);*/
-
+			
+			grammar.removeEmptyRules();
+			grammar.removeNonExistingRuleCalls();
+			
+			grammar.sort();
+			
 			if (!grammar.isLeftRecursive()) {
 				grammar.createAssignments(); //TODO: kills format in BaseRule
 				grammarContent = grammar.toString();

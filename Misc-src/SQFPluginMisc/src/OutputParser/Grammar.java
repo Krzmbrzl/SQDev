@@ -30,9 +30,9 @@ public class Grammar {
 	}
 
 	public ParserRule getRule(String name) {
-		//make sure name starts with a capital letter
+		// make sure name starts with a capital letter
 		name = name.substring(0, 1).toUpperCase() + name.substring(1);
-		
+
 		for (ParserRule currentRule : ruleList) {
 			if (currentRule.getName().toLowerCase().equals(name.toLowerCase())) {
 				return currentRule;
@@ -75,6 +75,37 @@ public class Grammar {
 	}
 
 	/**
+	 * @return A list of all baseRules in this grammar
+	 */
+	public ArrayList<ParserRule> getBaseRules() {
+		ArrayList<ParserRule> baseRules = new ArrayList<ParserRule>();
+
+		for (ParserRule currentRule : this.getRules()) {
+			if (currentRule.isBaseRule()) {
+				baseRules.add(currentRule);
+			}
+		}
+
+		return baseRules;
+	}
+
+	/**
+	 * @return A list of all rules except the terminals
+	 */
+	public ArrayList<ParserRule> getNonTerminalRules() {
+		ArrayList<ParserRule> nonTerminals = new ArrayList<ParserRule>();
+
+		for (ParserRule currentRule : this.getRules()) {
+			if (!currentRule.isTerminal()) {
+				// add to list if it's a nonTerminal rule
+				nonTerminals.add(currentRule);
+			}
+		}
+
+		return nonTerminals;
+	}
+
+	/**
 	 * Sets the rule at the given position
 	 * 
 	 * @param rule
@@ -113,59 +144,66 @@ public class Grammar {
 	}
 
 	public void setAsAssociated(boolean isAssociated) {
-		for(ParserRule currentRule : this.getRules()) {
+		for (ParserRule currentRule : this.getRules()) {
 			currentRule.setAsAssociated(isAssociated);
 		}
 		this.isAssociated = isAssociated;
 	}
-	
+
 	/**
 	 * Adds a rule to the grammar
-	 * @param rule The rule to be added
-	 * @param preventDuplicates false to allow duplicates of rules
+	 * 
+	 * @param rule
+	 *            The rule to be added
+	 * @param preventDuplicates
+	 *            false to allow duplicates of rules
 	 */
 	public void addRule(ParserRule rule, boolean preventDuplicates) {
-		if(this.containsRule(rule.getName()) && preventDuplicates) {
-			//add rules only if tey are not contained already
+		if (this.containsRule(rule.getName()) && preventDuplicates) {
+			// add rules only if tey are not contained already
 			return;
 		}
-		
-		//check for appended rules
-		if(!rule.getAppendedRules().isEmpty()) {
-			for(ParserRule currentAppendedRule : rule.getAppendedRules()) {
-				if(currentAppendedRule.getBaseRuleName().isEmpty()) {
-					//set baseRuleName if not set already
+
+		// check for appended rules
+		if (!rule.getAppendedRules().isEmpty()) {
+			for (ParserRule currentAppendedRule : rule.getAppendedRules()) {
+				if (currentAppendedRule.getBaseRuleName().isEmpty()) {
+					// set baseRuleName if not set already
 					currentAppendedRule.setBaseRuleName(rule.getName());
 				}
 				this.addRule(currentAppendedRule);
-				
-				//reset appened rules
-				currentAppendedRule.setAppendedRules(new ArrayList<ParserRule>());
+
+				// reset appened rules
+				currentAppendedRule
+						.setAppendedRules(new ArrayList<ParserRule>());
 			}
 		}
-		
+
 		ruleList.add(rule);
 		this.setAsAssociated(false);
 	}
-	
+
 	/**
 	 * Adds a rule to the grammar
-	 * @param rule The rule to be added
+	 * 
+	 * @param rule
+	 *            The rule to be added
 	 */
 	public void addRule(ParserRule rule) {
 		this.addRule(rule, true);
 	}
 
 	public String toString(boolean associate) {
-		if(!this.isAssociated() && associate) {
-			//create associations first
-			System.out.println("\nPerforming association before returning stringRepresentaion...");
-			
+		if (!this.isAssociated() && associate) {
+			// create associations first
+			System.out
+					.println("\nPerforming association before returning stringRepresentaion...");
+
 			this.associate();
-			
+
 			System.out.println("Grammar associated!\n");
 		}
-		
+
 		String grammarContent = this.getHeader();
 		if (!grammarContent.endsWith("\n")) {
 			// make sure there is a newline after the header
@@ -174,20 +212,20 @@ public class Grammar {
 
 		for (ParserRule currentRule : this.ruleList) {
 			currentRule.format();
-			
-			if(!currentRule.isSubRule()) {
-				//seperate new rule complex
+
+			if (!currentRule.isSubRule()) {
+				// seperate new rule complex
 				grammarContent += "\n\n\n";
 			}
 			grammarContent += "\n\n" + currentRule.toString();
 		}
-		
-		//format
+
+		// format
 		grammarContent = ParserRule.cleanString(grammarContent) + "\n";
 
 		return grammarContent;
 	}
-	
+
 	public String toString() {
 		return this.toString(true);
 	}
@@ -200,8 +238,8 @@ public class Grammar {
 	 */
 	public boolean containsRule(String name) {
 		String[] names = this.getRuleNames();
-		
-		//make sure name starts with a capital letter
+
+		// make sure name starts with a capital letter
 		name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
 		return Functions.isIn(names, name, true);
@@ -214,7 +252,7 @@ public class Grammar {
 	 */
 	public void createAssignments() {
 		for (ParserRule currentRule : this.getRules()) {
-			if(!currentRule.isTerminal()) {
+			if (!currentRule.isTerminal()) {
 				currentRule.createAssignments();
 			}
 		}
@@ -359,10 +397,10 @@ public class Grammar {
 	 */
 	public void removeLeftRecursion() {
 		for (ParserRule currentRule : this.getRules()) {
-			if(currentRule.isTerminal()) {
+			if (currentRule.isTerminal()) {
 				continue;
 			}
-			
+
 			if (currentRule.isLeftRecursive()) {
 				// process every left-recursive rule
 				for (String currentReachableRuleName : currentRule
@@ -412,7 +450,7 @@ public class Grammar {
 							ruleB = currentRule;
 						}
 
-						// remove parseAlternatives to the BaseRule in ruleA
+						// move parseAlternatives to the BaseRule in ruleA
 						// change ruleCall to atomic in ruleB
 
 						// process ruleA
@@ -954,9 +992,10 @@ public class Grammar {
 	 */
 	public void createStartRuleForecasts() {
 		for (ParserRule currentRule : this.getRules()) {
-			if(!currentRule.isTerminal()) {
+			if (!currentRule.isTerminal()) {
 				// create first layer
-				currentRule.setReachableStartRules(currentRule.getStartRuleCalls());
+				currentRule.setReachableStartRules(currentRule
+						.getStartRuleCalls());
 			}
 		}
 
@@ -965,9 +1004,9 @@ public class Grammar {
 		while (proceed) {
 			ArrayList<ArrayList<String>> previousReachableRules = new ArrayList<ArrayList<String>>();
 			for (ParserRule currentRule : this.getRules()) {
-				
+
 				System.out.println(currentRule.getName());
-				
+
 				ArrayList<String> reachableRules = currentRule
 						.getReachableStartRules();
 				previousReachableRules.add(reachableRules); // store previous
@@ -975,7 +1014,7 @@ public class Grammar {
 															// comparison
 
 				for (String currentReachableRuleName : reachableRules) {
-					
+
 					ParserRule currentReachableRule;
 					boolean onlyAtomic = false;
 
@@ -1041,76 +1080,89 @@ public class Grammar {
 			currentRule.formatReachableStartRules();
 		}
 	}
-	
+
 	/**
 	 * Sets the reachableRules for every rule
 	 */
 	public void createRuleForecast() {
-		for(ParserRule currentRule : this.getRules()) {
-			if(!currentRule.isTerminal()) {
+		for (ParserRule currentRule : this.getRules()) {
+			if (!currentRule.isTerminal()) {
 				currentRule.setReachableRules(currentRule.getRuleCalls());
 			}
 		}
-		
+
 		boolean proceed = true;
-		
-		while(proceed) {
+
+		while (proceed) {
 			ArrayList<ArrayList<String>> previousRuleForecast = new ArrayList<ArrayList<String>>();
-			
-			for(ParserRule currentRule : this.getRules()) {
+
+			for (ParserRule currentRule : this.getRules()) {
 				previousRuleForecast.add(currentRule.getReachableRules());
 			}
-			
-			for(ParserRule currentRule : this.getRules()) {
-				ArrayList<String> reachableRuleNames = currentRule.getReachableRules();
-				
-				for(String currentReachableRuleName : currentRule.getReachableRules()) {
+
+			for (ParserRule currentRule : this.getRules()) {
+				ArrayList<String> reachableRuleNames = currentRule
+						.getReachableRules();
+
+				for (String currentReachableRuleName : currentRule
+						.getReachableRules()) {
 					boolean atomic = false;
-					
-					if(currentReachableRuleName.contains("Atomic")) {
+
+					if (currentReachableRuleName.contains("Atomic")) {
 						atomic = true;
-						//get baseRule name
-						currentReachableRuleName = currentReachableRuleName.substring(0, currentReachableRuleName.indexOf("Atomic"));
+						// get baseRule name
+						currentReachableRuleName = currentReachableRuleName
+								.substring(0, currentReachableRuleName
+										.indexOf("Atomic"));
 					}
-					
-					//combine reachable rules
-					if(this.containsRule(currentReachableRuleName)) {
-						ParserRule targetRule = this.getRule(currentReachableRuleName);
-						
-						if(atomic) {
-							//only get rule calls from atomic rule
-							for(String currentTargetReachableRuleName : targetRule.getRuleCalls(false)) {
-								if(!reachableRuleNames.contains(currentTargetReachableRuleName)) {
-									//if not already contained
-									reachableRuleNames.add(currentTargetReachableRuleName);
+
+					// combine reachable rules
+					if (this.containsRule(currentReachableRuleName)) {
+						ParserRule targetRule = this
+								.getRule(currentReachableRuleName);
+
+						if (atomic) {
+							// only get rule calls from atomic rule
+							for (String currentTargetReachableRuleName : targetRule
+									.getRuleCalls(false)) {
+								if (!reachableRuleNames
+										.contains(currentTargetReachableRuleName)) {
+									// if not already contained
+									reachableRuleNames
+											.add(currentTargetReachableRuleName);
 								}
 							}
-						}else {
-							for(String currentTargetReachableRuleName : targetRule.getReachableRules()) {
-								if(!reachableRuleNames.contains(currentTargetReachableRuleName)) {
-									//if not already contained
-									reachableRuleNames.add(currentTargetReachableRuleName);
+						} else {
+							for (String currentTargetReachableRuleName : targetRule
+									.getReachableRules()) {
+								if (!reachableRuleNames
+										.contains(currentTargetReachableRuleName)) {
+									// if not already contained
+									reachableRuleNames
+											.add(currentTargetReachableRuleName);
 								}
 							}
 						}
-					}else {
-						//rule not found
-						System.err.println("Couldn't find reference to rule '" + currentReachableRuleName
+					} else {
+						// rule not found
+						System.err.println("Couldn't find reference to rule '"
+								+ currentReachableRuleName
 								+ "' in Grammar.createRuleForecast");
 					}
 				}
-				//update reachable rules
+				// update reachable rules
 				currentRule.setReachableRules(reachableRuleNames);
 			}
-			
-			//reset proceed
+
+			// reset proceed
 			proceed = false;
-			
-			for(int i=0; i<this.getRuleCount(); i++) {
+
+			for (int i = 0; i < this.getRuleCount(); i++) {
 				ParserRule checkRule = this.getRule(i);
-				
-				if(!checkRule.getReachableRules().equals(previousRuleForecast.get(i))) {
-					//if list has been updated
+
+				if (!checkRule.getReachableRules().equals(
+						previousRuleForecast.get(i))) {
+					// if list has been updated
 					proceed = true;
 					break;
 				}
@@ -1151,59 +1203,61 @@ public class Grammar {
 	public void appendAnythingRule() {
 		ParserRule anythingRule = new ParserRule("AbsolutelyAnything");
 
-		anythingRule.create();
-
-		for (ParserRule currentRule : this.getRules()) {
+		for (ParserRule currentRule : this.getBaseRules()) {
 			anythingRule.addSyntax(currentRule.getName());
 		}
 
 		this.addRule(anythingRule);
 	}
-	
+
 	/**
 	 * Indicates if the grammar contains a recursive rule
+	 * 
 	 * @return
 	 */
 	public boolean isRecursive() {
-		for(ParserRule currentRule : this.getRules()) {
-			if(currentRule.isTerminal()) {
+		for (ParserRule currentRule : this.getRules()) {
+			if (currentRule.isTerminal()) {
 				continue;
 			}
-			
-			if(currentRule.isRecursive()) {
+
+			if (currentRule.isRecursive()) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Creates associations between base- and subRules
 	 */
 	public void associate() {
-		for(ParserRule currentRule : this.getRules()) {
-			//check if currentRule is a subRule
-			if(currentRule.isSubRule()) {
+		for (ParserRule currentRule : this.getRules()) {
+			// check if currentRule is a subRule
+			if (currentRule.isSubRule()) {
 				String baseRuleName = currentRule.getBaseRuleName();
-				
-				if(this.containsRule(baseRuleName)) {
+
+				if (this.containsRule(baseRuleName)) {
 					ParserRule baseRule = this.getRule(baseRuleName);
-					
-					//assign currentRule as a subRule of baseRule
+
+					// assign currentRule as a subRule of baseRule
 					baseRule.addSubRule(currentRule);
-					
-					//assign baseRule as the baseRule of currentRule and set subLevel
+
+					// assign baseRule as the baseRule of currentRule and set
+					// subLevel
 					currentRule.setBaseRule(baseRule);
 					currentRule.setSubLevel(baseRule.getSubLevel() + 1);
-					
-					if(currentRule.hasSubRules()) {
-						//update subLevel of subSubRules
-						for(ParserRule currentSubSubRule : currentRule.getSubRules()) {
-							currentSubSubRule.setSubLevel(currentRule.getSubLevel() + 1);
+
+					if (currentRule.hasSubRules()) {
+						// update subLevel of subSubRules
+						for (ParserRule currentSubSubRule : currentRule
+								.getSubRules()) {
+							currentSubSubRule.setSubLevel(currentRule
+									.getSubLevel() + 1);
 						}
 					}
-				}else {
+				} else {
 					System.err.println("Couldn't find rule '" + baseRuleName
 							+ "' for Grammar.associate()");
 				}
@@ -1211,59 +1265,137 @@ public class Grammar {
 		}
 		this.setAsAssociated(true);
 	}
-	
+
 	/**
-	 * Rearranges the rules in the grammar according to the association of the rules
+	 * Rearranges the rules in the grammar according to the association of the
+	 * rules
 	 */
 	public void sort() {
-		if(!this.isAssociated()) {
+		if (!this.isAssociated()) {
 			this.associate();
 		}
-		
+
 		ArrayList<ParserRule> newRuleList = new ArrayList<ParserRule>();
-		
-		for(ParserRule currentRule : this.getRules()) {
-			if(!newRuleList.contains(currentRule) && !currentRule.isSubRule()) {
-				//only process new baseRules
+
+		for (ParserRule currentRule : this.getRules()) {
+			if (!newRuleList.contains(currentRule) && !currentRule.isSubRule()) {
+				// only process new baseRules
 				newRuleList.add(currentRule);
-				
-				//add atomicRule
-				if(currentRule.hasAtomicRule()) {
+
+				// add atomicRule
+				if (currentRule.hasAtomicRule()) {
 					newRuleList.add(currentRule.getAtomicRule());
 				}
-				
-				//add possible subRules
-				if(currentRule.hasSubRules()) {
+
+				// add possible subRules
+				if (currentRule.hasSubRules()) {
 					ArrayList<ParserRule> terminals = new ArrayList<ParserRule>();
-					
-					//add subRules
-					for(ParserRule currentSubRule : currentRule.getAllSubRules()) {
-						if(currentSubRule.isTerminal()) {
-							//add terminals in the end
+
+					// add subRules
+					for (ParserRule currentSubRule : currentRule
+							.getAllSubRules()) {
+						if (currentSubRule.isTerminal()) {
+							// add terminals in the end
 							terminals.add(currentSubRule);
-						}
-						
-						if(!newRuleList.contains(currentSubRule)) {
-							newRuleList.add(currentSubRule);
+						} else {
+							if (!newRuleList.contains(currentSubRule)) {
+								newRuleList.add(currentSubRule);
+							}
 						}
 					}
-					
-					//add terminal rules
-					for(ParserRule currentTerminalRule : terminals) {
+
+					// add terminal rules
+					for (ParserRule currentTerminalRule : terminals) {
 						newRuleList.add(currentTerminalRule);
 					}
 				}
 			}
 		}
-		
+
 		this.setRules(newRuleList);
-		
+
 		this.setAsAssociated(true);
 	}
-	
+
+	/**
+	 * Formats every rule in this grammar accoring to it's respective position
+	 */
 	public void format() {
-		for(ParserRule currentRule : this.getRules()) {
+		for (ParserRule currentRule : this.getRules()) {
 			currentRule.format();
+		}
+	}
+
+	public void removeEmptyRules() {
+		for (ParserRule currentRule : this.getRules()) {
+			if (currentRule.isEmpty()) {
+				this.deleteRule(currentRule);
+			}
+		}
+	}
+
+	/**
+	 * Removes given rule from the grammar
+	 * 
+	 * @param rule
+	 *            The rule to remove
+	 */
+	public void deleteRule(ParserRule rule) {
+		if (!this.containsRule(rule.getName())) {
+			// make sure the rule exists in this grammar
+			System.err.println("Gramamr doesn't contain rule '"
+					+ rule.getName()
+					+ "'! (Grammar.deleteRule(ParserRule rule)");
+			return;
+		}
+
+		ArrayList<ParserRule> ruleList = this.getRules();
+
+		int index = this.getRules().indexOf(rule);
+
+		ruleList.remove(index);
+
+		this.setRules(ruleList);
+	}
+
+	/**
+	 * Deletes rule with the given name from this grammar
+	 * 
+	 * @param name
+	 *            The name of the rule that should be removed
+	 */
+	public void deleteRule(String name) {
+		if (this.containsRule(name)) {
+			// make sure the rule exists in this grammar
+			this.deleteRule(this.getRule(name));
+		} else {
+			System.err.println("Gramamr doesn't contain rule '" + name
+					+ "'! (Grammar.deleteRule(String name)");
+		}
+	}
+	
+	public void removeNonExistingRuleCalls() {
+		for(ParserRule currentRule : this.getNonTerminalRules()) {
+			for(String currentName : currentRule.getReachableRules()) {
+				if(!this.containsRule(currentName) && !this.getHeader().contains(currentName + ":")) {
+					//remove respective ruleCall
+					currentRule.removeRuleCall(currentName);
+				}
+			}
+		}
+		
+		//update forecast
+		this.createRuleForecast();
+		
+		//check if there are still empty rules
+		for(ParserRule currentRule : this.getNonTerminalRules()) {
+			for(String currentName : currentRule.getReachableRules()) {
+				if(!this.containsRule(currentName)) {
+					//call this function again
+					this.removeEmptyRules();
+					break;
+				}
+			}
 		}
 	}
 }
