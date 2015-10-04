@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 
 public class syntaxArchiveList {
@@ -52,7 +51,16 @@ public class syntaxArchiveList {
 		return this.list.get(index);
 	}
 
-	// TODO: JavaDoc
+	/**
+	 * This functions generates a grammar out of the stored syntaxes and writes
+	 * it into the given file
+	 * 
+	 * @param outputDirectory
+	 *            Where the grammar should be stored
+	 * @param modelDirectory
+	 *            The directory for any rule-models that should be injected into
+	 *            the grammar
+	 */
 	public void write(String outputDirectory, String modelDirectory) {
 		File grammarFile = new File(outputDirectory);
 		try {
@@ -82,6 +90,9 @@ public class syntaxArchiveList {
 
 			Grammar grammar = new Grammar(grammarContent);
 
+			System.out
+					.println("\nCreating ParserRules for the syntaxVariants...");
+
 			for (syntaxArchive currentArchive : this.list) {
 				String name = currentArchive.getName();
 
@@ -98,53 +109,101 @@ public class syntaxArchiveList {
 					rule.addSyntaxVariant(currentVariant);
 				}
 
-				// System.out.println(rule.toString() + "\n"); //TODO: remove
-
-					grammar.addRule(rule);
+				grammar.addRule(rule);
 			}
-			
-			/*grammar.sort();
-			
-			System.out.println(grammar);*/
-			
+
+			System.out.println("Finished creating ParserRules\n");
+
+			/*
+			 * grammar.sort();
+			 * 
+			 * System.out.println(grammar);
+			 */
+
 			grammar.sort();
-			
+
+			System.out.println("\nAppending anything rule\n");
+
 			grammar.appendAnythingRule();
-			
+
+			System.out.println("\nStarting creating ruleForecasts...");
+
 			grammar.createStartRuleForecasts();
 			grammar.createRuleForecast();
 			
-			if(grammar.isRecursive()) {
-				String dummy = "";
-				//TODO: implement algorithm to deal with recursive rule calls
-			}
+			
+			//System.out.println(grammar.getRule("NumberAtomic") + "\n\n\n");
+
+			
+			System.out.println("Finished ruleForecasts\n");
+
+			System.out.println("\nDealing with recursion...");
 			
 			if (grammar.isLeftRecursive()) {
+				System.out.println("\tDealing with left-recursion");
+
 				grammar.removeLeftRecursion();
 			}
-
-			/*grammarContent = grammar.toString();
-
-			System.out.println(grammarContent);*/
 			
+			if (grammar.isRecursive()) {
+				//System.out.println("\tDealing with general recursion");
+
+				grammar.dealWithGeneralRecursion();
+				
+				System.out.println("\tRecreating ruleForecasts...");
+				
+				grammar.createStartRuleForecasts();
+				grammar.createRuleForecast();
+				
+				System.out.println("\tFinished recreation of ruleForecasts\n");
+			}
+			
+			//System.out.println(grammar.getRule("NumberAtomic"));
+
+			System.out.println("Finished dealing with recursion\n");
+
+			/*
+			 * grammarContent = grammar.toString();
+			 * 
+			 * System.out.println(grammarContent);
+			 */
+
+			System.out
+					.println("\nChecking for empty rules and invalid ruleCalls...");
+
 			grammar.removeEmptyRules();
 			grammar.removeNonExistingRuleCalls();
-			
+
+			System.out
+					.println("Finished check for empty rules and invalid ruleCalls\n");
+
+			System.out.println("\nSorting grammar\n");
+
 			grammar.sort();
-			
+
 			if (!grammar.isLeftRecursive()) {
-				grammar.createAssignments(); //TODO: kills format in BaseRule
+				System.out.println("\nCreating Assignments...");
+
+				grammar.createAssignments();
+
+				System.out.println("Assignments created\n");
+
 				grammarContent = grammar.toString();
-				
-				System.out.println(grammarContent);
-				
+
+				// System.out.println(grammarContent);
+
+				System.out.println("\nWriting grammar in file " + grammarFile);
+
 				FileWriter grammarWriter = new FileWriter(grammarFile);
 
 				grammarWriter.write(grammarContent);
 
 				grammarWriter.close();
-			}else {
-				System.err.println("\nGrammar is still left-recursive -> Hasn't been written in file!\n");
+
+				System.out.println("Finished writing grammar");
+			} else {
+				System.err
+						.println("\nGrammar is still left-recursive -> Hasn't been written in file!\n");
 			}
 
 		} catch (FileNotFoundException e) {

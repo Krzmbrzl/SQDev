@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.antlr.v4.codegen.model.chunk.SetNonLocalAttr;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -42,7 +41,7 @@ public class SQFOutputParser {
 				grammarDirectory = argument;
 
 			}
-			if(argument.startsWith("/mf=") || argument.startsWith("/mF=")) {
+			if (argument.startsWith("/mf=") || argument.startsWith("/mF=")) {
 				argument = argument.substring(4);
 				modelDirectory = argument;
 			}
@@ -71,8 +70,9 @@ public class SQFOutputParser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		//write every array as an array and don't care about length, types etc.   TODO: remove
+
+		// write every array as an array and don't care about length, types etc.
+		// TODO: remove
 		antlrInput = markAsArray(antlrInput);
 
 		// create CharStream that reads from the input file
@@ -570,8 +570,8 @@ public class SQFOutputParser {
 	}
 
 	/**
-	 * This function will format a string, so that different parameter-names
-	 * get corrected and unnessecary blanks get removed
+	 * This function will format a string, so that different parameter-names get
+	 * corrected and unnessecary blanks get removed
 	 * 
 	 * @param string
 	 *            The string that shouöd be formatted
@@ -624,10 +624,10 @@ public class SQFOutputParser {
 		if (string.indexOf("scripthandle") >= 0) {
 			string = string.replaceAll("scripthandle", "Script");
 		}
-		if(string.indexOf("scriptHandle") >= 0) {
+		if (string.indexOf("scriptHandle") >= 0) {
 			string = string.replace("scriptHandle", "Script");
 		}
-		if(string.contains("ScriptHandle")) {
+		if (string.contains("ScriptHandle")) {
 			string = string.replace("ScriptHandle", "Script");
 		}
 		if (string.indexOf("editorOBJECT") >= 0) {
@@ -656,7 +656,7 @@ public class SQFOutputParser {
 				giveAway = format(giveAway);
 				current = "[" + giveAway + "]";
 			}
-			
+
 			if (current.indexOf("/") >= 0) {
 				current = current.replaceAll("/", " | ");
 
@@ -699,24 +699,27 @@ public class SQFOutputParser {
 
 		return string;
 	}
-	
+
 	/**
-	 * This function will mark every element within brackets ("[" and "]") as an Array
-	 * @param string The string to be facilitated
+	 * This function will mark every element within brackets ("[" and "]") as an
+	 * Array
+	 * 
+	 * @param string
+	 *            The string to be facilitated
 	 * @return
 	 */
 	public static String markAsArray(String string) {
-		while(string.indexOf("[") >= 0) {
+		while (string.indexOf("[") >= 0) {
 			String fragment1 = string.substring(0, string.indexOf("["));
 			String fragment2 = string.substring(string.indexOf("["));
 			String bracketPart = Functions.getBracketElements(fragment2);
-			
-			//remove the part with the brackets
+
+			// remove the part with the brackets
 			fragment2 = fragment2.substring(bracketPart.length());
-			
+
 			string = fragment1 + "Array" + fragment2;
 		}
-		
+
 		return string;
 	}
 }

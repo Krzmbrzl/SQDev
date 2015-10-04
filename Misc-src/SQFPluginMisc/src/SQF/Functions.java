@@ -1285,7 +1285,7 @@ public class Functions {
 
 			for (String content : Array) {
 				boolean proceed = true;
-				if (content.equals("") | content == null) {
+				if (content == null || content.isEmpty()) {
 					proceed = false;
 					count = count - 1; // Damit kein unnötiges Leerzeichen
 										// eingefügt wird falls der Array nur

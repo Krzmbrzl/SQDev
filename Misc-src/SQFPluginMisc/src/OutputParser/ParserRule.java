@@ -27,6 +27,7 @@ public class ParserRule {
 	private boolean isTerminal;
 	private ArrayList<ParserRule> appendedRules;
 	private boolean isAtomicRule;
+	private boolean startRuleForecastDone;
 
 	public ParserRule(String name, boolean terminal) {
 		// Constructor for baseRules
@@ -46,6 +47,7 @@ public class ParserRule {
 		setAsTerminal(terminal);
 		setAppendedRules(new ArrayList<ParserRule>());
 		setReachableRules(new ArrayList<String>());
+		setStartRuleForecastDone(false);
 
 		if (this.getName().contains("Atomic")) {
 			this.setAsAtomicRule(true);
@@ -78,6 +80,7 @@ public class ParserRule {
 		setAsTerminal(terminal);
 		setAppendedRules(new ArrayList<ParserRule>());
 		setReachableRules(new ArrayList<String>());
+		setStartRuleForecastDone(false);
 
 		if (this.getName().contains("Atomic")) {
 			this.setAsAtomicRule(true);
@@ -314,6 +317,13 @@ public class ParserRule {
 
 	public void setReachableStartRules(ArrayList<String> ruleNames) {
 		reachableStartRules = ruleNames;
+
+		// indicate that if forecast was done
+		if (ruleNames.isEmpty()) {
+			this.setStartRuleForecastDone(false);
+		} else {
+			this.setStartRuleForecastDone(true);
+		}
 	}
 
 	public ArrayList<String> getReachableRules() {
@@ -568,6 +578,14 @@ public class ParserRule {
 		this.isAtomicRule = isAtomicRule;
 	}
 
+	public boolean isStartRuleForecastDone() {
+		return startRuleForecastDone;
+	}
+
+	public void setStartRuleForecastDone(boolean startRuleForecastDone) {
+		this.startRuleForecastDone = startRuleForecastDone;
+	}
+
 	/**
 	 * Increases the counter one step
 	 */
@@ -646,6 +664,11 @@ public class ParserRule {
 	 *            The syntax that should be added
 	 */
 	public void addSyntax(String syntax) {
+		if(syntax.isEmpty()) {
+			// don't add an empty syntax
+			return;
+		}
+		
 		syntaxVariant synVar = new syntaxVariant();
 		synVar.setSyntax(syntax);
 
@@ -771,9 +794,10 @@ public class ParserRule {
 			} else {
 				// the optional part which was non-atomic has been removed ->
 				// rest is atomic
+				
 				if (elements[1].equals("?") || elements[1].equals("*")) {
 					elements[1] = null;
-					Functions.removeNullElements(elements);
+					elements = Functions.removeNullElements(elements);
 				}
 				newFragment = Functions.ArrayToString(Functions
 						.getArrayContentFrom(elements, 1));
@@ -821,7 +845,7 @@ public class ParserRule {
 			 */
 
 		} else {
-			System.out.println(newFragment);
+			// System.out.println(newFragment);
 			// if syntax is left-recursive it has to go in the rule header after
 			// the atomic
 			// String mainContent = this.getRuleContent();
@@ -887,6 +911,19 @@ public class ParserRule {
 			// don't add empty lines
 			return;
 		}
+		
+		/*String cLine = cleanString(line);
+		
+		if(cLine.startsWith("=>")) {
+			//remove syntactic predicate since it would confuse detection mechanism
+			cLine = cLine.substring(2);
+			cLine = cleanString(cLine);
+		}
+		
+		if(cLine.startsWith("(") && (cLine.endsWith("?") || cLine.endsWith("*"))) {
+			//if rule can be called without object instantiation
+			line = "{" + this.getName() + "} " + line;
+		}*/
 
 		String newRuleContent = this.getRuleContent();
 
@@ -937,7 +974,18 @@ public class ParserRule {
 	 *            List of keywords this rule shall contain
 	 */
 	public void addTerminalRule(String name, ArrayList<String> keywordList) {
-		// create rulefor the terminals
+		//make sure the keywords are only listed once
+		ArrayList<String> cKeyords = new ArrayList<String>();
+		
+		for(String currentKeyword : keywordList) {
+			if(!cKeyords.contains(currentKeyword)) {
+				cKeyords.add(currentKeyword);
+			}
+		}
+		
+		keywordList = cKeyords;
+		
+		// create rule for the terminals
 		ParserRule newTerminalRule = new ParserRule(name, this.getName(), true);
 		newTerminalRule.create(); // TODO: create rules with instantiation
 		this.appendRule(newTerminalRule);
@@ -1540,9 +1588,9 @@ public class ParserRule {
 
 		ArrayList<String> reachableRuleNames = this.getReachableStartRules();
 
-		if (reachableRuleNames.isEmpty()) {
+		if (reachableRuleNames.isEmpty() && !this.isStartRuleForecastDone()) {
 			System.err
-					.println("Can't check for left recursion when this.reachableRules has not been set!");
+					.println("Can't check for left recursion when this.reachableStartRules has not been set!");
 			return false;
 		}
 
@@ -1608,6 +1656,10 @@ public class ParserRule {
 	public void formatReachableStartRules() {
 		ArrayList<String> newReachableRuleNames = new ArrayList<String>();
 		ArrayList<String> reachableRuleNames = this.getReachableStartRules();
+
+		if (reachableRuleNames.isEmpty()) {
+			return;
+		}
 
 		for (String currentName : reachableRuleNames) {
 			if (!currentName.contains("Atomic")) {
@@ -1782,6 +1834,10 @@ public class ParserRule {
 	public void formatReachableRules() {
 		ArrayList<String> newReachableRuleNames = new ArrayList<String>();
 
+		if (this.getReachableRules().isEmpty()) {
+			return;
+		}
+
 		for (String currentName : this.getReachableRules()) {
 			if (currentName.contains("Atomic")) {
 				// check if base rule is also included
@@ -1812,7 +1868,14 @@ public class ParserRule {
 		if (this.getReachableRules().contains(this.getName())) {
 			return true;
 		} else {
-			// TODO: implement atomic recursion
+			if(this.isAtomicRule()) {
+				//the baseRule always calls for the atomicRule
+				String baseName = this.getName().substring(0, this.getName().lastIndexOf("Atomic"));
+				
+				if(this.getReachableRules().contains(baseName)) {
+					return true;
+				}
+			}
 			return false;
 		}
 	}
@@ -1899,11 +1962,14 @@ public class ParserRule {
 
 		return lines;
 	}
-	
+
 	/**
 	 * Removes the ruleCall with the given name from the syntax of this rule<br>
-	 * Needs multiple calls if there are multiple ruleCalls of this name in one line
-	 * @param name The name of the ruleCall taht should be removed
+	 * Needs multiple calls if there are multiple ruleCalls of this name in one
+	 * line
+	 * 
+	 * @param name
+	 *            The name of the ruleCall taht should be removed
 	 */
 	public void removeRuleCall(String name) {
 		String[] lines = new String[this.getLines().length];
@@ -1916,11 +1982,14 @@ public class ParserRule {
 				currentLine = currentLine.replace(")", "]");
 
 				String[] elements = Functions.getElements(currentLine);
-				String[] cElements = elements;
+				String[] cElements = new String[elements.length];
+				
+				System.arraycopy(elements, 0, cElements, 0, elements.length);
+				
 				boolean killNextElement = false;
-				
+
 				int innerCounter = 0;
-				
+
 				for (String currentElement : cElements) {
 					if (killNextElement) {
 						// remove element because a previous match decided so
@@ -1956,16 +2025,18 @@ public class ParserRule {
 
 								if (!currentElement.contains("|")
 										&& !((elements.length - 1) >= innerCounter + 1)
-										|| !(elements[innerCounter + 1].equals("*")
+										|| !(elements[innerCounter + 1]
+												.equals("*")
 												|| elements[innerCounter + 1]
 														.equals("?") || elements[innerCounter + 1]
 												.equals("+"))) {
 									// if there is only one choice left and it's
 									// a normal rule call
 									currentElement = cleanString(currentElement);
-									//remove brackets
-									currentElement = currentElement.substring(1, currentElement.length() - 1);
-									
+									// remove brackets
+									currentElement = currentElement.substring(
+											1, currentElement.length() - 1);
+
 									currentElement = cleanString(currentElement);
 								}
 
@@ -2001,16 +2072,16 @@ public class ParserRule {
 							break;
 						}
 					}
-					
+
 					innerCounter++;
 				}
-				
+
 				currentLine = Functions.ArrayToString(elements);
-				
-				//undo formatting
+
+				// undo formatting
 				currentLine = currentLine.replace("[", "(");
 				currentLine = currentLine.replace("]", "]");
-				
+
 				lines[counter] = currentLine;
 			} else {
 				// keep line in place
@@ -2079,5 +2150,106 @@ public class ParserRule {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets the first ruleCall in a line
+	 * 
+	 * @param line
+	 *            The line containing a ruleCall
+	 * @param ignoreTerminals
+	 *            Wether or not the rule may be a terminal
+	 * @param stopAtTerminals
+	 *            Wether or not the function should return an empty string if
+	 *            the first rule was a terminal
+	 * @return The matched ruleCall or an empty string if no ruleCall could be
+	 *         matched
+	 */
+	public static String getFirstRuleCall(String line, boolean ignoreTerminals,
+			boolean stopAtTerminals) {
+		String firstElement = Grammar.getFirstElement(line);
+		
+		boolean isValid = false;
+		boolean wasSetAsValid = false;
+		
+		if(firstElement.startsWith("(")) {
+			//multiRuleCalls are valid as well
+			if(!firstElement.contains("|")) {
+				firstElement = firstElement.substring(1, firstElement.lastIndexOf(")"));
+			}else {
+				isValid = true;
+				wasSetAsValid = true;
+			}
+		}
+		
+		if(!isValid) {
+			isValid = isValidRuleName(firstElement);
+		}
+
+		while (!isValid) {
+			// get next element
+			line = line.substring(firstElement.length());
+
+			if (cleanString(line).isEmpty()) {
+				// return an empty string if no rule call could be matched
+				return "";
+			}
+
+			firstElement = Grammar.getFirstElement(line);
+			
+			isValid = isValidRuleName(firstElement);
+		}
+		
+		if(wasSetAsValid) {
+			//brackets are not expected to contain terminal rules
+			return firstElement;
+		}
+
+		if (ignoreTerminals) {
+			// check that it's not a terminal ruleCall
+			if (isTerminalRuleName(firstElement)) {
+				if (stopAtTerminals) {
+					return "";
+				} else {
+					line = line.substring(firstElement.length());
+
+					if (cleanString(line).isEmpty()) {
+						return "";
+					} else {
+						firstElement = getFirstRuleCall(line, ignoreTerminals,
+								stopAtTerminals);
+					}
+				}
+			}
+		}
+
+		return firstElement;
+	}
+
+	/**
+	 * Gets the first ruleCall in a line
+	 * 
+	 * @param line
+	 *            The line containing a ruleCall
+	 * @param ignoreTerminals
+	 *            Wether or not the rule may be a terminal
+	 *            
+	 * @return The matched ruleCall or an empty string if no ruleCall could be
+	 *         matched
+	 */
+	public static String getFirstRuleCall(String line, boolean ignoreTerminals) {
+		return getFirstRuleCall(line, ignoreTerminals, false);
+	}
+
+	/**
+	 * Gets the first non-terminal ruleCall in a line
+	 * 
+	 * @param line
+	 *            The line containing a ruleCall
+	 * @return The matched ruleCall or an empty string if no ruleCall could be
+	 *         matched
+	 */
+	public static String getFirstRuleCall(String line) {
+		return getFirstRuleCall(line, true);
 	}
 }

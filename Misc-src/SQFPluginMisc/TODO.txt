@@ -8,8 +8,8 @@ Eine Anything-Regel generieren -> auf Linksrekursion achten
 
 Deklarationsreferenzen implementieren
 
-check ParserRule.createAssignments()
-
-Grammar.sort() has to process subAtomic rules
-
 relocate atomic rule in base rule if base rule only contains rule call for the atomic rule
+
+ParserRule.addLineToRuleContent commented part
+
+Recursion is not completely removed
