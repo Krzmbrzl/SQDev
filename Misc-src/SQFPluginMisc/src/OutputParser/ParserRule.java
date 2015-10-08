@@ -664,11 +664,11 @@ public class ParserRule {
 	 *            The syntax that should be added
 	 */
 	public void addSyntax(String syntax) {
-		if(syntax.isEmpty()) {
+		if (syntax.isEmpty()) {
 			// don't add an empty syntax
 			return;
 		}
-		
+
 		syntaxVariant synVar = new syntaxVariant();
 		synVar.setSyntax(syntax);
 
@@ -794,7 +794,7 @@ public class ParserRule {
 			} else {
 				// the optional part which was non-atomic has been removed ->
 				// rest is atomic
-				
+
 				if (elements[1].equals("?") || elements[1].equals("*")) {
 					elements[1] = null;
 					elements = Functions.removeNullElements(elements);
@@ -911,19 +911,18 @@ public class ParserRule {
 			// don't add empty lines
 			return;
 		}
-		
-		/*String cLine = cleanString(line);
-		
-		if(cLine.startsWith("=>")) {
-			//remove syntactic predicate since it would confuse detection mechanism
-			cLine = cLine.substring(2);
-			cLine = cleanString(cLine);
-		}
-		
-		if(cLine.startsWith("(") && (cLine.endsWith("?") || cLine.endsWith("*"))) {
-			//if rule can be called without object instantiation
-			line = "{" + this.getName() + "} " + line;
-		}*/
+
+		/*
+		 * String cLine = cleanString(line);
+		 * 
+		 * if(cLine.startsWith("=>")) { //remove syntactic predicate since it
+		 * would confuse detection mechanism cLine = cLine.substring(2); cLine =
+		 * cleanString(cLine); }
+		 * 
+		 * if(cLine.startsWith("(") && (cLine.endsWith("?") ||
+		 * cLine.endsWith("*"))) { //if rule can be called without object
+		 * instantiation line = "{" + this.getName() + "} " + line; }
+		 */
 
 		String newRuleContent = this.getRuleContent();
 
@@ -974,20 +973,19 @@ public class ParserRule {
 	 *            List of keywords this rule shall contain
 	 */
 	public void addTerminalRule(String name, ArrayList<String> keywordList) {
-		//make sure the keywords are only listed once
+		// make sure the keywords are only listed once
 		ArrayList<String> cKeyords = new ArrayList<String>();
-		
-		for(String currentKeyword : keywordList) {
-			if(!cKeyords.contains(currentKeyword)) {
+
+		for (String currentKeyword : keywordList) {
+			if (!cKeyords.contains(currentKeyword)) {
 				cKeyords.add(currentKeyword);
 			}
 		}
-		
+
 		keywordList = cKeyords;
-		
+
 		// create rule for the terminals
 		ParserRule newTerminalRule = new ParserRule(name, this.getName(), true);
-		newTerminalRule.create(); // TODO: create rules with instantiation
 		this.appendRule(newTerminalRule);
 
 		String terminalRuleContent = "";
@@ -1868,11 +1866,12 @@ public class ParserRule {
 		if (this.getReachableRules().contains(this.getName())) {
 			return true;
 		} else {
-			if(this.isAtomicRule()) {
-				//the baseRule always calls for the atomicRule
-				String baseName = this.getName().substring(0, this.getName().lastIndexOf("Atomic"));
-				
-				if(this.getReachableRules().contains(baseName)) {
+			if (this.isAtomicRule()) {
+				// the baseRule always calls for the atomicRule
+				String baseName = this.getName().substring(0,
+						this.getName().lastIndexOf("Atomic"));
+
+				if (this.getReachableRules().contains(baseName)) {
 					return true;
 				}
 			}
@@ -1983,9 +1982,9 @@ public class ParserRule {
 
 				String[] elements = Functions.getElements(currentLine);
 				String[] cElements = new String[elements.length];
-				
+
 				System.arraycopy(elements, 0, cElements, 0, elements.length);
-				
+
 				boolean killNextElement = false;
 
 				int innerCounter = 0;
@@ -1998,6 +1997,30 @@ public class ParserRule {
 					}
 
 					if (currentElement.contains(name)) {
+						// check that the rule name is not just part of another
+						// name
+						String cCurrentElement = currentElement;
+
+						cCurrentElement = cCurrentElement.replace("[", " ");
+						cCurrentElement = cCurrentElement.replace("]", " ");
+						cCurrentElement = cCurrentElement.replace("|", " ");
+
+						if (!cCurrentElement.contains(" ")) {
+							// the element must be equal
+							if (!currentElement.equals(name)) {
+								// if not it's just a rule call that contains
+								// the name
+								innerCounter++;
+								continue;
+							}
+						} else {
+							if (!cCurrentElement.contains(" " + name + " ")) {
+								// the current rule call just contains name
+								innerCounter++;
+								continue;
+							}
+						}
+
 						if (currentElement.startsWith("[")) {
 							if (currentElement.contains("|")) {
 								// if there are multiple alternatives
@@ -2101,6 +2124,199 @@ public class ParserRule {
 	}
 
 	/**
+	 * Checks if the rule needs to be left-factored <br>
+	 * It might be the rule has to be left factored in the context of the
+	 * grammar it is part of
+	 * 
+	 * @return
+	 */
+	public boolean needsLeftFactoring_I() {
+		if (this.isEmpty()) {
+			// Can't left-factor an empty rule
+			return false;
+		}
+
+		ArrayList<String> startRuleNames = new ArrayList<String>();
+
+		for (String currentLine : this.getLines()) {
+			String firstElement = getFirstRuleCall(currentLine, false);
+
+			if (!startRuleNames.contains(firstElement)) {
+				startRuleNames.add(firstElement);
+			} else {
+				// another rule has started with this rule before ->
+				// left-factoring is needed
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks weather or not there are some recursive problems in the context of
+	 * the grammar this rule is contained
+	 * 
+	 * @param ctx
+	 *            The context grammar
+	 * @return
+	 */
+	public boolean needsLeftFactoring_II(Grammar ctx) {
+		ArrayList<ParserRule> startRules = new ArrayList<ParserRule>();
+
+		for (String currentLine : this.getLines()) {
+			// check startRulCalls
+			String firstElement = getFirstRuleCall(currentLine, true, true);
+
+			if (!firstElement.isEmpty()) {
+				// add the respective rule in the list
+				
+				//prepare for evenatual bracket start
+				firstElement = firstElement.replace("(", " ");
+				firstElement = firstElement.replace(")", " ");
+				firstElement = firstElement.replace("|", " ");
+
+				String[] aStartAlts = Functions.getElements(firstElement);
+
+				for (String currentAlt : aStartAlts) {
+
+					if (ctx.containsRule(currentAlt)) {
+						startRules.add(ctx.getRule(currentAlt));
+					} else {
+						System.err.println("Can't find reference to rule '"
+								+ currentAlt
+								+ "' in ParserRule.needsLeftFactoring_II");
+					}
+				}
+			}
+
+			// Check other ruleAlternatives
+			if (currentLine.contains("(")) {
+				// format for getElements
+				currentLine = currentLine.replace("(", "[");
+				currentLine = currentLine.replace(")", "]");
+
+				String[] aElements = Functions.getElements(currentLine);
+
+				for (String currentElement : aElements) {
+					currentElement = currentElement.replace("=>", "");
+					currentElement = cleanString(currentElement);
+
+					if (currentElement.startsWith("[")
+							&& currentElement.contains("|")) {
+						// if there is an alternative between two rules
+
+						// remove brackets
+						currentElement = currentElement.substring(1,
+								currentElement.lastIndexOf("]"));
+
+						currentElement = cleanString(currentElement);
+
+						if (currentElement.contains("[")) {
+							System.err
+									.println("Unhandled situation in ParserRule.needsLeftFactoring_II");
+						}
+
+						ArrayList<ParserRule> alternatives = new ArrayList<ParserRule>();
+
+						while (!currentElement.isEmpty()) {
+							// process each alternative
+							String currentAlternativeName = Grammar
+									.getFirstElement(currentElement);
+
+							if (!isValidRuleName(currentAlternativeName)) {
+								// only check possible rules
+								currentElement = currentElement
+										.substring(currentAlternativeName
+												.length());
+								currentElement = cleanString(currentElement);
+								continue;
+							}
+
+							if (isTerminalRuleName(currentAlternativeName)) {
+								// terminals don't need to be left-factored
+								currentElement = currentElement
+										.substring(currentAlternativeName
+												.length());
+								currentElement = cleanString(currentElement);
+								continue;
+							}
+
+							if (ctx.containsRule(currentAlternativeName)) {
+								ParserRule currentAlt = ctx
+										.getRule(currentAlternativeName);
+
+								// add rule to list
+								alternatives.add(currentAlt);
+							} else {
+								System.err
+										.println("Can't find reference to rule '"
+												+ currentAlternativeName
+												+ "' in ParserRule.needsLeftFactoring_II");
+							}
+
+							currentElement = currentElement
+									.substring(currentAlternativeName.length());
+							currentElement = cleanString(currentElement);
+						}
+
+						if (!alternatives.isEmpty()) {
+							// only proceed if there are some rules found
+
+							ArrayList<String> startRuleNames = new ArrayList<String>();
+
+							// gather all startRuleNames
+							for (ParserRule currentRule : alternatives) {
+								for (String currentStartRuleName : currentRule
+										.getReachableStartRules()) {
+									if (!startRuleNames
+											.contains(currentStartRuleName)) {
+										startRuleNames
+												.add(currentStartRuleName);
+									}
+								}
+							}
+
+							// check if left factoring is needed
+							for (ParserRule currentRule : alternatives) {
+								if (startRuleNames.contains(currentRule
+										.getName())) {
+									// then the parser doesn't know how to
+									// decide
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// process the startRules
+		
+		//gather startRuleNames
+		ArrayList<String> startRuleNames = new ArrayList<String>();
+		
+		for(ParserRule currentRule : startRules) {
+			for(String currentStartRuleName : currentRule.getReachableStartRules()) {
+				if(!startRuleNames.contains(currentStartRuleName)) {
+					startRuleNames.add(currentStartRuleName);
+				}
+			}
+		}
+		
+		//Check for recursive problems
+		for(ParserRule currentRule : startRules) {
+			if(startRuleNames.contains(currentRule.getName())) {
+				return true;
+			}
+		}
+
+		// if nothing has been found the rule doesn't need left factoring
+		return false;
+	}
+
+	/**
 	 * Check whether the given name is the name of a terminal rule
 	 * 
 	 * @param name
@@ -2168,21 +2384,22 @@ public class ParserRule {
 	public static String getFirstRuleCall(String line, boolean ignoreTerminals,
 			boolean stopAtTerminals) {
 		String firstElement = Grammar.getFirstElement(line);
-		
+
 		boolean isValid = false;
 		boolean wasSetAsValid = false;
-		
-		if(firstElement.startsWith("(")) {
-			//multiRuleCalls are valid as well
-			if(!firstElement.contains("|")) {
-				firstElement = firstElement.substring(1, firstElement.lastIndexOf(")"));
-			}else {
+
+		if (firstElement.startsWith("(")) {
+			// multiRuleCalls are valid as well
+			if (!firstElement.contains("|")) {
+				firstElement = firstElement.substring(1,
+						firstElement.lastIndexOf(")"));
+			} else {
 				isValid = true;
 				wasSetAsValid = true;
 			}
 		}
-		
-		if(!isValid) {
+
+		if (!isValid) {
 			isValid = isValidRuleName(firstElement);
 		}
 
@@ -2196,12 +2413,12 @@ public class ParserRule {
 			}
 
 			firstElement = Grammar.getFirstElement(line);
-			
+
 			isValid = isValidRuleName(firstElement);
 		}
-		
-		if(wasSetAsValid) {
-			//brackets are not expected to contain terminal rules
+
+		if (wasSetAsValid) {
+			// brackets are not expected to contain terminal rules
 			return firstElement;
 		}
 
@@ -2233,7 +2450,7 @@ public class ParserRule {
 	 *            The line containing a ruleCall
 	 * @param ignoreTerminals
 	 *            Wether or not the rule may be a terminal
-	 *            
+	 * 
 	 * @return The matched ruleCall or an empty string if no ruleCall could be
 	 *         matched
 	 */
@@ -2250,6 +2467,6 @@ public class ParserRule {
 	 *         matched
 	 */
 	public static String getFirstRuleCall(String line) {
-		return getFirstRuleCall(line, true);
+		return getFirstRuleCall(line, true, false);
 	}
 }

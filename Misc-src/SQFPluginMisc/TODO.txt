@@ -13,3 +13,7 @@ relocate atomic rule in base rule if base rule only contains rule call for the a
 ParserRule.addLineToRuleContent commented part
 
 Recursion is not completely removed
+
+Grammar.dealWithGeneralRecursion() + ruleCode
+
+test ParserRule.needsLeftFactoring_II()

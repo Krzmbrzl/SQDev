@@ -130,35 +130,62 @@ public class syntaxArchiveList {
 
 			grammar.createStartRuleForecasts();
 			grammar.createRuleForecast();
-			
-			
-			//System.out.println(grammar.getRule("NumberAtomic") + "\n\n\n");
 
-			
+			// System.out.println(grammar.getRule("NumberAtomic") + "\n\n\n");
+
 			System.out.println("Finished ruleForecasts\n");
 
 			System.out.println("\nDealing with recursion...");
-			
+
 			if (grammar.isLeftRecursive()) {
 				System.out.println("\tDealing with left-recursion");
 
 				grammar.removeLeftRecursion();
-			}
-			
-			if (grammar.isRecursive()) {
-				//System.out.println("\tDealing with general recursion");
 
-				grammar.dealWithGeneralRecursion();
-				
 				System.out.println("\tRecreating ruleForecasts...");
-				
+
 				grammar.createStartRuleForecasts();
 				grammar.createRuleForecast();
-				
-				System.out.println("\tFinished recreation of ruleForecasts\n");
+
+				System.out
+						.println("\tFinished recreation of ruleForecasts\n\n");
 			}
-			
-			//System.out.println(grammar.getRule("NumberAtomic"));
+
+			// System.out.println("\n" + grammar.needsLeftFactoring_I() + "\n");
+
+			System.out.println("\tLeft-factoring grammar");
+
+			int counter = 0;
+
+			while (grammar.needsLeftFactoring()) {
+				if (counter > 20) {
+					// prevent endless loop
+					System.err
+							.println("Failed at left-factoring the grammar (>20 iterations)!!!");
+					break;
+				}
+
+				if (grammar.needsLeftFactoring_I()) {
+					grammar.leftFactor_I();
+				}
+
+				if (grammar.needsLeftFacoring_II()) {
+					// TODO: implement
+				}
+
+				System.out.println("\tRecreating ruleForecasts...");
+
+				grammar.createStartRuleForecasts();
+				grammar.createRuleForecast();
+
+				System.out.println("\tFinished recreation of ruleForecasts\n");
+
+				counter++;
+			}
+
+			// System.out.println("\n" + grammar.needsLeftFacoring_II() + "\n");
+
+			// System.out.println(grammar.getRule("NumberAtomic"));
 
 			System.out.println("Finished dealing with recursion\n");
 
@@ -181,7 +208,7 @@ public class syntaxArchiveList {
 
 			grammar.sort();
 
-			if (!grammar.isLeftRecursive()) {
+			if (!grammar.isLeftRecursive() && !grammar.needsLeftFactoring()) {
 				System.out.println("\nCreating Assignments...");
 
 				grammar.createAssignments();
@@ -202,8 +229,15 @@ public class syntaxArchiveList {
 
 				System.out.println("Finished writing grammar");
 			} else {
-				System.err
-						.println("\nGrammar is still left-recursive -> Hasn't been written in file!\n");
+				if (grammar.isLeftRecursive()) {
+					System.err
+							.println("\nGrammar is still left-recursive -> Hasn't been written in file!\n");
+				}
+
+				if (grammar.needsLeftFactoring()) {
+					System.err
+							.println("\nGrammar still needs to be left factored -> Hasn't been written in file!\n");
+				}
 			}
 
 		} catch (FileNotFoundException e) {
