@@ -632,7 +632,7 @@ public class ParserRule {
 
 	public void create() {
 		if (this.getRuleContent() == null) {
-			this.setRuleContent("\n");
+			this.setRuleContent("");
 		}
 	}
 
@@ -1445,6 +1445,11 @@ public class ParserRule {
 		if (!checkAtomicRule) {
 			loopEndIndex = 1;
 		}
+		
+		if(this.isAtomicRule()) {
+			// prevent getting the same content twice
+			loopStartIndex = 1;
+		}
 
 		for (int i = loopStartIndex; i < loopEndIndex; i++) {
 			// select which content to process
@@ -1868,11 +1873,15 @@ public class ParserRule {
 		} else {
 			if (this.isAtomicRule()) {
 				// the baseRule always calls for the atomicRule
-				String baseName = this.getName().substring(0,
-						this.getName().lastIndexOf("Atomic"));
-
-				if (this.getReachableRules().contains(baseName)) {
-					return true;
+				int endIndex = this.getName().lastIndexOf("Atomic");
+				
+				if(endIndex >= 0) {
+					//prevent String index out of bound exceptions
+					String baseName = this.getName().substring(0, endIndex);
+	
+					if (this.getReachableRules().contains(baseName)) {
+						return true;
+					}
 				}
 			}
 			return false;
@@ -1931,7 +1940,11 @@ public class ParserRule {
 	/**
 	 * @return An array containing the lines of the ruleContent
 	 */
-	public String[] getLines() {
+	public String[] getLines() {		
+		if(this.isEmpty()) {
+			return new String[0];
+		}
+		
 		String content = this.getRuleContent();
 
 		int quantity = Functions.howOften(content, "\n") + 1;

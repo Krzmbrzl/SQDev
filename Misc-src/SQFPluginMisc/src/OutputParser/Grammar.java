@@ -997,10 +997,14 @@ public class Grammar {
 		for (ParserRule currentRule : this.getRules()) {
 			if (!currentRule.isTerminal()) {
 				// create first layer
-				currentRule.setReachableStartRules(currentRule
-						.getStartRuleCalls());
-				// indicate that forecast was done
-				currentRule.setStartRuleForecastDone(true);
+				if (!currentRule.isEmpty()) {
+					currentRule.setReachableStartRules(currentRule
+							.getStartRuleCalls());
+					// indicate that forecast was done
+					currentRule.setStartRuleForecastDone(true);
+				} else {
+					currentRule.setReachableStartRules(new ArrayList<String>());
+				}
 			}
 		}
 
@@ -1092,9 +1096,11 @@ public class Grammar {
 	 * Sets the reachableRules for every rule
 	 */
 	public void createRuleForecast() {
-		for (ParserRule currentRule : this.getRules()) {
-			if (!currentRule.isTerminal()) {
+		for (ParserRule currentRule : this.getNonTerminalRules()) {
+			if (!currentRule.isEmpty()) {
 				currentRule.setReachableRules(currentRule.getRuleCalls());
+			} else {
+				currentRule.setReachableRules(new ArrayList<String>());
 			}
 		}
 
@@ -1408,7 +1414,7 @@ public class Grammar {
 			}
 		}
 	}
-	
+
 	/**
 	 * Left factores every single rule of the grammar for itself
 	 */
@@ -1437,25 +1443,25 @@ public class Grammar {
 
 				String[] aRuleCalls = Functions.getElements(firstRuleCall);
 
-				for(String firstRuleName : aRuleCalls) {
+				for (String firstRuleName : aRuleCalls) {
 
 					if (!this.containsRule(firstRuleName)
 							&& !this.getHeader().contains(firstRuleName + ":")) {
 						// if rule can't be found skip it and continue with
 						// other
 						// rules
-						System.err.println("Couldn't find reference to rule '"
-								+ firstRuleName
-								+ "' in Grammar.leftFactor_1()");
+						System.err
+								.println("Couldn't find reference to rule '"
+										+ firstRuleName
+										+ "' in Grammar.leftFactor_1()");
 						continue;
 					}
 
 					ParserRule firstRule = this.getRule(firstRuleName);
 
-					if (firstRule.isRecursive()) {
-						// if this rule is recursive reduce alternatives
-						// starting
-						// with this rule to one
+					if (currentRule.howManyStartRuleCallsOf(firstRule) > 1) {
+						// if this rule has more than one alternative starting
+						// with the same ruleCall
 
 						// find all alternatives starting with this ruleCall
 
@@ -1615,8 +1621,8 @@ public class Grammar {
 						ParserRule altsRule = new ParserRule(
 								currentRule.getName() + "_" + firstRuleName
 										+ "Beginner", currentRule.getName());
-						
-						if(altsRule.getName().contains("Code_CodeAtomic")) {
+
+						if (altsRule.getName().contains("Code_CodeAtomic")) {
 							String dummy = "";
 						}
 
@@ -1700,45 +1706,53 @@ public class Grammar {
 			}
 		}
 	}
-	
+
 	public void leftFactor_II() {
-		//TODO implement
+		for (ParserRule currentRule : this.getNonTerminalRules()) {
+			// check each rule if it has to get left factored
+		}
 	}
-	
+
 	/**
-	 * Checks if one of the rules contained in this grammr needs the leftFactor_I algorithm
+	 * Checks if one of the rules contained in this grammr needs the
+	 * leftFactor_I algorithm
+	 * 
 	 * @return
 	 */
 	public boolean needsLeftFactoring_I() {
-		for(ParserRule currentRule : this.getNonTerminalRules()) {
-			if(currentRule.needsLeftFactoring_I()) {
+		for (ParserRule currentRule : this.getNonTerminalRules()) {
+			if (currentRule.needsLeftFactoring_I()) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
-	 * Checks if one of the rules contained in this grammr needs the leftFactor_II algorithm
+	 * Checks if one of the rules contained in this grammr needs the
+	 * leftFactor_II algorithm
+	 * 
 	 * @return
 	 */
 	public boolean needsLeftFacoring_II() {
-		for(ParserRule currentRule : this.getNonTerminalRules()) {
-			if(currentRule.needsLeftFactoring_II(this)) {
+		for (ParserRule currentRule : this.getNonTerminalRules()) {
+			if (currentRule.needsLeftFactoring_II(this)) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
-	 * Checks if one of the rules contained in this grammr needs to be left factored in any way
+	 * Checks if one of the rules contained in this grammr needs to be left
+	 * factored in any way
+	 * 
 	 * @return
 	 */
 	public boolean needsLeftFactoring() {
-		if(this.needsLeftFactoring_I() || this.needsLeftFacoring_II()) {
+		if (this.needsLeftFactoring_I() || this.needsLeftFacoring_II()) {
 			return true;
 		} else {
 			return false;

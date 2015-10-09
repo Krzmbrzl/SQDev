@@ -3044,6 +3044,10 @@ public class Functions {
 		return (startCharacter >= 'a' && startCharacter <= 'z');
 	}
 	
+	/**
+	 * Prints out the string without escaping any characters
+	 * @param string The string to be printed
+	 */
 	public static void printUnescaped(String string) {
 		string = string.replace("\n", "\\n");
 		string = string.replace("\t", "\\t");
