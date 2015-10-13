@@ -121,6 +121,7 @@ public class syntaxArchiveList {
 			 */
 
 			grammar.sort();
+			//grammar.simplify();
 
 			System.out.println("\nAppending anything rule\n");
 
@@ -207,6 +208,8 @@ public class syntaxArchiveList {
 			System.out.println("\nSorting grammar\n");
 
 			grammar.sort();
+			
+			System.out.println(grammar);
 
 			if (!grammar.isLeftRecursive() && !grammar.needsLeftFactoring()) {
 				System.out.println("\nCreating Assignments...");

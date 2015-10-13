@@ -66,6 +66,8 @@ public class GrammarTest {
 		assertTrue(g3.needsLeftFacoring_II());
 
 		g3.leftFactor_II();
+		
+		System.out.println(g3);
 
 		assertFalse(g3.needsLeftFacoring_II());
 	}

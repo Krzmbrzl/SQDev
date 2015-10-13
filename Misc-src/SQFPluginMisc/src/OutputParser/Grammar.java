@@ -1707,10 +1707,373 @@ public class Grammar {
 		}
 	}
 
+	/**
+	 * Left factores the rule according to ambiguities caused by the grammar
+	 * context
+	 */
 	public void leftFactor_II() {
 		for (ParserRule currentRule : this.getNonTerminalRules()) {
 			// check each rule if it has to get left factored
+			if (currentRule.needsLeftFactoring_II(this)) {
+				// process startRules
+				ArrayList<String> startRuleNames = currentRule
+						.getStartRuleCalls();
+				ArrayList<ParserRule> startRules = new ArrayList<ParserRule>();
+				
+				//gather startRule alts
+				for (String currentName : startRuleNames) {
+					if (this.containsRule(currentName)) {
+						startRules.add(this.getRule(currentName));
+					} else {
+						if (!this.getHeader().contains(currentName + ":")) {
+							System.err
+									.println("Couldn't find reference to rule '"
+											+ currentName
+											+ "' in Grammar.leftFactor_II");
+						}
+					}
+				}
+
+				int index1 = 0;
+				for (ParserRule currentStartRule : startRules) {
+					// check startRule against the other rules
+					for (int i = 0; i < startRules.size(); i++) {
+						if (i == index1) {
+							// don't compare with self
+							continue;
+						}
+
+						ParserRule compareRule = startRules.get(i);
+
+						ArrayList<String> startRules1 = currentStartRule
+								.getReachableStartRules();
+						startRules1.add(currentStartRule.getName());
+						
+						ArrayList<String> startRules2 = compareRule
+								.getReachableStartRules();
+						startRules2.add(compareRule.getName());
+
+						for (String currentStartRuleName : startRules1) {
+							if (startRules2.contains(currentStartRuleName)) {
+								// left factor
+								this.leftFactor_II(currentStartRule,
+										compareRule);
+								// TODO: implement left factored rules
+							}
+						}
+					}
+
+					index1++;
+				}
+
+				// process alts in brackets
+				String[] lines = currentRule.getLines();
+
+				for (String currentLine : lines) {
+					if (currentLine.contains("(")) {
+						// format for getElements
+						currentLine = currentLine.replace("(", "[");
+						currentLine = currentLine.replace(")", "]");
+
+						String[] aElements = Functions.getElements(currentLine);
+
+						for (String currentElement : aElements) {
+							if (currentElement.startsWith("(")
+									&& currentElement.contains("|")) {
+								// if it's a parser choice
+
+								currentElement = currentElement.replace("[",
+										" ");
+								currentElement = currentElement.replace("]",
+										" ");
+								currentElement = currentElement.replace("|",
+										" ");
+
+								String[] aChoices = Functions
+										.getElements(currentElement);
+
+								ArrayList<ParserRule> alternatives = new ArrayList<ParserRule>();
+
+								// gather alternatives
+								for (String currentCoice : aChoices) {
+									if (this.containsRule(currentCoice)) {
+										alternatives.add(this
+												.getRule(currentCoice));
+									} else {
+										if (!this.getHeader().contains(
+												currentCoice + ":")) {
+											System.err
+													.println("Couldn't find reference to rule '"
+															+ currentCoice
+															+ "' in Grammar.lefrFactor_II(ParserRule rule1, ...))");
+										}
+									}
+								}
+
+								int index2 = 0;
+								for (ParserRule currentAlternative : alternatives) {
+									for (int k = 0; k < alternatives.size(); k++) {
+										if (k == index2) {
+											// don't compare to self
+											continue;
+										}
+
+										// get compare rule
+										ParserRule compare = alternatives
+												.get(k);
+
+										for (String currentStart : currentAlternative
+												.getReachableStartRules()) {
+											if (compare
+													.getReachableStartRules()
+													.contains(currentStart)) {
+												// left factor
+												this.leftFactor_II(
+														currentAlternative,
+														compare);
+												// TODO: implement left factored
+												// rules
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
+	}
+
+	/**
+	 * Left factores the given rules and returns the names of the resulting
+	 * rules
+	 * 
+	 * @param rule1
+	 * @param rule2
+	 */
+	private String[] leftFactor_II(ParserRule rule1, ParserRule rule2) {
+		String[] names = new String[2];
+		names[0] = rule1.getName();
+		names[1] = rule2.getName();
+		
+		// check if the left factoring has to be applied at this level.
+		boolean properLevel = false;
+		String commonStartRule = "";
+
+		for (String currentStartRule : rule1.getStartRuleCalls()) {
+			if (rule2.canReachStartRule(currentStartRule)) {
+				// if they have a startRule in common stop searching and start
+				// processing
+				commonStartRule = currentStartRule;
+				properLevel = true;
+				break;
+			}
+		}
+
+		if (!properLevel) {
+			// if there was no rule in common
+
+			// check which startRule they have in common
+			for (String currentStartRule : rule1.getReachableStartRules()) {
+				if (rule2.canReachStartRule(currentStartRule)) {
+					commonStartRule = currentStartRule;
+				}
+			}
+
+			if (rule1.canStartWith(commonStartRule)) {
+				// need to go deeper into rule2
+				// check every rule that can start with the commonStartRule
+				for (String currentStartRule : rule2.getStartRuleCalls()) {
+					if (this.containsRule(currentStartRule)) {
+						ParserRule newRule2 = this.getRule(currentStartRule);
+
+						if (newRule2.canReachStartRule(commonStartRule)) {
+							// call this function recursively with the updated
+							// rule2
+							this.leftFactor_II(rule1, newRule2);
+							// TODO: rename respective startRules
+						}
+					}
+				}
+			} else {
+				if (rule2.canStartWith(commonStartRule)) {
+					// need to go deeper into rule1
+					// check every rule that can start with the commonStartRule
+					for (String currentStartRule : rule1.getStartRuleCalls()) {
+						if (this.containsRule(currentStartRule)) {
+							ParserRule newRule1 = this
+									.getRule(currentStartRule);
+
+							if (newRule1.canReachStartRule(commonStartRule)) {
+								// call this function recursively with the
+								// updated rule1
+								this.leftFactor_II(newRule1, rule2);
+								// TODO:rename respective startRules
+							}
+						}
+					}
+				} else {
+					// need to go deeper into both rules
+					// check every rule that can start with the commonStartRule
+					ParserRule newRule1;
+					ParserRule newRule2;
+
+					for (String currentStartRule1 : rule1.getStartRuleCalls()) {
+						if (this.containsRule(currentStartRule1)) {
+							newRule1 = this.getRule(currentStartRule1);
+
+							if (newRule1.canReachStartRule(commonStartRule)) {
+								// newRule1 assigned
+
+								// get newRule2
+								for (String currentStartRule2 : rule2
+										.getStartRuleCalls()) {
+									if (this.containsRule(currentStartRule2)) {
+										newRule2 = this
+												.getRule(currentStartRule2);
+
+										if (newRule2
+												.canReachStartRule(commonStartRule)) {
+											// call this function recursively
+											// with updated rules
+											this.leftFactor_II(newRule1,
+													newRule2);
+											// TODO: rename respective
+											// startRuleCalls
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		} else {
+			// the rules are in the proper level -> start left factoring
+			ParserRule[] rules = { rule1, rule2 };
+
+			ArrayList<String> rule1Syntaxes = new ArrayList<String>();
+			ArrayList<String> rule2Syntaxes = new ArrayList<String>();
+
+			for (int i = 0; i < 2; i++) {
+				// process each rule
+				for (String currentLine : rules[i].getLines()) {
+					if (currentLine.startsWith(commonStartRule)) {
+						// get syntax of this alternative
+						if (i == 0) {
+							rule1Syntaxes.add(currentLine);
+						} else {
+							rule2Syntaxes.add(currentLine);
+						}
+					}
+				}
+
+				// generate new HelperRules
+
+				// new start Rule
+				String startRuleName = rule1.getName() + "-" + rule2.getName()
+						+ "_" + commonStartRule + "Factored";
+				ParserRule starter = new ParserRule(startRuleName);
+				starter.setAsAtomicRule(true);
+
+				ParserRule starterHelper = new ParserRule(startRuleName
+						+ "Helper", startRuleName);
+				starterHelper.setAsAtomicRule(true);
+
+				// add respective syntaxes in respective rules
+				starter.addSyntax(commonStartRule + " "
+						+ starterHelper.getName());
+
+				// add syntaxes from rule1
+				for (String currentLine : rule1Syntaxes) {
+					// remove the commonStartRule from the start of the
+					// alternative
+					currentLine = currentLine.substring(commonStartRule
+							.length());
+					currentLine = ParserRule.cleanString(currentLine);
+
+					if (!starterHelper.containsLine(currentLine)) {
+						starterHelper.addSyntax(currentLine);
+					}
+				}
+
+				// add syntaxes from rule2
+				for (String currentLine : rule2Syntaxes) {
+					// remove the commonStartRule from the start of the
+					// alternative
+					currentLine = currentLine.substring(commonStartRule
+							.length());
+					currentLine = ParserRule.cleanString(currentLine);
+
+					if (!starterHelper.containsLine(currentLine)) {
+						starterHelper.addSyntax(currentLine);
+					}
+				}
+
+				// rule1 Helper
+				ParserRule rule1Helper = new ParserRule(rule1.getName() + "_"
+						+ commonStartRule + "-Factored");
+				rule1Helper.setAsAtomicRule(true);
+
+				rule1Helper.addSyntax(starter.getName());
+
+				for (String currentLine : rule1.getLines()) {
+					String[] aElements = Functions.getElements(currentLine);
+
+					if (aElements[0].contains(commonStartRule)) {
+						// if this alt starts with the commonStartRule
+						aElements[0] = aElements[0].replace(commonStartRule,
+								starter.getName());
+
+						currentLine = Functions.ArrayToString(aElements);
+						currentLine = currentLine.replace(") ", ")");
+
+						starterHelper.addSyntax(currentLine);
+					} else {
+						// add to the helper rule
+						rule1Helper.addSyntax(currentLine);
+					}
+				}
+
+				// rule2 Helper
+				ParserRule rule2Helper = new ParserRule(rule2.getName() + "_"
+						+ commonStartRule + "-Factored");
+				rule2Helper.setAsAtomicRule(true);
+
+				rule2Helper.addSyntax(starter.getName());
+
+				for (String currentLine : rule2.getLines()) {
+					String[] aElements = Functions.getElements(currentLine);
+
+					if (aElements[0].contains(commonStartRule)) {
+						// if this alt starts with the commonStartRule
+						aElements[0] = aElements[0].replace(commonStartRule,
+								starter.getName());
+
+						currentLine = Functions.ArrayToString(aElements);
+						currentLine = currentLine.replace(") ", ")");
+
+						starterHelper.addSyntax(currentLine);
+					} else {
+						// add line to the helper rule
+						rule2Helper.addSyntax(currentLine);
+					}
+				}
+				
+				//add new rules to grammar
+				this.addRule(starter);
+				this.addRule(starterHelper);
+				this.addRule(rule1Helper);
+				this.addRule(rule2Helper);
+				
+				//update returned names
+				names[0] = rule1Helper.getName();
+				names[1] = rule2Helper.getName();
+			}
+		}
+
+		return names;
 	}
 
 	/**
@@ -1756,6 +2119,15 @@ public class Grammar {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	/**
+	 * Simplifies every rule in this grammar (if it can be simplified)
+	 */
+	public void simplify() {
+		for (ParserRule currentRule : this.getNonTerminalRules()) {
+			currentRule.simplify();
 		}
 	}
 }

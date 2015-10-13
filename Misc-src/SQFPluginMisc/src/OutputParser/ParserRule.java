@@ -598,7 +598,11 @@ public class ParserRule {
 	 * terminalRules + "\n\n\n"; return content; }
 	 */
 
-	public String toString() {
+	public String toString(boolean format) {
+		if (format) {
+			this.format();
+		}
+
 		String ruleContent;
 
 		String formatter = "";
@@ -620,6 +624,10 @@ public class ParserRule {
 		ruleContent += "\n" + formatter + ";";
 
 		return ruleContent;
+	}
+
+	public String toString() {
+		return this.toString(true);
 	}
 
 	/**
@@ -762,7 +770,7 @@ public class ParserRule {
 			if (startElements.length != 0) {
 				// only proceed if there is an atomic part left
 				if (startElements.length > 1 || elements[1].equals("*")
-						|| elements[1].equals("?")) {
+						|| elements[1].equals("?") || elements[1].equals("+")) {
 					// if there are still multiple startRuleCalls or the rule
 					// call is optional
 					String starter = "";
@@ -779,6 +787,7 @@ public class ParserRule {
 					newFragment = newFragment.replace("]", ")");
 					newFragment = newFragment.replace(") *", ")*");
 					newFragment = newFragment.replace(") ?", ")?");
+					newFragment = newFragment.replace(") +", ")+");
 				} else {
 					// if there is just a single ruleCall left
 
@@ -1445,8 +1454,8 @@ public class ParserRule {
 		if (!checkAtomicRule) {
 			loopEndIndex = 1;
 		}
-		
-		if(this.isAtomicRule()) {
+
+		if (this.isAtomicRule()) {
 			// prevent getting the same content twice
 			loopStartIndex = 1;
 		}
@@ -1633,7 +1642,7 @@ public class ParserRule {
 	 *            The name of the potential startRule
 	 * @return
 	 */
-	public boolean canStartWith(String name) {
+	public boolean canReachStartRule(String name) {
 		if (this.getReachableStartRules().contains(name)) {
 			return true;
 		} else {
@@ -1648,8 +1657,36 @@ public class ParserRule {
 	 *            The potential startRule
 	 * @return
 	 */
-	public boolean canStartWith(ParserRule rule) {
+	public boolean canReachStartRule(ParserRule rule) {
 		return this.canReach(rule.getName());
+	}
+
+	/**
+	 * Checks if this rule can directly start with a rule call with the given
+	 * name
+	 * 
+	 * @param name
+	 *            The name of the potential startRuleCall
+	 * @return
+	 */
+	public boolean canStartWith(String name) {
+		if (this.getStartRuleCalls().contains(name)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Checks if this rule can directly start with a rule call with the given
+	 * name
+	 * 
+	 * @param rule
+	 *            The potential startRule
+	 * @return
+	 */
+	public boolean canStartWith(ParserRule rule) {
+		return this.canStartWith(rule.getName());
 	}
 
 	/**
@@ -1874,11 +1911,11 @@ public class ParserRule {
 			if (this.isAtomicRule()) {
 				// the baseRule always calls for the atomicRule
 				int endIndex = this.getName().lastIndexOf("Atomic");
-				
-				if(endIndex >= 0) {
-					//prevent String index out of bound exceptions
+
+				if (endIndex >= 0) {
+					// prevent String index out of bound exceptions
 					String baseName = this.getName().substring(0, endIndex);
-	
+
 					if (this.getReachableRules().contains(baseName)) {
 						return true;
 					}
@@ -1940,11 +1977,11 @@ public class ParserRule {
 	/**
 	 * @return An array containing the lines of the ruleContent
 	 */
-	public String[] getLines() {		
-		if(this.isEmpty()) {
+	public String[] getLines() {
+		if (this.isEmpty()) {
 			return new String[0];
 		}
-		
+
 		String content = this.getRuleContent();
 
 		int quantity = Functions.howOften(content, "\n") + 1;
@@ -2183,8 +2220,8 @@ public class ParserRule {
 
 			if (!firstElement.isEmpty()) {
 				// add the respective rule in the list
-				
-				//prepare for evenatual bracket start
+
+				// prepare for evenatual bracket start
 				firstElement = firstElement.replace("(", " ");
 				firstElement = firstElement.replace(")", " ");
 				firstElement = firstElement.replace("|", " ");
@@ -2306,27 +2343,137 @@ public class ParserRule {
 		}
 
 		// process the startRules
-		
-		//gather startRuleNames
+
+		// gather startRuleNames
 		ArrayList<String> startRuleNames = new ArrayList<String>();
-		
-		for(ParserRule currentRule : startRules) {
-			for(String currentStartRuleName : currentRule.getReachableStartRules()) {
-				if(!startRuleNames.contains(currentStartRuleName)) {
+
+		for (ParserRule currentRule : startRules) {
+			for (String currentStartRuleName : currentRule
+					.getReachableStartRules()) {
+				if (!startRuleNames.contains(currentStartRuleName)) {
 					startRuleNames.add(currentStartRuleName);
 				}
 			}
 		}
-		
-		//Check for recursive problems
-		for(ParserRule currentRule : startRules) {
-			if(startRuleNames.contains(currentRule.getName())) {
+
+		// Check for recursive problems
+		for (ParserRule currentRule : startRules) {
+			if (startRuleNames.contains(currentRule.getName())) {
 				return true;
 			}
 		}
 
 		// if nothing has been found the rule doesn't need left factoring
 		return false;
+	}
+
+	/**
+	 * Simplifies rule so that alternatives with opional startRules get split up
+	 * into two seperate alternatives (if possible)
+	 */
+	public void simplify() {
+		ArrayList<String> lines = new ArrayList<String>();
+
+		for (String currentLine : this.getLines()) {
+			boolean addOriginalLine = true;
+
+			if (currentLine.startsWith("(")) {
+				// format for getElements
+				currentLine = currentLine.replace("(", "[");
+				currentLine = currentLine.replace(")", "]");
+
+				String[] aElements = Functions.getElements(currentLine);
+
+				if (aElements.length >= 2) {
+					// only proceed if alternative has enough elements to be
+					// simplified
+					String[] operator = { "?", "+", "*" };
+
+					if (!Functions.isIn(operator, aElements[1], true) || aElements.length >= 3) {
+						addOriginalLine = false;
+						//if the second element is an operator the alternative ca't be simplified
+						
+						switch (aElements[1]) {
+						case "+":
+							// This operator can't be simplified
+							break;
+
+						case "?":
+							// Split into two different alternatives
+							lines.add(Functions.ArrayToString(Functions
+									.getArrayContentFrom(aElements, 2)));
+
+							String assembledLine1 = aElements[0].substring(1,
+									aElements[0].length() - 1);
+							assembledLine1 += " "
+									+ Functions.ArrayToString(Functions
+											.getArrayContentFrom(aElements, 2));
+
+							lines.add(assembledLine1);
+							break;
+
+						case "*":
+							// Split alternatives
+							lines.add(Functions.ArrayToString(Functions
+									.getArrayContentFrom(aElements, 2)));
+
+							String assembledLine2 = aElements[0] + "+";
+							assembledLine2 += " "
+									+ Functions.ArrayToString(Functions
+											.getArrayContentFrom(aElements, 2));
+
+							lines.add(assembledLine2);
+
+							break;
+
+						default:
+							if (aElements[1].length() == 1) {
+								System.err.println("Unhandled character '"
+										+ aElements[1]
+										+ "' in ParserRule.simplify");
+							}
+
+							// give every alternative a respective line
+							String alts = aElements[0];
+							alts = alts.replace("[", " ");
+							alts = alts.replace("]", " ");
+							alts = alts.replace("|", " ");
+
+							String[] alternatives = Functions.getElements(alts);
+
+							for (String currentAlt : alternatives) {
+								String assembledLine3 = currentAlt + " ";
+								assembledLine3 += Functions
+										.ArrayToString(Functions
+												.getArrayContentFrom(
+														aElements, 1));
+
+								lines.add(assembledLine3);
+							}
+						}
+					}
+				} else {
+					System.out.println("Can't simplify line '" + currentLine
+							+ "' in rule '" + this.getName()
+							+ "' -> Not enough content in this line");
+				}
+			}
+
+			if (addOriginalLine) {
+				lines.add(currentLine);
+			}
+		}
+
+		// update rule content
+		this.setRuleContent("");
+
+		for (String currentLine : lines) {
+			// reformat line
+			currentLine = currentLine.replace("[", "(");
+			currentLine = currentLine.replace("]", ")");
+
+			this.addLineToRuleContent(currentLine);
+		}
 	}
 
 	/**
