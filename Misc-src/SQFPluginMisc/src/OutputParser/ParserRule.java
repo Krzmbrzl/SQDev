@@ -5,11 +5,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import SQF.Functions;
 
-public class ParserRule implements Cloneable{
+public class ParserRule implements Cloneable {
 	private String					ruleName;
 	private String					ruleContent;
 	private String					terminalRules;
@@ -1387,9 +1388,9 @@ public class ParserRule implements Cloneable{
 			loopEndIndex = 1;
 		}
 		
-		if (this.isAtomicRule()) {
+		if (this.isAtomicRule() && checkAtomicRule && !checkBaseRule) {
 			// prevent getting the same content twice
-			loopStartIndex = 1;
+			loopEndIndex = 1;
 		}
 		
 		for (int i = loopStartIndex; i < loopEndIndex; i++) {
@@ -1590,7 +1591,7 @@ public class ParserRule implements Cloneable{
 	 * @return
 	 */
 	public boolean canStartWith(String name) {
-		if (this.getStartRuleCalls().contains(name)) {
+		if (this.getStartRuleCalls(true, false).contains(name)) {
 			return true;
 		} else {
 			return false;
@@ -2280,15 +2281,12 @@ public class ParserRule implements Cloneable{
 					// simplified
 					String[] operator = { "?", "+", "*" };
 					
-					if (!Functions.isIn(operator, aElements[1], true) || aElements.length >= 3) {
+					if (!Functions.isIn(operator, aElements[1], true)
+							|| ((aElements.length >= 3) && !aElements[1].equals("+"))) {
 						addOriginalLine = false;
 						// if the second element is an operator the alternative ca't be simplified
 						
 						switch (aElements[1]) {
-							case "+":
-								// This operator can't be simplified
-								break;
-							
 							case "?":
 								// Split into two different alternatives
 								lines.add(Functions.ArrayToString(Functions.getArrayContentFrom(aElements, 2)));
@@ -2336,10 +2334,59 @@ public class ParserRule implements Cloneable{
 									lines.add(assembledLine3);
 								}
 						}
+					} else {
+						if (aElements[0].contains("|")) {
+							addOriginalLine = false;
+							
+							String starter = aElements[0].substring(1, aElements[0].length() - 1);
+							starter += "|";
+							
+							while (!starter.isEmpty()) {
+								String currentStart = starter.substring(0, starter.indexOf("|"));
+								
+								starter = starter.substring(currentStart.length() + 1);
+								
+								currentStart = cleanString(currentStart);
+								
+								String assembledLine0;
+								
+								if (aElements[1].equals("+")) {
+									// only unprocessed operator left
+									assembledLine0 = "(" + currentStart + ")";
+								} else {
+									assembledLine0 = currentStart;
+								}
+								
+								assembledLine0 += Functions.ArrayToString(Functions.getArrayContentFrom(
+										aElements, 1));
+								
+								lines.add(assembledLine0);
+								
+								starter = cleanString(starter);
+							}
+						}
 					}
 				} else {
-					System.out.println("Can't simplify line '" + currentLine + "' in rule '" + this.getName()
-							+ "' -> Not enough content in this line");
+					if (currentLine.contains("|")) {
+						currentLine = currentLine.substring(1, currentLine.length() - 1);
+						
+						currentLine += "|";
+						
+						while (!currentLine.isEmpty()) {
+							String currentAlt = currentLine.substring(0, currentLine.indexOf("|"));
+							
+							currentLine = currentLine.substring(currentAlt.length() + 1);
+							
+							currentAlt = cleanString(currentAlt);
+							
+							lines.add(currentAlt);
+							
+							currentLine = cleanString(currentLine);
+						}
+					} else {
+						System.out.println("Can't simplify line '" + currentLine + "' in rule '"
+								+ this.getName() + "' -> Not enough content in this line");
+					}
 				}
 			}
 			
@@ -2357,6 +2404,16 @@ public class ParserRule implements Cloneable{
 			currentLine = currentLine.replace("]", ")");
 			
 			this.addLineToRuleContent(currentLine);
+		}
+		
+		// check if the rule can be simplified furhter
+		for (String currentLine : this.getLines()) {
+			String[] aElements = Functions.getElements(currentLine);
+			
+			if (aElements[0].startsWith("(") && aElements[0].contains("|")) {
+				this.simplify();
+				break;
+			}
 		}
 	}
 	
@@ -2386,17 +2443,19 @@ public class ParserRule implements Cloneable{
 	
 	/**
 	 * Removes all alternatives with the given startRule from this rule
-	 * @param name The name of the startRule
+	 * 
+	 * @param name
+	 *            The name of the startRule
 	 */
 	public void removeStartRuleCall(String name) {
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		
-		for(int i=0; i<this.getLines().length; i++) {
+		for (int i = 0; i < this.getLines().length; i++) {
 			String currentLine = this.getLines()[i];
 			
 			String firstElement = getFirstRuleCall(currentLine);
 			
-			if(firstElement.equals(name)) {
+			if (firstElement.equals(name)) {
 				indexes.add(i);
 			}
 		}
@@ -2487,6 +2546,55 @@ public class ParserRule implements Cloneable{
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	/**
+	 * Check if the given rule is equal to this rule
+	 * 
+	 * @param compareRule
+	 *            The rule to compare to
+	 * @return
+	 */
+	public boolean equals(ParserRule compareRule) {
+		Field[] fields = ParserRule.class.getDeclaredFields();
+		
+		for (Field currentField : fields) {
+			try {
+				if (currentField.get(this) == null || currentField.get(compareRule) == null) {
+					// handle uninitialized variables
+					if (currentField.get(this) == null && currentField.get(compareRule) != null) {
+						return false;
+					}
+					
+					if (currentField.get(compareRule) == null && currentField.get(this) != null) {
+						return false;
+					}
+				} else {
+					if (!currentField.get(this).equals(currentField.get(compareRule))) {
+						return false;
+					}
+				}
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Merges the rule into this one -> this rule contains all alts from both rules afterwards
+	 * 
+	 * @param rule
+	 */
+	public void mergeWith(ParserRule rule) {
+		for (String currentLine : rule.getLines()) {
+			if (!this.containsLine(currentLine)) {
+				this.addLineToRuleContent(currentLine);
+			}
 		}
 	}
 	
@@ -2634,5 +2742,28 @@ public class ParserRule implements Cloneable{
 	 */
 	public static String getFirstRuleCall(String line) {
 		return getFirstRuleCall(line, true, false);
+	}
+	
+	/**
+	 * Get the startRules these two rules have in common
+	 * 
+	 * @param rule1
+	 * @param rule2
+	 * @return A list of the common startRules
+	 */
+	public static ArrayList<String> getCommonStartRules(ParserRule rule1, ParserRule rule2) {
+		ArrayList<String> startRules1 = rule1.getReachableStartRules();
+		ArrayList<String> startRules2 = rule2.getReachableStartRules();
+		
+		ArrayList<String> commonStartRules = new ArrayList<String>();
+		
+		// filter out the common startRules
+		for (String currentStartRule : startRules1) {
+			if (startRules2.contains(currentStartRule)) {
+				commonStartRules.add(currentStartRule);
+			}
+		}
+		
+		return commonStartRules;
 	}
 }

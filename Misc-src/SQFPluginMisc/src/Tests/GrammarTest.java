@@ -2,6 +2,8 @@ package Tests;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import OutputParser.Grammar;
@@ -70,9 +72,74 @@ public class GrammarTest {
 		
 		g3.leftFactor_II();
 		
-		System.out.println(g3);
+		g3.leftFactor_II();
+		
+		g3.leftFactor_II();
+		
+		/*
+		 * g3.sort();
+		 * 
+		 * System.out.println(g3);
+		 */
 		
 		assertFalse(g3.needsLeftFacoring_II());
+		
+		// TODO: implement test for bracket-leftFactoring
+	}
+	
+	@Test
+	public void equalsTest() {
+		/*
+		 * Grammar g1 = createStandardGrammar(); Grammar g2 = createStandardGrammar();
+		 * 
+		 * assertTrue(g1.equals(g2));
+		 */
+	}
+	
+	@Test
+	public void getCommonStartRulesSortedTest() {
+		Grammar g = new Grammar();
+		
+		ParserRule r1 = new ParserRule("Rule1");
+		r1.setAsAtomicRule(true);
+		ParserRule r2 = new ParserRule("Rule2");
+		r2.setAsAtomicRule(true);
+		ParserRule dummy1 = new ParserRule("Dummy1");
+		ParserRule dummy2 = new ParserRule("Dummy2");
+		
+		dummy1.addSyntax(dummy2.getName());
+		
+		ParserRule s1 = new ParserRule("Sub1", r1.getName());
+		ParserRule s2 = new ParserRule("Sub2", s1.getName());
+		
+		r1.addSyntax(s1.getName());
+		r1.addSyntax("Dummy1 alt");
+		r1.addSyntax("Dummy1 etc");
+		
+		r2.addSyntax("Dummy1");
+		r2.addSyntax(s1.getName());
+		
+		s1.addSyntax(s2.getName());
+		
+		s2.addSyntax("Dummy1");
+		
+		g.addRule(r1);
+		g.addRule(r2);
+		g.addRule(s1);
+		g.addRule(s2);
+		g.addRule(dummy1);
+		g.addRule(dummy2);
+		
+		g.createStartRuleForecasts();
+		
+		ArrayList<String> solution = new ArrayList<String>();
+		
+		solution.add("Sub1");
+		solution.add("Sub2");
+		solution.add("Dummy1");
+		solution.add("Dummy2");
+		
+		assertEquals(solution, g.getCommonStartRulesSorted(r1, r2));
 	}
 	
 	// //////////////////////////////////////MISC/////////////////////////////////////////////////
@@ -256,6 +323,19 @@ public class GrammarTest {
 				rule8.addSyntax("Dummy test_Rule1");
 				rule8.addSyntax("Miau2");
 				
+				ParserRule rule9 = new ParserRule("Rec4_1");
+				rule9.setAsAtomicRule(true);
+				
+				ParserRule rule10 = new ParserRule("Rec4_2");
+				rule10.setAsAtomicRule(true);
+				
+				rule9.addSyntax("TestStart");
+				rule9.addSyntax("Syntax Dummy");
+				
+				rule10.addSyntax(rule9.getName() + " Miau");
+				rule10.addSyntax("Miau2 Miau");
+				rule10.addSyntax("Syntax");
+				
 				// create dummyRule to match syntax "Dummy"
 				ParserRule dummy = new ParserRule("Dummy");
 				dummy.setAsAtomicRule(true);
@@ -274,6 +354,8 @@ public class GrammarTest {
 				g.addRule(rule6);
 				g.addRule(rule7);
 				g.addRule(rule8);
+				g.addRule(rule9);
+				g.addRule(rule10);
 				g.addRule(dummyRule);
 				g.addRule(dummy);
 				g.addRule(miau1);

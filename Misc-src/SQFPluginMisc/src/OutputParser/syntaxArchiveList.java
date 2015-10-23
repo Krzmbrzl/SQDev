@@ -115,7 +115,7 @@ public class syntaxArchiveList {
 			 */
 			
 			grammar.sort();
-			// grammar.simplify();
+			grammar.simplify();
 			
 			System.out.println("\nAppending anything rule\n");
 			
@@ -149,22 +149,23 @@ public class syntaxArchiveList {
 			
 			System.out.println("\tLeft-factoring grammar");
 			
+			int ruleCount = grammar.getRuleCount();
 			int counter = 0;
 			
 			while (grammar.needsLeftFactoring()) {
-				if (counter > 20) {
-					// prevent endless loop
-					System.err.println("Failed at left-factoring the grammar (>20 iterations)!!!");
-					break;
-				}
+				System.out.println(ruleCount);
 				
 				if (grammar.needsLeftFactoring_I()) {
 					grammar.leftFactor_I();
 				}
 				
+				grammar.sort();
+				
 				if (grammar.needsLeftFacoring_II()) {
-					// TODO: implement
+					grammar.leftFactor_II();
 				}
+				
+				grammar.sort();
 				
 				System.out.println("\tRecreating ruleForecasts...");
 				
@@ -173,7 +174,23 @@ public class syntaxArchiveList {
 				
 				System.out.println("\tFinished recreation of ruleForecasts\n");
 				
+				if (counter > 50) {
+					System.err.println("Failed at left factoring grammar!");
+					break;
+				}
+				
 				counter++;
+				
+				if (grammar.getRuleCount() == ruleCount) {
+					if (counter > 50) {
+						System.err.println("Failed at left factoring grammar!");
+						break;
+					} else {
+						counter++;
+					}
+				} else {
+					ruleCount = grammar.getRuleCount();
+				}
 			}
 			
 			// System.out.println("\n" + grammar.needsLeftFacoring_II() + "\n");

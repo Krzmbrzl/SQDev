@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import OutputParser.Grammar;
 import OutputParser.ParserRule;
 
 public class ParserRuleTest {
@@ -130,6 +131,51 @@ public class ParserRuleTest {
 		rule7.simplify();
 		
 		assertEquals(rule8.toString(), rule7.toString());
+		
+		ParserRule rule9 = createBasicParserRule("Tester", 3, false);
+		ParserRule rule10 = rule9.copy();
+		
+		rule9.addSyntax("(Drei | Vier)");
+		rule10.addSyntax("Drei");
+		rule10.addSyntax("Vier");
+		
+		rule9.simplify();
+		
+		assertEquals(rule10.toString(), rule9.toString());
+		
+		ParserRule rule11 = createBasicParserRule("Tester", 3, false);
+		ParserRule rule12 = rule11.copy();
+		
+		rule11.addSyntax("(Drei | Vier)+");
+		rule12.addSyntax("(Drei)+");
+		rule12.addSyntax("(Vier)+");
+		
+		rule11.simplify();
+		
+		assertEquals(rule12.toString(), rule11.toString());
+		
+		ParserRule rule13 = createBasicParserRule("Tester", 3, false);
+		ParserRule rule14 = rule13.copy();
+		
+		rule13.addSyntax("(Drei | Vier)+ Test");
+		rule14.addSyntax("(Drei)+ Test");
+		rule14.addSyntax("(Vier)+ Test");
+		
+		rule13.simplify();
+		
+		assertEquals(rule14.toString(), rule13.toString());
+		
+		ParserRule rule15 = createBasicParserRule("Tester", 3, false);
+		ParserRule rule16 = rule15.copy();
+		
+		rule15.addSyntax("(Drei | Vier)* Test");
+		rule16.addSyntax("Test");
+		rule16.addSyntax("(Drei)+ Test");
+		rule16.addSyntax("(Vier)+ Test");
+		
+		rule15.simplify();
+		
+		assertEquals(rule16.toString(), rule15.toString());
 	}
 	
 	@Test
@@ -267,6 +313,104 @@ public class ParserRuleTest {
 		rule2.removeStartRuleCall("Drei");
 		
 		assertEquals(solution.toString(), rule2.toString());
+	}
+	
+	@Test
+	public void equalsTest() {
+		ParserRule rule1 = createBasicParserRule();
+		ParserRule rule2 = createBasicParserRule();
+		
+		assertTrue(rule1.equals(rule2));
+		
+		rule2.setName("Miauuuuuuu");
+		
+		assertFalse(rule1.equals(rule2));
+		
+		rule1.setName("Miauuuuuuu");
+		
+		assertTrue(rule1.equals(rule2));
+	}
+	
+	@Test
+	public void mergeWithTest() {
+		ParserRule rule1 = createBasicParserRule();
+		ParserRule rule2 = createBasicParserRule();
+		ParserRule compare1 = rule1.copy();
+		
+		rule1.mergeWith(rule2);
+		
+		assertTrue(rule1.equals(compare1));
+		
+		rule2.addSyntax("DaTest");
+		
+		rule1.mergeWith(rule2);
+		
+		compare1.addLineToRuleContent("DaTest");
+		
+		assertTrue(rule1.equals(compare1));
+	}
+	
+	@Test
+	public void getCommonStartRulesTest() {
+		Grammar g = new Grammar();
+		
+		ParserRule rule1 = new ParserRule("Dummy");
+		rule1.setAsAtomicRule(true);
+		
+		ParserRule d1 = new ParserRule("Mama");
+		ParserRule d2 = new ParserRule("Papa");
+		ParserRule d3 = new ParserRule("Grandma");
+		
+		d3.setAsAtomicRule(true);
+		d3.addSyntax("Dummy");
+		
+		g.addRule(d1);
+		g.addRule(d2);
+		g.addRule(d3);
+		
+		ParserRule rule2 = rule1.copy();
+		
+		rule1.addSyntax("Mama is cool");
+		rule1.addSyntax("Papa is cool");
+		rule1.addSyntax("Grandma is cool");
+		
+		g.addRule(rule1);
+		g.addRule(rule2);
+		
+		g.createStartRuleForecasts();
+		
+		assertTrue(ParserRule.getCommonStartRules(rule1, rule2).isEmpty());
+		
+		rule2.addSyntax("Papa is wow");
+		
+		ArrayList<String> solution = new ArrayList<String>();
+		solution.add("Papa");
+		
+		g.createStartRuleForecasts();
+		
+		assertEquals(solution, ParserRule.getCommonStartRules(rule1, rule2));
+		
+		rule2.addSyntax("Mama wow is");
+		
+		g.createStartRuleForecasts();
+		
+		solution.clear();
+		solution.add("Mama");
+		solution.add("Papa");
+		
+		assertEquals(solution, ParserRule.getCommonStartRules(rule1, rule2));
+		
+		rule2.addSyntax("Grandma bakes cakes");
+		
+		solution.clear();
+		solution.add("Mama");
+		solution.add("Papa");
+		solution.add("Grandma");
+		solution.add("Dummy");
+
+		g.createStartRuleForecasts();
+		
+		assertEquals(solution, ParserRule.getCommonStartRules(rule1, rule2));
 	}
 	
 	// //////////////////////////////////////////MISC///////////////////////////////////////////////////////
