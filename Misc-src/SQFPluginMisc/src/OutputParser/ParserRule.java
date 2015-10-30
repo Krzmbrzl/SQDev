@@ -2430,7 +2430,24 @@ public class ParserRule implements Cloneable {
 		for (String currentLine : this.getLines()) {
 			String[] aElements = Functions.getElements(currentLine);
 			
-			aElements[0] = aElements[0].replace(call, with);
+			if(aElements[0].equals(call)) {
+				aElements[0] = aElements[0].replace(call, with);
+			}else {
+				if(aElements[0].startsWith("(")) {
+					String frag = aElements[0];
+					//remove brackets
+					frag = frag.substring(1, frag.length() - 1);
+					
+					//Generate helperRule to recursively call this function again
+					ParserRule helper = new ParserRule("Dummy");
+					helper.setAsAtomicRule(true);
+					helper.addLineToRuleContent(frag);
+					
+					helper.replaceStartRuleCall(call, with);
+					
+					aElements[0] = helper.getLines()[0];
+				}
+			}
 			
 			currentLine = Functions.ArrayToString(aElements);
 			currentLine = currentLine.replace(") ", ")");

@@ -162,6 +162,8 @@ public class Grammar {
 		if (this.containsRule(rule.getName()) && preventDuplicates) {
 			// merge rules if the rule already exists in the grammar
 			this.getRule(rule.getName()).mergeWith(rule);
+			
+			return;
 		}
 		
 		// check for appended rules
@@ -1556,6 +1558,8 @@ public class Grammar {
 							continue;
 						}
 						
+						// TODO: add the outfactored alts to currentRule
+						
 						ParserRule compareRule = startRules.get(i);
 						
 						/*
@@ -1590,7 +1594,8 @@ public class Grammar {
 								this.leftFactor_II(currentRule, currentStartRuleName);
 							} else {
 								if (compareRule.canStartWith(currentStartRuleName)) {
-									this.leftFactor_II(compareRule, currentStartRuleName);
+									//this.leftFactor_II(compareRule, currentStartRuleName);
+									this.leftFactor_II(currentRule, currentStartRuleName);
 								} else {
 									String[] names = this.leftFactor_II(currentStartRule, compareRule);
 									
@@ -1773,7 +1778,7 @@ public class Grammar {
 			// generate new HelperRules
 			
 			// new start Rule
-			String startRuleName = rule1.getName() + "-" + rule2.getName() + "_" + commonStartRule
+			String startRuleName = rule1.getName() + "_" + rule2.getName() + "__" + commonStartRule
 					+ "Factored";
 			ParserRule starter = new ParserRule(startRuleName, rule2.getName());
 			starter.setAsAtomicRule(true);
@@ -1813,7 +1818,7 @@ public class Grammar {
 			}
 			
 			// rule1 Helper
-			ParserRule rule1Helper = new ParserRule(rule1.getName() + "_" + commonStartRule + "-Factored",
+			ParserRule rule1Helper = new ParserRule(rule1.getName() + "_" + commonStartRule + "Factored",
 					rule1.getName());
 			rule1Helper.setAsAtomicRule(true);
 			
@@ -1842,7 +1847,7 @@ public class Grammar {
 			}
 			
 			// rule2 Helper
-			ParserRule rule2Helper = new ParserRule(rule2.getName() + "_" + commonStartRule + "-Factored",
+			ParserRule rule2Helper = new ParserRule(rule2.getName() + "_" + commonStartRule + "Factored",
 					rule2.getName());
 			rule2Helper.setAsAtomicRule(true);
 			
@@ -1909,6 +1914,18 @@ public class Grammar {
 					// create helperRule for the normal alts
 					String ruleName = currentStartRule.getName() + "_Except" + commonStartRuleName;
 					
+					if(ruleName.substring(ruleName.indexOf("_Except") + 3).contains("_Except")) {
+						//only write "_except" once
+						String fragment1 = ruleName.substring(ruleName.lastIndexOf("_"));
+						
+						//remove duplicate from name
+						ruleName = ruleName.substring(0, ruleName.length() - fragment1.length());
+						
+						fragment1 = fragment1.substring(7); //remove "_Except"
+						
+						ruleName += fragment1;
+					}
+					
 					ParserRule helper = new ParserRule(ruleName, currentStartRule.getName());
 					helper.setAsAtomicRule(true);
 					
@@ -1964,9 +1981,9 @@ public class Grammar {
 			this.addRule(factoredRule);
 			
 			if (singleCall) {
-				rule.addSyntax(commonStartRuleName + " (" + factoredRule.getName() + ")?");
+				rule.addLineToRuleContent(commonStartRuleName + " (" + factoredRule.getName() + ")?");
 			} else {
-				rule.addSyntax(commonStartRuleName + " " + factoredRule.getName());
+				rule.addLineToRuleContent(commonStartRuleName + " " + factoredRule.getName());
 			}
 		} else {
 			rule.addSyntax(commonStartRuleName);

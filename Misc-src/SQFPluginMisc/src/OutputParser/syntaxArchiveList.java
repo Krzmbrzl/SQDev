@@ -174,7 +174,7 @@ public class syntaxArchiveList {
 				
 				System.out.println("\tFinished recreation of ruleForecasts\n");
 				
-				if (counter > 50) {
+				if (counter > 20) {
 					System.err.println("Failed at left factoring grammar!");
 					break;
 				}
@@ -218,7 +218,7 @@ public class syntaxArchiveList {
 			
 			System.out.println(grammar);
 			
-			if (!grammar.isLeftRecursive() && !grammar.needsLeftFactoring()) {
+			if (!grammar.isLeftRecursive() && grammar.needsLeftFactoring()) {
 				System.out.println("\nCreating Assignments...");
 				
 				grammar.createAssignments();
