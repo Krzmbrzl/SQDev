@@ -161,23 +161,22 @@ public class syntaxArchiveList {
 				
 				grammar.sort();
 				
-				if (grammar.needsLeftFacoring_II()) {
-					grammar.leftFactor_II();
-				}
 				
-				grammar.sort();
+				  if (grammar.needsLeftFacoring_II()) { grammar.leftFactor_II(); }
+				  
+				  grammar.sort();
+				 
+				  System.out.println("\tRecreating ruleForecasts...");
+				  
+				  grammar.createStartRuleForecasts(); grammar.createRuleForecast();
+				  
+				  System.out.println("\tFinished recreation of ruleForecasts\n");
+				 
 				
-				System.out.println("\tRecreating ruleForecasts...");
-				
-				grammar.createStartRuleForecasts();
-				grammar.createRuleForecast();
-				
-				System.out.println("\tFinished recreation of ruleForecasts\n");
-				
-				if (counter > 20) {
-					System.err.println("Failed at left factoring grammar!");
-					break;
-				}
+				// if (counter > 20) {
+				// System.err.println("Failed at left factoring grammar!");
+				// break;
+				// }
 				
 				counter++;
 				
@@ -207,8 +206,8 @@ public class syntaxArchiveList {
 			
 			System.out.println("\nChecking for empty rules and invalid ruleCalls...");
 			
-			grammar.removeEmptyRules();
-			grammar.removeNonExistingRuleCalls();
+			/*TODO grammar.removeEmptyRules();
+			grammar.removeNonExistingRuleCalls();*/
 			
 			System.out.println("Finished check for empty rules and invalid ruleCalls\n");
 			
@@ -218,7 +217,7 @@ public class syntaxArchiveList {
 			
 			System.out.println(grammar);
 			
-			if (!grammar.isLeftRecursive() && grammar.needsLeftFactoring()) {
+			if (!grammar.isLeftRecursive() && !grammar.needsLeftFactoring() || /* TODO:remove */true) {
 				System.out.println("\nCreating Assignments...");
 				
 				grammar.createAssignments();

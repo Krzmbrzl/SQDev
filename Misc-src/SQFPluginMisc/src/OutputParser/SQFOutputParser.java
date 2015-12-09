@@ -19,6 +19,8 @@ public class SQFOutputParser {
 	public static void main(String[] args) {
 		String antlrInput = "";
 		String commandFilePath = "";
+		
+		@SuppressWarnings("unused")
 		String outputDirectoryPath = "";
 		String grammarDirectory = "";
 		String modelDirectory = "";

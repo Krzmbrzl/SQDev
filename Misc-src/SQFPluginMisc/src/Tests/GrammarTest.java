@@ -76,11 +76,13 @@ public class GrammarTest {
 		
 		g3.leftFactor_II();
 		
-		/*
-		 * g3.sort();
-		 * 
-		 * System.out.println(g3);
-		 */
+		g3.leftFactor_II();
+		
+		
+		g3.sort();
+		
+		System.out.println(g3);
+		
 		
 		assertFalse(g3.needsLeftFacoring_II());
 		
@@ -266,6 +268,7 @@ public class GrammarTest {
 	 * @return The created grammar
 	 */
 	public static Grammar createLeftFactorGrammar(boolean LF_II, boolean leftRecursive) {
+		// TODO: implement bracket alts
 		Grammar g;
 		
 		if (leftRecursive) {
@@ -307,6 +310,9 @@ public class GrammarTest {
 				ParserRule rule8 = new ParserRule("Rec3_2", rule6.getName());
 				rule8.setAsAtomicRule(true);
 				
+				ParserRule rule9 = new ParserRule("Rec4_1");
+				rule9.setAsAtomicRule(true);
+				
 				// create empty dummy rule to match syntax "testStart"
 				ParserRule dummyRule = new ParserRule("testStart", "Rec1_2");
 				dummyRule.setAsAtomicRule(true);
@@ -323,11 +329,20 @@ public class GrammarTest {
 				rule8.addSyntax("Dummy test_Rule1");
 				rule8.addSyntax("Miau2");
 				
-				ParserRule rule9 = new ParserRule("Rec4_1");
-				rule9.setAsAtomicRule(true);
-				
 				ParserRule rule10 = new ParserRule("Rec4_2");
 				rule10.setAsAtomicRule(true);
+				
+				ParserRule rule11 = new ParserRule("Rec5_1");
+				rule11.setAsAtomicRule(true);
+				
+				ParserRule rule12 = new ParserRule("Rec5_2");
+				rule12.setAsAtomicRule(true);
+				
+				ParserRule rule13 = new ParserRule("Rec5_3");
+				rule13.setAsAtomicRule(true);
+				
+				ParserRule rule14 = new ParserRule("Rec5_4");
+				rule14.setAsAtomicRule(true);
 				
 				rule9.addSyntax("TestStart");
 				rule9.addSyntax("Syntax Dummy");
@@ -335,6 +350,15 @@ public class GrammarTest {
 				rule10.addSyntax(rule9.getName() + " Miau");
 				rule10.addSyntax("Miau2 Miau");
 				rule10.addSyntax("Syntax");
+				
+				rule11.addSyntax("Miau (" + rule12.getName() + " | " + rule13.getName() + " | "
+						+ rule14.getName() + ")");
+				
+				rule12.addSyntax("Dummy Test");
+				
+				rule13.addSyntax("Dummy Miau");
+				
+				rule14.addSyntax("Dummy");
 				
 				// create dummyRule to match syntax "Dummy"
 				ParserRule dummy = new ParserRule("Dummy");
@@ -356,6 +380,10 @@ public class GrammarTest {
 				g.addRule(rule8);
 				g.addRule(rule9);
 				g.addRule(rule10);
+				g.addRule(rule11);
+				g.addRule(rule12);
+				g.addRule(rule13);
+				g.addRule(rule14);
 				g.addRule(dummyRule);
 				g.addRule(dummy);
 				g.addRule(miau1);

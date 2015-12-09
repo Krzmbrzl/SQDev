@@ -396,6 +396,8 @@ public class ParserRule implements Cloneable {
 	
 	public void setBaseRule(ParserRule baseRule) {
 		this.baseRule = baseRule;
+		this.setBaseRuleName(baseRule.getName());
+		this.setSubLevel(baseRule.getSubLevel() + 1);
 	}
 	
 	public ArrayList<ParserRule> getSubRules() {
@@ -2003,11 +2005,11 @@ public class ParserRule implements Cloneable {
 								
 								currentElement = fragment1 + fragment2;
 								
-								if (!currentElement.contains("|")
+								if (elements.length > innerCounter + 1 && (!currentElement.contains("|")
 										&& !((elements.length - 1) >= innerCounter + 1)
 										|| !(elements[innerCounter + 1].equals("*")
 												|| elements[innerCounter + 1].equals("?") || elements[innerCounter + 1]
-												.equals("+"))) {
+												.equals("+")))) {
 									// if there is only one choice left and it's
 									// a normal rule call
 									currentElement = cleanString(currentElement);
@@ -2163,7 +2165,11 @@ public class ParserRule implements Cloneable {
 						currentElement = cleanString(currentElement);
 						
 						if (currentElement.contains("[")) {
-							System.err.println("Unhandled situation in ParserRule.needsLeftFactoring_II");
+							if (currentElement.contains("]?")) {
+								// TODO: handle brackets in brackets
+							} else {
+								System.err.println("Unhandled situation in ParserRule.needsLeftFactoring_II");
+							}
 						}
 						
 						ArrayList<ParserRule> alternatives = new ArrayList<ParserRule>();
@@ -2430,15 +2436,15 @@ public class ParserRule implements Cloneable {
 		for (String currentLine : this.getLines()) {
 			String[] aElements = Functions.getElements(currentLine);
 			
-			if(aElements[0].equals(call)) {
+			if (aElements[0].equals(call)) {
 				aElements[0] = aElements[0].replace(call, with);
-			}else {
-				if(aElements[0].startsWith("(")) {
+			} else {
+				if (aElements[0].startsWith("(")) {
 					String frag = aElements[0];
-					//remove brackets
+					// remove brackets
 					frag = frag.substring(1, frag.length() - 1);
 					
-					//Generate helperRule to recursively call this function again
+					// Generate helperRule to recursively call this function again
 					ParserRule helper = new ParserRule("Dummy");
 					helper.setAsAtomicRule(true);
 					helper.addLineToRuleContent(frag);
