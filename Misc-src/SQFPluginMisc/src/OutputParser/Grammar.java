@@ -991,6 +991,9 @@ public class Grammar {
 			}
 			
 			for (ParserRule currentRule : this.getRules()) {
+				if(currentRule.getName().equals("NumberAtomic_ObjectBeginner")) {
+					String dummy = "";
+				}
 				ArrayList<String> reachableRuleNames = currentRule.getReachableRules();
 				
 				for (String currentReachableRuleName : currentRule.getReachableRules()) {
@@ -1201,11 +1204,16 @@ public class Grammar {
 	}
 	
 	public void removeEmptyRules() {
+		System.out.println("Removing empty rules...");
+		
 		for (ParserRule currentRule : this.getRules()) {
 			if (currentRule.isEmpty()) {
 				this.deleteRule(currentRule);
+				System.out.println("\tDeleted empty rule '" + currentRule.getName() + "'");
 			}
 		}
+		
+		System.out.println("All empty rules deleted\n");
 	}
 	
 	/**
@@ -1248,20 +1256,24 @@ public class Grammar {
 	}
 	
 	public void removeNonExistingRuleCalls() {
+		System.out.println("Removing non-existing ruleCalls...");
 		for (ParserRule currentRule : this.getNonTerminalRules()) {
 			for (String currentName : currentRule.getReachableRules()) {
 				if (!this.containsRule(currentName) && !this.getHeader().contains(currentName + ":")) {
 					// remove respective ruleCall
 					currentRule.removeRuleCall(currentName);
+					System.out.println("\tRemoved ruleCall '" + currentName + "' from rule '" + currentRule.getName() + "'");
 				}
 			}
 		}
+		
+		System.out.println("Finished deletion of non-existing ruleCalls\n");
 		
 		// update forecast
 		this.createRuleForecast();
 		
 		// check if there are still empty rules
-		for (ParserRule currentRule : this.getNonTerminalRules()) {
+		/*for (ParserRule currentRule : this.getNonTerminalRules()) {
 			for (String currentName : currentRule.getReachableRules()) {
 				if (!this.containsRule(currentName)) {
 					// call this function again
@@ -1269,7 +1281,7 @@ public class Grammar {
 					break;
 				}
 			}
-		}
+		}*/
 	}
 	
 	/**
@@ -1526,8 +1538,9 @@ public class Grammar {
 	/**
 	 * Left factores the rule according to ambiguities caused by the grammar context
 	 */
-	public void leftFactor_II() {		
-		for (ParserRule currentRule : sortByLevel(this.getNonTerminalRules(), true)) {			
+	public void leftFactor_II() {
+		
+		for (ParserRule currentRule : sortByLevel(this.getNonTerminalRules(), true)) {
 			// check each rule if it has to get left factored (starting with the lowest rules)
 			
 			if (currentRule.needsLeftFactoring_II(this)) {
@@ -1538,6 +1551,9 @@ public class Grammar {
 					String currentLine = currentRule.getLines()[x];
 					
 					if (currentLine.contains("(")) {
+						// make syntactcic predicate a single element
+						currentLine = currentLine.replace("=>", " => ");
+						
 						String[] fragments = Functions.getElements(currentLine);
 						
 						for (int i = 0; i < fragments.length; i++) {
@@ -1590,7 +1606,7 @@ public class Grammar {
 								
 								if (!commonStartRules.isEmpty()) {
 									factoredBrackets = true;
-								}else {
+								} else {
 									// don't proceed if there are no common startRules
 									continue;
 								}
@@ -1598,8 +1614,8 @@ public class Grammar {
 								int counter = 1;
 								String helperName = currentRule.getName() + "_BracketHelper" + counter;
 								
-								while(this.containsRule(helperName)) {
-									if(counter >= 10) {
+								while (this.containsRule(helperName)) {
+									if (counter >= 10) {
 										System.err.println("FuckThatShit!!!");
 									}
 									
@@ -1618,11 +1634,6 @@ public class Grammar {
 								
 								// add helperRule temporary to the grammar
 								this.addRule(helperRule);
-								
-								/*for (String currentCommonStartRule : commonStartRules) {
-									// TODO: loop this until it's no longer needed
-									this.leftFactor_II(helperRule, currentCommonStartRule);
-								}*/
 								
 								// refactor one step after another
 								this.leftFactor_II(helperRule, commonStartRules.get(0));
@@ -1653,10 +1664,16 @@ public class Grammar {
 							
 							currentLine = Functions.ArrayToString(fragments);
 						}
+						
+						currentLine = currentLine.replace(" => ", "=>");
+						currentLine.replace(" *", "*");
+						currentLine.replace(" +", "+");
+						currentLine.replace(" ?", "?");
+						
+						// reassign the current line
+						currentRule.setLine(x, currentLine);
+						
 					}
-					
-					// reassign the current line
-					currentRule.setLine(x, currentLine);
 				}
 				
 				if (factoredBrackets) {
@@ -2235,8 +2252,11 @@ public class Grammar {
 	
 	/**
 	 * Sorts the given list of ParserRules according to their subLevel
-	 * @param rules The ruleList that should be sorted
-	 * @param lowestFirst Should the ones with the lowest levels be listed first?
+	 * 
+	 * @param rules
+	 *            The ruleList that should be sorted
+	 * @param lowestFirst
+	 *            Should the ones with the lowest levels be listed first?
 	 * @return The sorted list
 	 */
 	public static ArrayList<ParserRule> sortByLevel(ArrayList<ParserRule> rules, boolean lowestFirst) {
@@ -2244,15 +2264,15 @@ public class Grammar {
 		
 		ArrayList<ParserRule> sortedRules = new ArrayList<ParserRule>();
 		
-		for(int i=highestSubLevel; i>0; i--) {
-			for(ParserRule currentRule : rules) {
-				if(currentRule.getSubLevel() == i) {
+		for (int i = highestSubLevel; i >= 0; i--) {
+			for (ParserRule currentRule : rules) {
+				if (currentRule.getSubLevel() == i) {
 					sortedRules.add(currentRule);
 				}
 			}
 		}
 		
-		if(!lowestFirst) {
+		if (!lowestFirst) {
 			Collections.reverse(sortedRules);
 		}
 		
@@ -2261,19 +2281,122 @@ public class Grammar {
 	
 	/**
 	 * Gets the highest subrule level of the rules contained in the given list
-	 * @param rules A list of ParserRules
+	 * 
+	 * @param rules
+	 *            A list of ParserRules
 	 */
 	public static int getHighestSubLevel(ArrayList<ParserRule> rules) {
 		int level = -1;
 		
-		for(ParserRule currentRule : rules) {
+		for (ParserRule currentRule : rules) {
 			int currentLevel = currentRule.getSubLevel();
 			
-			if(currentLevel > level) {
+			if (currentLevel > level) {
 				level = currentLevel;
 			}
 		}
 		
 		return level;
+	}
+	
+	/**
+	 * Removes all the ParserRules (terminal rules are not processed by this mehtod) from this
+	 * grammar that aren't referenced by another rule
+	 */
+	public void removeUnusedRules(ParserRule root) {
+		if (root == null || !this.containsRule(root.getName())) {
+			System.out.println("\nCanceled deleting unused rules!\n");
+			return;
+		}
+		
+		// update rule forecast
+		this.createRuleForecast();
+		this.associate();
+		
+		ArrayList<String> referencedRuleNames = root.getReachableRules();
+		ArrayList<ParserRule> referencedRules = new ArrayList<ParserRule>();
+		
+		// add root rule to the referencedRules list
+		referencedRules.add(root);
+		
+		ArrayList<ParserRule> rulesToDelete = new ArrayList<ParserRule>();
+		
+		// convert to ParserRules
+		for (String currentName : referencedRuleNames) {
+			if (this.containsRule(currentName)) {
+				if (!referencedRules.contains(this.getRule(currentName))) {
+					referencedRules.add(this.getRule(currentName));
+				}
+			} else {
+				if (!this.getHeader().contains(currentName + ":")) {
+					System.err.println("Couldn't find referenceto rule '" + currentName
+							+ "' in Grammar.removeUnusedRules");
+				}
+			}
+		}
+		
+		ArrayList<ParserRule> atomicRulesToCheck = new ArrayList<ParserRule>();
+		
+		for (ParserRule currentRule : this.getNonTerminalRules()) {
+			// check if the currentRule is used
+			if (!referencedRules.contains(currentRule)) {
+				// store for later deletion
+				if (currentRule.getName().endsWith("Atomic")) {
+					// store to be checked later
+					atomicRulesToCheck.add(currentRule);
+				} else {
+					rulesToDelete.add(currentRule);
+				}
+			}
+		}
+		
+		for (ParserRule currentRule : atomicRulesToCheck) {
+			if (rulesToDelete.contains(currentRule.getBaseRule())) {
+				// add only if parent also gets deleted
+				rulesToDelete.add(currentRule);
+			}
+		}
+		
+		System.out.println("Deleting rules that aren't referenced...");
+		
+		// delete respective rules
+		for (ParserRule currentDeleteRule : rulesToDelete) {
+			System.out.println("\tDeleted rule '" + currentDeleteRule.getName()
+					+ "' from grammar because it is not reachable from the root rule");
+			
+			this.deleteRule(currentDeleteRule);
+		}
+		
+		System.out.println("Finished rule deletion");
+	}
+	
+	/**
+	 * Gets all the ParserRules referenced in this grammar <br>
+	 * <b>note:</b> may not yet work properly
+	 * 
+	 * @return A list of the respective rules
+	 */
+	public ArrayList<ParserRule> getReferencedRules() {
+		// update rule forecast
+		this.createRuleForecast();
+		
+		ArrayList<ParserRule> referencedRules = new ArrayList<ParserRule>();
+		
+		for (ParserRule currentRule : this.getRules()) {
+			// gather the respective names
+			for (String currentStartRuleName : currentRule.getReachableRules()) {
+				if (this.containsRule(currentStartRuleName)) {
+					// convert to ParserRules and add if not yet in the list
+					if (!referencedRules.contains(this.getRule(currentStartRuleName))) {
+						referencedRules.add(this.getRule(currentStartRuleName));
+					}
+				} else {
+					System.err.println("Couldn't find reference to rule '" + currentStartRuleName
+							+ "' in Grammar.getReferencedRules()");
+				}
+			}
+		}
+		
+		return referencedRules;
 	}
 }

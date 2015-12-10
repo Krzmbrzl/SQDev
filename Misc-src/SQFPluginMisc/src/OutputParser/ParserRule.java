@@ -314,7 +314,7 @@ public class ParserRule implements Cloneable {
 	}
 	
 	public ArrayList<String> getReachableRules() {
-		ArrayList<String> copy = new ArrayList<String>(reachableRules);
+		ArrayList<String> copy = new ArrayList<String>(this.reachableRules);
 		return copy;
 	}
 	
@@ -1426,10 +1426,20 @@ public class ParserRule implements Cloneable {
 										.substring(currentContent.indexOf("}") + 1));
 								break;
 							
+							case '=':
+								if (firstElement.charAt(1) == '>') {
+									// remove syntactic predicate
+									firstElement = firstElement.substring(2);
+								} else {
+									System.err.println("Misplaced '=' in ParserRule.getStartRulCalls");
+								}
+								break;
+							
 							default:
 								System.err.println("Unhandled special character '" + firstElement.charAt(0)
 										+ "' in ParserRule.getStartRulCalls");
 								break;
+						
 						}
 					}
 				}
@@ -1723,6 +1733,10 @@ public class ParserRule implements Cloneable {
 					content = cleanString(content);
 				}
 				
+				if(currentLine.contains("NumberAtomic_ObjectBeginner_BracketHelper1_ArrayAtomicBeginner")) {
+					String dummy = "";
+				}
+				
 				// remove any special characters from current line
 				currentLine = currentLine.replace("|", " ");
 				currentLine = currentLine.replace("(", " ");
@@ -1796,7 +1810,7 @@ public class ParserRule implements Cloneable {
 		}
 		
 		for (String currentName : this.getReachableRules()) {
-			if (currentName.contains("Atomic")) {
+			if (currentName.endsWith("Atomic")) {
 				// check if base rule is also included
 				String baseName = currentName.substring(0, currentName.indexOf("Atomic"));
 				
@@ -1935,6 +1949,9 @@ public class ParserRule implements Cloneable {
 	 *            The name of the ruleCall taht should be removed
 	 */
 	public void removeRuleCall(String name) {
+		if (name.equals("Position2D")) {
+			String dummy = "";
+		}
 		String[] lines = new String[this.getLines().length];
 		int counter = 0;
 		
@@ -2005,11 +2022,11 @@ public class ParserRule implements Cloneable {
 								
 								currentElement = fragment1 + fragment2;
 								
-								if (elements.length > innerCounter + 1 && (!currentElement.contains("|")
+								if (!currentElement.contains("|")
 										&& !((elements.length - 1) >= innerCounter + 1)
 										|| !(elements[innerCounter + 1].equals("*")
 												|| elements[innerCounter + 1].equals("?") || elements[innerCounter + 1]
-												.equals("+")))) {
+												.equals("+"))) {
 									// if there is only one choice left and it's
 									// a normal rule call
 									currentElement = cleanString(currentElement);
@@ -2059,7 +2076,7 @@ public class ParserRule implements Cloneable {
 				
 				// undo formatting
 				currentLine = currentLine.replace("[", "(");
-				currentLine = currentLine.replace("]", "]");
+				currentLine = currentLine.replace("]", ")");
 				
 				lines[counter] = currentLine;
 			} else {

@@ -182,7 +182,7 @@ public class syntaxArchiveList {
 				
 				if (grammar.getRuleCount() == ruleCount) {
 					if (counter > 50) {
-						System.err.println("Failed at left factoring grammar!");
+						System.err.println("\nFailed at left factoring grammar!\n\n");
 						break;
 					} else {
 						counter++;
@@ -206,18 +206,19 @@ public class syntaxArchiveList {
 			
 			System.out.println("\nChecking for empty rules and invalid ruleCalls...");
 			
-			/*TODO grammar.removeEmptyRules();
-			grammar.removeNonExistingRuleCalls();*/
+			grammar.removeEmptyRules();
+			grammar.removeNonExistingRuleCalls();
+			grammar.removeUnusedRules(grammar.getRule("AbsolutelyAnything"));
 			
-			System.out.println("Finished check for empty rules and invalid ruleCalls\n");
+			System.out.println("Finished check for empty, unused and invalid ruleCalls\n");
 			
 			System.out.println("\nSorting grammar\n");
 			
 			grammar.sort();
 			
-			System.out.println(grammar);
+			//System.out.println(grammar);
 			
-			if (!grammar.isLeftRecursive() && !grammar.needsLeftFactoring() || /* TODO:remove */true) {
+			if (!grammar.isLeftRecursive() && !grammar.needsLeftFactoring() || /* TODO:remove*/ true) {
 				System.out.println("\nCreating Assignments...");
 				
 				grammar.createAssignments();
