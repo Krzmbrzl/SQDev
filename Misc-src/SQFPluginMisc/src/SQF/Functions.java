@@ -1285,7 +1285,7 @@ public class Functions {
 
 			for (String content : Array) {
 				boolean proceed = true;
-				if (content.equals("") | content == null) {
+				if (content == null || content.isEmpty()) {
 					proceed = false;
 					count = count - 1; // Damit kein unnötiges Leerzeichen
 										// eingefügt wird falls der Array nur
@@ -3044,6 +3044,10 @@ public class Functions {
 		return (startCharacter >= 'a' && startCharacter <= 'z');
 	}
 	
+	/**
+	 * Prints out the string without escaping any characters
+	 * @param string The string to be printed
+	 */
 	public static void printUnescaped(String string) {
 		string = string.replace("\n", "\\n");
 		string = string.replace("\t", "\\t");

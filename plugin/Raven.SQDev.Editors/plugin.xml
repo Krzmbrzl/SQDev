@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="raven.sqdev.editors.BasicTextEditor"
+            default="false"
+            id="Raven.SQDev.Editors.BasicTextEditor"
+            name="BasicTextEditor">
+      </editor>
+   </extension>
+
+</plugin>
