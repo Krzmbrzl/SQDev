@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="raven.sqdev.wizards.SQdev"
+            name="SQDev">
+      </category>
+      <wizard
+            category="raven.sqdev.wizards.sqfNewFileWizard"
+            class="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
+            icon="platform:plugin/raven.sqdev.util/resources/icons/SQF_image.gif"
+            id="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
+            name="New SQF file">
+      </wizard>
+   </extension>
+
+</plugin>

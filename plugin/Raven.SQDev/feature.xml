@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="raven.sqdev"
+      label="SQDev"
+      version="0.1.0"
+      provider-name="Raven">
+
+   <description url="http://krzmbrzl.github.io/SQDev/">
+      SQDev brings SQF support for eclipse
+   </description>
+
+   <license url="https://github.com/Krzmbrzl/SQDev/blob/master/licence.md">
+      SQDev is published under the MIT License
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui.editors" version="3.8.200" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface.text" version="3.9.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.workbench"/>
+   </requires>
+
+   <plugin
+         id="raven.sqdev.editors"
+         download-size="0"
+         install-size="0"
+         version="0.1.0"
+         unpack="false"/>
+
+   <plugin
+         id="raven.sqdev.editors.sqfeditor"
+         download-size="0"
+         install-size="0"
+         version="0.1.0"
+         unpack="false"/>
+
+   <plugin
+         id="raven.sqdev.util"
+         download-size="0"
+         install-size="0"
+         version="0.1.0"
+         unpack="false"/>
+
+   <plugin
+         id="raven.sqdev.wizards"
+         download-size="0"
+         install-size="0"
+         version="0.1.0"
+         unpack="false"/>
+
+</feature>
