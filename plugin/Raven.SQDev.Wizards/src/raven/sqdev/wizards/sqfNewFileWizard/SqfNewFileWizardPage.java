@@ -37,7 +37,7 @@ public class SqfNewFileWizardPage extends WizardPage {
 	 * @param pageName
 	 */
 	public SqfNewFileWizardPage(ISelection selection) {
-		super("wizardPage");
+		super("newSqfFileWizardPage");
 		setTitle("New SQF file");
 		setDescription("This wizard creates a new file with *.sqf extension");
 		this.selection = selection;
