@@ -8,11 +8,23 @@
             name="SQDev">
       </category>
       <wizard
-            category="raven.sqdev.wizards.sqfNewFileWizard"
+            category="raven.sqdev.wizards.SQdev"
             class="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
             icon="platform:plugin/raven.sqdev.util/resources/icons/SQF_image.gif"
             id="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
-            name="New SQF file">
+            name="New SQF file"
+            project="false">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="raven.sqdev.wizards.SQdev"
+            class="raven.sqdev.wizards.sqdevProject.SQDevProjectWizard"
+            icon="platform:plugin/raven.sqdev.util/resources/icons/prj_obj.gif"
+            id="Raven.SQDev.Wizards.sqdevProject"
+            name="SQDev Project"
+            project="true">
       </wizard>
    </extension>
 
