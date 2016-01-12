@@ -2,11 +2,12 @@
 <feature
       id="raven.sqdev"
       label="SQDev"
-      version="0.1.0"
+      version="0.3.0"
       provider-name="Raven">
 
    <description url="http://krzmbrzl.github.io/SQDev/">
-      SQDev provides a set of features to facilitate the development of scripts for ArmA.
+      SQDev provides a set of features to facilitate the development
+of scripts for the ArmA series.
    </description>
 
    <license url="https://github.com/Krzmbrzl/SQDev/blob/master/licence.md">

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="raven.sqdev.preferences.pages.SQDevGeneralPreferancePage"
+            id="raven.sqdev.preferences.sqdevpreferencepage"
+            name="SQDev">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="raven.sqdev.preferences.initializer.SQDevPreferenceInitializer">
+      </initializer>
+   </extension>
+
+</plugin>
