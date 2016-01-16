@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="raven.sqdev.preferences.pages.SQDevGeneralPreferancePage"
+            class="raven.sqdev.preferences.pages.SQDevGeneralPreferencePage"
             id="raven.sqdev.preferences.sqdevpreferencepage"
             name="SQDev">
       </page>
