@@ -2,12 +2,12 @@ package raven.sqdev.preferences.preferenceEditors;
 
 import java.io.File;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -23,16 +23,11 @@ import raven.sqdev.preferences.util.SQDevChangeEvent;
 
 public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEditor
 		implements VerifyListener {
-		
-	/**
-	 * The label used by this editor
-	 */
-	private Label label;
 	
 	/**
 	 * The TextField used to show the current selected path to the user
 	 */
-	private Text pathText;
+	protected Text pathText;
 	
 	/**
 	 * The initial text of {@linkplain #pathText}.<br>
@@ -43,7 +38,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	/**
 	 * The button to open the <code>FileDialog</code>
 	 */
-	private Button browseButton;
+	protected Button browseButton;
 	
 	/**
 	 * The text used on the created button. Default value is
@@ -129,23 +124,16 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	
 	@Override
 	public boolean doSave() {
-		if (isValid()) {
+		if (super.doSave()) {
 			getPreferenceStore().setValue(getPreferenceKey(), pathText.getText());
 			
 			// update save status
 			updateSaveStatus();
 			
 			return true;
-		} else {
-			MessageDialog.open(MessageDialog.ERROR,
-					PlatformUI.getWorkbench().getDisplay().getActiveShell(),
-					"Failed at saving " + getLabelText().substring(1, getLabelText().length() - 1),
-					"Couldn't save " + getLabelText().substring(1, getLabelText().length() - 1)
-							+ " because it is in an invalid state!",
-					SWT.NULL);
-					
-			return false;
 		}
+		
+		return false;
 	}
 	
 	@Override
@@ -162,7 +150,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	 * @param text
 	 *            The text to display<br>
 	 */
-	public void load(String text) {		
+	private void load(String text) {		
 		if (pathText == null) {
 			setInitialText(text);
 		} else {
@@ -191,6 +179,13 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		File inputFile = new File(input);
 		EStatus status = EStatus.OK;
 		
+		if(input.isEmpty()) {
+			status = EStatus.ERROR;
+			status.setHint("No path specified!");
+			setStatus(status);
+			return;
+		}
+		
 		// check if the directory exists
 		if (!inputFile.exists()) {
 			status = EStatus.ERROR;
@@ -215,21 +210,10 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	}
 	
 	@Override
-	public void setLabelText(String text) {
-		super.setLabelText(text);
-		
-		if (label != null) {
-			// update label if it has already been created
-			label.setText(text);
-			
-			label.pack(true);
-		}
-	};
-	
-	@Override
 	public void createComponents(Composite container) {
 		label = new Label(container, SWT.BOLD);
-		label.setText(getLabelText());
+		setLabelText(getLabelText());
+		label.setToolTipText(getTooltip());
 		
 		// check that initialText is not null
 		if (getInitialText() == null) {
@@ -296,45 +280,13 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		return willNeedSave(pathText.getText());
 	}
 	
-	/**
-	 * Checks if the editor needs to be saved when it will change to this
-	 * content
-	 * 
-	 * @param content
-	 *            The new content
-	 * @return
-	 */
+	@Override
 	public boolean willNeedSave(String content) {
 		if (content.equals(getPreferenceStore().getString(getPreferenceKey()))) {
 			return false;
 		} else {
 			return true;
 		}
-	}
-	
-	/**
-	 * Indicates graphically whether the editor has a value that differs from
-	 * the value of the preference this editor is working on
-	 * 
-	 * @param newText
-	 *            The text that represents the value of this editor and that
-	 *            will be compared to the preference's value
-	 */
-	public void updateSaveStatus(String newText) {
-		// mark the editor if it needs to be saved
-		String labelText = getLabelText();
-		
-		if (willNeedSave(newText)) {
-			if (!labelText.endsWith("*")) {
-				labelText += "*";
-			}
-		} else {
-			if (labelText.endsWith("*")) {
-				labelText = labelText.substring(0, labelText.length() - 1);
-			}
-		}
-		
-		setLabelText(labelText);
 	}
 	
 	/**
@@ -354,6 +306,22 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		
 		// notify about change
 		changed(new SQDevChangeEvent(SQDevChangeEvent.SQDEV_VALUE_CHANGED));
+	}
+	
+	@Override
+	public void setStatus(EStatus status) {
+		super.setStatus(status);
+		
+		if(pathText == null) {
+			return;
+		}
+		
+		// indicate an error via red backgroundColor
+		if(status == EStatus.ERROR) {
+			pathText.setBackground(new Color(Display.getCurrent(), 255, 153, 153));
+		}else {
+			pathText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		}
 	}
 	
 }

@@ -69,7 +69,7 @@ public class BasicTextEditor extends TextEditor {
 		char[] matchChars = { '(', ')', '[', ']', '{', '}' }; // which brackets
 																// to match
 		ICharacterPairMatcher matcher = new DefaultCharacterPairMatcher(matchChars,
-				IDocumentExtension3.DEFAULT_PARTITIONING);
+				IDocumentExtension3.DEFAULT_PARTITIONING, true);
 				
 		support.setCharacterPairMatcher(matcher);
 		support.setMatchingCharacterPainterPreferenceKeys(EDITOR_MATCHING_BRACKETS_KEY,

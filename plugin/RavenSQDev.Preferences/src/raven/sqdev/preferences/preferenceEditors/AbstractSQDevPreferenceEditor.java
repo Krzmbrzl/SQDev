@@ -3,12 +3,15 @@ package raven.sqdev.preferences.preferenceEditors;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.PlatformUI;
 
 import raven.sqdev.preferences.activator.Activator;
 import raven.sqdev.preferences.pages.EStatus;
@@ -60,7 +63,15 @@ public abstract class AbstractSQDevPreferenceEditor
 	 */
 	private int emptyComponentsToCreate;
 	
+	/**
+	 * The tooltip that belongs to this editor
+	 */
 	private String tooltip;
+	
+	/**
+	 * The label used by this editor
+	 */
+	protected Label label;
 	
 	/**
 	 * Creates a new <code>SQDevPreferenceEditor</code>
@@ -75,7 +86,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	 *            Indicating whether or not the program should try to resolve
 	 *            the preferencePage itself
 	 */
-	protected AbstractSQDevPreferenceEditor(String preferenceKey, String labelText,
+	private AbstractSQDevPreferenceEditor(String preferenceKey, String labelText,
 			Composite container, boolean resolve, String tooltip) {
 		// initialize the listener list
 		this.listener = new ArrayList<ISQDevPreferenceEditorListener>();
@@ -180,6 +191,22 @@ public abstract class AbstractSQDevPreferenceEditor
 		this(preferenceKey, labelText, container, false, tooltip);
 		
 		setPreferencePage(page);
+	}
+	
+	@Override
+	public boolean doSave() {
+		if(!isValid()) {
+			MessageDialog.open(MessageDialog.ERROR,
+					PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+					"Failed at saving " + getLabelText().substring(1, getLabelText().length() - 1),
+					"Couldn't save " + getLabelText().substring(1, getLabelText().length() - 1)
+							+ " because it is in an invalid state!",
+					SWT.NULL);
+					
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -482,7 +509,8 @@ public abstract class AbstractSQDevPreferenceEditor
 	}
 	
 	/**
-	 * Sets the text of the used label
+	 * Sets the text of the used label.<br>
+	 * If the label has already been created it will update ot's text.
 	 * 
 	 * @param text
 	 *            The new text for this label
@@ -490,6 +518,13 @@ public abstract class AbstractSQDevPreferenceEditor
 	@Override
 	public void setLabelText(String text) {
 		this.labelText = text;
+		
+		if (label != null) {
+			// update label if it has already been created
+			label.setText(text);
+			
+			label.pack(true);
+		}
 	}
 	
 	/**
@@ -561,6 +596,42 @@ public abstract class AbstractSQDevPreferenceEditor
 	 */
 	public String getTooltip() {
 		return tooltip;
+	}
+	
+	/**
+	 * Checks if the editor needs to be saved when it will change to this
+	 * content
+	 * 
+	 * @param content
+	 *            The new content
+	 * @return
+	 */
+	public abstract boolean willNeedSave(String content);
+	
+	/**
+	 * Indicates graphically whether the editor has a value that differs from
+	 * the value of the preference this editor is working on
+	 * 
+	 * @param newText
+	 *            The text that represents the value of this editor and that
+	 *            will be compared to the preference's value
+	 */
+	protected void updateSaveStatus(String newText) {
+		// mark the editor if it needs to be saved
+		String labelText = getLabelText();
+		
+		if (willNeedSave(newText)) {
+			if (!labelText.endsWith("*")) {
+				labelText += "*";
+			}
+		} else {
+			if (labelText.endsWith("*")) {
+				labelText = labelText.substring(0, labelText.length() - 1);
+			}
+		}
+		
+		setLabelText(labelText);
+		getContainer().layout(true);
 	}
 	
 }

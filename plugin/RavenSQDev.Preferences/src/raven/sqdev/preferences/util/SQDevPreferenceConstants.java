@@ -13,4 +13,6 @@ public class SQDevPreferenceConstants {
 	
 	public static final String SQDEV_ARMA_DOCUMENTS_DIRECTORY = "raven.sqdev.ArmADocumentsDirectory";
 	
+	public static final String SQDEV_ALWAYS_SAVE_ON_EXIT = "raven.sqdev.AlwaysSaveOnExit";
+	
 }

@@ -20,6 +20,7 @@ import raven.sqdev.preferences.preferenceEditors.ISQDevPreferenceEditor;
 import raven.sqdev.preferences.util.ISQDevPreferenceEditorListener;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 import raven.sqdev.preferences.util.SQDevPreferenceComposite;
+import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 
 public class SQDevPreferencePage extends PreferencePage
 		implements ISQDevPreferencePage, ISQDevPreferenceEditorListener {
@@ -81,16 +82,24 @@ public class SQDevPreferencePage extends PreferencePage
 			Composite sharedContainer = new Composite(current, SWT.NULL);
 			
 			for (ISQDevPreferenceEditor currentEditor : getEditors()) {
-				currentEditor.setContainer(sharedContainer);
-				
-				// make all editors fill out the later crated layout
-				currentEditor.matchComponentCount(maxComponents);
-				
-				// create the GUI components of this editor
-				currentEditor.createComponents();
+				if (currentEditor.getContainer().equals(current)) {
+					// put all editors that have the same container on one new sharedContainer
+					currentEditor.setContainer(sharedContainer);
+					// make all editors fill out the later crated layout
+					currentEditor.matchComponentCount(maxComponents);
+					// create the GUI components of this editor
+					currentEditor.createComponents();
+				}
 			}
 			
-			GridLayout layout = new GridLayout();
+			GridLayout layout;
+			
+			if(sharedContainer.getLayout() == null || !(sharedContainer.getLayout() instanceof GridLayout)) {
+				layout = new GridLayout();
+			}else {
+				layout = (GridLayout) sharedContainer.getLayout();
+			}
+			
 			layout.numColumns = maxComponents;
 			
 			sharedContainer.setLayout(layout);
@@ -220,23 +229,27 @@ public class SQDevPreferencePage extends PreferencePage
 	@Override
 	public boolean performOk() {
 		for (ISQDevPreferenceEditor currentEditor : getEditors()) {
-			if (currentEditor.needsSave()) {
-				
-				//TODO: add option to automatically save unsaved preferences on leaving via ok
-				
-				MessageBox messageBox = new MessageBox(
-						PlatformUI.getWorkbench().getDisplay().getActiveShell(),
-						SWT.ICON_WARNING | SWT.YES | SWT.NO);
-				
-				messageBox.setMessage(
-						"There are some unsaved preference changes. Do you want to save them now?");
-				messageBox.setText("Unsaved Changes");
-				int response = messageBox.open();
-				if (response == SWT.YES) {
+			if (currentEditor.needsSave()) {				
+				if (!SQDevPreferenceUtil.alwaysSaveOnExit()) {
+					MessageBox messageBox = new MessageBox(
+							PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+							SWT.ICON_WARNING | SWT.YES | SWT.NO);
+					messageBox.setMessage(
+							"There are some unsaved preference changes. Do you want to save them now?");
+					messageBox.setText("Unsaved Changes");
+					int response = messageBox.open();
+					if (response == SWT.YES) {
+						// save and then exit
+						save();
+						return true;
+					} else {
+						// exit without saving
+						return true;
+					} 
+				}else {
+					// save unpromted
 					save();
 					return true;
-				} else {
-					return false;
 				}
 			}
 		}
