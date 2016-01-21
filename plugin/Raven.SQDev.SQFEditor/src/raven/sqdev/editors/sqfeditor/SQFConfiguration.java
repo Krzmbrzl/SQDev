@@ -9,9 +9,9 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
 import raven.sqdev.editors.ColorManager;
-import raven.sqdev.editors.ISQDevColorConstants;
 import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.editors.NonRuleBasedDamagerRepairer;
+import raven.sqdev.preferences.util.ISQDevColorConstants;
 
 public final class SQFConfiguration extends SourceViewerConfiguration {
 	

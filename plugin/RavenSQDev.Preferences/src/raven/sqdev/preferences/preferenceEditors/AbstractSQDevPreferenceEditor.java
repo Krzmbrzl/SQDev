@@ -14,8 +14,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
 
 import raven.sqdev.preferences.activator.Activator;
-import raven.sqdev.preferences.pages.EStatus;
 import raven.sqdev.preferences.pages.ISQDevPreferencePage;
+import raven.sqdev.preferences.util.EStatus;
 import raven.sqdev.preferences.util.ISQDevPreferenceEditorListener;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 import raven.sqdev.preferences.util.SQDevPreferenceComposite;
@@ -74,6 +74,11 @@ public abstract class AbstractSQDevPreferenceEditor
 	protected Label label;
 	
 	/**
+	 * The ID of this editor
+	 */
+	private String ID;
+	
+	/**
 	 * Creates a new <code>SQDevPreferenceEditor</code>
 	 * 
 	 * @param preferenceKey
@@ -98,6 +103,7 @@ public abstract class AbstractSQDevPreferenceEditor
 		setContainer(container);
 		setStatus(EStatus.OK);
 		setTooltip(tooltip);
+		setID(preferenceKey);
 		
 		if (resolve) {
 			// try to find the preferencePage yourself
@@ -195,7 +201,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	
 	@Override
 	public boolean doSave() {
-		if(!isValid()) {
+		if (!isValid()) {
 			MessageDialog.open(MessageDialog.ERROR,
 					PlatformUI.getWorkbench().getDisplay().getActiveShell(),
 					"Failed at saving " + getLabelText().substring(1, getLabelText().length() - 1),
@@ -632,6 +638,43 @@ public abstract class AbstractSQDevPreferenceEditor
 		
 		setLabelText(labelText);
 		getContainer().layout(true);
+	}
+	
+	/**
+	 * Gets the unique ID of this editor
+	 * 
+	 * @return
+	 */
+	public String getID() {
+		return ID;
+	}
+	
+	public void setID(String iD) {
+		ID = iD;
+	}
+	
+	/**
+	 * Compares the two editors. They are considered equal when they are an
+	 * instance of the same class and if they have the same ID.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof AbstractSQDevPreferenceEditor) {
+			AbstractSQDevPreferenceEditor editor = (AbstractSQDevPreferenceEditor) obj;
+			
+			if (!editor.getClass().equals(this.getClass())) {
+				return false;
+			}
+			
+			if (!editor.getID().equals(this.getID())) {
+				return false;
+			}
+			
+			return true;
+			
+		} else {
+			return false;
+		}
 	}
 	
 }

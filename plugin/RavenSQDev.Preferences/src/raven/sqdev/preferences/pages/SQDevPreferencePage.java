@@ -265,7 +265,9 @@ public class SQDevPreferencePage extends PreferencePage
 				setErrorMessage(currentEditor.getStatusHint());
 				return false;
 			}
-			
+		}
+		
+		if(getErrorMessage() != null) {
 			setErrorMessage(null);
 		}
 		

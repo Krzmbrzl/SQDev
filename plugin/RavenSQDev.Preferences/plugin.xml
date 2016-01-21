@@ -5,8 +5,14 @@
          point="org.eclipse.ui.preferencePages">
       <page
             class="raven.sqdev.preferences.pages.SQDevGeneralPreferencePage"
-            id="raven.sqdev.preferences.sqdevpreferencepage"
+            id="raven.sqdev.preferences.sqdevgeneralpreferencepage"
             name="SQDev">
+      </page>
+      <page
+            category="raven.sqdev.preferences.sqdevgeneralpreferencepage"
+            class="raven.sqdev.preferences.pages.SQDevEditorPreferencePage"
+            id="raven.sqdev.preferences.sqdeveditorpreferencepage"
+            name="Editor">
       </page>
    </extension>
    <extension

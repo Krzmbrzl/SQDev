@@ -3,8 +3,8 @@ package raven.sqdev.preferences.preferenceEditors;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Composite;
 
-import raven.sqdev.preferences.pages.EStatus;
 import raven.sqdev.preferences.pages.ISQDevPreferencePage;
+import raven.sqdev.preferences.util.EStatus;
 import raven.sqdev.preferences.util.ISQDevPreferenceEditorListener;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 

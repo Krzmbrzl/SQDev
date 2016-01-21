@@ -3,25 +3,29 @@ package raven.sqdev.preferences.preferenceEditors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.PlatformUI;
 
 import raven.sqdev.preferences.pages.ISQDevPreferencePage;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
+import raven.sqdev.util.ColorUtils;
 
-public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor {
+public class ColorSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor {
 	
 	/**
-	 * The checkbox button
+	 * The button to display and choose the color
 	 */
-	protected Button checkBox;
-	
-	/**
-	 * The initial state of the checkBox
-	 */
-	private boolean initialState;
+	protected Button colorButton;
+	private String chosenColor;
 	
 	/**
 	 * Creates a new <code>SQDevPreferenceEditor</code><br>
@@ -36,8 +40,7 @@ public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	 * @param container
 	 *            The container the GUI elements should be placed in
 	 */
-	public BooleanSQDevPreferenceEditor(String preferenceKey, String labelText,
-			Composite container) {
+	public ColorSQDevPreferenceEditor(String preferenceKey, String labelText, Composite container) {
 		super(preferenceKey, labelText, container);
 	}
 	
@@ -57,7 +60,7 @@ public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	 * @param container
 	 *            The container the GUI elements should be placed in
 	 */
-	public BooleanSQDevPreferenceEditor(String preferenceKey, String labelText, String tooltip,
+	public ColorSQDevPreferenceEditor(String preferenceKey, String labelText, String tooltip,
 			Composite container) {
 		super(preferenceKey, labelText, tooltip, container);
 	}
@@ -75,7 +78,7 @@ public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	 *            The <code>ISQDevPreferencePage</code> this editor is apllied
 	 *            to
 	 */
-	public BooleanSQDevPreferenceEditor(String preferenceKey, String labelText, Composite container,
+	public ColorSQDevPreferenceEditor(String preferenceKey, String labelText, Composite container,
 			ISQDevPreferencePage page) {
 		super(preferenceKey, labelText, container, page);
 	}
@@ -96,81 +99,53 @@ public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	 *            The <code>ISQDevPreferencePage</code> this editor is apllied
 	 *            to
 	 */
-	public BooleanSQDevPreferenceEditor(String preferenceKey, String labelText, String tooltip,
+	public ColorSQDevPreferenceEditor(String preferenceKey, String labelText, String tooltip,
 			Composite container, ISQDevPreferencePage page) {
 		super(preferenceKey, labelText, tooltip, container, page);
 	}
 	
 	@Override
-	public boolean doSave() {
-		if (super.doSave()) {
-			getPreferenceStore().setValue(getPreferenceKey(), checkBox.getSelection());
-			
-			updateSaveStatus(String.valueOf(checkBox.getSelection()));
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	@Override
 	public boolean needsSave() {
-		if (willNeedSave(String.valueOf(checkBox.getSelection()))) {
-			return true;
-		} else {
-			return false;
-		}
+		return willNeedSave(chosenColor);
 	}
 	
 	@Override
-	public boolean willNeedSave(String content) {
-		if (!content.equals("true") && !content.equals("false")) {
-			// has to be one of the two
-			throw new IllegalArgumentException(
-					"Expected \"true\" or \"false\" but got \"" + content + "\"");
-		}
-		
-		boolean newState = (content.equals("true")) ? true : false;
-		
-		if (newState != getPreferenceStore().getBoolean(getPreferenceKey())) {
+	public boolean doSave() {
+		if(super.doSave()) {
+			getPreferenceStore().setValue(getPreferenceKey(), chosenColor);
 			return true;
-		} else {
+		}else {
 			return false;
 		}
 	}
 	
 	@Override
 	public void doLoad() {
-		load(getPreferenceStore().getBoolean(getPreferenceKey()));
+		load(getPreferenceStore().getString(getPreferenceKey()));
 	}
 	
-	@Override
-	public void doLoadDefault() {
-		load(getPreferenceStore().getDefaultBoolean(getPreferenceKey()));
-	}
-	
-	private void load(boolean state) {
-		if (checkBox == null) {
-			// if the checkBox has not yet been created store the state and
-			// initialize with it
-			initialState = state;
-		} else {
-			if (checkBox.isDisposed()) {
-				return;
-			}
-			
-			checkBox.setSelection(state);
+	public void load(String str) {
+		// store current selection
+		chosenColor = str;
+		
+		if (colorButton != null && !colorButton.isDisposed()) {
+			colorButton.setImage(createColorImage(getSelectedColor()));
 			
 			evaluateInput();
-			updateSaveStatus(String.valueOf(state));
+			updateSaveStatus(chosenColor);
 		}
 		
 		changed(new SQDevChangeEvent(SQDevChangeEvent.SQDEV_VALUE_LOADED));
 	}
 	
 	@Override
+	public void doLoadDefault() {
+		load(getPreferenceStore().getDefaultString(getPreferenceKey()));
+	}
+	
+	@Override
 	public void evaluateInput() {
+		// There can't be wrong input
 	}
 	
 	@Override
@@ -180,42 +155,77 @@ public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	
 	@Override
 	public void createComponents(Composite container) {
-		label = new Label(container, SWT.NULL);
+		label = new Label(getContainer(), SWT.NULL);
 		setLabelText(getLabelText());
 		label.setToolTipText(getTooltip());
 		
-		checkBox = new Button(container, SWT.CHECK);
-		checkBox.setToolTipText(getTooltip());
-		checkBox.addMouseListener(new MouseAdapter() {
-			
+		colorButton = new Button(getContainer(), SWT.PUSH);
+		colorButton.setImage(createColorImage(getSelectedColor()));
+		colorButton.setToolTipText(getTooltip());
+		colorButton.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseUp(MouseEvent e) {
-				// fire change event
-				changed(new SQDevChangeEvent(SQDevChangeEvent.SQDEV_VALUE_ABOUT_TO_CHANGE));
+			public void mouseUp(MouseEvent event) {
+				ColorDialog dialog = new ColorDialog(
+						PlatformUI.getWorkbench().getDisplay().getActiveShell());
+				dialog.setRGB(ColorUtils.decodeRGB(chosenColor));
+				RGB selectedRGB = dialog.open();
 				
-				evaluateInput();
-				
-				updateSaveStatus(String.valueOf(checkBox.getSelection()));
+				if (selectedRGB != null) {
+					load(ColorUtils.getRGBValuesAsString(selectedRGB));
+				}
 			}
 		});
-		load(initialState);
 		
 		if (getContainer().getLayout() instanceof GridLayout) {
 			// make the layout's gaps a little wider
 			GridLayout layout = (GridLayout) getContainer().getLayout();
-			if (layout.horizontalSpacing < 20) {
-				layout.horizontalSpacing = 20;
-			}
+			layout.horizontalSpacing = 20;
 			
 			getContainer().setLayout(layout);
-		} else {
-			if (getContainer().getLayout() == null) {
+		}else {
+			if(getContainer().getLayout() == null) {
 				GridLayout layout = new GridLayout();
-				layout.horizontalSpacing = 20;
+
+				if (layout.horizontalSpacing < 20) {
+					layout.horizontalSpacing = 20;
+				}
 				
 				getContainer().setLayout(layout);
 			}
 		}
+	}
+	
+	protected Image createColorImage(Color color) {
+		int width = 50;
+		int height = 13;
+		
+		Image image = new Image(Display.getCurrent(), width + 1, height + 1);
+		
+		GC gc = new GC(image);
+		gc.setBackground(color);
+		gc.drawRectangle(0, 0, width, height);
+		gc.fillRectangle(1, 1, width - 1, height - 1);
+		gc.dispose();
+		
+		return image;
+	}
+	
+	@Override
+	public boolean willNeedSave(String content) {
+		if(content.equals(getPreferenceStore().getString(getPreferenceKey()))) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
+	/**
+	 * Gets the color the user has currently chosen
+	 * 
+	 * @return The chosen color
+	 */
+	protected Color getSelectedColor() {
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(chosenColor));
 	}
 	
 }

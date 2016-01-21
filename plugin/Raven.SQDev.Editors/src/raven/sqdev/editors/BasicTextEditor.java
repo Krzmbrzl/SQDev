@@ -1,6 +1,5 @@
 package raven.sqdev.editors;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.ITextViewerExtension;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
@@ -11,13 +10,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 
+import raven.sqdev.preferences.util.SQDevPreferenceConstants;
+import raven.sqdev.preferences.util.SQDevPreferenceUtil;
+
 public class BasicTextEditor extends TextEditor {
-	
-	public static final String EDITOR_MATCHING_BRACKETS_KEY = "matchingBrackets";
-	public static final String EDITOR_MATCHING_BRACKETS_COLOR_KEY = "matchingBracketsColor";
-	public static final String EDITOR_HIGHLIGHT_CURRENTLINE_KEY = "highlightCurrentLine";
-	public static final String EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY = "highlighCurrentLineColor";
-	
 	
 	private ColorManager colorManager;
 	private EditorKeyEventQueue editorKeyEventQueue;
@@ -71,24 +67,17 @@ public class BasicTextEditor extends TextEditor {
 		ICharacterPairMatcher matcher = new DefaultCharacterPairMatcher(matchChars,
 				IDocumentExtension3.DEFAULT_PARTITIONING, true);
 				
+		// character pair matching
 		support.setCharacterPairMatcher(matcher);
-		support.setMatchingCharacterPainterPreferenceKeys(EDITOR_MATCHING_BRACKETS_KEY,
-				EDITOR_MATCHING_BRACKETS_COLOR_KEY);
-		
-		// newLine highlighting
-		support.setCursorLinePainterPreferenceKeys(EDITOR_HIGHLIGHT_CURRENTLINE_KEY,
-				EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY);
+		support.setMatchingCharacterPainterPreferenceKeys(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY,
+				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY);
 				
-		// Enable bracket highlighting in the preference store
-		IPreferenceStore store = getPreferenceStore();
-		store.setDefault(EDITOR_MATCHING_BRACKETS_KEY, true);
-		store.setDefault(EDITOR_MATCHING_BRACKETS_COLOR_KEY,
-				ISQDevColorConstants.getRGBValuesAsString(ISQDevColorConstants.BRACKETMATCH));
-		
-		//enable currentLine highlighting
-		store.setDefault(EDITOR_HIGHLIGHT_CURRENTLINE_KEY, true);
-		store.setDefault(EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
-				ISQDevColorConstants.getRGBValuesAsString(ISQDevColorConstants.CURRENTLINE));
+		// newLine highlighting
+		support.setCursorLinePainterPreferenceKeys(
+				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY,
+				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY);
+				
 	}
 	
 	/**
@@ -126,6 +115,16 @@ public class BasicTextEditor extends TextEditor {
 		pairHandler.addPair(CharacterPair.CURLY_BRACKETS);
 		
 		getEditorKeyEventQueue().queueEditorKeyHandler(pairHandler);
+	}
+	
+	@Override
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+		
+		if (fSourceViewerDecorationSupport != null) {
+			// set the plugin's shared preference store instead of the default one
+			fSourceViewerDecorationSupport.install(SQDevPreferenceUtil.getPreferenceStore());
+		}
 	}
 	
 }

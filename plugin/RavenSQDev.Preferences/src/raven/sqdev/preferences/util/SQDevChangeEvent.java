@@ -2,7 +2,7 @@ package raven.sqdev.preferences.util;
 
 public class SQDevChangeEvent {
 	
-	public static final String SQDEV_VALUE_CHANGED = "valueChanged";
+	public static final String SQDEV_VALUE_ABOUT_TO_CHANGE = "valueABoutToChange";
 	public static final String SQDEV_STATUS_CHANGED = "statusChanged";
 	public static final String SQDEV_VALUE_LOADED = "valueLoaded";
 	

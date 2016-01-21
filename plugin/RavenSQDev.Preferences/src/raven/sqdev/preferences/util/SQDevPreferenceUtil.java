@@ -52,13 +52,37 @@ public class SQDevPreferenceUtil {
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_ALWAYS_SAVE_ON_EXIT</code>
-	 * preference taht indicates whether the preference page shall prompt for
+	 * preference that indicates whether the preference page shall prompt for
 	 * save when clicking OK
 	 * 
-	 * @return
+	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean alwaysSaveOnExit() {
 		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_ALWAYS_SAVE_ON_EXIT);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_ARMA_DOCUMENTS_DIRECTORY</code>
+	 * preference that holds the path to the ArmA folder in the documents directory
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static String getArmaDocumentsDirectory() {
+		return getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_ARMA_DOCUMENTS_DIRECTORY);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY</code>
+	 * preference that holds the path to the ArmA folder in the programs directory
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static String getArmaProgramDirectory() {
+		return getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY);
 	}
 	
 }

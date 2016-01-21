@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Util
 Bundle-SymbolicName: raven.sqdev.util
-Bundle-Version: 0.1.0
+Bundle-Version: 0.2.0
 Bundle-Activator: raven.sqdev.util.Activator
 Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.core.runtime
@@ -10,3 +10,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: raven.sqdev.exceptions,
  raven.sqdev.util
+Import-Package: org.eclipse.swt.graphics

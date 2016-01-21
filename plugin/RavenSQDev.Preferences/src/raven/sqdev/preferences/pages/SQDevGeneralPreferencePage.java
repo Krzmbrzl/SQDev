@@ -24,10 +24,14 @@ public class SQDevGeneralPreferencePage extends SQDevPreferencePage {
 		createDescription(armaDirs, "Here the location of your ArmA folders are specified "
 				+ "(The program folder as well as the document folder)  ");
 				
-		addPreferenceEditor(new DirectorySQDevPreferenceEditor(
+		DirectorySQDevPreferenceEditor dirEditor = new DirectorySQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY, "&Program:",
-				"The path to the directory in which your arma3.exe is located", armaDirs));
+				"The path to the directory in which your arma3.exe is located", armaDirs);
+		
+		dirEditor.addFileToMatch("arma3.exe");
 				
+		addPreferenceEditor(dirEditor);
+		
 		addPreferenceEditor(new DirectorySQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_ARMA_DOCUMENTS_DIRECTORY, "&Documents:",
 				"The path to the \"Arma 3\" or \"Arma 3 - Other Profiles\" directory in your Documents",
@@ -44,5 +48,4 @@ public class SQDevGeneralPreferencePage extends SQDevPreferencePage {
 				"Whether unsaved preferences should get automatically saved when clicking \"OK\" without a popup asking for it",
 				misc));
 	}
-	
 }

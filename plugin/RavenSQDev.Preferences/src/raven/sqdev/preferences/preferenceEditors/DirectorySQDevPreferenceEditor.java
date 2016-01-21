@@ -1,6 +1,7 @@
 package raven.sqdev.preferences.preferenceEditors;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -17,13 +18,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-import raven.sqdev.preferences.pages.EStatus;
 import raven.sqdev.preferences.pages.ISQDevPreferencePage;
+import raven.sqdev.preferences.util.EStatus;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 
 public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEditor
 		implements VerifyListener {
-	
+		
 	/**
 	 * The TextField used to show the current selected path to the user
 	 */
@@ -47,9 +48,15 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	private String buttonText = "Browse...";
 	
 	/**
+	 * An array of files that have to exist in the selected directory
+	 */
+	protected ArrayList<String> filesToMatch;
+	
+	/**
 	 * Creates a new <code>SQDevPreferenceEditor</code><br>
-	 * <b>This constructor can only be used if the given container is an instance
-	 * of <code>ISQDevPreferencePage</code> or one of it's parents is. </b>
+	 * <b>This constructor can only be used if the given container is an
+	 * instance of <code>ISQDevPreferencePage</code> or one of it's parents
+	 * is. </b>
 	 * 
 	 * @param preferenceKey
 	 *            The key of the preference to work on
@@ -64,12 +71,15 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	public DirectorySQDevPreferenceEditor(String preferenceKey, String labelText, String tooltip,
 			Composite container) {
 		super(preferenceKey, labelText, tooltip, container);
+		
+		filesToMatch = new ArrayList<String>();
 	}
 	
 	/**
 	 * Creates a new <code>SQDevPreferenceEditor</code><br>
-	 * <b>This constructor can only be used if the given container is an instance
-	 * of <code>ISQDevPreferencePage</code> or one of it's parents is. </b>
+	 * <b>This constructor can only be used if the given container is an
+	 * instance of <code>ISQDevPreferencePage</code> or one of it's parents
+	 * is. </b>
 	 * 
 	 * @param preferenceKey
 	 *            The key of the preference to work on
@@ -81,6 +91,8 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	public DirectorySQDevPreferenceEditor(String preferenceKey, String labelText,
 			Composite container) {
 		super(preferenceKey, labelText, "", container);
+		
+		filesToMatch = new ArrayList<String>();
 	}
 	
 	/**
@@ -102,6 +114,8 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	public DirectorySQDevPreferenceEditor(String preferenceKey, String labelText,
 			Composite container, String tooltip, ISQDevPreferencePage page) {
 		super(preferenceKey, labelText, tooltip, container, page);
+		
+		filesToMatch = new ArrayList<String>();
 	}
 	
 	/**
@@ -120,6 +134,8 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	public DirectorySQDevPreferenceEditor(String preferenceKey, String labelText,
 			Composite container, ISQDevPreferencePage page) {
 		super(preferenceKey, labelText, "", container, page);
+		
+		filesToMatch = new ArrayList<String>();
 	}
 	
 	@Override
@@ -150,7 +166,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	 * @param text
 	 *            The text to display<br>
 	 */
-	private void load(String text) {		
+	private void load(String text) {
 		if (pathText == null) {
 			setInitialText(text);
 		} else {
@@ -175,11 +191,14 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	
 	@Override
 	public void evaluateInput() {
-		String input = pathText.getText();
+		evaluateInput(pathText.getText());
+	}
+	
+	public void evaluateInput(String input) {
 		File inputFile = new File(input);
 		EStatus status = EStatus.OK;
 		
-		if(input.isEmpty()) {
+		if (input.isEmpty()) {
 			status = EStatus.ERROR;
 			status.setHint("No path specified!");
 			setStatus(status);
@@ -198,7 +217,19 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		if (!inputFile.isDirectory()) {
 			status = EStatus.ERROR;
 			status.setHint("The given path is no directory!");
+			setStatus(status);
 			return;
+		}
+		
+		// check for the files that have to be present
+		for (String currentFile : filesToMatch) {
+			if (!new File(input + "\\" + currentFile).exists()) {
+				status = EStatus.ERROR;
+				status.setHint(
+						"Can't find the file \"" + currentFile + "\" in the specified directory!");
+				setStatus(status);
+				return;
+			}
 		}
 		
 		setStatus(status);
@@ -298,30 +329,35 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	}
 	
 	@Override
-	public void verifyText(VerifyEvent e) {
-		updateSaveStatus(e.text);
-		
-		// evaluate the new value
-		evaluateInput();
-		
+	public void verifyText(VerifyEvent e) {		
 		// notify about change
-		changed(new SQDevChangeEvent(SQDevChangeEvent.SQDEV_VALUE_CHANGED));
+		changed(new SQDevChangeEvent(SQDevChangeEvent.SQDEV_VALUE_ABOUT_TO_CHANGE));
 	}
 	
 	@Override
 	public void setStatus(EStatus status) {
 		super.setStatus(status);
 		
-		if(pathText == null) {
+		if (pathText == null) {
 			return;
 		}
 		
 		// indicate an error via red backgroundColor
-		if(status == EStatus.ERROR) {
+		if (status == EStatus.ERROR) {
 			pathText.setBackground(new Color(Display.getCurrent(), 255, 153, 153));
-		}else {
+		} else {
 			pathText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		}
+	}
+	
+	/**
+	 * Adds a file that has to present in the directory specified by this editor
+	 * in order to get the valid state
+	 * 
+	 * @param fileName The name of the file to match
+	 */
+	public void addFileToMatch(String fileName) {
+		filesToMatch.add(fileName);
 	}
 	
 }
