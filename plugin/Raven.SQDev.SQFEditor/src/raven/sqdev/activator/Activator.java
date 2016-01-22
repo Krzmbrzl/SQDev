@@ -1,7 +1,10 @@
 package raven.sqdev.activator;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -45,6 +48,16 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+	/**
+	 * This will return the preference store of
+	 * <code>raven.sqdev.preferences</code> as this is where all SQDev
+	 * preference are stored
+	 */
+	@Override
+	public IPreferenceStore getPreferenceStore() {
+		return SQDevPreferenceUtil.getPreferenceStore();
 	}
 
 }

@@ -8,18 +8,22 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
+import raven.sqdev.editors.BasicTextEditor;
 import raven.sqdev.editors.ColorManager;
-import raven.sqdev.editors.ISQDevColorConstants;
 import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.editors.NonRuleBasedDamagerRepairer;
+import raven.sqdev.preferences.util.ISQDevColorConstants;
+import raven.sqdev.preferences.util.SQDevPreferenceConstants;
 
 public final class SQFConfiguration extends SourceViewerConfiguration {
 	
-	private ColorManager colorManager;
-	private KeywordScanner keywordScanner;
+	protected ColorManager colorManager;
+	protected KeywordScanner keywordScanner;
+	protected BasicTextEditor editor;
 	
-	public SQFConfiguration(ColorManager manager) {
+	public SQFConfiguration(ColorManager manager, BasicTextEditor editor) {
 		this.setColorManager(manager);
+		this.editor = editor;
 	}
 	
 	@Override
@@ -45,7 +49,7 @@ public final class SQFConfiguration extends SourceViewerConfiguration {
 		
 		if (this.keywordScanner == null) {			
 			this.keywordScanner = new KeywordScanner(new SQFKeywordProvider(),
-					this.getColorManager().getColor(ISQDevColorConstants.KEYWORD));
+					SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY, editor);
 		}
 		
 		return this.keywordScanner;
