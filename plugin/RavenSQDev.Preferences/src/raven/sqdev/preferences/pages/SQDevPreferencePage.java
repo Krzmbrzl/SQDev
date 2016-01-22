@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
+import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.preferences.preferenceEditors.ISQDevPreferenceEditor;
 import raven.sqdev.preferences.util.ISQDevPreferenceEditorListener;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
@@ -40,9 +41,13 @@ public class SQDevPreferencePage extends PreferencePage
 		SQDevPreferencePageContainer.setParent(parent);
 		
 		SQDevPreferencePageContainer.setLayout(createDefaultGridLayout(1));
+		SQDevPreferencePageContainer.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		SQDevPreferencePageContainer.setFont(parent.getFont());
 		
 		initialize();
+		
+		Composite spacer = new Composite(SQDevPreferencePageContainer, SWT.NULL);
+		spacer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		return SQDevPreferencePageContainer;
 	}
@@ -67,6 +72,8 @@ public class SQDevPreferencePage extends PreferencePage
 		for (ISQDevPreferenceEditor currentEditor : getEditors()) {
 			Composite container = currentEditor.getContainer();
 			
+			container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+			
 			if (!containerList.contains(container)) {
 				containerList.add(container);
 			}
@@ -77,13 +84,50 @@ public class SQDevPreferencePage extends PreferencePage
 			}
 		}
 		
+		// create an underlying component that will hold all of the added
+		// components
+		Composite mainContainer = new Composite(SQDevPreferencePageContainer, SWT.NULL);
+		GridLayout mainContainerLayout = new GridLayout();
+		mainContainerLayout.verticalSpacing = 25;
+		mainContainer.setLayout(mainContainerLayout);
+		mainContainer.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		
 		for (Composite current : containerList) {
+			// put current on the mainContainer
+			if (current instanceof SQDevPreferenceComposite) {
+				current.setParent(mainContainer);
+			} else {
+				Composite previousContainer = current;
+				Composite underlyingContainer = current.getParent();
+				
+				while (underlyingContainer != null) {
+					if (underlyingContainer instanceof SQDevPreferenceComposite) {
+						previousContainer.setParent(mainContainer);
+						break;
+					} else {
+						previousContainer = underlyingContainer;
+						underlyingContainer = underlyingContainer.getParent();
+					}
+				}
+				
+				if (underlyingContainer == null) {
+					// indicate that a problem occured
+					try {
+						throw new SQDevException("Failed at finding the underlying container!");
+					} catch (SQDevException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			
 			// create the shared container
 			Composite sharedContainer = new Composite(current, SWT.NULL);
 			
 			for (ISQDevPreferenceEditor currentEditor : getEditors()) {
 				if (currentEditor.getContainer().equals(current)) {
-					// put all editors that have the same container on one new sharedContainer
+					// put all editors that have the same container on one new
+					// sharedContainer
 					currentEditor.setContainer(sharedContainer);
 					// make all editors fill out the later crated layout
 					currentEditor.matchComponentCount(maxComponents);
@@ -94,9 +138,10 @@ public class SQDevPreferencePage extends PreferencePage
 			
 			GridLayout layout;
 			
-			if(sharedContainer.getLayout() == null || !(sharedContainer.getLayout() instanceof GridLayout)) {
+			if (sharedContainer.getLayout() == null
+					|| !(sharedContainer.getLayout() instanceof GridLayout)) {
 				layout = new GridLayout();
-			}else {
+			} else {
 				layout = (GridLayout) sharedContainer.getLayout();
 			}
 			
@@ -161,6 +206,7 @@ public class SQDevPreferencePage extends PreferencePage
 	 * columns
 	 * 
 	 * @param columns
+	 *            The amount of columns to use
 	 * @return
 	 */
 	public GridLayout createDefaultGridLayout(int columns) {
@@ -229,7 +275,7 @@ public class SQDevPreferencePage extends PreferencePage
 	@Override
 	public boolean performOk() {
 		for (ISQDevPreferenceEditor currentEditor : getEditors()) {
-			if (currentEditor.needsSave()) {				
+			if (currentEditor.needsSave()) {
 				if (!SQDevPreferenceUtil.alwaysSaveOnExit()) {
 					MessageBox messageBox = new MessageBox(
 							PlatformUI.getWorkbench().getDisplay().getActiveShell(),
@@ -245,8 +291,8 @@ public class SQDevPreferencePage extends PreferencePage
 					} else {
 						// exit without saving
 						return true;
-					} 
-				}else {
+					}
+				} else {
 					// save unpromted
 					save();
 					return true;
@@ -267,7 +313,7 @@ public class SQDevPreferencePage extends PreferencePage
 			}
 		}
 		
-		if(getErrorMessage() != null) {
+		if (getErrorMessage() != null) {
 			setErrorMessage(null);
 		}
 		

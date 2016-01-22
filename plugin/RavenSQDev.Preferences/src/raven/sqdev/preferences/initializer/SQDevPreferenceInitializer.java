@@ -46,6 +46,10 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY, true);
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.CURRENTLINE));
+				
+		// set syntax highlighting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.KEYWORD));
 	}
 	
 	/**

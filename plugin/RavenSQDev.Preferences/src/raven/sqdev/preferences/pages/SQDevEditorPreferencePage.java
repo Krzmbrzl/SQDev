@@ -43,6 +43,12 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		
 		createDescription(colors, "Here you can change the colors of the editor");
 		
+		ColorSQDevPreferenceEditor syntaxHighlightingColorEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY,
+				"&Syntax highlighting:",
+				"Defines the color in which keywords are highlighted", colors);
+		addPreferenceEditor(syntaxHighlightingColorEditor);
+		
 		ColorSQDevPreferenceEditor currentLineHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
 				"&Current line highlighting:",

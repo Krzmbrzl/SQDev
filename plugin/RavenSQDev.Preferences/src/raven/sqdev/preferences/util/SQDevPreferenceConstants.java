@@ -45,4 +45,9 @@ public class SQDevPreferenceConstants {
 	 */
 	public static final String SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY = "raven.sqdev.currentLineHighlightingColor";
 	
+	/**
+	 * The preferences indicating the color of the syntax highlighting
+	 */
+	public static final String SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY = "raven.sqdev.syntaxHighlightingColor";
+	
 }

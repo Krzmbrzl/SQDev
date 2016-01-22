@@ -5,9 +5,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
 
 import raven.sqdev.preferences.activator.Activator;
+import raven.sqdev.util.ColorUtils;
 
 /**
  * This class provides functions for dealing with SQDev preferences
@@ -64,7 +67,8 @@ public class SQDevPreferenceUtil {
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_ARMA_DOCUMENTS_DIRECTORY</code>
-	 * preference that holds the path to the ArmA folder in the documents directory
+	 * preference that holds the path to the ArmA folder in the documents
+	 * directory
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
@@ -76,13 +80,65 @@ public class SQDevPreferenceUtil {
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY</code>
-	 * preference that holds the path to the ArmA folder in the programs directory
+	 * preference that holds the path to the ArmA folder in the programs
+	 * directory
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getArmaProgramDirectory() {
+		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY</code>
+	 * preference that holds the path to the ArmA folder in the programs
+	 * directory
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static boolean areMatchingBracketsShown() {
 		return getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY);
+				.getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY</code>
+	 * preference that holds the path to the ArmA folder in the programs
+	 * directory
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static boolean isCurrentLineHighlighted() {
+		return getPreferenceStore()
+				.getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY</code>
+	 * preference that holds the path to the ArmA folder in the programs
+	 * directory
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static Color getMatchingBracketHighlightingColor() {
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY)));
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY</code>
+	 * preference that holds the path to the ArmA folder in the programs
+	 * directory
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static Color getCurrentLineHighlightingColor() {
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY)));
 	}
 	
 }

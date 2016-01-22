@@ -127,4 +127,10 @@ public class BasicTextEditor extends TextEditor {
 		}
 	}
 	
+	/**
+	 * Updates the editor
+	 */
+	public void update() {
+		this.getSourceViewer().invalidateTextPresentation();
+	}
 }
