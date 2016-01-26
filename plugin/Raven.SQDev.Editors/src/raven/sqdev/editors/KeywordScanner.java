@@ -26,7 +26,7 @@ public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeL
 	
 	protected String preferenceKey;
 	protected IKeywordProvider provider;
-	protected BasicTextEditor editor;
+	protected BasicCodeEditor editor;
 	
 	/**
 	 * Creates an instance of this scanner
@@ -38,7 +38,7 @@ public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeL
 	 *            The key of the preference describing the color of the
 	 *            highlighting of the keywords
 	 */
-	public KeywordScanner(IKeywordProvider provider, String colorPreferenceKey, BasicTextEditor editor) {
+	public KeywordScanner(IKeywordProvider provider, String colorPreferenceKey, BasicCodeEditor editor) {
 		String strColor = SQDevPreferenceUtil.getPreferenceStore().getString(colorPreferenceKey);
 		
 		if (strColor == null || strColor.isEmpty()) {

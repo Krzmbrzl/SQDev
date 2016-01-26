@@ -1,25 +1,15 @@
 package raven.sqdev.wizards.sqdevProject;
 
-import java.io.ByteArrayInputStream;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.part.FileEditorInput;
 
-import raven.sqdev.editors.BasicTextEditor;
-import raven.sqdev.wizards.exceptions.FailedAtCreatingFileException;
+import raven.sqdev.exceptions.FailedAtCreatingFileException;
+import raven.sqdev.util.EFileType;
 
 public enum EProjectType {
 	SQF("SQF", "Creates a new SQF-project"), OOS("OOS", "Creates a new OOS-project"), MIXED("Mixed",
@@ -27,8 +17,6 @@ public enum EProjectType {
 			
 	private String displayName;
 	private String creationDescription;
-	
-	private final String INITIAL_SQF_CONTENT = "scopeName = \"init\";\n\n";
 	
 	private EProjectType(String name, String creationDescription) {
 		setDisplayName(name);
@@ -111,7 +99,6 @@ public enum EProjectType {
 	 */
 	private void createSQFProject(IProject project, IWorkspaceRoot root) {
 		IFolder scriptFolder = project.getFolder("scripts");
-		IFile initFile = project.getFile("init.sqf");
 		
 		try {
 			// open the project
@@ -133,51 +120,15 @@ public enum EProjectType {
 			}
 		}
 		
-		if (!initFile.exists()) {
-			try {
-				initFile.create(getSQFInitFileContent(), IResource.NONE, null);
-			} catch (CoreException e) {
-				try {
-					throw new FailedAtCreatingFileException(e);
-				} catch (FailedAtCreatingFileException e1) {
-					e1.printStackTrace();
-				}
-			}
-		}
+		// create init file //TODO: could also use CfgFunctions
+		EFileType file = EFileType.SQF;
+		file.setPath(project.getFullPath().toString());
+		file.create("init");
 		
-		// open the init file
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
-		
-		IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry()
-				.getDefaultEditor(initFile.getName());
-				
-		try {
-			page.openEditor(new FileEditorInput(initFile), desc.getId());
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
-		
-		// set initial caret offset so that it is at the end of the file
-		try {
-			BasicTextEditor editor = (BasicTextEditor) IDE.openEditor(page, initFile, true);
-			
-			editor.selectAndReveal(INITIAL_SQF_CONTENT.length(), 0);
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}		
-	}
-	
-	/**
-	 * Creates an InputStream with the initial content of the init.sqf
-	 * 
-	 * @return
-	 */
-	private ByteArrayInputStream getSQFInitFileContent() {
-		byte[] content = INITIAL_SQF_CONTENT.getBytes();
-		
-		return new ByteArrayInputStream(content);
+		// create the Description.ext
+		file = EFileType.EXT;
+		file.setPath(project.getFullPath().toString());
+		file.create("description", false);
 	}
 	
 	public String getDisplayName() {

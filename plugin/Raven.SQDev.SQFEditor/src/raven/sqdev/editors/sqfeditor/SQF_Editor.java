@@ -1,8 +1,8 @@
 package raven.sqdev.editors.sqfeditor;
 
-import raven.sqdev.editors.BasicTextEditor;
+import raven.sqdev.editors.BasicCodeEditor;
 
-public class SQF_Editor extends BasicTextEditor {
+public class SQF_Editor extends BasicCodeEditor {
 	
 	public SQF_Editor() {
 		super();
