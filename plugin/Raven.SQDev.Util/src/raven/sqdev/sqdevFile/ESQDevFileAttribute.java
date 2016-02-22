@@ -3,7 +3,7 @@ package raven.sqdev.sqdevFile;
 /**
  * Contains all valid attributes that can be used in a {@linkplain #SDevFile}
  * 
- * @author Robert Adam
+ * @author Raven
  * 		
  */
 public enum ESQDevFileAttribute {	
@@ -25,10 +25,10 @@ public enum ESQDevFileAttribute {
 	/**
 	 * The attribute defining where the project should be exported to
 	 */
-	EXPORTLOCATION {
+	EXPORTDIRECTORY {
 		@Override
 		public String toString() {
-			return "exportLocation";
+			return "exportDirectory";
 		}
 
 		@Override
@@ -36,8 +36,28 @@ public enum ESQDevFileAttribute {
 			// export location has to specified
 			return null;
 		}
-	};
+	},
+	/**
+	 * The attribute defining the map the mission should play on
+	 */
+	MAP {
+		@Override
+		public String toString() {
+			return "map";
+		}
+		
+		@Override
+		public String getDefault() {
+			// a map has to be specified
+			return null;
+		}
+		
+	}
+	;
 	
+	/**
+	 * The value of this attribute
+	 */
 	protected String value;
 	
 	/**

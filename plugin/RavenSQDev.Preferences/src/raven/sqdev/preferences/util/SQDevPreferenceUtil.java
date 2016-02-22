@@ -1,5 +1,7 @@
 package raven.sqdev.preferences.util;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -11,6 +13,7 @@ import org.osgi.framework.Bundle;
 
 import raven.sqdev.preferences.activator.Activator;
 import raven.sqdev.util.ColorUtils;
+import raven.sqdev.util.FileSystemUtil;
 
 /**
  * This class provides functions for dealing with SQDev preferences
@@ -78,6 +81,28 @@ public class SQDevPreferenceUtil {
 	}
 	
 	/**
+	 * Gets the missions directory
+	 * 
+	 * @return
+	 */
+	public static File getMissionsDirectory() {
+		File docDir = new File(getArmaDocumentsDirectory());
+		
+		if (docDir == null || !docDir.exists()) {
+			throw new SQDevInvalidPreferenceException(
+					"The ArmA folder in the documents directory is invalid");
+		}
+		
+		File missionsDir = FileSystemUtil.getFolder(docDir, "missions");
+		
+		if (missionsDir == null) {
+			throw new SQDevInvalidPreferenceException("Couldn't find the \"missions\" directory");
+		}
+		
+		return missionsDir;
+	}
+	
+	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY</code>
 	 * preference that holds the path to the ArmA folder in the programs
@@ -141,4 +166,15 @@ public class SQDevPreferenceUtil {
 				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY)));
 	}
 	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN</code> preference
+	 * that indicates whether a directory should get cleaned without asking for
+	 * permission when exporting a project
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static boolean autoClean() {
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN);
+	}
 }

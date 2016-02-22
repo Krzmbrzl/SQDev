@@ -8,6 +8,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
 
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
@@ -18,13 +22,15 @@ import raven.sqdev.util.StringUtils;
 /**
  * A <code>SQDevFile</code> contains some project specific information for the
  * plugin to use.<br>
- * This kind of file has to follow a <b>strict syntax:</b><br>
+ * This kind of file has to follow a <b>strict syntax:</b>
  * <li>Every information has to end with a newLine</li>
- * <li>Every information must be specified in it's own line</li><br>
- * <li>An attribute has to assign it's value via <code>=</code></li><br>
- * <li>An annotation has to start with <code>@</code></li>
+ * <li>Every information must be specified in it's own line</li>
+ * <li>An attribute has to assign it's value via <code>=</code></li>
  * <li>Every attribute may only be used once</li>
- * <li>Every attribute has to be closed with a semicolon on the same line<(li>
+ * <li>Every attribute has to be closed with a semicolon on the same line</li>
+ * <li>An annotation has to start with <code>@</code></li>
+ * <li>The argument for the annotation has to be encapsulated in quotation marks
+ * </li><br>
  * 
  * @author Raven
  * 		
@@ -110,8 +116,25 @@ public class SQDevFile extends File {
 	 *             If the file is not readable or writable this exception will
 	 *             be thrown
 	 */
-	public SQDevFile(File file) throws FileNotFoundException, IllegalAccessStateException {
-		this(file.getPath());
+	public SQDevFile(IFile file) throws FileNotFoundException, IllegalAccessStateException {
+		this(file.getRawLocation().toString());
+	}
+	
+	/**
+	 * Converts the given path to a <code>SQDevFile</code>
+	 * 
+	 * @param path
+	 *            The path to the file to be converted. <b>Must exist!</b>
+	 * @throws FileNotFoundException
+	 *             The constructor will check if the given path can be resolved.
+	 *             If not it will throw this exception. <b>This file can't be
+	 *             non-existant!</b>
+	 * @throws IllegalAccessStateException
+	 *             If the file is not readable or writable this exception will
+	 *             be thrown
+	 */
+	public SQDevFile(IPath path) throws FileNotFoundException, IllegalAccessStateException {
+		this(path.toString());
 	}
 	
 	/**
@@ -195,10 +218,12 @@ public class SQDevFile extends File {
 		String completeFile = "";
 		try {
 			String currentLine;
-			while ((currentLine = openReader().readLine()) != null) {
-				completeFile += currentLine;
+			BufferedReader reader = openReader();
+			
+			while ((currentLine = reader.readLine()) != null) {
+				completeFile += currentLine + "\n";
 				
-				if (currentLine.equals("\n") || currentLine.trim().startsWith("//")) {
+				if (currentLine.isEmpty() || currentLine.trim().startsWith("//")) {
 					// skip blank lines and comments
 					continue;
 				} else {
@@ -263,15 +288,16 @@ public class SQDevFile extends File {
 		String completeFile = "";
 		
 		String currentLine;
-		while ((currentLine = openReader().readLine()) != null) {
-			completeFile += currentLine;
+		BufferedReader reader = openReader();
+		while ((currentLine = reader.readLine()) != null) {
+			completeFile += currentLine + "\n";
 		}
 		
 		return completeFile;
 	}
 	
 	/**
-	 * Gets the the value of the given attribute
+	 * Takes the given attribute and sets it's value accordingly to this file
 	 * 
 	 * @param attribute
 	 *            The attribute that should be obtained
@@ -279,7 +305,7 @@ public class SQDevFile extends File {
 	 * @throws SQDevFileIsInvalidException
 	 *             This exception is thrown when the this file is invalid
 	 */
-	public ESQDevFileAttribute getAttribute(ESQDevFileAttribute attribute)
+	public ESQDevFileAttribute parseAttribute(ESQDevFileAttribute attribute)
 			throws SQDevFileIsInvalidException {
 		if (!isValid()) {
 			throw new SQDevFileIsInvalidException();
@@ -291,6 +317,9 @@ public class SQDevFile extends File {
 		} catch (IOException e) {
 			throw new SQDevCoreException(e);
 		}
+		
+		// remove all comments
+		content = content.replaceAll("//.*\n", "");
 		
 		if (!content.contains(attribute.toString())) {
 			if (!attribute.hasDefault()) {
@@ -319,7 +348,7 @@ public class SQDevFile extends File {
 			
 			if (!found) {
 				// trim content with each iteration to prevent an endless loop
-				content = content.substring(content.indexOf(detectedLine));
+				content = content.substring(content.indexOf(detectedLine) + detectedLine.length());
 			}
 		}
 		
@@ -330,6 +359,61 @@ public class SQDevFile extends File {
 		attribute.setValue(value);
 		
 		return attribute;
+	}
+	
+	/**
+	 * Takes the given annotation and sets it's values accordingly to this file
+	 * 
+	 * @param annotation
+	 *            The desired annotation
+	 * @return The annotation with the set values
+	 * @throws SQDevFileIsInvalidException
+	 *             This exception is thrown when this file is invalid
+	 */
+	public ESQDevFileAnnotation parseAnnotation(ESQDevFileAnnotation annotation)
+			throws SQDevFileIsInvalidException {
+		// clean the values
+		annotation.setValues(new ArrayList<String>());
+		
+		if (!isValid()) {
+			throw new SQDevFileIsInvalidException();
+		}
+		
+		String content;
+		try {
+			content = getContent();
+		} catch (IOException e) {
+			throw new SQDevCoreException(e);
+		}
+		
+		// remove all comments
+		content = content.replaceAll("//.*\n", "");
+		
+		// check if the annotation is specified
+		if (!content.contains("@" + annotation + " ")) {
+			// if the annotation is not specified just set empty values
+			annotation.setValues(new ArrayList<String>());
+		} else {
+			// get the values of this annotation
+			while (content.contains("@" + annotation + " ")) {
+				String detectedLine = content.substring(content.indexOf("@" + annotation + " "));
+				detectedLine = detectedLine.substring(0, detectedLine.indexOf("\n"));
+				
+				// get the value that is enclosed in quotation marks
+				String value = detectedLine
+						.substring(detectedLine.indexOf("\"") + 1, detectedLine.lastIndexOf("\""))
+						.trim();
+						
+				// add the value to the annotation
+				annotation.addValue(value);
+				
+				
+				// cut content to prevent endless loop
+				content = content.substring(content.indexOf(detectedLine) + detectedLine.length());
+			}
+		}
+		
+		return annotation;
 	}
 	
 }

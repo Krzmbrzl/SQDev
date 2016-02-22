@@ -21,6 +21,7 @@ import org.eclipse.ui.PlatformUI;
 import raven.sqdev.preferences.pages.ISQDevPreferencePage;
 import raven.sqdev.preferences.util.EStatus;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
+import raven.sqdev.util.FileSystemUtil;
 
 public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEditor
 		implements VerifyListener {
@@ -48,9 +49,15 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	private String buttonText = "Browse...";
 	
 	/**
-	 * An array of files that have to exist in the selected directory
+	 * A list of files that have to exist in the selected directory
 	 */
 	protected ArrayList<String> filesToMatch;
+	
+	/**
+	 * A list of folders that have to be present within the given folder
+	 */
+	protected ArrayList<String> foldersToMatch;
+	
 	
 	/**
 	 * Creates a new <code>SQDevPreferenceEditor</code><br>
@@ -73,6 +80,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		super(preferenceKey, labelText, tooltip, container);
 		
 		filesToMatch = new ArrayList<String>();
+		foldersToMatch = new ArrayList<String>();
 	}
 	
 	/**
@@ -93,6 +101,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		super(preferenceKey, labelText, "", container);
 		
 		filesToMatch = new ArrayList<String>();
+		foldersToMatch = new ArrayList<String>();
 	}
 	
 	/**
@@ -116,6 +125,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		super(preferenceKey, labelText, tooltip, container, page);
 		
 		filesToMatch = new ArrayList<String>();
+		foldersToMatch = new ArrayList<String>();
 	}
 	
 	/**
@@ -136,6 +146,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		super(preferenceKey, labelText, "", container, page);
 		
 		filesToMatch = new ArrayList<String>();
+		foldersToMatch = new ArrayList<String>();
 	}
 	
 	@Override
@@ -227,6 +238,17 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 				status = EStatus.ERROR;
 				status.setHint(
 						"Can't find the file \"" + currentFile + "\" in the specified directory!");
+				setStatus(status);
+				return;
+			}
+		}
+		
+		// check for the directories that have to be present
+		for (String currentFolder : foldersToMatch) {
+			if (!FileSystemUtil.containsFolder(inputFile, currentFolder)) {
+				status = EStatus.ERROR;
+				status.setHint("Can't find the directory \"" + currentFolder
+						+ "\" in the specified directory!");
 				setStatus(status);
 				return;
 			}
@@ -329,7 +351,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	}
 	
 	@Override
-	public void verifyText(VerifyEvent e) {		
+	public void verifyText(VerifyEvent e) {
 		// notify about change
 		changed(new SQDevChangeEvent(SQDevChangeEvent.SQDEV_VALUE_ABOUT_TO_CHANGE));
 	}
@@ -354,10 +376,21 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 	 * Adds a file that has to present in the directory specified by this editor
 	 * in order to get the valid state
 	 * 
-	 * @param fileName The name of the file to match
+	 * @param fileName
+	 *            The name of the file to match
 	 */
 	public void addFileToMatch(String fileName) {
 		filesToMatch.add(fileName);
+	}
+	
+	/**
+	 * Adds a folder that has to be contained in the specified directory in
+	 * order to get the valid state for this editor
+	 * 
+	 * @param folderName
+	 */
+	public void addFolderToMatch(String folderName) {
+		foldersToMatch.add(folderName);
 	}
 	
 }

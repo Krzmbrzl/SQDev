@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import raven.sqdev.util.EProjectType;
 import raven.sqdev.util.StringUtils;
 
 public class SQDevProjectWizardPage extends WizardPage {

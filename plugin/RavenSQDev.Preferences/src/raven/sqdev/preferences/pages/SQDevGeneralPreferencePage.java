@@ -27,16 +27,20 @@ public class SQDevGeneralPreferencePage extends SQDevPreferencePage {
 		DirectorySQDevPreferenceEditor dirEditor = new DirectorySQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY, "&Program:",
 				"The path to the directory in which your arma3.exe is located", armaDirs);
-		
-		dirEditor.addFileToMatch("arma3.exe");
 				
+		dirEditor.addFileToMatch("arma3.exe");
+		
 		addPreferenceEditor(dirEditor);
 		
-		addPreferenceEditor(new DirectorySQDevPreferenceEditor(
+		DirectorySQDevPreferenceEditor docDirEditor = new DirectorySQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_ARMA_DOCUMENTS_DIRECTORY, "&Documents:",
-				"The path to the \"Arma 3\" or \"Arma 3 - Other Profiles\" directory in your Documents",
-				armaDirs));
-				
+				"The path to the \"Arma 3\" or \"Arma 3 - Other Profiles\" directory in"
+						+ " your Documents (has to contain the \"missions\" folder)",
+				armaDirs);
+
+		docDirEditor.addFolderToMatch("missions");
+		addPreferenceEditor(docDirEditor);
+		
 		// miscellaneous preferences
 		Group misc = createGroup("Miscellaneous");
 		
