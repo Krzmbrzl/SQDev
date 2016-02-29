@@ -23,6 +23,14 @@ import raven.sqdev.preferences.util.EStatus;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 import raven.sqdev.util.FileSystemUtil;
 
+/**
+ * A preference editor letting the user select a directory and that can be set
+ * to check for ceratin files/folders that have to present in the specified
+ * directory in order for this editor to get a valid state.
+ * 
+ * @author Raven
+ *		
+ */
 public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEditor
 		implements VerifyListener {
 		

@@ -20,6 +20,13 @@ import raven.sqdev.preferences.util.ISQDevPreferenceEditorListener;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 import raven.sqdev.preferences.util.SQDevPreferenceComposite;
 
+/**
+ * The abstract base class for every SQDevPreferenceEditor that defines some low
+ * level behaviour each editor has in common
+ * 
+ * @author Raven
+ *		
+ */
 public abstract class AbstractSQDevPreferenceEditor
 		implements ISQDevPreferenceEditor, IPropertyChangeListener {
 	/**

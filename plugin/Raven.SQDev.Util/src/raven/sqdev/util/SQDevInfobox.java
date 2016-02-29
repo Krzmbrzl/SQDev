@@ -1,5 +1,7 @@
 package raven.sqdev.util;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
@@ -8,10 +10,11 @@ import org.eclipse.ui.PlatformUI;
 
 /**
  * A class used to inform the user about something that happened in the SQDev
- * plugin
+ * plugin. This will bring a MessageBox up that is scheduled in the UI-thread
+ * automatically
  * 
  * @author Raven
- *		
+ * 		
  */
 public class SQDevInfobox {
 	
@@ -53,20 +56,32 @@ public class SQDevInfobox {
 	 *         (e.g. SWT.OK, SWT.CANCEL, etc.)
 	 */
 	public int open() {
-		MessageBox box = new MessageBox(Display.getCurrent().getActiveShell(), style);
+		Display display = PlatformUI.getWorkbench().getDisplay();
 		
-		box.setText("SQDev Info");
-		box.setMessage(message);
+		AtomicInteger result = new AtomicInteger();
 		
-		int status = box.open();
+		display.syncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				MessageBox box = new MessageBox(Display.getCurrent().getActiveShell(), style);
+				
+				box.setText("SQDev Info");
+				box.setMessage(message);
+				
+				result.set(box.open());
+				
+				Shell active = Display.getCurrent().getActiveShell();
+				
+				if (!active
+						.equals(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())) {
+					active.dispose();
+				}
+			}
+		});
 		
-		Shell active = Display.getCurrent().getActiveShell();
 		
-		if(!active.equals(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())) {
-			active.dispose();
-		}
-		
-		return status;
+		return result.get();
 	}
 	
 }

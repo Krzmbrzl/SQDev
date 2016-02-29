@@ -269,16 +269,11 @@ public class SQDevFile extends File {
 			}
 		}
 		
-		if (!completeFile.endsWith("\n")) {
-			// file has to end with a newLine
-			return false;
-		}
-		
 		return true;
 	}
 	
 	/**
-	 * Gets the complete file content as a String
+	 * Gets the complete file content as a String (making sure that it ends with a newLine)
 	 * 
 	 * @return
 	 * @throws FileNotFoundException

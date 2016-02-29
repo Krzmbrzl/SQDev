@@ -2,8 +2,9 @@ package raven.sqdev.sqdevFile;
 
 import java.util.ArrayList;
 
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 import raven.sqdev.util.EFileType;
+import raven.sqdev.util.SQDevInformation;
+import raven.sqdev.util.Util;
 
 /**
  * An enum representing all possible names for a .sqdev file
@@ -24,15 +25,18 @@ public enum ESQDevFileType {
 		
 		@Override
 		public String getInitialInput() {
-			// TODO: add necessary attributes with proper values
+			// clear the initial content before recreating it
+			initialContent = "";
 			
 			// add attributes
-			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY,
-					SQDevPreferenceUtil.getMissionsDirectory().getAbsolutePath());
+			addAttribute(ESQDevFileAttribute.PROFILE, info.getProfile());
 			
-			addAttribute(ESQDevFileAttribute.AUTOEXPORT, autoExport);
+			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY,
+					Util.getMissionsDirectory(info.getProfile()).toOSString());
 					
-			addAttribute(ESQDevFileAttribute.MAP, map);
+			addAttribute(ESQDevFileAttribute.AUTOEXPORT, String.valueOf(info.getAutoExport()));
+			
+			addAttribute(ESQDevFileAttribute.TERRAIN, info.getTerrain());
 			
 			// add annotations
 			initialContent += "\n\n";
@@ -44,36 +48,25 @@ public enum ESQDevFileType {
 			addAnnotation(ESQDevFileAnnotation.PRESERVE,
 					filesToPreserve.toArray(new String[filesToPreserve.size()]));
 					
-			return (initialContent.endsWith("\n")) ? initialContent : initialContent + "\n";
+			return initialContent.trim() + "\n";
 		}
 	};
 	
 	private ESQDevFileType() {
 		initialContent = "";
-		map = "Altis";
 		filesToIgnore = new ArrayList<String>();
 		filesToPreserve = new ArrayList<String>();
-		autoExport = ESQDevFileAttribute.AUTOEXPORT.getDefault();
 		
 		addFileToIgnore(this.toString() + EFileType.SQDEV.getExtension());
 		addFileToIgnore(".project");
 	}
 	
+	protected SQDevInformation info;
+	
 	/**
 	 * A String containing the initial content od this fileType
 	 */
 	protected String initialContent;
-	
-	/**
-	 * A String containing the information about the map on which the mission
-	 * takes place
-	 */
-	protected String map;
-	
-	/**
-	 * A String indicating if autoExport should be enabled for this project
-	 */
-	protected String autoExport;
 	
 	/**
 	 * A list of files/folders that should be ignored during project export
@@ -118,24 +111,6 @@ public enum ESQDevFileType {
 		return (resolve(type) == null) ? false : true;
 	}
 	
-	/**
-	 * Sets the map on which the mission should take place
-	 * 
-	 * @param map
-	 *            The name of the map
-	 */
-	public void setMap(String map) {
-		this.map = map;
-	}
-	
-	/**
-	 * Sets whether autoExport is enabled
-	 * @param autoExport may be "true" or "false" (case-sensitive!)
-	 */
-	public void setAutoExport(String autoExport) {
-		this.autoExport = autoExport;
-	}
-
 	public void addFileToIgnore(String fileName) {
 		filesToIgnore.add(fileName);
 	}
@@ -163,8 +138,30 @@ public enum ESQDevFileType {
 	 */
 	protected void addAnnotation(ESQDevFileAnnotation annotation, String[] values) {
 		for (String currentValue : values) {
-			initialContent += ((initialContent.endsWith("\n")) ? "" : "\n") + annotation + " \""
-					+ currentValue + "\"\n";
+			initialContent += ((initialContent.endsWith("\n")) ? "" : "\n") + "@" + annotation
+					+ " \"" + currentValue + "\"\n";
 		}
+	}
+	
+	/**
+	 * Checks if the information has been et
+	 */
+	public boolean isInformationSet() {
+		return info != null;
+	}
+
+	/**
+	 * Gets the set information
+	 */
+	public SQDevInformation getInformation() {
+		return (isInformationSet())? info : new SQDevInformation();
+	}
+	
+	/**
+	 * Sets the information
+	 * @param info The new information
+	 */
+	public void setInformation(SQDevInformation info) {
+		this.info = info;
 	}
 }

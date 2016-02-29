@@ -8,6 +8,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
+import raven.sqdev.util.EProjectType;
+
 public class SQDevProjectWizard extends Wizard implements INewWizard {
 	private SQDevProjectWizardPage page;
 	
@@ -26,13 +28,14 @@ public class SQDevProjectWizard extends Wizard implements INewWizard {
 	}
 	
 	@Override
-	public boolean performFinish() {
-		String projectName = page.getProjectName();
-		
+	public boolean performFinish() {		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
 		
-		page.getProjectType().create(projectName, root);
+		EProjectType type = page.getProjectType();
+		type.setInformation(page.getInformation());
+		
+		type.create(root);
 		
 		return true;
 		

@@ -9,7 +9,7 @@ import raven.sqdev.preferences.util.ISQDevPreferenceEditorListener;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 
 /**
- * An interface for all SQDev preferences
+ * An interface for all SQDev preferencesEditors
  * 
  * @author Raven
  * 		

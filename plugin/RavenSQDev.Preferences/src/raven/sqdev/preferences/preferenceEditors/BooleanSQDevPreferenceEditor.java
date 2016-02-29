@@ -11,6 +11,11 @@ import org.eclipse.swt.widgets.Label;
 import raven.sqdev.preferences.pages.ISQDevPreferencePage;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 
+/**
+ * A preference editor that let the user change a boolean preference.
+ * @author Raven
+ *
+ */
 public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor {
 	
 	/**
@@ -116,11 +121,7 @@ public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	
 	@Override
 	public boolean needsSave() {
-		if (willNeedSave(String.valueOf(checkBox.getSelection()))) {
-			return true;
-		} else {
-			return false;
-		}
+		return willNeedSave(String.valueOf(checkBox.getSelection()));
 	}
 	
 	@Override
@@ -198,6 +199,7 @@ public class BooleanSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 				updateSaveStatus(String.valueOf(checkBox.getSelection()));
 			}
 		});
+		
 		load(initialState);
 		
 		if (getContainer().getLayout() instanceof GridLayout) {

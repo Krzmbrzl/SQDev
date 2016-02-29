@@ -7,6 +7,12 @@ import raven.sqdev.preferences.preferenceEditors.BooleanSQDevPreferenceEditor;
 import raven.sqdev.preferences.preferenceEditors.ColorSQDevPreferenceEditor;
 import raven.sqdev.preferences.util.SQDevPreferenceConstants;
 
+/**
+ * The preferencePage that contains all settings concerning the editor
+ * 
+ * @author Raven
+ *		
+ */
 public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 	
 	public SQDevEditorPreferencePage() {
@@ -45,8 +51,8 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		
 		ColorSQDevPreferenceEditor syntaxHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY,
-				"&Syntax highlighting:",
-				"Defines the color in which keywords are highlighted", colors);
+				"&Syntax highlighting:", "Defines the color in which keywords are highlighted",
+				colors);
 		addPreferenceEditor(syntaxHighlightingColorEditor);
 		
 		ColorSQDevPreferenceEditor currentLineHighlightingColorEditor = new ColorSQDevPreferenceEditor(

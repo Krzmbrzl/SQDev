@@ -1,16 +1,25 @@
 package raven.sqdev.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 
+import raven.sqdev.exceptions.IllegalAccessStateException;
+import raven.sqdev.exceptions.SQDevCoreException;
+import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.preferences.util.SQDevPreferenceUtil;
+import raven.sqdev.sqdevFile.ESQDevFileAttribute;
+import raven.sqdev.sqdevFile.ESQDevFileType;
+import raven.sqdev.sqdevFile.SQDevFile;
 
 public class ProjectUtil {
 	
@@ -29,6 +38,23 @@ public class ProjectUtil {
 	 */
 	public static String FAILED = "failed";
 	
+	/**
+	 * Exports the given project to the given location
+	 * 
+	 * @param project
+	 *            The project that should get exported
+	 * @param destination
+	 *            The path to the export destination
+	 * @param filesToIgnore
+	 *            A list of files that should not get exported
+	 * @param filesToPreserve
+	 *            A list of files that should not get deleted when performing
+	 *            the clean of the destination
+	 * @return The status of this export operation. Possible values are:
+	 *         <li>ProjectUtil.SUCCESS</li>
+	 *         <li>ProjectUtil.CANCELED</li>
+	 *         <li>ProjectUtil.FAILED</li>
+	 */
 	public static String export(IProject project, IPath destination,
 			ArrayList<String> filesToIgnore, ArrayList<String> filesToPreserve) {
 		if (!new File(destination.toOSString()).exists()) {
@@ -51,7 +77,7 @@ public class ProjectUtil {
 				// normally there should be only the mission folder to be
 				// created
 				SQDevInfobox info = new SQDevInfobox(
-						"The export process would require an unusual high amounts (" + diff
+						"The export process would require an unusual high amount (" + diff
 								+ ") of new folders being created.\n\nDo you want to proceed?",
 						SWT.ICON_QUESTION | SWT.YES | SWT.NO);
 						
@@ -71,9 +97,10 @@ public class ProjectUtil {
 			if (!SQDevPreferenceUtil.autoClean()) {
 				SQDevInfobox info = new SQDevInfobox(
 						"The directory \"" + destination.toOSString()
-								+ "\" has to be cleaned in order to export the project.\n"
-								+ "Any files that are not part of the project in the eclipse workspace"
-								+ " will be deleted.\n\nDo you want to proceed?",
+								+ "\" has to be cleaned in order to export the project \""
+								+ project.getName()
+								+ "\".\nAny files that are not part of the project in the eclipse "
+								+ "workspace will be deleted.\n\nDo you want to proceed?",
 						SWT.ICON_QUESTION | SWT.YES | SWT.NO);
 						
 				if (info.open() != SWT.YES) {
@@ -133,5 +160,77 @@ public class ProjectUtil {
 		
 		// indicate that the export was successfull
 		return SUCCESS;
+	}
+	
+	/**
+	 * Finds out whether the given project is a valid SQDev project.<br>
+	 * A project is considered a SQDev project if it contains a link.sqdev
+	 * 
+	 * @param project
+	 *            The project to be checked
+	 * @return
+	 */
+	public static boolean isSQDevProject(IProject project) {
+		IFile testFile = project
+				.getFile(ESQDevFileType.LINK.toString() + EFileType.SQDEV.getExtension());
+				
+		return testFile.exists();
+	}
+	
+	/**
+	 * Gets the profile specified for the given project/mission
+	 * 
+	 * @param project
+	 *            The SQDevProject whose corresponding profile should be
+	 *            obtained <b>Has to be an SQDevProject!</b>
+	 * @return The corresponding profile
+	 */
+	public static String getMissionProfile(IProject project) {
+		SQDevFile linkFile = getLinkFile(project);
+		
+		try {
+			String profile = linkFile.parseAttribute(ESQDevFileAttribute.PROFILE).getValue()
+					.toString();
+					
+			return profile;
+		} catch (SQDevFileIsInvalidException e) {
+			// inform the user
+			SQDevInfobox info = new SQDevInfobox(
+					"The linkFile in the project \"" + project.getName() + "\" is invalid!",
+					SWT.ICON_ERROR);
+					
+			info.open();
+			
+			// rethrow
+			throw new SQDevCoreException(e);
+		}
+	}
+	
+	/**
+	 * Gets the linkFile of this SQDevProject
+	 * 
+	 * @param project
+	 *            The SQDevProject whose linkFile should be obtained. <b>Has to
+	 *            be an SQDevProject!</b>
+	 * @return The corresponding linkFile
+	 */
+	public static SQDevFile getLinkFile(IProject project) {
+		Assert.isTrue(isSQDevProject(project));
+		
+		IResource linkMember = project
+				.findMember(ESQDevFileType.LINK + EFileType.SQDEV.getExtension());
+				
+		if (linkMember.getType() == IResource.FILE) {
+			try {
+				SQDevFile linkFile = new SQDevFile((IFile) linkMember);
+				
+				return linkFile;
+			} catch (FileNotFoundException | IllegalAccessStateException e) {
+				// rethrow
+				throw new SQDevCoreException(e);
+			}
+		} else {
+			throw new SQDevCoreException("Selected linkFile is not a file!");
+		}
 	}
 }

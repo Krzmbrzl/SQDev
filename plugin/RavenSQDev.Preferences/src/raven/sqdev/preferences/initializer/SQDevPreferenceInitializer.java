@@ -27,15 +27,25 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
 		// find the ArmA directory in programs folder
-		store.setDefault(SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY,
+		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_ARMA_MAIN_DIRECTORY,
 				locateArmaMainDirectory());
 				
 		// find ArmA directory in documents folder
-		store.setDefault(SQDevPreferenceConstants.SQDEV_ARMA_DOCUMENTS_DIRECTORY,
+		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY,
 				locateArmaDocumentsDirectory());
 				
+		// set default profile
+		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE,
+				System.getProperty("user.name"));
+		
+		// set deafult map
+		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN, "Altis");
+		
+		// set default autoExport
+		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT, false);
+				
 		// let the preference page always ask for saving
-		store.setDefault(SQDevPreferenceConstants.SQDEV_ALWAYS_SAVE_ON_EXIT, false);
+		store.setDefault(SQDevPreferenceConstants.SQDEV_PREF_ALWAYS_SAVE_ON_EXIT, false);
 		
 		// enable matching brackets highlighting
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY, true);
@@ -50,7 +60,7 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		// set syntax highlighting
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.KEYWORD));
-		
+				
 		// set autoClean
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN, false);
 	}

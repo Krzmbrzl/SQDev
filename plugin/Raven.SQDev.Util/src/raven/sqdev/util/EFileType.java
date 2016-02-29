@@ -75,10 +75,9 @@ public enum EFileType {
 		}
 		
 		@Override
-		public String getInitialContent() {
-			// TODO use Nickname if possible
-			
-			String initialContent = "author = " + System.getProperty("user.name") + ";\n";
+		public String getInitialContent() {			
+			String initialContent = "author = \"" + info.getProfile() + "\";\n";
+			initialContent += "onLoadName = \"" + info.getName() + "\";\n";
 			return initialContent;
 		}
 	},
@@ -153,6 +152,8 @@ public enum EFileType {
 		}
 		
 		private void setInitialContent(ESQDevFileType file) {
+			file.setInformation(getInformation());
+			
 			initialContent = file.getInitialInput();
 		}
 		
@@ -175,6 +176,8 @@ public enum EFileType {
 	 */
 	private IFile file;
 	
+	protected SQDevInformation info;
+	
 	
 	/**
 	 * Creates a file of the selected type with the given name. The newly
@@ -195,7 +198,7 @@ public enum EFileType {
 	/**
 	 * Creates a file of the selected type with the given name
 	 * 
-	 *@param name
+	 * @param name
 	 *            The name of the new file (<b>without extension!</b>)<br>
 	 *            Will be overriden in {@linkplain #EXT} and {@linkplain #SQM};
 	 *            <br>
@@ -204,7 +207,7 @@ public enum EFileType {
 	 * @param open
 	 *            Indicates whether the file should be dirctly opened in the
 	 *            respective editor
-	 *            @see ESQDevFileType
+	 * @see ESQDevFileType
 	 */
 	public void create(String name, boolean open) {
 		AtomicReference<Display> display = new AtomicReference<Display>(Display.getCurrent());
@@ -300,6 +303,9 @@ public enum EFileType {
 						});
 					}
 					
+					// reset path so that the new file will check for it's own path
+					path = null;
+					
 					monitor.done();
 					return Status.OK_STATUS;
 					
@@ -385,7 +391,7 @@ public enum EFileType {
 							container = ((IResource) obj).getParent();
 						}
 						
-						path = container.getFullPath().toString();
+						path = container.getRawLocation().toOSString();
 					}
 				}
 				
@@ -467,5 +473,29 @@ public enum EFileType {
 	
 	protected void setFile(IFile file) {
 		this.file = file;
+	}
+	
+	/**
+	 * Checks if the information has been set
+	 */
+	public boolean isInformationSet() {
+		return info != null;
+	}
+	
+	/**
+	 * Gets the set information
+	 */
+	public SQDevInformation getInformation() {
+		return (isInformationSet())? info : new SQDevInformation();
+	}
+	
+	/**
+	 * Sets the information
+	 * 
+	 * @param info
+	 *            The information
+	 */
+	public void setInformation(SQDevInformation info) {
+		this.info = info;
 	}
 }

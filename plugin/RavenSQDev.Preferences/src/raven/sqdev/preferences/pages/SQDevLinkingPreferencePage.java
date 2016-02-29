@@ -8,8 +8,9 @@ import raven.sqdev.preferences.util.SQDevPreferenceConstants;
 
 /**
  * The preference page containing all preferences about the project linking
+ * 
  * @author Raven
- *
+ *		
  */
 public class SQDevLinkingPreferencePage extends SQDevPreferencePage {
 	
@@ -19,6 +20,8 @@ public class SQDevLinkingPreferencePage extends SQDevPreferencePage {
 	
 	@Override
 	public void init(IWorkbench workbench) {
+		setDescription("Preferences affecting the link of a project to the ArmA directory");
+		
 		Group export = createGroup("Export");
 		
 		createDescription(export, "Settings about the export of files/projects");

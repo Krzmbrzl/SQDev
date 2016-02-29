@@ -4,11 +4,11 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            id="raven.sqdev.wizards.SQdev"
+            id="raven.sqdev.wizards.newcategory"
             name="SQDev">
       </category>
       <wizard
-            category="raven.sqdev.wizards.SQdev"
+            category="raven.sqdev.wizards.newcategory"
             class="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
             icon="platform:plugin/raven.sqdev.util/resources/icons/SQF_image.gif"
             id="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
@@ -19,13 +19,26 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
-            category="raven.sqdev.wizards.SQdev"
+            category="raven.sqdev.wizards.newcategory"
             class="raven.sqdev.wizards.sqdevProject.SQDevProjectWizard"
             icon="platform:plugin/raven.sqdev.util/resources/icons/prj_obj.gif"
-            id="Raven.SQDev.Wizards.sqdevProject"
+            id="raven.sqdev.wizards.sqdevproject"
             name="SQDev Project"
             project="true">
       </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            category="raven.sqdev.wizards.exportcategory"
+            class="raven.sqdev.wizards.export.SQDevExportWizard"
+            id="raven.sqdev.wizards.export"
+            name="Export SQDev Project">
+      </wizard>
+      <category
+            id="raven.sqdev.wizards.exportcategory"
+            name="SQDev">
+      </category>
    </extension>
 
 </plugin>

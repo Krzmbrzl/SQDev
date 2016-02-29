@@ -18,6 +18,8 @@ public enum EProjectType {
 	private String displayName;
 	private String creationDescription;
 	
+	protected SQDevInformation info;
+	
 	private EProjectType(String name, String creationDescription) {
 		setDisplayName(name);
 		setCreationDescription(creationDescription);
@@ -50,7 +52,9 @@ public enum EProjectType {
 	 * @param root
 	 *            The location where the project should be created
 	 */
-	public void create(String projectName, IWorkspaceRoot root) {
+	public void create(IWorkspaceRoot root) {
+		String projectName = info.getName();
+		
 		IProject project = root.getProject(projectName);
 		
 		// create the project; If anything goes wrong return
@@ -120,19 +124,23 @@ public enum EProjectType {
 			}
 		}
 		
-		// create init file //TODO: could also use CfgFunctions -> create setting
+		// create init file //TODO: could also use CfgFunctions -> create
+		// setting
 		EFileType file = EFileType.SQF;
-		file.setPath(project.getFullPath().toString());
+		file.setPath(project.getFullPath().toOSString());
+		file.setInformation(getInformation());
 		file.create("init");
 		
 		// create the Description.ext
 		file = EFileType.EXT;
-		file.setPath(project.getFullPath().toString());
+		file.setPath(project.getFullPath().toOSString());
+		file.setInformation(getInformation());
 		file.create("description", false);
 		
 		// create the link.sqdev
 		file = EFileType.SQDEV;
-		file.setPath(project.getFullPath().toString());
+		file.setPath(project.getFullPath().toOSString());
+		file.setInformation(getInformation());
 		file.create(ESQDevFileType.LINK.toString(), false);
 	}
 	
@@ -150,5 +158,20 @@ public enum EProjectType {
 	
 	public void setCreationDescription(String creationDescription) {
 		this.creationDescription = creationDescription;
+	}
+	
+	/**
+	 * Checks if the information has been set
+	 */
+	public boolean isInformationSet() {
+		return info != null;
+	}
+	
+	public SQDevInformation getInformation() {
+		return (isInformationSet()) ? info : new SQDevInformation();
+	}
+	
+	public void setInformation(SQDevInformation info) {
+		this.info = info;
 	}
 }

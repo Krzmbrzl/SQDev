@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
@@ -39,7 +42,7 @@ public class SQF_Editor extends BasicCodeEditor {
 			// get the containing project
 			IProject containingProject = ((IFileEditorInput) input).getFile().getProject();
 			
-			if (containingProject != null && Util.isSQDevProject(containingProject)) {
+			if (containingProject != null && ProjectUtil.isSQDevProject(containingProject)) {
 				try {
 					// get the linking file
 					SQDevFile linkFile = new SQDevFile(containingProject
@@ -50,11 +53,32 @@ public class SQF_Editor extends BasicCodeEditor {
 							.getValue().equals("true");
 							
 					if (autoExport) {
-						// export the project
-						ProjectUtil.export(containingProject,
-								Util.getExportPathFor(containingProject),
-								linkFile.parseAnnotation(ESQDevFileAnnotation.IGNORE).getValues(),
-								linkFile.parseAnnotation(ESQDevFileAnnotation.PRESERVE).getValues());
+						// outsource the export process to another thread
+						Job exportJob = new Job("Export") {
+							
+							@Override
+							protected IStatus run(IProgressMonitor monitor) {
+								monitor.beginTask("Export project \"" + containingProject.getName() + "\"", 1);
+								try {
+									ProjectUtil.export(containingProject,
+											Util.getExportPathFor(containingProject),
+											linkFile.parseAnnotation(ESQDevFileAnnotation.IGNORE)
+													.getValues(),
+											linkFile.parseAnnotation(ESQDevFileAnnotation.PRESERVE)
+													.getValues());
+									
+									monitor.worked(1);
+								} catch (SQDevFileIsInvalidException e) {
+									e.printStackTrace();
+								}
+								
+								monitor.done();
+								
+								return Status.OK_STATUS;
+							}
+						};
+						
+						exportJob.schedule();
 					}
 					
 				} catch (FileNotFoundException | IllegalAccessStateException e) {

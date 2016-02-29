@@ -23,6 +23,14 @@ import raven.sqdev.preferences.util.SQDevChangeEvent;
 import raven.sqdev.preferences.util.SQDevPreferenceComposite;
 import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 
+/**
+ * The base class for all SQDevPreferencePages that contains the low level
+ * communication with the preferencePage Framework as well as an integrated
+ * LayoutManager that lays out the different preferenceEditors.
+ * 
+ * @author Raven
+ *		
+ */
 public class SQDevPreferencePage extends PreferencePage
 		implements ISQDevPreferencePage, ISQDevPreferenceEditorListener {
 		
@@ -66,7 +74,6 @@ public class SQDevPreferencePage extends PreferencePage
 		}
 		
 		ArrayList<Composite> containerList = new ArrayList<Composite>();
-		int maxComponents = -1;
 		
 		// get all different containers
 		for (ISQDevPreferenceEditor currentEditor : getEditors()) {
@@ -76,11 +83,6 @@ public class SQDevPreferencePage extends PreferencePage
 			
 			if (!containerList.contains(container)) {
 				containerList.add(container);
-			}
-			
-			if (currentEditor.getComponentCount() > maxComponents) {
-				// store the maximum amount of components
-				maxComponents = currentEditor.getComponentCount();
 			}
 		}
 		
@@ -123,6 +125,17 @@ public class SQDevPreferencePage extends PreferencePage
 			
 			// create the shared container
 			Composite sharedContainer = new Composite(current, SWT.NULL);
+			
+			
+			// find out the maximum amount of components of the editors placed
+			// on this shared container
+			int maxComponents = -1;
+			for (ISQDevPreferenceEditor currentEditor : getEditors()) {
+				if ((currentEditor.getComponentCount() > maxComponents)
+						&& currentEditor.getContainer().equals(current)) {
+					maxComponents = currentEditor.getComponentCount();
+				}
+			}
 			
 			for (ISQDevPreferenceEditor currentEditor : getEditors()) {
 				if (currentEditor.getContainer().equals(current)) {
