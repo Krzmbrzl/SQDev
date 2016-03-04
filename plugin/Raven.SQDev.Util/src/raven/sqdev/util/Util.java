@@ -159,4 +159,27 @@ public class Util {
 		return System.getProperty("user.name").equals(profile);
 	}
 	
+	/**
+	 * Checks whether the given file is a mission folder
+	 * 
+	 * @param file
+	 *            The file to check
+	 */
+	public static boolean isMissionFolder(File file) {
+		Assert.isNotNull(file);
+		
+		if (!file.exists() || !file.isDirectory() || !file.getName().contains(".")) {
+			return false;
+		}
+		
+		for (File currentFile : file.listFiles()) {
+			if (currentFile.getName().toLowerCase().equals("mission.sqm")) {
+				// if it contains a mission.sqm it's a mission
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 }

@@ -11,12 +11,16 @@ import java.net.URI;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
+import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
+import raven.sqdev.exceptions.SQDevIllegalFileChangeException;
+import raven.sqdev.util.SQDevInfobox;
 import raven.sqdev.util.StringUtils;
 
 /**
@@ -24,7 +28,6 @@ import raven.sqdev.util.StringUtils;
  * plugin to use.<br>
  * This kind of file has to follow a <b>strict syntax:</b>
  * <li>Every information has to end with a newLine</li>
- * <li>Every information must be specified in it's own line</li>
  * <li>An attribute has to assign it's value via <code>=</code></li>
  * <li>Every attribute may only be used once</li>
  * <li>Every attribute has to be closed with a semicolon on the same line</li>
@@ -273,7 +276,8 @@ public class SQDevFile extends File {
 	}
 	
 	/**
-	 * Gets the complete file content as a String (making sure that it ends with a newLine)
+	 * Gets the complete file content as a String (making sure that it ends with
+	 * a newLine)
 	 * 
 	 * @return
 	 * @throws FileNotFoundException
@@ -289,6 +293,21 @@ public class SQDevFile extends File {
 		}
 		
 		return completeFile;
+	}
+	
+	/**
+	 * Sets the content of this file
+	 * 
+	 * @param content
+	 *            The new fileContent
+	 * @throws IOException
+	 */
+	public void setContent(String content) throws IOException {
+		FileWriter writer = new FileWriter(this);
+		
+		writer.write(content);
+		
+		writer.close();
 	}
 	
 	/**
@@ -409,6 +428,133 @@ public class SQDevFile extends File {
 		}
 		
 		return annotation;
+	}
+	
+	/**
+	 * Checks if the given attribute is used in this file (comments are not
+	 * considered)
+	 * 
+	 * @param attribute
+	 *            The attribute to search for
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public boolean contains(ESQDevFileAttribute attribute)
+			throws FileNotFoundException, IOException {
+		// get content and remove comments
+		String content = getContent().replaceAll("//.*\n", "");
+		
+		while (content.contains("  ")) {
+			// prevent double spaces
+			content = content.replace("  ", " ");
+		}
+		
+		return (content.contains(attribute + "=") || content.contains(attribute + " ="));
+	}
+	
+	/**
+	 * Checks if the given annotation is used in this file (comments are not
+	 * considered)
+	 * 
+	 * @param annotation
+	 *            The annotation to search for
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public boolean contains(ESQDevFileAnnotation annotation)
+			throws FileNotFoundException, IOException {
+		String content = getContent().replaceAll("//.*\n", "");
+		
+		return content.contains("@" + annotation + " ");
+	}
+	
+	/**
+	 * Adds the given attribute with the given value to this file
+	 * 
+	 * @param attribute
+	 *            The attribute to add
+	 * @param value
+	 *            The value of the attribute
+	 * @throws SQDevException
+	 */
+	public void addAttribute(ESQDevFileAttribute attribute, String value) throws SQDevException {
+		Assert.isNotNull(attribute);
+		Assert.isNotNull(value);
+		Assert.isTrue(!value.isEmpty());
+		
+		try {
+			if (contains(attribute)) {
+				throw new SQDevIllegalFileChangeException(
+						"Can't add attribute \"" + attribute + "\" because it already exists");
+			}
+		} catch (IOException e) {
+			new SQDevInfobox("Can't add attribute to file \"" + this.getName() + "\"!", e).open();
+			e.printStackTrace();
+		}
+		
+		try {
+			String content = getContent();
+			String insertedAttribute = attribute + " = " + value + ";\n";
+			
+			if (content.contains("=")) {
+				// add the attribute after the other attributes
+				String fragment1 = content.substring(0, content.lastIndexOf("="));
+				fragment1 = fragment1.substring(fragment1.indexOf("\n") + 1);
+				
+				String fragment2 = content.substring(fragment1.length());
+				
+				content = fragment1 + insertedAttribute + fragment2;
+			} else {
+				// add at the beginning
+				content = insertedAttribute + content;
+			}
+			
+			// set the content
+			setContent(content);
+		} catch (IOException e) {
+			// rethrow
+			throw new SQDevException(e);
+		}
+	}
+	
+	/**
+	 * Adds the given annotation with the given value to this file.
+	 * 
+	 * @param annotation
+	 *            The annotation to add
+	 * @param value
+	 *            The value of the annotation
+	 * @throws SQDevException
+	 */
+	public void addAnnotation(ESQDevFileAnnotation annotation, String value) throws SQDevException {
+		Assert.isNotNull(annotation);
+		Assert.isNotNull(value);
+		Assert.isTrue(!value.isEmpty());
+		
+		try {
+			String content = getContent();
+			String insertedAnnotation = "@" + annotation + " " + value + "\n";
+			
+			if (content.contains("@" + annotation + " ")) {
+				// add right after the last annotation of this type
+				String fragment1 = content.substring(0,
+						content.lastIndexOf("@" + annotation + " "));
+				fragment1 = fragment1.substring(fragment1.indexOf("\n") + 1);
+				
+				String fragment2 = content.substring(fragment1.length());
+				
+				content = fragment1 + insertedAnnotation + fragment2;
+			} else {
+				// add at the end of the file
+				content = content + insertedAnnotation;
+			}
+			
+			// set conted
+			setContent(content);
+		} catch (IOException e) {
+			// rethrow
+			throw new SQDevException(e);
+		}
 	}
 	
 }

@@ -50,6 +50,22 @@ public class SQDevInfobox {
 	}
 	
 	/**
+	 * Creates an instance of this Infobox.
+	 * 
+	 * @param message
+	 *            The message exlpaining what went wrong. The message will be
+	 *            enhanced by a paragraph that states the reason (The message of
+	 *            the given exception)
+	 * @param exception
+	 *            The exception whose message will be used for the explaination
+	 *            for what went wrong.
+	 */
+	public SQDevInfobox(String message, Exception exception) {
+		this((exception.getMessage() != null) ? message + "\n\nReason: " + exception.getMessage()
+				: message, SWT.ICON_ERROR);
+	}
+	
+	/**
 	 * Makes the dialog visible and brings it to the front of the display.
 	 * 
 	 * @return the ID of the button that was selected to dismiss the message box

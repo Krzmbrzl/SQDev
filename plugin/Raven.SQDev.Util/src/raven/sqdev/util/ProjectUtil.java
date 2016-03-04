@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 
@@ -232,5 +235,93 @@ public class ProjectUtil {
 		} else {
 			throw new SQDevCoreException("Selected linkFile is not a file!");
 		}
+	}
+	
+	/**
+	 * Checks whether a project with the given name already exists in the
+	 * workspace
+	 * 
+	 * @param name
+	 *            The name of the project
+	 */
+	public static boolean exists(String name) {
+		for (IProject currentProject : ResourcesPlugin.getWorkspace().getRoot()
+				.getProjects(IWorkspaceRoot.INCLUDE_HIDDEN)) {
+			if (currentProject.getName().equals(name)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Imports the given mission folder into the workspace as an SQDevProject
+	 * 
+	 * @param path
+	 *            The path to the folder to import
+	 * @return
+	 */
+	public static String importAsProject(Path path) {
+		Assert.isTrue(path.isAbsolute() && path.toFile().exists()
+				&& Util.isMissionFolder(new File(path.toOSString())));
+				
+		String projectName = path.lastSegment().substring(0, path.lastSegment().indexOf("."));
+		
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		
+		if (project.exists()) {
+			String message = "Failed at importing \"" + path.toOSString()
+					+ "\" because there is already a project with the name \"" + projectName
+					+ "\"!";
+					
+			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
+			info.open();
+			
+			throw new SQDevCoreException(message);
+		}
+		
+		try {
+			// create the project
+			project.create(new NullProgressMonitor());
+			
+			project.open(new NullProgressMonitor());
+			
+			// gather information
+			SQDevInformation information = new SQDevInformation();
+			information.setProfile(SQDevPreferenceUtil.getDefaultProfile());
+			information
+					.setTerrain(path.lastSegment().substring(path.lastSegment().indexOf(".") + 1));
+			information.autoExport = SQDevPreferenceUtil.getAutoExportDefaultEnabled();
+			information.name = projectName;
+			
+			// create linkFile
+			EFileType type = EFileType.SQDEV;
+			type.setInformation(information);
+			type.setPath(project.getLocation().toOSString());
+			type.create(ESQDevFileType.LINK.toString(), false);
+			
+			// copy files and folders
+			for (File currentFile : path.toFile().listFiles()) {
+				if (currentFile.isDirectory()) {
+					FileUtil.copyFolder(currentFile, (Path) project.getLocation());
+				} else {
+					FileUtil.copyFile(currentFile, (Path) project.getLocation());
+				}
+			}
+			
+			//refresh project
+			project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+			
+		} catch (CoreException e) {
+			String message = "Failed at importing \"" + path.toOSString() + "\"";
+			
+			SQDevInfobox info = new SQDevInfobox(message, e);
+			info.open();
+			
+			e.printStackTrace();
+		}
+		
+		return SUCCESS;
 	}
 }

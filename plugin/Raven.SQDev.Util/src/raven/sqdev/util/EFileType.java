@@ -18,8 +18,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchPage;
@@ -75,7 +73,7 @@ public enum EFileType {
 		}
 		
 		@Override
-		public String getInitialContent() {			
+		public String getInitialContent() {
 			String initialContent = "author = \"" + info.getProfile() + "\";\n";
 			initialContent += "onLoadName = \"" + info.getName() + "\";\n";
 			return initialContent;
@@ -210,8 +208,6 @@ public enum EFileType {
 	 * @see ESQDevFileType
 	 */
 	public void create(String name, boolean open) {
-		AtomicReference<Display> display = new AtomicReference<Display>(Display.getCurrent());
-		
 		// create the job for creating the new file
 		Job creationJob = new Job("Creating file...") {
 			
@@ -226,7 +222,7 @@ public enum EFileType {
 					
 					// get the container where the file should be created
 					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-					IResource resource = root.findMember(getPath(display.get()));
+					IResource resource = root.findMember(getPath());
 					
 					if (resource instanceof IContainer) {
 						IContainer container = (IContainer) resource;
@@ -248,24 +244,22 @@ public enum EFileType {
 									throw new FailedAtCreatingFileException(e);
 								} catch (FailedAtCreatingFileException e1) {
 									e1.printStackTrace();
+									
+									SQDevInfobox info = new SQDevInfobox(
+											"Failed at creating file \"" + getFileName() + "\"!",
+											e1);
+											
+									info.open();
 								}
 							}
 						} else {
 							// report that the file does already exist (in UI
 							// thread)
-							display.get().asyncExec(new Runnable() {
-								
-								@Override
-								public void run() {
-									MessageBox box1 = new MessageBox(
-											Display.getCurrent().getActiveShell(), SWT.ERROR);
-									box1.setMessage("Couldn't create file \"" + getFileName()
-											+ "\" because it already exists!");
-									box1.setText("File does already exists");
+							SQDevInfobox info = new SQDevInfobox("Can't create file \""
+									+ getFileName() + "\" because it already exists!",
+									SWT.ICON_ERROR);
 									
-									box1.open();
-								}
-							});
+							info.open();
 						}
 						
 						// store the file
@@ -276,12 +270,17 @@ public enum EFileType {
 									"Specified resource is not a container!");
 						} catch (FailedAtCreatingFileException e) {
 							e.printStackTrace();
+							
+							SQDevInfobox info = new SQDevInfobox(
+									"Failed at creating file \"" + getFileName() + "\"!", e);
+									
+							info.open();
 						}
 					}
 					
 					if (open) {
 						// open the file (in the UI thread)
-						display.get().asyncExec(new Runnable() {
+						PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 							
 							@Override
 							public void run() {
@@ -303,7 +302,8 @@ public enum EFileType {
 						});
 					}
 					
-					// reset path so that the new file will check for it's own path
+					// reset path so that the new file will check for it's own
+					// path
 					path = null;
 					
 					monitor.done();
@@ -311,6 +311,12 @@ public enum EFileType {
 					
 				} catch (Exception e) {
 					monitor.done();
+					
+					e.printStackTrace();
+					
+					SQDevInfobox info = new SQDevInfobox(
+							"Failed at creating file \"" + getFileName() + "\"!", e);
+					info.open();
 					
 					// return error status
 					return new Status(IStatus.ERROR, "raven.sqdev.util", "Failed");
@@ -362,11 +368,11 @@ public enum EFileType {
 	 * 
 	 * @return
 	 */
-	public IPath getPath(Display display) {
+	public IPath getPath() {
 		final AtomicReference<IPath> result = new AtomicReference<IPath>();
 		
 		// run in UI thread because it may depend on UI elements
-		display.syncExec(new Runnable() {
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			
 			public void run() {
 				
@@ -486,7 +492,7 @@ public enum EFileType {
 	 * Gets the set information
 	 */
 	public SQDevInformation getInformation() {
-		return (isInformationSet())? info : new SQDevInformation();
+		return (isInformationSet()) ? info : new SQDevInformation();
 	}
 	
 	/**
