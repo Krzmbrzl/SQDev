@@ -208,6 +208,19 @@ public class SQDevPreferenceUtil {
 	
 	/**
 	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY</code>
+	 * preference that holds the path to the ArmA folder in the programs
+	 * directory
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static Color getSyntaxHighlightingColor() {
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY)));
+	}
+	
+	/**
+	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN</code> preference
 	 * that indicates whether a directory should get cleaned without asking for
 	 * permission when exporting a project

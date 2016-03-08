@@ -7,7 +7,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
@@ -27,7 +26,7 @@ public class SQF_Editor extends BasicCodeEditor {
 	
 	public SQF_Editor() {
 		super();
-		this.setSourceViewerConfiguration(new SQFConfiguration(this.getColorManager(), this));
+		this.setSourceViewerConfiguration(new SQFConfiguration(getColorManager(), this));
 		this.setDocumentProvider(new SQFDocumentProvider());
 	}
 	
@@ -58,7 +57,9 @@ public class SQF_Editor extends BasicCodeEditor {
 							
 							@Override
 							protected IStatus run(IProgressMonitor monitor) {
-								monitor.beginTask("Export project \"" + containingProject.getName() + "\"", 1);
+								monitor.beginTask(
+										"Export project \"" + containingProject.getName() + "\"",
+										1);
 								try {
 									ProjectUtil.export(containingProject,
 											Util.getExportPathFor(containingProject),
@@ -66,7 +67,7 @@ public class SQF_Editor extends BasicCodeEditor {
 													.getValues(),
 											linkFile.parseAnnotation(ESQDevFileAnnotation.PRESERVE)
 													.getValues());
-									
+													
 									monitor.worked(1);
 								} catch (SQDevFileIsInvalidException e) {
 									e.printStackTrace();
@@ -84,22 +85,14 @@ public class SQF_Editor extends BasicCodeEditor {
 				} catch (FileNotFoundException | IllegalAccessStateException e) {
 					e.printStackTrace();
 					
-					// inform the user
-					String message = "Couldn't perform linking process!\n\nReason: "
-							+ ((e.getMessage() == null || e.getMessage().isEmpty()) ? "Unknown"
-									: e.getMessage());
-									
-					SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
+					SQDevInfobox info = new SQDevInfobox("Couldn't perform linking process!", e);
 					info.open();
 				} catch (SQDevFileIsInvalidException e) {
 					e.printStackTrace();
 					
 					// inform the user
-					String message = "The linking file is invalid!\n\nReason: "
-							+ ((e.getMessage() == null || e.getMessage().isEmpty()) ? "Unknown"
-									: e.getMessage());
-									
-					SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
+					
+					SQDevInfobox info = new SQDevInfobox("The linking file is invalid!", e);
 					info.open();
 				}
 			}

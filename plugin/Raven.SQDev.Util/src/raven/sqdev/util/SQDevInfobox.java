@@ -62,7 +62,7 @@ public class SQDevInfobox {
 	 */
 	public SQDevInfobox(String message, Exception exception) {
 		this((exception.getMessage() != null) ? message + "\n\nReason: " + exception.getMessage()
-				: message, SWT.ICON_ERROR);
+				: message + "\n\nReason: Unknown", SWT.ICON_ERROR);
 	}
 	
 	/**

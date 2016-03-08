@@ -13,10 +13,45 @@ import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import raven.sqdev.preferences.util.SQDevPreferenceConstants;
 import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 
+/**
+ * A default implementation of a code editor. This contains the autoCompletion
+ * for some baisc <code>CharacterPairs</code>. If you want to change those you
+ * have to override addCharacterPairHandler().<br>
+ * Also this editor provides an <code>EditorKeyEventQueue</code> that can be
+ * used.<br>
+ * Furthermore it adds an CharacterPairMatcher that will highlight corresponding
+ * pairs when selected. It also installs the PreferenceStore of
+ * <code>raven.sqdev.preferences</code>.
+ * 
+ * @author Raven
+ * 		
+ * @see {@linkplain CharacterPairHandler}
+ * @see {@linkplain CharacterPair}
+ * @see {@linkplain EditorKeyEventQueue}
+ * @see {@linkplain EditorKeyEventManager}
+ * 		
+ */
 public class BasicCodeEditor extends TextEditor {
 	
-	private ColorManager colorManager;
-	private EditorKeyEventQueue editorKeyEventQueue;
+	/**
+	 * The color manager
+	 */
+	protected ColorManager colorManager;
+	
+	/**
+	 * The queue for the keyEvents
+	 */
+	protected EditorKeyEventQueue editorKeyEventQueue;
+	
+	/**
+	 * The source viewer configuration for this editor
+	 */
+	protected BasicSourceViewerConfiguration configuration;
+	
+	/**
+	 * The document provider of this editor
+	 */
+	protected BasicDocumentProvider provider;
 	
 	public BasicCodeEditor() {
 		super();
@@ -26,6 +61,9 @@ public class BasicCodeEditor extends TextEditor {
 		
 		// add a implementation for the autoCompletion of pairing characters
 		addCharacterPairHandler();
+		
+		this.setSourceViewerConfiguration(getBasicConfiguration());
+		this.setDocumentProvider(getBasicProvider());
 	}
 	
 	@Override
@@ -122,15 +160,45 @@ public class BasicCodeEditor extends TextEditor {
 		super.createPartControl(parent);
 		
 		if (fSourceViewerDecorationSupport != null) {
-			// set the plugin's shared preference store instead of the default one
+			// set the plugin's shared preference store instead of the default
+			// one
 			fSourceViewerDecorationSupport.install(SQDevPreferenceUtil.getPreferenceStore());
 		}
 	}
 	
 	/**
-	 * Updates the editor
+	 * Updates the editor. Needed when some changes are made to the way the
+	 * editor content should be displayed
 	 */
 	public void update() {
-		this.getSourceViewer().invalidateTextPresentation();
+		if (this.getSourceViewer() != null) {
+			this.getSourceViewer().invalidateTextPresentation();
+		}
+	}
+	
+	/**
+	 * Gets the <code>BasicSourceViewerConfiguration</code> of this editor
+	 * 
+	 * @see {@linkplain BasicSourceViewerConfiguration}
+	 */
+	protected BasicSourceViewerConfiguration getBasicConfiguration() {
+		if (configuration == null) {
+			configuration = new BasicSourceViewerConfiguration(getColorManager(), this);
+		}
+		
+		return configuration;
+	}
+	
+	/**
+	 * Gets the <code>BasicDocumentProvider</code> of this editor
+	 * 
+	 * @see {@linkplain BasicDocumentProvider}
+	 */
+	protected BasicDocumentProvider getBasicProvider() {
+		if (provider == null) {
+			provider = new BasicDocumentProvider();
+		}
+		
+		return provider;
 	}
 }

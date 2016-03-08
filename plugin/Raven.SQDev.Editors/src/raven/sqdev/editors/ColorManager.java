@@ -8,12 +8,15 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * A color manager for decoding <code>RGB</code> into <code>Color</code>
+ * 
+ * @author Raven
+ *		
+ */
 public class ColorManager {
 	
 	protected Map<RGB, Color> colorTable = new HashMap<RGB, Color>(10);
-	
-
-	public ColorManager() { }
 	
 	/**
 	 * Disposes all stored colors
@@ -26,11 +29,13 @@ public class ColorManager {
 	
 	/**
 	 * Get the respective color to a rgb value
-	 * @param rgb The RGB value of the desired color
+	 * 
+	 * @param rgb
+	 *            The RGB value of the desired color
 	 * @return
 	 */
 	public Color getColor(RGB rgb) {
-		//check if the color has already been stored
+		// check if the color has already been stored
 		Color color = (Color) colorTable.get(rgb);
 		
 		if (color == null) {
