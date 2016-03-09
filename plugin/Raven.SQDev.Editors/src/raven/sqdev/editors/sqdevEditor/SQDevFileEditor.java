@@ -23,6 +23,8 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		// remove the multi-line comment
 		getBasicProvider().getPartitionScanner()
 				.removeRule(BasicPartitionScanner.MULTILINE_COMMENT_RULE);
+		
+		getBasicConfiguration().getKeywordScanner().makeCaseSensitive(false);
 	}
 	
 	/**
@@ -41,7 +43,6 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		}
 		
 		// add all annotations including the "@"
-		// TODO make own partittion
 		for (ESQDevFileAnnotation currentAnnotation : ESQDevFileAnnotation.values()) {
 			keywords.add("@" + currentAnnotation.toString());
 		}

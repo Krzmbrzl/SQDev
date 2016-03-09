@@ -7,10 +7,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.text.rules.Token;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
 import raven.sqdev.editors.BasicCodeEditor;
+import raven.sqdev.editors.BasicPartitionScanner;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
@@ -22,12 +24,26 @@ import raven.sqdev.util.ProjectUtil;
 import raven.sqdev.util.SQDevInfobox;
 import raven.sqdev.util.Util;
 
+/**
+ * The editor for working with SQF files
+ * 
+ * @author Raven
+ *		
+ */
 public class SQF_Editor extends BasicCodeEditor {
 	
 	public SQF_Editor() {
 		super();
-		this.setSourceViewerConfiguration(new SQFConfiguration(getColorManager(), this));
-		this.setDocumentProvider(new SQFDocumentProvider());
+		
+		// set KeywordProvider
+		getBasicConfiguration().getKeywordScanner().setKeywordProvider(new SQFKeywordProvider());
+		
+		// get PartitionScanner
+		BasicPartitionScanner scanner = getBasicProvider().getPartitionScanner();
+		
+		// exchange the string rule of the partitionScanner
+		scanner.removeRule(BasicPartitionScanner.DOUBLE_QUOTE_STRING_RULE);
+		scanner.addRule(new SQFStringPartitionRule(new Token(BasicPartitionScanner.BASIC_STRING)));
 	}
 	
 	@Override

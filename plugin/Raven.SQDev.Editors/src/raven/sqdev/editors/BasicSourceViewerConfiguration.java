@@ -36,11 +36,6 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration {
 	 */
 	protected BasicCodeEditor editor;
 	
-	/**
-	 * The keywordProvider for this configuration
-	 */
-	protected BasicKeywordProvider keywordProvider;
-	
 	public BasicSourceViewerConfiguration(ColorManager manager, BasicCodeEditor editor) {
 		this.setColorManager(manager);
 		this.editor = editor;
@@ -71,7 +66,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration {
 	public KeywordScanner getKeywordScanner() {
 		
 		if (this.keywordScanner == null) {
-			this.keywordScanner = new KeywordScanner(getKeywordProvider(),
+			this.keywordScanner = new KeywordScanner(new BasicKeywordProvider(),
 					SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY, editor);
 		}
 		
@@ -102,12 +97,5 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setRepairer(ndr_Comment, BasicPartitionScanner.BASIC_COMMENT);
 		
 		return reconciler;
-	}
-	
-	/**
-	 * Gets the keywordProvider for this configuration
-	 */
-	protected BasicKeywordProvider getKeywordProvider() {
-		return (keywordProvider != null) ? keywordProvider : new BasicKeywordProvider();
 	}
 }
