@@ -139,7 +139,6 @@ public class SQFStringPartitionRule extends PatternRule {
 					int next = scanner.read();
 					
 					if (next == '"') {
-						scanner.read();
 						continue;
 					} else {
 						scanner.unread();
