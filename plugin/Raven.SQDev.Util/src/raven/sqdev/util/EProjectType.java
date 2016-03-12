@@ -142,6 +142,12 @@ public enum EProjectType {
 		file.setPath(project.getFullPath().toOSString());
 		file.setInformation(getInformation());
 		file.create(ESQDevFileType.LINK.toString(), false);
+		
+		// create the mission.sqm file
+		file = EFileType.SQM;
+		file.setPath(project.getFullPath().toOSString());
+		file.setInformation(getInformation());
+		file.create("mission", false);
 	}
 	
 	public String getDisplayName() {

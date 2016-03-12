@@ -91,8 +91,22 @@ public enum EFileType {
 		
 		@Override
 		public String getInitialContent() {
-			// TODO Auto-generated method stub
-			return "";
+			// create initial sqm content
+			String content = "version=51;\n\n";
+			content += "class EditorData\n{\n";
+			content += "\tmoveGridStep=1;\n";
+			content += "\tangleGridStep=0.3;\n";
+			content += "\tscaleGridStep=1;\n";
+			content += "\tautoGroupingDist=10;\n";
+			content += "\ttoggles=1;\n\n";
+			content += "\tclass Camera\n\t{\n";
+			content += "\t\tpos[]={0,0,0};\n";
+			content += "\t\tdir[]={0,0,0};\n";
+			content += "\t\tup[]={0,0,0};\n";
+			content += "\t\taside[]={0,0,0};\n";
+			content += "\t};\n};\n";
+			
+			return content;
 		}
 	},
 	
