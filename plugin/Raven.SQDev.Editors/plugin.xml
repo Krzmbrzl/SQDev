@@ -4,10 +4,18 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="raven.sqdev.editors.BasicTextEditor"
+            class="raven.sqdev.editors.BasicCodeEditor"
             default="false"
             id="Raven.SQDev.Editors.BasicTextEditor"
             name="BasicTextEditor">
+      </editor>
+      <editor
+            class="raven.sqdev.editors.sqdevEditor.SQDevFileEditor"
+            default="true"
+            extensions="sqdev"
+            icon="platform:plugin/raven.sqdev.util/resources/icons/sqdevFileIcon.png"
+            id="raven.sqdev.editors.sqdevfileeditor"
+            name="SQDevFileEditor">
       </editor>
    </extension>
 

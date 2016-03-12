@@ -14,6 +14,12 @@
             id="raven.sqdev.preferences.sqdeveditorpreferencepage"
             name="Editor">
       </page>
+      <page
+            category="raven.sqdev.preferences.sqdevgeneralpreferencepage"
+            class="raven.sqdev.preferences.pages.SQDevLinkingPreferencePage"
+            id="raven.sqdev.preferences.sqdevlinkingpreferencepage"
+            name="Linking">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">

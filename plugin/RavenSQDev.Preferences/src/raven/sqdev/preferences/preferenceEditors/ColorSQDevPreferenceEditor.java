@@ -19,6 +19,11 @@ import raven.sqdev.preferences.pages.ISQDevPreferencePage;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 import raven.sqdev.util.ColorUtils;
 
+/**
+ * A preference editor that lets the user choose a color for the respective preference.
+ * @author Raven
+ *
+ */
 public class ColorSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor {
 	
 	/**

@@ -8,7 +8,7 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
-import raven.sqdev.editors.BasicTextEditor;
+import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.ColorManager;
 import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.editors.NonRuleBasedDamagerRepairer;
@@ -19,9 +19,9 @@ public final class SQFConfiguration extends SourceViewerConfiguration {
 	
 	protected ColorManager colorManager;
 	protected KeywordScanner keywordScanner;
-	protected BasicTextEditor editor;
+	protected BasicCodeEditor editor;
 	
-	public SQFConfiguration(ColorManager manager, BasicTextEditor editor) {
+	public SQFConfiguration(ColorManager manager, BasicCodeEditor editor) {
 		this.setColorManager(manager);
 		this.editor = editor;
 	}
@@ -55,6 +55,7 @@ public final class SQFConfiguration extends SourceViewerConfiguration {
 		return this.keywordScanner;
 	}
 	
+	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
 		

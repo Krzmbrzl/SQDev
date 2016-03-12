@@ -7,13 +7,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import raven.sqdev.editors.IKeywordProvider;
+import raven.sqdev.editors.exceptions.SQDevEditorException;
 import raven.sqdev.editors.sqfeditor.exceptions.IllegalBlankException;
 import raven.sqdev.util.ResourceManager;
+import raven.sqdev.util.SQDevInfobox;
 
 public class SQFKeywordProvider implements IKeywordProvider {
 	
-	@Override
-	public String[] getKeywords() {
+	public SQFKeywordProvider() {
 		ArrayList<String> keywordList = new ArrayList<String>();
 		
 		ResourceManager manager = new ResourceManager();
@@ -23,7 +24,17 @@ public class SQFKeywordProvider implements IKeywordProvider {
 		if (in == null) {
 			// something went wrong in the process of finding the respective
 			// resource
-			return new String[0];
+			setKeywords(new String[0]);
+			
+			try {
+				throw new SQDevEditorException("Couldn't find SQF keywords!");
+			} catch (SQDevEditorException e) {
+				SQDevInfobox info = new SQDevInfobox("Failed at instantiating SQF editor properly!",
+						e);
+				info.open();
+				
+				e.printStackTrace();
+			}
 		}
 		
 		try {
@@ -31,12 +42,12 @@ public class SQFKeywordProvider implements IKeywordProvider {
 			
 			String line = reader.readLine();
 			
-			while(line != null) {
+			while (line != null) {
 				line = line.trim();
 				
-				if(line.contains(" ")) {
+				if (line.contains(" ")) {
 					throw new IllegalBlankException("A keyword mustn't contain a blank!");
-				}else {
+				} else {
 					keywordList.add(line);
 				}
 				
@@ -56,7 +67,22 @@ public class SQFKeywordProvider implements IKeywordProvider {
 			keywords[i] = keywordList.get(i);
 		}
 		
+		setKeywords(keywords);
+	}
+	
+	/**
+	 * The keyword this provider provides
+	 */
+	protected String[] keywords;
+	
+	@Override
+	public String[] getKeywords() {
 		return keywords;
+	}
+	
+	@Override
+	public void setKeywords(String[] keywords) {
+		this.keywords = keywords;
 	}
 	
 }
