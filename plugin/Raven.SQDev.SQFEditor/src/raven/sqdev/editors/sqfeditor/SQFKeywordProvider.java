@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import raven.sqdev.editors.IKeywordProvider;
-import raven.sqdev.editors.exceptions.SQDevEditorException;
 import raven.sqdev.editors.sqfeditor.exceptions.IllegalBlankException;
+import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.util.ResourceManager;
 import raven.sqdev.util.SQDevInfobox;
 

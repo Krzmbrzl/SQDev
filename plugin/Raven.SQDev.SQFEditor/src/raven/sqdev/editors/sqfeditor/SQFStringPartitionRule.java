@@ -7,7 +7,7 @@ import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.PatternRule;
 
-import raven.sqdev.editors.exceptions.IllegalConstructorException;
+import raven.sqdev.exceptions.IllegalConstructorException;
 
 public class SQFStringPartitionRule extends PatternRule {
 	

@@ -13,8 +13,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 import raven.sqdev.util.ColorUtils;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
  * A scanner that scans for keywords and colors them with the

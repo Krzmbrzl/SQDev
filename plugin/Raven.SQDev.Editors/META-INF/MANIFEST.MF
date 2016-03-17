@@ -2,17 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Editors
 Bundle-SymbolicName: raven.sqdev.editors;singleton:=true
-Bundle-Version: 0.1.1
+Bundle-Version: 0.2.0
 Bundle-Activator: raven.sqdev.editors.activator.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.editors;bundle-version="3.8.200",
  org.eclipse.jface.text;bundle-version="3.9.2",
  org.eclipse.swt,
- raven.sqdev.util;bundle-version="0.1.0"
+ raven.sqdev.util;bundle-version="0.1.0",
+ raven.sqdev.preferences,
+ raven.sqdev.misc;bundle-version="0.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: raven.sqdev.editors,
- raven.sqdev.editors.exceptions
+Export-Package: raven.sqdev.editors
 Bundle-Vendor: Raven
 Import-Package: raven.sqdev.preferences.util

@@ -21,7 +21,7 @@ import raven.sqdev.preferences.preferenceEditors.ISQDevPreferenceEditor;
 import raven.sqdev.preferences.util.ISQDevPreferenceEditorListener;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
 import raven.sqdev.preferences.util.SQDevPreferenceComposite;
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
  * The base class for all SQDevPreferencePages that contains the low level

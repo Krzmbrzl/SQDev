@@ -3,9 +3,9 @@ package raven.sqdev.preferences.pages;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 
+import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.preferences.preferenceEditors.BooleanSQDevPreferenceEditor;
 import raven.sqdev.preferences.preferenceEditors.ColorSQDevPreferenceEditor;
-import raven.sqdev.preferences.util.SQDevPreferenceConstants;
 
 /**
  * The preferencePage that contains all settings concerning the editor

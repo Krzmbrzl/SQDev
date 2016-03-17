@@ -1,6 +1,6 @@
 package raven.sqdev.editors.sqfeditor.exceptions;
 
-import raven.sqdev.editors.exceptions.SQDevEditorException;
+import raven.sqdev.exceptions.SQDevEditorException;
 
 public class IllegalBlankException extends SQDevEditorException {
 	

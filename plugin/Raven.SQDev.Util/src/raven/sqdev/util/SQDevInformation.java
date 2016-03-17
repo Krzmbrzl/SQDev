@@ -1,7 +1,5 @@
 package raven.sqdev.util;
 
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
-
 /**
  * The class for transferring information between several SQDev classes.<br>
  * It contains various fields that can be set and does the handling with defualt
@@ -46,6 +44,7 @@ public class SQDevInformation {
 	
 	/**
 	 * Checks if the profile has been set
+	 * 
 	 * @return
 	 */
 	public boolean isProfileSet() {
@@ -61,7 +60,9 @@ public class SQDevInformation {
 	
 	/**
 	 * Sets the value for the profile
-	 * @param profile The new profile value
+	 * 
+	 * @param profile
+	 *            The new profile value
 	 */
 	public void setProfile(String profile) {
 		this.profile = profile.trim();
@@ -69,6 +70,7 @@ public class SQDevInformation {
 	
 	/**
 	 * Checks if the value for the terrain has been set
+	 * 
 	 * @return
 	 */
 	public boolean isTerrainSet() {

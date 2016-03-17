@@ -4,7 +4,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
+import raven.sqdev.pluginManager.SQDevPluginManager;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -32,6 +33,8 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		
+		SQDevPluginManager.getManager().register(this);
 	}
 	
 	/*
@@ -42,6 +45,9 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		
+		SQDevPluginManager.getManager().unregister(this);
+		
 		super.stop(context);
 	}
 	

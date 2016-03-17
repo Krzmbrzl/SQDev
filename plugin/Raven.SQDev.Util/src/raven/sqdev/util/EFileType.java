@@ -1,6 +1,7 @@
 package raven.sqdev.util;
 
 import java.io.ByteArrayInputStream;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.resources.IContainer;
@@ -76,6 +77,10 @@ public enum EFileType {
 		public String getInitialContent() {
 			String initialContent = "author = \"" + info.getProfile() + "\";\n";
 			initialContent += "onLoadName = \"" + info.getName() + "\";\n";
+			
+			// make windows compatible
+			initialContent = initialContent.replace("\n", "\r\n");
+			
 			return initialContent;
 		}
 	},
@@ -92,6 +97,8 @@ public enum EFileType {
 		@Override
 		public String getInitialContent() {
 			// create initial sqm content
+			
+			// basic editor information
 			String content = "version=51;\n\n";
 			content += "class EditorData\n{\n";
 			content += "\tmoveGridStep=1;\n";
@@ -99,12 +106,35 @@ public enum EFileType {
 			content += "\tscaleGridStep=1;\n";
 			content += "\tautoGroupingDist=10;\n";
 			content += "\ttoggles=1;\n\n";
+			
+			// editor camera positioning
 			content += "\tclass Camera\n\t{\n";
-			content += "\t\tpos[]={0,0,0};\n";
-			content += "\t\tdir[]={0,0,0};\n";
-			content += "\t\tup[]={0,0,0};\n";
-			content += "\t\taside[]={0,0,0};\n";
-			content += "\t};\n};\n";
+			content += "\t\tpos[]={-10,25,15};\n";
+			content += "\t\tdir[]={0,-0.7,0.7};\n";
+			content += "\t\tup[]={0,0.7,0.7};\n";
+			content += "\t\taside[]={1,0,-0};\n";
+			content += "\t};\n};\n\n";
+			
+			content += "binarizationWanted=0;\n";
+			
+			double doubleSeed = new Random().nextDouble();
+			
+			while (doubleSeed == 0 || doubleSeed == 1) {
+				doubleSeed = new Random().nextDouble();
+			}
+			
+			// bring it to the respective length
+			int seed = (int) (doubleSeed * 10000000);
+			
+			content += "randomSeed=" + seed + ";\n\n";
+			
+			// scenario information
+			content += "class ScenarioData\n{\n";
+			content += "\tauthor=\"" + getInformation().getProfile() + "\";\n";
+			content += "};\n";
+			
+			// make windows compatible
+			content = content.replace("\n", "\r\n");
 			
 			return content;
 		}
@@ -171,6 +201,9 @@ public enum EFileType {
 		
 		@Override
 		public String getInitialContent() {
+			// make windows compatible
+			initialContent = initialContent.replace("\n", "\r\n");
+			
 			return initialContent;
 		}
 	};

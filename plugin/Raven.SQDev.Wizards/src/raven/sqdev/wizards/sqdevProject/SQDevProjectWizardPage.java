@@ -17,9 +17,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 import raven.sqdev.util.EProjectType;
 import raven.sqdev.util.SQDevInformation;
+import raven.sqdev.util.SQDevPreferenceUtil;
 import raven.sqdev.util.StringUtils;
 import raven.sqdev.util.Util;
 
@@ -132,8 +132,11 @@ public class SQDevProjectWizardPage extends WizardPage {
 		mapLabel.setToolTipText(mapToolTip);
 		
 		terrainCombo = new Combo(container, SWT.DROP_DOWN);
-		terrainCombo.add("Altis");
-		terrainCombo.add("Stratis");
+		
+		for (String currentTerrain : Util.getTerrains()) {
+			terrainCombo.add(currentTerrain);
+		}
+		
 		terrainCombo.setText(SQDevPreferenceUtil.getDefaultTerrain());
 		terrainCombo.setToolTipText(mapToolTip);
 		terrainCombo.setLayoutData(gd);
@@ -158,7 +161,7 @@ public class SQDevProjectWizardPage extends WizardPage {
 		profileCombo.setLayoutData(gd);
 		
 		// TODO: select default profile
-		for(String currentProfile : Util.getProfiles()) {
+		for (String currentProfile : Util.getProfiles()) {
 			profileCombo.add(currentProfile);
 		}
 		
@@ -175,7 +178,7 @@ public class SQDevProjectWizardPage extends WizardPage {
 		// autoExport selection
 		String autoExportTooltip = "Defines whether the project should get exported automatically"
 				+ " whenever a file in it changed";
-		
+				
 		Label autoExportLabel = new Label(container, SWT.NULL);
 		autoExportLabel.setText("Auto export:");
 		autoExportLabel.setToolTipText(autoExportTooltip);
@@ -183,7 +186,7 @@ public class SQDevProjectWizardPage extends WizardPage {
 		autoExportButton = new Button(container, SWT.CHECK);
 		autoExportButton.setToolTipText(autoExportTooltip);
 		autoExportButton.setSelection(SQDevPreferenceUtil.getAutoExportDefaultEnabled());
-				
+		
 		getNameText().setFocus();
 		dialogChanged();
 		setControl(container);
@@ -262,7 +265,7 @@ public class SQDevProjectWizardPage extends WizardPage {
 	public EProjectType getProjectType() {
 		return projectType;
 	}
-
+	
 	/**
 	 * Gets the name the user has chosen for the project to be created
 	 * 

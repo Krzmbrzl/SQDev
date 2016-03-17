@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 
-import raven.sqdev.preferences.util.SQDevPreferenceConstants;
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
+import raven.sqdev.constants.SQDevPreferenceConstants;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
  * A default implementation of a code editor. This contains the autoCompletion
