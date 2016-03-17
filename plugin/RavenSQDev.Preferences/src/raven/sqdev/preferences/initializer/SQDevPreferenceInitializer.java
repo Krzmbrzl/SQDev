@@ -7,9 +7,9 @@ import javax.swing.filechooser.FileSystemView;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import raven.sqdev.constants.ISQDevColorConstants;
+import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.preferences.activator.Activator;
-import raven.sqdev.preferences.util.ISQDevColorConstants;
-import raven.sqdev.preferences.util.SQDevPreferenceConstants;
 import raven.sqdev.util.ColorUtils;
 
 /**

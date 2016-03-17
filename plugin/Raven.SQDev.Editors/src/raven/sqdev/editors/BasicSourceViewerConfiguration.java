@@ -8,8 +8,8 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
-import raven.sqdev.preferences.util.ISQDevColorConstants;
-import raven.sqdev.preferences.util.SQDevPreferenceConstants;
+import raven.sqdev.constants.ISQDevColorConstants;
+import raven.sqdev.constants.SQDevPreferenceConstants;
 
 /**
  * Basic implementation of a <code>SourceViewerConfiguration</code>

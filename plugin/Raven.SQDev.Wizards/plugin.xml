@@ -32,6 +32,7 @@
       <wizard
             category="raven.sqdev.wizards.exportcategory"
             class="raven.sqdev.wizards.export.SQDevExportWizard"
+            icon="platform:plugin/raven.sqdev.util/resources/icons/sqdevExportIcon.png"
             id="raven.sqdev.wizards.export"
             name="Export SQDev Project">
       </wizard>
@@ -49,6 +50,7 @@
       <wizard
             category="raven.sqdev.wizards.importcategory"
             class="raven.sqdev.wizards.importWizard.SQDevImportWizard"
+            icon="platform:plugin/raven.sqdev.util/resources/icons/sqdevImportIcon.png"
             id="raven.sqdev.wizards.import"
             name="Import as SQDevProject">
       </wizard>

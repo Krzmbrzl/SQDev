@@ -4,17 +4,17 @@ package raven.sqdev.preferences.pages;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 
+import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.preferences.preferenceEditors.BooleanSQDevPreferenceEditor;
 import raven.sqdev.preferences.preferenceEditors.ComboSQDevPreferenceEditor;
 import raven.sqdev.preferences.preferenceEditors.DirectorySQDevPreferenceEditor;
-import raven.sqdev.preferences.util.SQDevPreferenceConstants;
 import raven.sqdev.util.Util;
 
 /**
  * The preferencePage that contains all general settings for this plugin
  * 
  * @author Robert Adam
- *		
+ * 		
  */
 public class SQDevGeneralPreferencePage extends SQDevPreferencePage {
 	
@@ -60,10 +60,9 @@ public class SQDevGeneralPreferencePage extends SQDevPreferencePage {
 						+ "(can be overwritten by each project individually)",
 				info));
 				
-		String[] terrainAlternatives = { "Altis", "Stratis" };
 		addPreferenceEditor(
 				new ComboSQDevPreferenceEditor(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN,
-						"&Default terrain:", terrainAlternatives, true,
+						"&Default terrain:", Util.getTerrains(), true,
 						"Defines the default terrain newly created projects will be located on per"
 								+ " default (Can be overwritten by each project individually)",
 						info));

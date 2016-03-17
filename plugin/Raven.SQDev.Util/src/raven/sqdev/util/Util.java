@@ -14,7 +14,6 @@ import org.eclipse.swt.SWT;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
@@ -180,6 +179,15 @@ public class Util {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Finds all available terrains
+	 * 
+	 * @return An array of terrain names
+	 */
+	public static String[] getTerrains() {
+		return new String[] { "Altis", "Stratis", "VR" };
 	}
 	
 }

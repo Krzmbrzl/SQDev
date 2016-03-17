@@ -19,7 +19,6 @@ import org.eclipse.swt.SWT;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
-import raven.sqdev.preferences.util.SQDevPreferenceUtil;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
