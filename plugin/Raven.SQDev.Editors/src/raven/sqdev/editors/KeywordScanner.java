@@ -7,7 +7,6 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
-import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -23,7 +22,7 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  * @author Raven
  * 		
  */
-public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeListener {
+public class KeywordScanner extends RuleBasedScanner {
 	
 	/**
 	 * A token that indicates an unrecognized word meaning any word, that is not
@@ -86,8 +85,6 @@ public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeL
 					"Invalid preference key \"" + colorPreferenceKey + "\"");
 		}
 		
-		SQDevPreferenceUtil.getPreferenceStore().addPropertyChangeListener(this);
-		
 		// assign variables
 		preferenceKey = colorPreferenceKey;
 		this.provider = provider;
@@ -119,8 +116,15 @@ public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeL
 		this(provider, colorPreferenceKey, editor, true);
 	}
 	
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
+	/**
+	 * Synchronizes this scanner to a PropertyChangeEvent (adjusts the color of
+	 * the highlighting
+	 * 
+	 * @param event
+	 *            The respective PropertyChangeEvent. Must be the same as the
+	 *            one this scanner has been initialized with
+	 */
+	public void syncToPropertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(preferenceKey)) {
 			// if the changed property is the one for the color this scanner
 			// depends on

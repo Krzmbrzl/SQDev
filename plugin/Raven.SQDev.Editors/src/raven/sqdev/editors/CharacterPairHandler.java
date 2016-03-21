@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.VerifyEvent;
 
-import raven.sqdev.util.StringUtils;
+import raven.sqdev.misc.CharacterPair;
+import raven.sqdev.util.TextUtils;
 
 /**
  * This class will handle character inputs that have a predefined partner to
@@ -82,9 +83,9 @@ public class CharacterPairHandler implements IEditorKeyHandler {
 				String previousText = text.getText(0, caretPosition - 1);
 				String followingText = text.getText(caretPosition, text.getText().length() - 1);
 				
-				int occuranceBefore = StringUtils.countMatches(previousText,
+				int occuranceBefore = TextUtils.countMatches(previousText,
 						String.valueOf(event.character));
-				int occuranceAfter = StringUtils.countMatches(followingText,
+				int occuranceAfter = TextUtils.countMatches(followingText,
 						String.valueOf(event.character));
 						
 				// TODO: handle escaped character or only consider characters

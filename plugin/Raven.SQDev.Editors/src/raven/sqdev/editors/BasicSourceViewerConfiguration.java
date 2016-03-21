@@ -2,14 +2,20 @@ package raven.sqdev.editors;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 import raven.sqdev.constants.ISQDevColorConstants;
 import raven.sqdev.constants.SQDevPreferenceConstants;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
  * Basic implementation of a <code>SourceViewerConfiguration</code>
@@ -19,8 +25,9 @@ import raven.sqdev.constants.SQDevPreferenceConstants;
  * @see {@linkplain SourceViewerConfiguration}
  * 		
  */
-public class BasicSourceViewerConfiguration extends SourceViewerConfiguration {
-	
+public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
+		implements IPropertyChangeListener {
+		
 	/**
 	 * The color manager
 	 */
@@ -36,9 +43,17 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration {
 	 */
 	protected BasicCodeEditor editor;
 	
+	/**
+	 * The contentAssistant for this editor
+	 */
+	protected ContentAssistant assistant;
+	
 	public BasicSourceViewerConfiguration(ColorManager manager, BasicCodeEditor editor) {
 		this.setColorManager(manager);
 		this.editor = editor;
+		
+		// register to get notified about preference changes
+		SQDevPreferenceUtil.getPreferenceStore().addPropertyChangeListener(this);
 	}
 	
 	@Override
@@ -97,5 +112,44 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setRepairer(ndr_Comment, BasicPartitionScanner.BASIC_COMMENT);
 		
 		return reconciler;
+	}
+	
+	@Override
+	public IContentAssistant getContentAssistant(ISourceViewer viewer) {
+		assistant = new ContentAssistant();
+		assistant.enableAutoInsert(SQDevPreferenceUtil.isAutoCompleteEnabled());
+		
+		IContentAssistProcessor processor = new BasicContentAssistProcessor(editor);
+		
+		assistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
+		
+		assistant.setInformationControlCreator(getInformationControlCreator(viewer));
+		
+		return assistant;
+	}
+	
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		if (event.getNewValue() == null) {
+			// if there is no useful new value just ignore it
+			return;
+		}
+		
+		// watch out for a change concerning the autoCompletion
+		switch (event.getProperty()) {
+			case SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY:
+				assistant.enableAutoActivation((boolean) event.getNewValue());
+				break;
+				
+			case SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY:
+				getKeywordScanner().syncToPropertyChange(event);
+				break;
+				
+			default:
+				// don't update the editor
+				return;
+		}
+		
+		editor.update();
 	}
 }

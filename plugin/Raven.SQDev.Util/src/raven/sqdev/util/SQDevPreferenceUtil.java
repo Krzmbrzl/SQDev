@@ -157,8 +157,8 @@ public class SQDevPreferenceUtil {
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY</code>
-	 * preference that holds the path to the ArmA folder in the programs
-	 * directory
+	 * preference that indicates whether matching brackets should get
+	 * highlighted
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
@@ -170,8 +170,7 @@ public class SQDevPreferenceUtil {
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY</code>
-	 * preference that holds the path to the ArmA folder in the programs
-	 * directory
+	 * preference that indicates whether the current line should be highlighted
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
@@ -182,9 +181,21 @@ public class SQDevPreferenceUtil {
 	
 	/**
 	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY</code>
+	 * preference that indicates whether the content assist will insert the
+	 * proposal automatically when there is only one proposal
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static boolean isAutoCompleteEnabled() {
+		return getPreferenceStore()
+				.getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY);
+	}
+	
+	/**
+	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY</code>
-	 * preference that holds the path to the ArmA folder in the programs
-	 * directory
+	 * preference that indicates whether matching brackets should be highlighted
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
@@ -196,8 +207,7 @@ public class SQDevPreferenceUtil {
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY</code>
-	 * preference that holds the path to the ArmA folder in the programs
-	 * directory
+	 * preference that defines the color for the highlight of the current line
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
@@ -209,8 +219,7 @@ public class SQDevPreferenceUtil {
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY</code>
-	 * preference that holds the path to the ArmA folder in the programs
-	 * directory
+	 * preference that defines the color for the hihlighting of keywords
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */

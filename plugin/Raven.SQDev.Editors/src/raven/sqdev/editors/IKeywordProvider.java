@@ -21,4 +21,12 @@ public interface IKeywordProvider {
 	 *            The array of keywords
 	 */
 	public void setKeywords(String[] keywords);
+	
+	/**
+	 * Gets the keywords sorted alphabetically. Normally the keywords starting
+	 * with an A are listed at index 0
+	 * 
+	 * @return The twodimensional array of sorted keywords
+	 */
+	public String[][] getSortedKeywords();
 }

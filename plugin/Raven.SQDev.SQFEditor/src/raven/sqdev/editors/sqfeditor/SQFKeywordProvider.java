@@ -6,14 +6,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import raven.sqdev.editors.IKeywordProvider;
+import raven.sqdev.editors.BasicKeywordProvider;
 import raven.sqdev.editors.sqfeditor.exceptions.IllegalBlankException;
 import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.util.ResourceManager;
 import raven.sqdev.util.SQDevInfobox;
 
-public class SQFKeywordProvider implements IKeywordProvider {
+/**
+ * The KeywordProvider for the SQF keywords
+ * 
+ * @author Raven
+ *		
+ */
+public class SQFKeywordProvider extends BasicKeywordProvider {
 	
+	/**
+	 * Creates an instance of this SQFKeywordProvider that will set it's
+	 * keywords automatically
+	 */
 	public SQFKeywordProvider() {
 		ArrayList<String> keywordList = new ArrayList<String>();
 		
@@ -69,20 +79,4 @@ public class SQFKeywordProvider implements IKeywordProvider {
 		
 		setKeywords(keywords);
 	}
-	
-	/**
-	 * The keyword this provider provides
-	 */
-	protected String[] keywords;
-	
-	@Override
-	public String[] getKeywords() {
-		return keywords;
-	}
-	
-	@Override
-	public void setKeywords(String[] keywords) {
-		this.keywords = keywords;
-	}
-	
 }

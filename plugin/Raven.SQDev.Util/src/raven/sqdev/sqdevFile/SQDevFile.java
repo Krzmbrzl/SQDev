@@ -21,7 +21,7 @@ import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
 import raven.sqdev.exceptions.SQDevIllegalFileChangeException;
 import raven.sqdev.util.SQDevInfobox;
-import raven.sqdev.util.StringUtils;
+import raven.sqdev.util.TextUtils;
 
 /**
  * A <code>SQDevFile</code> contains some project specific information for the
@@ -266,7 +266,7 @@ public class SQDevFile extends File {
 		}
 		
 		for (String currentAttribute : getAttributesAsString()) {
-			if (StringUtils.countMatches(completeFile, currentAttribute) > 1) {
+			if (TextUtils.countMatches(completeFile, currentAttribute) > 1) {
 				// Each attribute may only be specified once
 				return false;
 			}
