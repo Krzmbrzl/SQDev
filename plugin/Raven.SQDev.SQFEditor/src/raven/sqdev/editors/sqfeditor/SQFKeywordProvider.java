@@ -1,14 +1,7 @@
 package raven.sqdev.editors.sqfeditor;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-
 import raven.sqdev.editors.BasicKeywordProvider;
-import raven.sqdev.editors.sqfeditor.exceptions.IllegalBlankException;
-import raven.sqdev.exceptions.SQDevEditorException;
+import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.util.ResourceManager;
 import raven.sqdev.util.SQDevInfobox;
 
@@ -16,7 +9,7 @@ import raven.sqdev.util.SQDevInfobox;
  * The KeywordProvider for the SQF keywords
  * 
  * @author Raven
- *		
+ * 		
  */
 public class SQFKeywordProvider extends BasicKeywordProvider {
 	
@@ -25,58 +18,22 @@ public class SQFKeywordProvider extends BasicKeywordProvider {
 	 * keywords automatically
 	 */
 	public SQFKeywordProvider() {
-		ArrayList<String> keywordList = new ArrayList<String>();
-		
 		ResourceManager manager = new ResourceManager();
+		String savedKeywords = manager.getResourceContent("SQFKeywords.txt");
 		
-		InputStream in = manager.findResource("/resources/sqf/Keywords.txt");
-		
-		if (in == null) {
-			// something went wrong in the process of finding the respective
-			// resource
-			setKeywords(new String[0]);
+		if (savedKeywords == null) {
+			setKeywordList(new KeywordList());
 			
-			try {
-				throw new SQDevEditorException("Couldn't find SQF keywords!");
-			} catch (SQDevEditorException e) {
-				SQDevInfobox info = new SQDevInfobox("Failed at instantiating SQF editor properly!",
-						e);
-				info.open();
-				
-				e.printStackTrace();
-			}
+			SQDevInfobox info = new SQDevInfobox(
+					"Failed at instantiating SQF editor properly!\n\nReason:"
+							+ "\nProblems with reading respective resource");
+			info.open();
+			
+			return;
 		}
 		
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			
-			String line = reader.readLine();
-			
-			while (line != null) {
-				line = line.trim();
-				
-				if (line.contains(" ")) {
-					throw new IllegalBlankException("A keyword mustn't contain a blank!");
-				} else {
-					keywordList.add(line);
-				}
-				
-				line = reader.readLine();
-			}
-			
-			reader.close();
-			
-		} catch (IOException | IllegalBlankException e) {
-			e.printStackTrace();
-		}
+		KeywordList list = new KeywordList(savedKeywords);
 		
-		String[] keywords = new String[keywordList.size()];
-		
-		// pack in array
-		for (int i = 0; i < keywordList.size(); i++) {
-			keywords[i] = keywordList.get(i);
-		}
-		
-		setKeywords(keywords);
+		setKeywordList(list);
 	}
 }

@@ -11,5 +11,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: raven.sqdev.constants,
  raven.sqdev.exceptions,
+ raven.sqdev.infoCollection,
+ raven.sqdev.infoCollection.base,
+ raven.sqdev.interfaces,
  raven.sqdev.misc,
- raven.sqdev.pluginManager
+ raven.sqdev.pluginManagement

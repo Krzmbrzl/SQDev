@@ -31,4 +31,22 @@ public enum ELocality {
 			return "undefined";
 		}
 	};
+	
+	/**
+	 * Finds the locality enum constant represented by this String
+	 * 
+	 * @param locality
+	 *            The String representation of the desired enum constant
+	 * @return The resolved enum constant or <code>null</code> if none could be
+	 *         found
+	 */
+	public static ELocality resolve(String locality) {
+		for (ELocality current : ELocality.values()) {
+			if (current.toString().toLowerCase().equals(locality.toLowerCase())) {
+				return current;
+			}
+		}
+		
+		return null;
+	}
 }

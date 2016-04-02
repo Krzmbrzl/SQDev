@@ -66,6 +66,10 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 				
 		// set autoClean
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN, false);
+		
+		// set start and end command for keyword update
+		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND, "abs");
+		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND, "worldToScreen");
 	}
 	
 	/**

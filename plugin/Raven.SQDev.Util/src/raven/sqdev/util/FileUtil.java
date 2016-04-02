@@ -2,13 +2,18 @@ package raven.sqdev.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
+
+import raven.sqdev.exceptions.SQDevException;
 
 /**
  * A class containing static util methods for files
@@ -134,6 +139,85 @@ public class FileUtil {
 		}
 		
 		return targetFolder;
+	}
+	
+	/**
+	 * Gets the content of the given file
+	 * 
+	 * @param file
+	 *            The <code>File</code> whose content should be obtained. Has to
+	 *            exist!
+	 * @return The file's content
+	 * @throws SQDevException
+	 *             If anything goes wrong
+	 */
+	public static String getContent(File file) throws SQDevException {
+		if (!file.exists()) {
+			throw new SQDevException(
+					"Failed at getting content of file \"" + file.getAbsolutePath() + "\"",
+					new FileNotFoundException("The requested file does not exist"));
+		}
+		
+		try {
+//			BufferedReader reader = new BufferedReader(new FileReader(file));
+//			
+//			String content = "";
+//			String currentLine = "";
+//			
+//			while ((currentLine = reader.readLine()) != null) {
+//				content += (content.isEmpty()) ? currentLine : "\n" + currentLine;
+//			}
+//			
+//			reader.close();
+//			
+//			return content;
+			
+			return readAll(new FileInputStream(file), (int) file.length());
+			
+		} catch (IOException e) {
+			throw new SQDevException(
+					"Failed at getting content of file \"" + file.getAbsolutePath() + "\"", e);
+		}
+	}
+	
+	/**
+	 * Reads the complete InputStream into a String.
+	 * 
+	 * @param in
+	 *            The <code>InputStream</code> to read from
+	 * @param size
+	 *            The length of the <code>InputStream</code> or <code>-1</code>
+	 *            if unknown.
+	 * @return The created String
+	 * @throws IOException
+	 */
+	public static String readAll(InputStream in, int size) throws IOException {
+		byte[] bytes;
+		
+		if (size < 0) {
+			bytes = new byte[in.available()];
+		} else {
+			bytes = new byte[size];
+		}
+		
+		in.read(bytes);
+		
+		return new String(bytes);
+	}
+	
+	/**
+	 * Reads the complete InputStream into a String. If the size of the
+	 * <code>InputStream</code> can be obtained
+	 * <code>readAll(InputStream in, int size)</code> should be used for safer
+	 * results.
+	 * 
+	 * @param in
+	 *            The <code>InputStream</code> to read from
+	 * @return The created String
+	 * @throws IOException
+	 */
+	public static String readAll(InputStream in) throws IOException {
+		return readAll(in, -1);
 	}
 	
 }

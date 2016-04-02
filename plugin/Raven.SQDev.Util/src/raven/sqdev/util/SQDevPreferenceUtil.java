@@ -15,7 +15,7 @@ import org.osgi.framework.Bundle;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.exceptions.SQDevInvalidPreferenceException;
-import raven.sqdev.pluginManager.SQDevPluginManager;
+import raven.sqdev.pluginManagement.SQDevPluginManager;
 
 /**
  * This class provides functions for dealing with SQDev preferences
@@ -272,5 +272,30 @@ public class SQDevPreferenceUtil {
 	 */
 	public static String getDefaultTerrain() {
 		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND</code>
+	 * preference that holds the first command in the BIKI that should be
+	 * processed
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static String getFirstCommand() {
+		return getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND</code>
+	 * preference that holds the last command in the BIKI that should be
+	 * processed
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static String getLastCommand() {
+		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND);
 	}
 }

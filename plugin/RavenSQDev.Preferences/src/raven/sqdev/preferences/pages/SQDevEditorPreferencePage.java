@@ -44,7 +44,8 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		addPreferenceEditor(enableBracketMatchEditor);
 		
 		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY, "&Enable autoComplete:",
+				SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY,
+				"&Enable autoComplete:",
 				"Enables/Disables autoComplete meaning that content assist will insert the proposal automatically if there is only one choice",
 				behaviour));
 				

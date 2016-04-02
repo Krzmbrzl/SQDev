@@ -1,6 +1,7 @@
 package raven.sqdev.editors;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
@@ -9,6 +10,7 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 
+import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.util.EditorUtil;
 
 /**
@@ -33,26 +35,28 @@ public class BasicContentAssistProcessor implements IContentAssistProcessor {
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
 		String prefix = EditorUtil.getWordBeforeOffset(viewer.getDocument(), offset);
 		
-		String[] keywords;
+		List<Keyword> keywords;
 		// get the respective list of keywords
 		if (prefix.isEmpty()) {
 			keywords = editor.getBasicConfiguration().getKeywordScanner().getKeywordProvider()
-					.getKeywords();
+					.getKeywordList().getKeywords();
 		} else {
-			String[][] allKeywords = editor.getBasicConfiguration().getKeywordScanner()
-					.getKeywordProvider().getSortedKeywords();
+			List<List<Keyword>> allKeywords = editor.getBasicConfiguration().getKeywordScanner()
+					.getKeywordProvider().getKeywordList().getKeywordsSorted();
 					
-			keywords = allKeywords[prefix.toLowerCase().charAt(0) - 'a'];
+			keywords = allKeywords.get(prefix.toLowerCase().charAt(0) - 'a');
 		}
 		
 		ArrayList<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
 		
 		// create proposals
-		for (String currentKeyword : keywords) {
-			if (currentKeyword.toLowerCase().startsWith(prefix.toLowerCase())) {
-				// TODO: provide descriptions
-				proposals.add(new CompletionProposal(currentKeyword, offset - prefix.length(),
-						prefix.length(), currentKeyword.length()));
+		for (Keyword currentKeyword : keywords) {
+			if (currentKeyword.getKeyword().toLowerCase().startsWith(prefix.toLowerCase())) {
+				// add a proposal
+				proposals.add(new CompletionProposal(currentKeyword.getKeyword(),
+						offset - prefix.length(), prefix.length(),
+						currentKeyword.getKeyword().length(), null, currentKeyword.getKeyword(),
+						null, currentKeyword.getDescription()));
 			}
 		}
 		

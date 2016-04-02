@@ -10,12 +10,17 @@ import java.util.ArrayList;
  */
 public enum ESQDevFileAnnotation {
 	/**
-	 * Defines a file that shouldbe ignored during export
+	 * Defines a file that should be ignored during export
 	 */
 	IGNORE {
 		@Override
 		public String toString() {
 			return "ignore";
+		}
+		
+		@Override
+		public String getDescription() {
+			return "Defines a file that should be ignored during export";
 		}
 	},
 	/**
@@ -26,8 +31,12 @@ public enum ESQDevFileAnnotation {
 		public String toString() {
 			return "preserve";
 		}
-	}
-	;
+		
+		@Override
+		public String getDescription() {
+			return "Defines a file that should not get deleted during the clean of an export";
+		}
+	};
 	
 	/**
 	 * The values of this annotation
@@ -36,7 +45,9 @@ public enum ESQDevFileAnnotation {
 	
 	/**
 	 * Checks if the given line contains a valid annotation in a SQDevFile.<br>
-	 * @param inputLine The line to be checked
+	 * 
+	 * @param inputLine
+	 *            The line to be checked
 	 * @return <code>True</code> if it's an annotation
 	 */
 	public static boolean isAnnotation(String inputLine) {
@@ -49,8 +60,8 @@ public enum ESQDevFileAnnotation {
 		String possibleAnnotation = (inputLine.contains(" "))
 				? inputLine.substring(1, inputLine.indexOf(" ")) : inputLine.substring(1);
 				
-		for(ESQDevFileAnnotation current : ESQDevFileAnnotation.values()) {
-			if(current.toString().equals(possibleAnnotation)) {
+		for (ESQDevFileAnnotation current : ESQDevFileAnnotation.values()) {
+			if (current.toString().equals(possibleAnnotation)) {
 				return true;
 			}
 		}
@@ -67,6 +78,7 @@ public enum ESQDevFileAnnotation {
 	
 	/**
 	 * Sets the list of values of this annotation
+	 * 
 	 * @param values
 	 */
 	public void setValues(ArrayList<String> values) {
@@ -75,12 +87,19 @@ public enum ESQDevFileAnnotation {
 	
 	/**
 	 * Adds a value to the list
-	 * @param value The value to add
+	 * 
+	 * @param value
+	 *            The value to add
 	 */
 	public void addValue(String value) {
-		if(values == null) {
+		if (values == null) {
 			values = new ArrayList<String>();
 		}
 		values.add(value);
 	}
+	
+	/**
+	 * Gets the description for this annotation
+	 */
+	public abstract String getDescription();
 }

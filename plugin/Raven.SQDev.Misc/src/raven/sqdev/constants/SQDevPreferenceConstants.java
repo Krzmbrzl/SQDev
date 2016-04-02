@@ -80,4 +80,16 @@ public class SQDevPreferenceConstants {
 	 */
 	public static final String SQDEV_EXPORT_AUTOCLEAN = "raven.sqdev.autoClean";
 	
+	/**
+	 * The preference holding the command that will be the first one to be
+	 * processed during keyword update
+	 */
+	public static final String SQDEV_COLLECTION_STARTCOMMAND = "raven.sqdev.collection.startCommand";
+	
+	/**
+	 * The preference holding the command that will be the last one to be
+	 * processed during keyword update
+	 */
+	public static final String SQDEV_COLLECTION_ENDCOMMAND = "raven.sqdev.collection.endCommand";
+	
 }

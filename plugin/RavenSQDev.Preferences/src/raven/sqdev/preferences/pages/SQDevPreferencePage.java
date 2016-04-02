@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
 import raven.sqdev.exceptions.SQDevException;
@@ -29,9 +28,9 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  * LayoutManager that lays out the different preferenceEditors.
  * 
  * @author Raven
- *		
+ * 		
  */
-public class SQDevPreferencePage extends PreferencePage
+public abstract class SQDevPreferencePage extends PreferencePage
 		implements ISQDevPreferencePage, ISQDevPreferenceEditorListener {
 		
 	private SQDevPreferenceComposite SQDevPreferencePageContainer;
@@ -58,10 +57,6 @@ public class SQDevPreferencePage extends PreferencePage
 		spacer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		return SQDevPreferencePageContainer;
-	}
-	
-	@Override
-	public void init(IWorkbench workbench) {
 	}
 	
 	/**
@@ -193,7 +188,7 @@ public class SQDevPreferencePage extends PreferencePage
 		container.setLayout(layout);
 		container.setFont(parent.getFont());
 		
-		container.setLayoutData(new GridData(GridData.FILL_BOTH));
+		container.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		return container;
 	}

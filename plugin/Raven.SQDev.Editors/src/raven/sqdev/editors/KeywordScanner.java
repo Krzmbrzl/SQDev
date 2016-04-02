@@ -1,5 +1,7 @@
 package raven.sqdev.editors;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IRule;
@@ -12,6 +14,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
+import raven.sqdev.infoCollection.base.Keyword;
+import raven.sqdev.infoCollection.base.KeywordList;
+import raven.sqdev.interfaces.IKeywordProvider;
 import raven.sqdev.util.ColorUtils;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
@@ -148,15 +153,17 @@ public class KeywordScanner extends RuleBasedScanner {
 	 *            The token the rule should use
 	 */
 	protected void updateRules(IToken token) {
-		String[] keywords = provider.getKeywords();
+		ArrayList<Keyword> keywordList = provider.getKeywordList().getKeywords();
+		
+		Keyword[] keywords = keywordList.toArray(new Keyword[keywordList.size()]);
 		
 		// create the respective WordRule
 		WordRule keywordRule = new WordRule(new WordDetector(), getDefaultToken(),
 				!isCaseSensitive());
 				
 		// add keywords
-		for (String currentKeyword : keywords) {
-			keywordRule.addWord(currentKeyword, token);
+		for (Keyword currentKeyword : keywords) {
+			keywordRule.addWord(currentKeyword.getKeyword(), token);
 		}
 		
 		IRule[] rules = { keywordRule };
@@ -189,12 +196,12 @@ public class KeywordScanner extends RuleBasedScanner {
 	/**
 	 * Sets the keywords for this scanner
 	 * 
-	 * @param keywords
-	 *            The new keywords
+	 * @param list
+	 *            The new keyword list
 	 */
-	public void setKeywords(String[] keywords) {
+	public void setKeywords(KeywordList list) {
 		IKeywordProvider provider = getKeywordProvider();
-		provider.setKeywords(keywords);
+		provider.setKeywordList(list);
 		
 		setKeywordProvider(provider);
 	}

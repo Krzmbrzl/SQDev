@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 
+import raven.sqdev.interfaces.IEditorKeyHandler;
+
 /**
  * This class provides management for KeyEvents. <br>
  * It will ask every registered handler if it wants to handle the current event

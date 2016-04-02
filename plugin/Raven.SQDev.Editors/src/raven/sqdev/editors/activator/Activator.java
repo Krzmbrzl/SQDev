@@ -4,7 +4,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import raven.sqdev.pluginManager.SQDevPluginManager;
+import raven.sqdev.pluginManagement.SQDevPluginManager;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
