@@ -4,7 +4,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import raven.sqdev.pluginManagement.SQDevPluginManager;
+import raven.sqdev.pluginManager.SQDevPluginManager;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
@@ -17,12 +17,6 @@ public class Activator extends AbstractUIPlugin {
 	
 	// The shared instance
 	private static Activator plugin;
-	
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
 	
 	/*
 	 * (non-Javadoc)

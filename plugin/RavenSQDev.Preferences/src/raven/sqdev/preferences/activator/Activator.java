@@ -3,7 +3,7 @@ package raven.sqdev.preferences.activator;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import raven.sqdev.pluginManagement.SQDevPluginManager;
+import raven.sqdev.pluginManager.SQDevPluginManager;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -15,12 +15,6 @@ public class Activator extends AbstractUIPlugin {
 	
 	// The shared instance
 	private static Activator plugin;
-	
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
 	
 	/*
 	 * (non-Javadoc)

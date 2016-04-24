@@ -12,8 +12,8 @@ import org.eclipse.jface.text.IDocument;
 public class EditorUtil {
 	
 	/**
-	 * Gets the word(part) in this document that occurs directly before the
-	 * given offset. It will take all characters that are considered valid by
+	 * Gets the wordpart in this document that occurs directly before the given
+	 * offset. It will take all characters that are considered valid by
 	 * <code>TextUtil.isWordPart(char c)</code>
 	 * 
 	 * @param document
@@ -21,9 +21,9 @@ public class EditorUtil {
 	 * @param offset
 	 *            The offset the search should use (has to be in range of the
 	 *            document!)
-	 * @return The found word(part)
+	 * @return The found wordpart (may be empty)
 	 */
-	public static String getWordBeforeOffset(IDocument document, int offset) {
+	public static String getWordPartBeforeOffset(IDocument document, int offset) {
 		Assert.isTrue(document.getLength() >= offset);
 		
 		// get relevant content in reverse order
@@ -45,5 +45,49 @@ public class EditorUtil {
 		word = new StringBuilder(word).reverse().toString();
 		
 		return word;
+	}
+	
+	/**
+	 * Gets the wordpart in this document that occurs directly after the given
+	 * offset. It will take all characters that are considered valid by
+	 * <code>TextUtil.isWordPart(char c)</code>
+	 * 
+	 * @param document
+	 *            The document to search on
+	 * @param offset
+	 *            The offset the search should use (has to be in range of the
+	 *            document!)
+	 * @return The found wordpart (may be empty)
+	 */
+	public static String getWordPartAfterOffset(IDocument document, int offset) {
+		Assert.isTrue(document.getLength() >= offset);
+		
+		String relevantContent = document.get().substring(offset);
+		
+		String word = "";
+		
+		for (char currentChar : relevantContent.toCharArray()) {
+			if (TextUtils.isWordPart(currentChar)) {
+				word += currentChar;
+			} else {
+				// word has ended
+				break;
+			}
+		}
+		
+		return word;
+	}
+	
+	/**
+	 * Gets the word the given offset corresponds to
+	 * 
+	 * @param document
+	 *            The doument to search in
+	 * @param offset
+	 *            The offset to search for. Has to bein range of the document!
+	 * @return The found word (may be empty)
+	 */
+	public static String getWordAroundOffset(IDocument document, int offset) {
+		return getWordPartBeforeOffset(document, offset) + getWordPartAfterOffset(document, offset);
 	}
 }

@@ -3,7 +3,7 @@ package raven.sqdev.wizards.activator;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import raven.sqdev.pluginManagement.SQDevPluginManager;
+import raven.sqdev.pluginManager.SQDevPluginManager;
 
 public class Activator extends AbstractUIPlugin {
 	

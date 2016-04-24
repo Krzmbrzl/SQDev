@@ -1,6 +1,7 @@
 package raven.sqdev.editors;
 
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
@@ -118,6 +119,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	public IContentAssistant getContentAssistant(ISourceViewer viewer) {
 		assistant = new ContentAssistant();
 		assistant.enableAutoInsert(SQDevPreferenceUtil.isAutoCompleteEnabled());
+		assistant.enableColoredLabels(true);
 		
 		IContentAssistProcessor processor = new BasicContentAssistProcessor(editor);
 		
@@ -126,6 +128,11 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 		assistant.setInformationControlCreator(getInformationControlCreator(viewer));
 		
 		return assistant;
+	}
+	
+	@Override
+	public ITextHover getTextHover(ISourceViewer sv, String contentType) {
+		return new BasicTextHover(editor);
 	}
 	
 	@Override

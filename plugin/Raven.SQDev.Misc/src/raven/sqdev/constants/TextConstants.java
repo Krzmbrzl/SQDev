@@ -22,5 +22,5 @@ public class TextConstants {
 	 * An array containing all special characters a valid word can constist of
 	 * apart from letters and digits
 	 */
-	public static final char[] SPECIAL_WORD_CHARACTERS = { '_' };
+	public static final char[] SPECIAL_WORD_CHARACTERS = { '_', '@' };
 }

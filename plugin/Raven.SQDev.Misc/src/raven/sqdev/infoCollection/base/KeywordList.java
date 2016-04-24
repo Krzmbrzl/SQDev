@@ -34,7 +34,7 @@ public class KeywordList implements ISaveable {
 	
 	/**
 	 * The list of keywords where every starting letter has it's own list.
-	 * Therefor <code>get('b'-'a')</code> will get the list for the starting
+	 * Therefor <code>get('b'-('a'+1))</code> will get the list for the starting
 	 * letter b
 	 */
 	private List<List<Keyword>> keywords;
@@ -44,10 +44,10 @@ public class KeywordList implements ISaveable {
 	 * Creates an instance of this <code>KeywordList</code>
 	 */
 	public KeywordList() {
-		keywords = new ArrayList<List<Keyword>>(26);
+		keywords = new ArrayList<List<Keyword>>(27);
 		
 		// initialize a list for every letter
-		for (int i = 'a'; i <= 'z'; i++) {
+		for (int i = ('a' - 1); i <= 'z'; i++) {
 			keywords.add(new ArrayList<Keyword>());
 		}
 	}
@@ -78,9 +78,18 @@ public class KeywordList implements ISaveable {
 	public void addKeyword(Keyword keyword) {
 		Assert.isNotNull(keyword);
 		
-		keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0)) - 'a').add(keyword);
+		int listIndex;
 		
-		Collections.sort(keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0)) - 'a'));
+		if (Character.isLetter(keyword.getKeyword().charAt(0))) {
+			listIndex = Character.toLowerCase(keyword.getKeyword().charAt(0)) - ('a' - 1);
+		} else {
+			listIndex = 0;
+		}
+		
+		keywords.get(listIndex).add(keyword);
+		
+		// sort the list the keywords has been added to
+		Collections.sort(keywords.get(listIndex));
 	}
 	
 	/**
@@ -97,7 +106,8 @@ public class KeywordList implements ISaveable {
 			return;
 		}
 		
-		keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0)) - 'a').remove(keyword);
+		keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0)) - ('a' - 1))
+				.remove(keyword);
 	}
 	
 	/**
@@ -107,7 +117,7 @@ public class KeywordList implements ISaveable {
 	 *            The keyword to search for
 	 */
 	public boolean contains(Keyword keyword) {
-		return keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0)) - 'a')
+		return keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0)) - ('a' - 1))
 				.contains(keyword);
 	}
 	
@@ -129,7 +139,7 @@ public class KeywordList implements ISaveable {
 	/**
 	 * Gets the keywordList where each starting letter is stored in it's own
 	 * subList.<br>
-	 * 'a' is index 0
+	 * 'a' is index 1
 	 */
 	public List<List<Keyword>> getKeywordsSorted() {
 		return keywords;
@@ -144,7 +154,7 @@ public class KeywordList implements ISaveable {
 	 *         could be found
 	 */
 	public Keyword getKeyword(String keyword) {
-		List<Keyword> list = keywords.get(Character.toLowerCase(keyword.charAt(0)) - 'a');
+		List<Keyword> list = keywords.get(Character.toLowerCase(keyword.charAt(0)) - ('a' - 1));
 		
 		for (Keyword currentKeyword : list) {
 			if (currentKeyword.getKeyword().equals(keyword)) {
@@ -237,6 +247,23 @@ public class KeywordList implements ISaveable {
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Gets the KeywordList for the given starting character
+	 * 
+	 * @param c
+	 *            The starting character the returned list should correspond to
+	 * @return The respective list
+	 */
+	public List<Keyword> getListFor(char c) {
+		c = Character.toLowerCase(c);
+		
+		if (Character.isLetter(c)) {
+			return keywords.get(c - ('a' - 1));
+		} else {
+			return keywords.get(0);
+		}
 	}
 	
 }

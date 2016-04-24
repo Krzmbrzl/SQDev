@@ -1,6 +1,7 @@
 package raven.sqdev.pluginManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Platform;
@@ -8,8 +9,10 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
+import raven.sqdev.constants.ESQDevPlugin;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
+import raven.sqdev.interfaces.IPluginListener;
 
 /**
  * An manager for all running SQDev plugins
@@ -25,6 +28,11 @@ public class SQDevPluginManager {
 	protected static SQDevPluginManager manager;
 	
 	/**
+	 * All plugin listeners
+	 */
+	private List<IPluginListener> pluginListeners;
+	
+	/**
 	 * The list of all registered plugins
 	 */
 	protected ArrayList<AbstractUIPlugin> pluginList;
@@ -33,12 +41,13 @@ public class SQDevPluginManager {
 	 * Creates an <code>SQDevPluginManager</code> instance. It's not meant to be
 	 * done manually
 	 */
-	public SQDevPluginManager() {
+	private SQDevPluginManager() {
 		pluginList = new ArrayList<AbstractUIPlugin>();
+		pluginListeners = new ArrayList<IPluginListener>(0);
 	}
 	
 	/**
-	 * Gets the PLuginManager holding all the references to running SQDevPlugins
+	 * Gets the PluginManager holding all the references to running SQDevPlugins
 	 * 
 	 * @return The <code>SQDevPLuginManager<code>
 	 */
@@ -137,6 +146,11 @@ public class SQDevPluginManager {
 		if (!pluginList.contains(plugin)) {
 			pluginList.add(plugin);
 		}
+		
+		// notify listeners
+		for (IPluginListener current : pluginListeners) {
+			current.started(ESQDevPlugin.resolve(plugin.getBundle().getSymbolicName()));
+		}
 	}
 	
 	/**
@@ -147,5 +161,32 @@ public class SQDevPluginManager {
 	 */
 	public void unregister(AbstractUIPlugin plugin) {
 		pluginList.remove(plugin);
+		
+		// notify listeners
+		for (IPluginListener current : pluginListeners) {
+			current.stopped(ESQDevPlugin.resolve(plugin.getBundle().getSymbolicName()));
+		}
+	}
+	
+	/**
+	 * Adds a plugin listener if it has not been added before
+	 * 
+	 * @param listener
+	 *            The listener to add
+	 */
+	public void addPluginListener(IPluginListener listener) {
+		if (!pluginListeners.contains(listener)) {
+			pluginListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given plugin listener
+	 * 
+	 * @param listener
+	 *            The listener to remove
+	 */
+	public void removePluginListener(IPluginListener listener) {
+		pluginListeners.remove(listener);
 	}
 }

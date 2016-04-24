@@ -2,7 +2,7 @@ package raven.sqdev.editors.sqfeditor;
 
 import raven.sqdev.editors.BasicKeywordProvider;
 import raven.sqdev.infoCollection.base.KeywordList;
-import raven.sqdev.util.ResourceManager;
+import raven.sqdev.pluginManagement.ResourceManager;
 import raven.sqdev.util.SQDevInfobox;
 
 /**
@@ -18,7 +18,7 @@ public class SQFKeywordProvider extends BasicKeywordProvider {
 	 * keywords automatically
 	 */
 	public SQFKeywordProvider() {
-		ResourceManager manager = new ResourceManager();
+		ResourceManager manager = ResourceManager.getManager();
 		String savedKeywords = manager.getResourceContent("SQFKeywords.txt");
 		
 		if (savedKeywords == null) {

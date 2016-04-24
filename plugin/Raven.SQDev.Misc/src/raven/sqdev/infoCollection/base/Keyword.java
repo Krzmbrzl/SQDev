@@ -114,6 +114,10 @@ public class Keyword implements Comparable<Keyword>, ISaveable {
 	public void setDescription(String description) {
 		if (description != null) {
 			description = description.trim();
+			
+			if (description.isEmpty()) {
+				description = null;
+			}
 		}
 		
 		this.description = description;

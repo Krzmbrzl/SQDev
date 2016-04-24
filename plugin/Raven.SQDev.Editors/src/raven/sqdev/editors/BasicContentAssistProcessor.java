@@ -33,7 +33,7 @@ public class BasicContentAssistProcessor implements IContentAssistProcessor {
 	
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
-		String prefix = EditorUtil.getWordBeforeOffset(viewer.getDocument(), offset);
+		String prefix = EditorUtil.getWordPartBeforeOffset(viewer.getDocument(), offset);
 		
 		List<Keyword> keywords;
 		// get the respective list of keywords
@@ -41,10 +41,8 @@ public class BasicContentAssistProcessor implements IContentAssistProcessor {
 			keywords = editor.getBasicConfiguration().getKeywordScanner().getKeywordProvider()
 					.getKeywordList().getKeywords();
 		} else {
-			List<List<Keyword>> allKeywords = editor.getBasicConfiguration().getKeywordScanner()
-					.getKeywordProvider().getKeywordList().getKeywordsSorted();
-					
-			keywords = allKeywords.get(prefix.toLowerCase().charAt(0) - 'a');
+			keywords = editor.getBasicConfiguration().getKeywordScanner().getKeywordProvider()
+					.getKeywordList().getListFor(prefix.charAt(0));
 		}
 		
 		ArrayList<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
@@ -53,10 +51,8 @@ public class BasicContentAssistProcessor implements IContentAssistProcessor {
 		for (Keyword currentKeyword : keywords) {
 			if (currentKeyword.getKeyword().toLowerCase().startsWith(prefix.toLowerCase())) {
 				// add a proposal
-				proposals.add(new CompletionProposal(currentKeyword.getKeyword(),
-						offset - prefix.length(), prefix.length(),
-						currentKeyword.getKeyword().length(), null, currentKeyword.getKeyword(),
-						null, currentKeyword.getDescription()));
+				proposals.add(new BasicCompletionProposal(currentKeyword, offset - prefix.length(),
+						prefix.length()));
 			}
 		}
 		

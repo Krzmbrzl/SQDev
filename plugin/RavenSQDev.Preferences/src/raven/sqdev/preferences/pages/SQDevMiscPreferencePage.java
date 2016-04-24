@@ -1,10 +1,6 @@
 package raven.sqdev.preferences.pages;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,13 +16,12 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
-import raven.sqdev.exceptions.SQDevCollectionException;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.SQFCommandCollector;
 import raven.sqdev.infoCollection.base.KeywordList;
+import raven.sqdev.pluginManagement.ResourceManager;
 import raven.sqdev.pluginManagement.SQDevEclipseEventManager;
 import raven.sqdev.preferences.preferenceEditors.ValueSQDevPreferenceEditor;
-import raven.sqdev.util.ResourceManager;
 import raven.sqdev.util.SQDevInfobox;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
@@ -35,6 +30,10 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 	 * The job used for updating the keywords
 	 */
 	private static Job collectionJob;
+	/**
+	 * The button corresponding to the update function
+	 */
+	private Button updateButton;
 	
 	public SQDevMiscPreferencePage() {
 		super();
@@ -60,75 +59,111 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 				keywordGroup));
 				
 		// SQF keyword collection
-		Button btn = new Button(createContainer(), SWT.PUSH);
-		btn.setText("Update keywords");
-		btn.setToolTipText("Updates the SQF keywords according to the BIKI. This may take a while");
-		btn.setEnabled(collectionJob == null || collectionJob.getResult() != null);
+		updateButton = new Button(createContainer(), SWT.PUSH);
+		updateButton.setToolTipText(
+				"Updates the SQF keywords according to the BIKI. This may take a while");
+		updateButton.setEnabled(collectionJob == null || collectionJob.getResult() != null);
 		
-		btn.addMouseListener(new MouseAdapter() {
+		// set text according to status
+		if (!updateButton.isEnabled()) {
+			updateButton.setText("Updating keywords...");
+		} else {
+			updateButton.setText("Update keywords");
+		}
+		
+		updateButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				btn.setEnabled(false);
+				// change button status
+				updateButton.setEnabled(false);
+				updateButton.setText("Updating keywords...");
+				updateButton.pack(true);
 				
-				ResourceManager manager = new ResourceManager();
-				try {
-					manager.updateResource("test.txt", "test here!");
-					//TODO test
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
-				collectionJob = new Job("Updating keywords") {
-					@Override
-					protected IStatus run(IProgressMonitor monitor) {
-						monitor.beginTask("Updating keywords", IProgressMonitor.UNKNOWN);
-						
-						try {
-							KeywordList list = new SQFCommandCollector(
-									new URL("https://community.bistudio.com/wiki/Category:Scripting_Commands_Arma_3"),
-									SQDevPreferenceUtil.getFirstCommand(),
-									SQDevPreferenceUtil.getLastCommand()).collect(monitor);
-									
-							// TODO: store keywords + restart util plugin
-							Writer writer = new FileWriter(new File(
-									"C:/Users/Robert Adam/Desktop/tester/KeywordList.txt"));
-							writer.write(list.getSaveableFormat());
-							writer.close();
-							
-						} catch (/* MalformedURLException | */ SQDevCollectionException
-								| IOException e) {
-							SQDevInfobox info = new SQDevInfobox("Failed at updating keywords", e);
-							info.open();
-							
-							e.printStackTrace();
-							return Status.CANCEL_STATUS;
-						} finally {
-							if (!PlatformUI.getWorkbench().getDisplay().isDisposed()) {
-								PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-									
-									@Override
-									public void run() {
-										if (!btn.isDisposed()) {
-											btn.setEnabled(true);
-										}
-									}
-								});
-							}
-							
-							monitor.done();
-						}
-						
-						return Status.OK_STATUS;
-					}
-				};
-				
-				// make sure eclipse is not closed with this job running
-				SQDevEclipseEventManager.getManager().registerCloseSuspendingJob(collectionJob);
-				
-				collectionJob.schedule();
+				updateKeywords();
 			}
 		});
+	}
+	
+	/**
+	 * Schedules the keyword update Job
+	 */
+	private void updateKeywords() {
+		collectionJob = new Job("Updating keywords") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				monitor.beginTask("Updating keywords", IProgressMonitor.UNKNOWN);
+				
+				try {
+					// gather keywords from the wiki
+					KeywordList list = new SQFCommandCollector(
+							new URL("https://community.bistudio.com/wiki/Category:"
+									+ "Scripting_Commands_Arma_3"),
+							SQDevPreferenceUtil.getFirstCommand(),
+							SQDevPreferenceUtil.getLastCommand()).collect(monitor);
+							
+					if (monitor.isCanceled()) {
+						// ask whether to save the list
+						SQDevInfobox info = new SQDevInfobox(
+								"The keyword update has been interrupted.\n"
+										+ "Do you wish to store the current keywords?"
+										+ " (This will override the current keword list and may"
+										+ " leed to an incomplete list)",
+								SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+								
+						if (info.open() != SWT.YES) {
+							// don't save
+							return Status.OK_STATUS;
+						}
+					}
+					
+					// save the keywords
+					monitor.done();
+					monitor.beginTask("Storing keywords...", IProgressMonitor.UNKNOWN);
+					
+					ResourceManager manager = ResourceManager.getManager();
+					manager.updateResource("SQFKeywords.txt", list.getSaveableFormat());
+					
+					// tell the user to restart
+					SQDevInfobox info = new SQDevInfobox(
+							"In order for the new keywords to take effect"
+									+ " you have to restart all respective editors",
+							SWT.ICON_INFORMATION);
+							
+					info.open();
+					
+				} catch (IOException | SQDevException e) {
+					SQDevInfobox info = new SQDevInfobox("Failed at updating keywords", e);
+					info.open();
+					
+					e.printStackTrace();
+					return Status.CANCEL_STATUS;
+				} finally {
+					if (!PlatformUI.getWorkbench().getDisplay().isDisposed()) {
+						// reset buton status
+						PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+							
+							@Override
+							public void run() {
+								if (updateButton != null && !updateButton.isDisposed()) {
+									updateButton.setText("Update keywords");
+									updateButton.setEnabled(true);
+									updateButton.pack(true);
+								}
+							}
+						});
+					}
+					
+					monitor.done();
+				}
+				
+				return Status.OK_STATUS;
+			}
+		};
+		
+		// make sure eclipse is not closed with this job running
+		SQDevEclipseEventManager.getManager().registerCloseSuspendingJob(collectionJob);
+		
+		collectionJob.schedule();
 	}
 	
 }

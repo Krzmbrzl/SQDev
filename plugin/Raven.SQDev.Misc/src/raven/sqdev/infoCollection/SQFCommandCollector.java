@@ -18,6 +18,7 @@ import raven.sqdev.infoCollection.base.ELocality;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.SQFControlStructure;
+import raven.sqdev.misc.SQDev;
 
 /**
  * A class for collecting all SQF commands from the BIKI.
@@ -219,8 +220,13 @@ public class SQFCommandCollector {
 		String content = formatCommandPageContent(getSite(commandPage));
 		
 		String[] categories = categorizeContent(content);
+		
 		// set description
-		control.setDescription(categories[CATEGORY_DESCRIPTION]);
+		String description = categories[CATEGORY_DESCRIPTION].trim();
+		if (description.toLowerCase().startsWith("description:")) {
+			description = description.substring(12).trim();
+		}
+		control.setDescription(description);
 		
 		return control;
 	}
@@ -446,8 +452,8 @@ public class SQFCommandCollector {
 		content = content.replace("<dd class=\"param\">", "\nparam:\n");
 		
 		// keep code markdown
-		content = content.replace("<code>", " $Code$");
-		content = content.replace("</code>", "$/Code$ ");
+		content = content.replace("<code>", " " + SQDev.CODE.getOpener());
+		content = content.replace("</code>", SQDev.CODE.getCloser() + " ");
 		
 		String commandInfoLine = content.substring(content.indexOf("<div class=\"gvi\">"));
 		commandInfoLine = commandInfoLine.substring(0, commandInfoLine.indexOf("\n"));

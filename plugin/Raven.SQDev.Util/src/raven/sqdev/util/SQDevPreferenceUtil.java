@@ -15,7 +15,7 @@ import org.osgi.framework.Bundle;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.exceptions.SQDevInvalidPreferenceException;
-import raven.sqdev.pluginManagement.SQDevPluginManager;
+import raven.sqdev.pluginManager.SQDevPluginManager;
 
 /**
  * This class provides functions for dealing with SQDev preferences

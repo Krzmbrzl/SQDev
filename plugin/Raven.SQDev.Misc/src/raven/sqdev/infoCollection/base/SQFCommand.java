@@ -1,9 +1,11 @@
 package raven.sqdev.infoCollection.base;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.misc.SQDev;
 import raven.sqdev.syntax.Syntax;
 
 /**
@@ -225,7 +227,7 @@ public class SQFCommand extends SQFElement {
 	 *         examples)
 	 */
 	public ArrayList<String> getExamples() {
-		if (examples != null) {
+		if (examples == null) {
 			examples = new ArrayList<String>();
 		}
 		
@@ -255,24 +257,51 @@ public class SQFCommand extends SQFElement {
 		
 		Assert.isTrue(example != null && !example.isEmpty());
 		
-		if (!example.contains("$Code$") && !example.contains("$/Code$")) {
+		String codeOpener = SQDev.CODE.getOpener();
+		String codeCloser = SQDev.CODE.getCloser();
+		
+		if (!example.contains(codeOpener) && !example.contains(codeCloser)) {
 			// surround with Code tags
-			example = "$Code$" + example.trim() + "$/Code$";
+			example = codeOpener + example.trim() + codeCloser;
 		}
 		
 		String taggedExample = "";
 		
-		for (String current : example.split("$Code§")) {
-			// put the example part that is not yet in code bracket intop it as
+		for (String current : example.split(Pattern.quote(codeOpener))) {
+			// put the example part that is not yet in code bracket into it as
 			// a comment
-			String comment = "\n// " + current.substring(current.indexOf("$/Code$") + 7).trim()
-					.replace("\n", "\n//");
-			taggedExample += ((current.startsWith("$Code$")) ? "" : "$Code$")
-					+ current.substring(0, current.indexOf("$/Code$"))
-					+ ((comment.equals("\n// ")) ? "" : comment) + "$/Code$";
+			
+			if (current.isEmpty()) {
+				// don't process empty parts
+				continue;
+			}
+			
+			// get the part that might has to be put into a comment
+			String comment = "\n// ";
+			if (current.contains(codeCloser)) {
+				comment += current.substring(current.indexOf(codeCloser) + codeCloser.length())
+						.trim().replace("\n", "\n//");
+			} else {
+				comment += current.trim().replace("\n", "\n//") + "\n";
+				
+				current = codeCloser;
+			}
+			
+			// reassemble the example so that everything is contained in code
+			// tags
+			taggedExample += current.substring(
+					(current.startsWith(codeOpener)) ? codeOpener.length() : 0,
+					current.indexOf(codeCloser)) + ((comment.equals("\n// ")) ? "" : comment);
 		}
 		
+		taggedExample = taggedExample.trim();
+		taggedExample = taggedExample.replace("\n ", "\n");
 		
+		// make sure the example is surrounded by code tags
+		taggedExample = ((taggedExample.startsWith(codeOpener)) ? "" : codeOpener) + taggedExample
+				+ ((taggedExample.endsWith(codeCloser)) ? "" : codeCloser);
+				
+		// add example if it has not been added yet
 		if (!getExamples().contains(taggedExample)) {
 			getExamples().add(taggedExample);
 		}
