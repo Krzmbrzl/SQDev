@@ -62,16 +62,31 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 				// create overview page
 				String overviewContent = "";
 				
+				// description
 				if (command.getDescription().length() > 100) {
 					overviewContent += command.getDescription().substring(0, 99) + "...\n\n";
 				} else {
 					overviewContent += command.getDescription() + "\n\n";
 				}
 				
+				// syntax
 				overviewContent += SQDev.BOLD.getOpener() + "Possible syntax: "
 						+ SQDev.BOLD.getCloser()
 						+ command.getRawSytaxes().get(command.getRawSytaxes().size() - 1) + "\n\n";
 						
+				// locality
+				if (command.isArgumentLocalityDefined()) {
+					overviewContent += SQDev.BOLD.getOpener() + "Argument locality: "
+							+ SQDev.BOLD.getCloser() + command.getArgumentLocality() + "\n\n";
+				}
+				if (command.isEffectLocalityDefined()) {
+					// remove one newLine
+					overviewContent = overviewContent.substring(0, overviewContent.length() - 1);
+					overviewContent += SQDev.BOLD.getOpener() + "Effect locality: "
+							+ SQDev.BOLD.getCloser() + command.getEffectLocality() + "\n\n";
+				}
+				
+				// return value
 				overviewContent += SQDev.BOLD.getOpener() + "Return Value: "
 						+ SQDev.BOLD.getCloser() + command.getReturnType();
 						

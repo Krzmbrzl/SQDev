@@ -14,6 +14,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Shell;
@@ -21,11 +22,18 @@ import org.eclipse.ui.PlatformUI;
 
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.miscellaneous.AdditionalKeywordProposalInformation;
+import raven.sqdev.pluginManagement.ResourceManager;
 
-public class BasicCompletionProposal implements ICompletionProposal, 
-		ICompletionProposalExtension3, ICompletionProposalExtension5,
-		ICompletionProposalExtension6 {
+public class BasicCompletionProposal implements ICompletionProposal, ICompletionProposalExtension3,
+		ICompletionProposalExtension5, ICompletionProposalExtension6 {
 		
+	/**
+	 * The image for all the SQF commands
+	 */
+	private static final Image SQFCOMMAND_IMAGE = new Image(PlatformUI.getWorkbench().getDisplay(),
+			new ImageData(ResourceManager.getManager()
+					.getInternalResourceStream(ResourceManager.SQFCOMMAND_ICON)));
+					
 	/** The string to be displayed in the completion proposal popup. */
 	private String displayString;
 	/** The replacement string. */
@@ -57,9 +65,8 @@ public class BasicCompletionProposal implements ICompletionProposal,
 	 */
 	public BasicCompletionProposal(Keyword keyword, int replacementOffset, int replacementLength) {
 		// create instance according to the keyword
-		// TODO: add image
 		this(keyword.getKeyword(), replacementOffset, replacementLength,
-				keyword.getKeyword().length(), null, keyword.getKeyword(), null,
+				keyword.getKeyword().length(), SQFCOMMAND_IMAGE, keyword.getKeyword(), null,
 				new AdditionalKeywordProposalInformation(keyword));
 	}
 	

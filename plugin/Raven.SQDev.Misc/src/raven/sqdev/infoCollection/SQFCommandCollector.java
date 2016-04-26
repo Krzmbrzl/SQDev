@@ -813,6 +813,15 @@ public class SQFCommandCollector {
 			// add the raw syntax to the command
 			command.addRawSyntax(currentSyntax[SYNTAXPART_SYNTAX]);
 		}
+		
+		if (syntaxes.length > 0) {
+			// add return type
+			String returnType = syntaxes[0][SYNTAXPART_RETURN_VALUE];
+			
+			if (returnType != null && !returnType.isEmpty()) {
+				command.setReturnType(returnType);
+			}
+		}
 	}
 	
 	/**

@@ -357,6 +357,15 @@ public class SQFCommand extends SQFElement {
 	}
 	
 	/**
+	 * Checks whether this command has a defined argument locality
+	 * 
+	 * @return <code>True</code> if an argument locality is defined
+	 */
+	public boolean isArgumentLocalityDefined() {
+		return !getArgumentLocality().equals(ELocality.UNDEFINED);
+	}
+	
+	/**
 	 * Sets the locality of the command's effect
 	 * 
 	 * @param locality
@@ -374,6 +383,15 @@ public class SQFCommand extends SQFElement {
 	 */
 	public ELocality getEffectLocality() {
 		return getLocality()[1];
+	}
+	
+	/**
+	 * Checks whether this command has a defined effect locality
+	 * 
+	 * @return <code>True</code> if an effect locality is defined
+	 */
+	public boolean isEffectLocalityDefined() {
+		return !getEffectLocality().equals(ELocality.UNDEFINED);
 	}
 	
 	/**
@@ -502,6 +520,7 @@ public class SQFCommand extends SQFElement {
 		representation += "hasRawSyntax: " + hasRawSyntax() + "\n";
 		representation += "hasExamples: " + hasExample() + "\n";
 		representation += "hasNotes: " + hasNote() + "\n";
+		representation += "hasReturnValue" + hasReturnValue() + "\n";
 		
 		return representation;
 	}

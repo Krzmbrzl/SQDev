@@ -67,7 +67,11 @@ public class ResourceManager {
 	/**
 	 * The internal path to the SQF icon resource
 	 */
-	public static final String SQF_ICON = ICON_FOLDER + "SQF_image.gif";
+	public static final String SQF_ICON = ICON_FOLDER + "/SQF_image.gif";
+	/**
+	 * The internal path to the SQFCommand icon resource
+	 */
+	public static final String SQFCOMMAND_ICON = ICON_FOLDER + "/SQFCommandIcon.png";
 	
 	private ClassLoader loader;
 	private URL locationURL;
