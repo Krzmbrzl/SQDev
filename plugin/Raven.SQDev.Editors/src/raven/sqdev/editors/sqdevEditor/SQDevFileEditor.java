@@ -1,9 +1,9 @@
 package raven.sqdev.editors.sqdevEditor;
 
-import java.util.ArrayList;
-
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicPartitionScanner;
+import raven.sqdev.infoCollection.base.Keyword;
+import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 
@@ -23,7 +23,7 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		// remove the multi-line comment
 		getBasicProvider().getPartitionScanner()
 				.removeRule(BasicPartitionScanner.MULTILINE_COMMENT_RULE);
-		
+				
 		getBasicConfiguration().getKeywordScanner().makeCaseSensitive(false);
 	}
 	
@@ -35,21 +35,22 @@ public class SQDevFileEditor extends BasicCodeEditor {
 	 * @see {@linkplain ESQDevFileAnnotation}
 	 */
 	protected void setKeywords() {
-		ArrayList<String> keywords = new ArrayList<String>();
+		KeywordList keywordList = new KeywordList();
 		
 		// add all attributes
 		for (ESQDevFileAttribute currentAttribute : ESQDevFileAttribute.values()) {
-			keywords.add(currentAttribute.toString());
+			keywordList.addKeyword(
+					new Keyword(currentAttribute.toString(), currentAttribute.getDescription()));
 		}
 		
 		// add all annotations including the "@"
 		for (ESQDevFileAnnotation currentAnnotation : ESQDevFileAnnotation.values()) {
-			keywords.add("@" + currentAnnotation.toString());
+			keywordList.addKeyword(new Keyword("@" + currentAnnotation.toString(),
+					currentAnnotation.getDescription()));
 		}
 		
 		// set the keywords
-		getBasicConfiguration().getKeywordScanner()
-				.setKeywords(keywords.toArray(new String[keywords.size()]));
+		getBasicConfiguration().getKeywordScanner().setKeywords(keywordList);
 	}
 	
 }

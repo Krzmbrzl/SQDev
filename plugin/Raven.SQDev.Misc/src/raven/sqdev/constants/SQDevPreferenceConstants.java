@@ -53,6 +53,12 @@ public class SQDevPreferenceConstants {
 	public static final String SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY = "raven.sqdev.matchingBracketsColor";
 	
 	/**
+	 * The name of the preference indicating whether autoCompletion should be
+	 * enabled
+	 */
+	public static final String SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY = "raven.sqdev.enableAutoComplete";
+	
+	/**
 	 * The name of the preference indicating whether the current line should get
 	 * highlighted
 	 */
@@ -73,5 +79,17 @@ public class SQDevPreferenceConstants {
 	 * for permission when exporting a project
 	 */
 	public static final String SQDEV_EXPORT_AUTOCLEAN = "raven.sqdev.autoClean";
+	
+	/**
+	 * The preference holding the command that will be the first one to be
+	 * processed during keyword update
+	 */
+	public static final String SQDEV_COLLECTION_STARTCOMMAND = "raven.sqdev.collection.startCommand";
+	
+	/**
+	 * The preference holding the command that will be the last one to be
+	 * processed during keyword update
+	 */
+	public static final String SQDEV_COLLECTION_ENDCOMMAND = "raven.sqdev.collection.endCommand";
 	
 }

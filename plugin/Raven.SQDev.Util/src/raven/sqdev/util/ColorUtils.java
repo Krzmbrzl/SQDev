@@ -36,7 +36,7 @@ public class ColorUtils {
 		RGB rgb = new RGB(0, 0, 0);
 		
 		try {
-			if (StringUtils.countMatches(str, ",") != 2) {
+			if (TextUtils.countMatches(str, ",") != 2) {
 				throw new IllegalRGBSyntaxException(
 						"The string \"" + str + "\" has an illegal syntax for decoding as RGB!");
 			}

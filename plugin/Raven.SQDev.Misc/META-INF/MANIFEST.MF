@@ -1,14 +1,21 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Misc
-Bundle-SymbolicName: raven.sqdev.misc
-Bundle-Version: 0.1.0
-Bundle-Activator: raven.sqdev.exceptions.activator.Activator
+Bundle-SymbolicName: raven.sqdev.misc;singleton:=true
+Bundle-Version: 0.2.0
+Bundle-Activator: raven.sqdev.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: raven.sqdev.constants,
  raven.sqdev.exceptions,
- raven.sqdev.pluginManager
+ raven.sqdev.infoCollection,
+ raven.sqdev.infoCollection.base,
+ raven.sqdev.interfaces,
+ raven.sqdev.misc,
+ raven.sqdev.pluginManager,
+ raven.sqdev.styles
+Import-Package: raven.sqdev.misc

@@ -1,5 +1,7 @@
 package raven.sqdev.editors;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IRule;
@@ -7,12 +9,14 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
-import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
+import raven.sqdev.infoCollection.base.Keyword;
+import raven.sqdev.infoCollection.base.KeywordList;
+import raven.sqdev.interfaces.IKeywordProvider;
 import raven.sqdev.util.ColorUtils;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
@@ -23,7 +27,7 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  * @author Raven
  * 		
  */
-public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeListener {
+public class KeywordScanner extends RuleBasedScanner {
 	
 	/**
 	 * A token that indicates an unrecognized word meaning any word, that is not
@@ -86,8 +90,6 @@ public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeL
 					"Invalid preference key \"" + colorPreferenceKey + "\"");
 		}
 		
-		SQDevPreferenceUtil.getPreferenceStore().addPropertyChangeListener(this);
-		
 		// assign variables
 		preferenceKey = colorPreferenceKey;
 		this.provider = provider;
@@ -119,8 +121,15 @@ public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeL
 		this(provider, colorPreferenceKey, editor, true);
 	}
 	
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
+	/**
+	 * Synchronizes this scanner to a PropertyChangeEvent (adjusts the color of
+	 * the highlighting
+	 * 
+	 * @param event
+	 *            The respective PropertyChangeEvent. Must be the same as the
+	 *            one this scanner has been initialized with
+	 */
+	public void syncToPropertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(preferenceKey)) {
 			// if the changed property is the one for the color this scanner
 			// depends on
@@ -144,15 +153,17 @@ public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeL
 	 *            The token the rule should use
 	 */
 	protected void updateRules(IToken token) {
-		String[] keywords = provider.getKeywords();
+		ArrayList<Keyword> keywordList = provider.getKeywordList().getKeywords();
+		
+		Keyword[] keywords = keywordList.toArray(new Keyword[keywordList.size()]);
 		
 		// create the respective WordRule
 		WordRule keywordRule = new WordRule(new WordDetector(), getDefaultToken(),
 				!isCaseSensitive());
 				
 		// add keywords
-		for (String currentKeyword : keywords) {
-			keywordRule.addWord(currentKeyword, token);
+		for (Keyword currentKeyword : keywords) {
+			keywordRule.addWord(currentKeyword.getKeyword(), token);
 		}
 		
 		IRule[] rules = { keywordRule };
@@ -185,12 +196,12 @@ public class KeywordScanner extends RuleBasedScanner implements IPropertyChangeL
 	/**
 	 * Sets the keywords for this scanner
 	 * 
-	 * @param keywords
-	 *            The new keywords
+	 * @param list
+	 *            The new keyword list
 	 */
-	public void setKeywords(String[] keywords) {
+	public void setKeywords(KeywordList list) {
 		IKeywordProvider provider = getKeywordProvider();
-		provider.setKeywords(keywords);
+		provider.setKeywordList(list);
 		
 		setKeywordProvider(provider);
 	}

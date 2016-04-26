@@ -61,7 +61,7 @@ public class SQDevInfobox {
 	 *            for what went wrong.
 	 */
 	public SQDevInfobox(String message, Exception exception) {
-		this((exception.getMessage() != null) ? message + "\n\nReason: " + exception.getMessage()
+		this((exception.getMessage() != null) ? message + "\n\nReason:\n" + exception.getMessage()
 				: message + "\n\nReason: Unknown", SWT.ICON_ERROR);
 	}
 	
@@ -80,7 +80,14 @@ public class SQDevInfobox {
 			
 			@Override
 			public void run() {
-				MessageBox box = new MessageBox(Display.getCurrent().getActiveShell(), style);
+				Shell activeShell = Display.getCurrent().getActiveShell();
+				
+				if(activeShell == null) {
+					// can't report error because user is not in eclipse anymore
+					return;
+				}
+				
+				MessageBox box = new MessageBox(activeShell, style);
 				
 				box.setText("SQDev Info");
 				box.setMessage(message);
@@ -89,9 +96,10 @@ public class SQDevInfobox {
 				
 				Shell active = Display.getCurrent().getActiveShell();
 				
-				if (!active
+				if (style == SWT.ERROR && !active
 						.equals(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())) {
-					active.dispose();
+					// close every other opened window
+					active.close();
 				}
 			}
 		});

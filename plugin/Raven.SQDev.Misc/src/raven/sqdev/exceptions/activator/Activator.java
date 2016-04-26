@@ -3,7 +3,7 @@ package raven.sqdev.exceptions.activator;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import raven.sqdev.pluginManager.SQDevPluginManager;
+import raven.sqdev.pluginManagement.SQDevPluginManager;
 
 
 public class Activator extends AbstractUIPlugin {

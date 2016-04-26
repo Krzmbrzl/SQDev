@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Text;
 import raven.sqdev.util.EProjectType;
 import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.util.SQDevPreferenceUtil;
-import raven.sqdev.util.StringUtils;
+import raven.sqdev.util.TextUtils;
 import raven.sqdev.util.Util;
 
 /**
@@ -215,8 +215,8 @@ public class SQDevProjectWizardPage extends WizardPage {
 		}
 		
 		// check if the entered project name is valid
-		if (!StringUtils.isValidProjectName(getProjectName())) {
-			updateStatus(StringUtils.whyIsInvalidProjectName(getProjectName()));
+		if (!TextUtils.isValidProjectName(getProjectName())) {
+			updateStatus(TextUtils.whyIsInvalidProjectName(getProjectName()));
 			return;
 		}
 		

@@ -21,6 +21,12 @@ public enum ESQDevFileAttribute {
 		public String getDefault() {
 			return "false";
 		}
+		
+		@Override
+		public String getDescription() {
+			return "The attribute specifying whether the project "
+					+ "should get exported/synced every time a file changes";
+		}
 	},
 	/**
 	 * The attribute defining where the project should be exported to
@@ -35,6 +41,11 @@ public enum ESQDevFileAttribute {
 		public String getDefault() {
 			// export location has to specified
 			return null;
+		}
+		
+		@Override
+		public String getDescription() {
+			return "The attribute defining where the project should be exported to";
 		}
 	},
 	/**
@@ -52,8 +63,17 @@ public enum ESQDevFileAttribute {
 			return null;
 		}
 		
+		@Override
+		public String getDescription() {
+			return "The attribute defining the terrain the mission should play on";
+		}
+		
 	},
 	
+	/**
+	 * The attribute defining to which profile this mission/project should be
+	 * associated to
+	 */
 	PROFILE {
 		@Override
 		public String toString() {
@@ -65,6 +85,12 @@ public enum ESQDevFileAttribute {
 			// if the profile is not specified then it's unclear where this
 			// project should get exported to
 			return null;
+		}
+		
+		@Override
+		public String getDescription() {
+			return "The attribute defining to which profile this "
+					+ "mission/project should be associated to";
 		}
 	};
 	
@@ -143,4 +169,9 @@ public enum ESQDevFileAttribute {
 		// if it coudn't be found it can't be a valid attribute
 		return false;
 	}
+	
+	/**
+	 * Gets the description for this attribute
+	 */
+	public abstract String getDescription();
 }

@@ -11,7 +11,7 @@ import raven.sqdev.preferences.preferenceEditors.ColorSQDevPreferenceEditor;
  * The preferencePage that contains all settings concerning the editor
  * 
  * @author Raven
- *		
+ * 		
  */
 public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 	
@@ -43,7 +43,13 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				behaviour);
 		addPreferenceEditor(enableBracketMatchEditor);
 		
-		
+		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY,
+				"&Enable autoComplete:",
+				"Enables/Disables autoComplete meaning that content assist will insert the proposal automatically if there is only one choice",
+				behaviour));
+				
+				
 		// preferences for the coloring
 		Group colors = createGroup("Colors");
 		

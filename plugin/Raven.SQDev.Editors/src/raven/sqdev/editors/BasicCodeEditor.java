@@ -5,12 +5,14 @@ import org.eclipse.jface.text.ITextViewerExtension;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
+import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
@@ -168,11 +170,18 @@ public class BasicCodeEditor extends TextEditor {
 	
 	/**
 	 * Updates the editor. Needed when some changes are made to the way the
-	 * editor content should be displayed
+	 * editor content should be displayed or when the behaviour of the editor
+	 * should change
 	 */
 	public void update() {
-		if (this.getSourceViewer() != null) {
-			this.getSourceViewer().invalidateTextPresentation();
+		if (getSourceViewer() != null) {
+			getSourceViewer().invalidateTextPresentation();
+			
+			if (getSourceViewer() instanceof ISourceViewerExtension2) {
+				// reconfigure the SourceViewer
+				((ISourceViewerExtension2) getSourceViewer()).unconfigure();
+				getSourceViewer().configure(getBasicConfiguration());
+			}
 		}
 	}
 	

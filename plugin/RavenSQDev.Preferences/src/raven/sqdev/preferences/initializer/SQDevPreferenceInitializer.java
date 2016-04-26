@@ -37,13 +37,13 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		// set default profile
 		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE,
 				System.getProperty("user.name"));
-		
+				
 		// set deafult map
 		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN, "Altis");
 		
 		// set default autoExport
 		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT, false);
-				
+		
 		// let the preference page always ask for saving
 		store.setDefault(SQDevPreferenceConstants.SQDEV_PREF_ALWAYS_SAVE_ON_EXIT, false);
 		
@@ -57,12 +57,19 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.CURRENTLINE));
 				
+		// enable autoComplete
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY, true);
+		
 		// set syntax highlighting
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.KEYWORD));
 				
 		// set autoClean
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN, false);
+		
+		// set start and end command for keyword update
+		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND, "abs");
+		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND, "worldToScreen");
 	}
 	
 	/**

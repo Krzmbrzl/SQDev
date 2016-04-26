@@ -3,6 +3,7 @@ package raven.sqdev.editors;
 import java.util.ArrayList;
 
 import raven.sqdev.exceptions.IllegalModificationException;
+import raven.sqdev.interfaces.IEditorKeyHandler;
 
 /**
  * This class can queue <code>IEditorKeyHandler</code> for later assignment to
