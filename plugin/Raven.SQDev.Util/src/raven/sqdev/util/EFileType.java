@@ -444,7 +444,13 @@ public enum EFileType {
 							container = ((IResource) obj).getParent();
 						}
 						
-						path = container.getRawLocation().toOSString();
+						IPath containerLocation = container.getRawLocation();
+						
+						if(containerLocation == null) {
+							containerLocation = container.getLocation();
+						}
+						
+						path = containerLocation.toOSString();
 					}
 				}
 				

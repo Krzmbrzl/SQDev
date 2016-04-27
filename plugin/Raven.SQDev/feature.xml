@@ -2,7 +2,7 @@
 <feature
       id="raven.sqdev"
       label="SQDev"
-      version="0.5.0"
+      version="0.5.1"
       provider-name="Raven">
 
    <description url="http://krzmbrzl.github.io/SQDev/">
@@ -57,7 +57,7 @@ THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRES
          id="raven.sqdev.util"
          download-size="0"
          install-size="0"
-         version="0.4.0"
+         version="0.5.0"
          unpack="false"/>
 
    <plugin
