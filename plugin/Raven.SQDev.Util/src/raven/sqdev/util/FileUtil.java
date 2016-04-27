@@ -1,6 +1,7 @@
 package raven.sqdev.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -159,18 +160,19 @@ public class FileUtil {
 		}
 		
 		try {
-//			BufferedReader reader = new BufferedReader(new FileReader(file));
-//			
-//			String content = "";
-//			String currentLine = "";
-//			
-//			while ((currentLine = reader.readLine()) != null) {
-//				content += (content.isEmpty()) ? currentLine : "\n" + currentLine;
-//			}
-//			
-//			reader.close();
-//			
-//			return content;
+			// BufferedReader reader = new BufferedReader(new FileReader(file));
+			//
+			// String content = "";
+			// String currentLine = "";
+			//
+			// while ((currentLine = reader.readLine()) != null) {
+			// content += (content.isEmpty()) ? currentLine : "\n" +
+			// currentLine;
+			// }
+			//
+			// reader.close();
+			//
+			// return content;
 			
 			return readAll(new FileInputStream(file), (int) file.length());
 			
@@ -192,17 +194,32 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static String readAll(InputStream in, int size) throws IOException {
-		byte[] bytes;
+		byte[] initialBytes;
 		
 		if (size < 0) {
-			bytes = new byte[in.available()];
+			initialBytes = new byte[in.available()];
 		} else {
-			bytes = new byte[size];
+			initialBytes = new byte[size];
 		}
 		
-		in.read(bytes);
+		in.read(initialBytes);
 		
-		return new String(bytes);
+		byte[] furtherBytes = new byte[0];
+		// check that all input has been read
+		char currentChar = (char) -1;
+		if ((currentChar = (char) in.read()) != (char) -1) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			out.write(currentChar);
+			
+			while ((currentChar = (char) in.read()) != (char) -1) {
+				// read rest of the inputStream
+				out.write(currentChar);
+			}
+			
+			furtherBytes = out.toByteArray();
+		}
+		
+		return new String(initialBytes) + new String(furtherBytes);
 	}
 	
 	/**
