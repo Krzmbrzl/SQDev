@@ -432,6 +432,19 @@ public enum EFileType {
 					IStructuredSelection structured = (IStructuredSelection) service
 							.getSelection("org.eclipse.jdt.ui.PackageExplorer");
 							
+					if (structured == null) {
+						// The ective explorer might be the project explorer
+						structured = (IStructuredSelection) service
+								.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
+								
+						if (structured == null) {
+							SQDevInfobox info = new SQDevInfobox("Selection is null!", SWT.ERROR);
+							info.open();
+							
+							return;
+						}
+					}
+					
 					// get the selected resource
 					Object obj = structured.getFirstElement();
 					
@@ -446,7 +459,7 @@ public enum EFileType {
 						
 						IPath containerLocation = container.getRawLocation();
 						
-						if(containerLocation == null) {
+						if (containerLocation == null) {
 							containerLocation = container.getLocation();
 						}
 						
