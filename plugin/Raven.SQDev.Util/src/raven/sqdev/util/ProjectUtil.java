@@ -82,7 +82,7 @@ public class ProjectUtil {
 						"The export process would require an unusual high amount (" + diff
 								+ ") of new folders being created.\n\nDo you want to proceed?",
 						SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-						
+				
 				if (info.open() != SWT.YES) {
 					// abort the export process
 					return CANCELED;
@@ -104,7 +104,7 @@ public class ProjectUtil {
 								+ "\".\nAny files that are not part of the project in the eclipse "
 								+ "workspace will be deleted.\n\nDo you want to proceed?",
 						SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-						
+				
 				if (info.open() != SWT.YES) {
 					return CANCELED;
 				}
@@ -120,7 +120,7 @@ public class ProjectUtil {
 									+ "\"\nMake sure the files are not opened somewhere and try again"
 									+ "\n\nCanceled the export process.",
 							SWT.ICON_INFORMATION);
-							
+					
 					info.open();
 					
 					// abort export when cleaning can't be performed
@@ -152,7 +152,7 @@ public class ProjectUtil {
 			String message = "Failed at exporting \"" + project.getName() + "\"\nReason: "
 					+ ((e.getMessage() == null || e.getMessage().isEmpty()) ? "Unknown"
 							: e.getMessage());
-							
+			
 			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
 			
 			info.open();
@@ -175,7 +175,7 @@ public class ProjectUtil {
 	public static boolean isSQDevProject(IProject project) {
 		IFile testFile = project
 				.getFile(ESQDevFileType.LINK.toString() + EFileType.SQDEV.getExtension());
-				
+		
 		return testFile.exists();
 	}
 	
@@ -193,14 +193,14 @@ public class ProjectUtil {
 		try {
 			String profile = linkFile.parseAttribute(ESQDevFileAttribute.PROFILE).getValue()
 					.toString();
-					
+			
 			return profile;
 		} catch (SQDevFileIsInvalidException e) {
 			// inform the user
 			SQDevInfobox info = new SQDevInfobox(
 					"The linkFile in the project \"" + project.getName() + "\" is invalid!",
 					SWT.ICON_ERROR);
-					
+			
 			info.open();
 			
 			// rethrow
@@ -221,7 +221,7 @@ public class ProjectUtil {
 		
 		IResource linkMember = project
 				.findMember(ESQDevFileType.LINK + EFileType.SQDEV.getExtension());
-				
+		
 		if (linkMember.getType() == IResource.FILE) {
 			try {
 				SQDevFile linkFile = new SQDevFile((IFile) linkMember);
@@ -234,6 +234,23 @@ public class ProjectUtil {
 		} else {
 			throw new SQDevCoreException("Selected linkFile is not a file!");
 		}
+	}
+	
+	/**
+	 * Gets the <code>SQDevInformation</code> corresponding to the given
+	 * SQDevProject
+	 * 
+	 * @param project
+	 *            The <b>SQDevProject</b>
+	 * @return The respective <code>SQDevInformation</code> or <code>null</code>
+	 *         if the given project is no SQDevProject
+	 */
+	public static SQDevInformation getInformation(IProject project) {
+		if (!isSQDevProject(project)) {
+			return null;
+		}
+		
+		return new SQDevInformation(getLinkFile(project));
 	}
 	
 	/**
@@ -264,7 +281,7 @@ public class ProjectUtil {
 	public static String importAsProject(Path path) {
 		Assert.isTrue(path.isAbsolute() && path.toFile().exists()
 				&& Util.isMissionFolder(new File(path.toOSString())));
-				
+		
 		String projectName = path.lastSegment().substring(0, path.lastSegment().indexOf("."));
 		
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
@@ -273,7 +290,7 @@ public class ProjectUtil {
 			String message = "Failed at importing \"" + path.toOSString()
 					+ "\" because there is already a project with the name \"" + projectName
 					+ "\"!";
-					
+			
 			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
 			info.open();
 			
@@ -309,7 +326,7 @@ public class ProjectUtil {
 				}
 			}
 			
-			//refresh project
+			// refresh project
 			project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 			
 		} catch (CoreException e) {

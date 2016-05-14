@@ -145,7 +145,7 @@ public class BasicCodeEditor extends TextEditor {
 	 * @see CharacterPair
 	 */
 	public void addCharacterPairHandler() {
-		CharacterPairHandler pairHandler = new CharacterPairHandler();
+		CharacterPairHandler pairHandler = new CharacterPairHandler(this);
 		
 		// TODO: make all completions optional via preference
 		pairHandler.addPair(CharacterPair.DOUBLE_QUOTATION_MARKS);

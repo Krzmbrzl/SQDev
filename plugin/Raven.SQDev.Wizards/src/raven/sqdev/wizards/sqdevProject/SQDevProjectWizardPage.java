@@ -215,8 +215,8 @@ public class SQDevProjectWizardPage extends WizardPage {
 		}
 		
 		// check if the entered project name is valid
-		if (!TextUtils.isValidProjectName(getProjectName())) {
-			updateStatus(TextUtils.whyIsInvalidProjectName(getProjectName()));
+		if (!TextUtils.isValidFileName(getProjectName())) {
+			updateStatus(TextUtils.whyIsInvalidFileName(getProjectName()));
 			return;
 		}
 		

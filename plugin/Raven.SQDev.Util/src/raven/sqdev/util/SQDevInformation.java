@@ -1,12 +1,18 @@
 package raven.sqdev.util;
 
+import java.io.IOException;
+
+import raven.sqdev.exceptions.SQDevFileIsInvalidException;
+import raven.sqdev.sqdevFile.ESQDevFileAttribute;
+import raven.sqdev.sqdevFile.SQDevFile;
+
 /**
  * The class for transferring information between several SQDev classes.<br>
  * It contains various fields that can be set and does the handling with defualt
  * values for fields that are not set
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQDevInformation {
 	
@@ -40,6 +46,41 @@ public class SQDevInformation {
 	 * A String containing the name
 	 */
 	protected String name;
+	
+	/**
+	 * Creates a new instance of this <code>SQDevInformation</code> with default
+	 * values
+	 */
+	public SQDevInformation() {
+		// default constructor
+	}
+	
+	/**
+	 * Creates a new instance of this <code>SQDevInformation</code> and applies
+	 * the values stated int eh given <code>SQDevFile</code>
+	 */
+	public SQDevInformation(SQDevFile file) {
+		try {
+			// gather information from the given file
+			if (file.contains(ESQDevFileAttribute.PROFILE)) {
+				this.profile = file.parseAttribute(ESQDevFileAttribute.PROFILE).getValue();
+			}
+			
+			if (file.contains(ESQDevFileAttribute.TERRAIN)) {
+				this.terrain = file.parseAttribute(ESQDevFileAttribute.TERRAIN).getValue();
+			}
+			
+			if (file.contains(ESQDevFileAttribute.AUTOEXPORT)) {
+				setAutoExport(file.parseAttribute(ESQDevFileAttribute.AUTOEXPORT).getValue());
+			}
+		} catch (IOException | SQDevFileIsInvalidException e) {
+			// report
+			SQDevInfobox info = new SQDevInfobox("Couldn't get information from the SQDevFile...",
+					e);
+			info.open();
+			e.printStackTrace();
+		}
+	}
 	
 	
 	/**
