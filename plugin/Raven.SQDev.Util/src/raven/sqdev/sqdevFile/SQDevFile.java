@@ -20,8 +20,8 @@ import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
 import raven.sqdev.exceptions.SQDevIllegalFileChangeException;
+import raven.sqdev.misc.TextUtils;
 import raven.sqdev.util.SQDevInfobox;
-import raven.sqdev.util.TextUtils;
 
 /**
  * A <code>SQDevFile</code> contains some project specific information for the

@@ -6,12 +6,13 @@ import org.eclipse.ui.IWorkbench;
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.preferences.preferenceEditors.BooleanSQDevPreferenceEditor;
 import raven.sqdev.preferences.preferenceEditors.ColorSQDevPreferenceEditor;
+import raven.sqdev.preferences.preferenceEditors.IntegerSQDevPreferenceEditor;
 
 /**
  * The preferencePage that contains all settings concerning the editor
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 	
@@ -48,8 +49,16 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				"&Enable autoComplete:",
 				"Enables/Disables autoComplete meaning that content assist will insert the proposal automatically if there is only one choice",
 				behaviour));
-				
-				
+		
+		IntegerSQDevPreferenceEditor parseDelayEditor = new IntegerSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, "&Parse delay:",
+				"Specifies the delay in seconds between a user input in the editor and the actual parsing of the editor's content",
+				behaviour);
+		parseDelayEditor.setMinValue(1);
+		
+		addPreferenceEditor(parseDelayEditor);
+		
+		
 		// preferences for the coloring
 		Group colors = createGroup("Colors");
 		

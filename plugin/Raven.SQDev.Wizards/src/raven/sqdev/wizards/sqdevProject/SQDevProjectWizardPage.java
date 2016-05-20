@@ -17,10 +17,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import raven.sqdev.misc.TextUtils;
 import raven.sqdev.util.EProjectType;
 import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.util.SQDevPreferenceUtil;
-import raven.sqdev.util.TextUtils;
 import raven.sqdev.util.Util;
 
 /**
@@ -215,8 +215,8 @@ public class SQDevProjectWizardPage extends WizardPage {
 		}
 		
 		// check if the entered project name is valid
-		if (!TextUtils.isValidProjectName(getProjectName())) {
-			updateStatus(TextUtils.whyIsInvalidProjectName(getProjectName()));
+		if (!TextUtils.isValidFileName(getProjectName())) {
+			updateStatus(TextUtils.whyIsInvalidFileName(getProjectName()));
 			return;
 		}
 		

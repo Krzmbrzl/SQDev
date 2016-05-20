@@ -21,7 +21,7 @@ import raven.sqdev.pluginManager.SQDevPluginManager;
  * This class provides functions for dealing with SQDev preferences
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQDevPreferenceUtil {
 	
@@ -226,6 +226,17 @@ public class SQDevPreferenceUtil {
 	public static Color getSyntaxHighlightingColor() {
 		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(getPreferenceStore()
 				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY)));
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY</code> preference
+	 * that defines the color for the hihlighting of keywords
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static int getParseDelay() {
+		return getPreferenceStore().getInt(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY);
 	}
 	
 	/**

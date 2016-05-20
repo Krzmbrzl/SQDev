@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import raven.sqdev.misc.TextUtils;
+
 /**
  * The "New" wizard page allows setting the container for the new file as well
  * as the file name. The page will only accept file name without the extension
@@ -122,6 +124,11 @@ public class SqfNewFileWizardPage extends WizardPage {
 		
 		if (fileName.length() == 0) {
 			updateStatus("File name must be specified");
+			return;
+		}
+		
+		if (!TextUtils.isValidFileName(fileName)) {
+			updateStatus(TextUtils.whyIsInvalidFileName(fileName));
 			return;
 		}
 		

@@ -2,18 +2,29 @@ package raven.sqdev.editors.sqfeditor;
 
 import java.io.FileNotFoundException;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.rules.Token;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
 import raven.sqdev.editors.BasicCodeEditor;
+import raven.sqdev.editors.BasicErrorListener;
 import raven.sqdev.editors.BasicPartitionScanner;
 import raven.sqdev.editors.KeywordScanner;
+import raven.sqdev.editors.sqfeditor.parsing.SQFLexer;
+import raven.sqdev.editors.sqfeditor.parsing.SQFParser;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
@@ -29,7 +40,7 @@ import raven.sqdev.util.Util;
  * The editor for working with SQF files
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQF_Editor extends BasicCodeEditor {
 	
@@ -70,11 +81,11 @@ public class SQF_Editor extends BasicCodeEditor {
 					// get the linking file
 					SQDevFile linkFile = new SQDevFile(containingProject
 							.getFile(ESQDevFileType.LINK + EFileType.SQDEV.getExtension()));
-							
+					
 					// check if autoExport is enabled for this project
 					boolean autoExport = linkFile.parseAttribute(ESQDevFileAttribute.AUTOEXPORT)
 							.getValue().equals("true");
-							
+					
 					if (autoExport) {
 						// outsource the export process to another thread
 						Job exportJob = new Job("Export") {
@@ -91,7 +102,7 @@ public class SQF_Editor extends BasicCodeEditor {
 													.getValues(),
 											linkFile.parseAnnotation(ESQDevFileAnnotation.PRESERVE)
 													.getValues());
-													
+									
 									monitor.worked(1);
 								} catch (SQDevFileIsInvalidException e) {
 									e.printStackTrace();
@@ -121,5 +132,40 @@ public class SQF_Editor extends BasicCodeEditor {
 				}
 			}
 		}
+	}
+	
+	@Override
+	protected ParseTree doParse(String input) {
+		IFile file = null;
+		if(getEditorInput() instanceof IFileEditorInput) {
+			file = ((IFileEditorInput) getEditorInput()).getFile();
+		}else {
+			SQDevInfobox info = new SQDevInfobox("An unexpected input occured (not a FileEditorInput)."
+					+ "\n\nPlease contact the developer", SWT.ERROR);
+			
+			info.open();
+			
+			return null;
+		}
+		
+		try {
+			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
+		} catch (CoreException e) {
+			SQDevInfobox info = new SQDevInfobox("Problem while removing markers...", e);
+			info.open();
+		}
+		
+		ANTLRInputStream in = new ANTLRInputStream(input);
+		
+		SQFLexer lexer = new SQFLexer(in); // TODO: get binary operators
+		
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		
+		SQFParser parser = new SQFParser(tokens);
+		
+		parser.removeErrorListeners();
+		parser.addErrorListener(new BasicErrorListener(this));
+		
+		return parser.code();
 	}
 }

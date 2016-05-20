@@ -37,7 +37,7 @@ import raven.sqdev.sqdevFile.ESQDevFileType;
  * selected in the package explorer or at a given Path within the workspace.
  * 
  * @author Raven
- * 		
+ * 
  */
 public enum EFileType {
 	/**
@@ -51,8 +51,23 @@ public enum EFileType {
 		
 		@Override
 		public String getInitialContent() {
-			return ("scopeName " + getFileName().substring(0, getFileName().length() - 4)
-					+ ";\n\n");
+			String author = "", projectName = "";
+			
+			if (isInformationSet()) {
+				author = getInformation().getProfile();
+				projectName = getInformation().getName();
+			}
+			
+			String content = "/**\n * " + projectName + " - "
+					+ getFileName().substring(0, getFileName().length() - getExtension().length())
+					+ "\n * ";
+			content += "\n * Author: " + author + "\n * ";
+			content += "\n * Description:\n * Not given\n * ";
+			content += "\n * Parameter(s):";
+			content += "\n * 0: None <Any>\n * ";
+			content += "\n * Return Value:\n * None <Any>\n * \n */\n\n";
+			
+			return content;
 		}
 	},
 	
@@ -295,7 +310,7 @@ public enum EFileType {
 									SQDevInfobox info = new SQDevInfobox(
 											"Failed at creating file \"" + getFileName() + "\"!",
 											e1);
-											
+									
 									info.open();
 								}
 							}
@@ -305,7 +320,7 @@ public enum EFileType {
 							SQDevInfobox info = new SQDevInfobox("Can't create file \""
 									+ getFileName() + "\" because it already exists!",
 									SWT.ICON_ERROR);
-									
+							
 							info.open();
 						}
 						
@@ -320,7 +335,7 @@ public enum EFileType {
 							
 							SQDevInfobox info = new SQDevInfobox(
 									"Failed at creating file \"" + getFileName() + "\"!", e);
-									
+							
 							info.open();
 						}
 					}
@@ -335,7 +350,7 @@ public enum EFileType {
 									// open the editor on the created file
 									IWorkbenchPage page = PlatformUI.getWorkbench()
 											.getActiveWorkbenchWindow().getActivePage();
-											
+									
 									IEditorPart part = IDE.openEditor(page, file, true);
 									
 									if (part instanceof ITextEditor) {
@@ -431,7 +446,20 @@ public enum EFileType {
 					ISelectionService service = window.getSelectionService();
 					IStructuredSelection structured = (IStructuredSelection) service
 							.getSelection("org.eclipse.jdt.ui.PackageExplorer");
+					
+					if (structured == null) {
+						// The ective explorer might be the project explorer
+						structured = (IStructuredSelection) service
+								.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
+						
+						if (structured == null) {
+							SQDevInfobox info = new SQDevInfobox("Selection is null!", SWT.ERROR);
+							info.open();
 							
+							return;
+						}
+					}
+					
 					// get the selected resource
 					Object obj = structured.getFirstElement();
 					
@@ -446,7 +474,7 @@ public enum EFileType {
 						
 						IPath containerLocation = container.getRawLocation();
 						
-						if(containerLocation == null) {
+						if (containerLocation == null) {
 							containerLocation = container.getLocation();
 						}
 						

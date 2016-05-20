@@ -2,7 +2,9 @@ package raven.sqdev.syntax;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.misc.CharacterPair;
+import raven.sqdev.misc.TextUtils;
 
 /**
  * A class representing a syntax element.<br>
@@ -11,7 +13,7 @@ import raven.sqdev.misc.CharacterPair;
  * of another sub-syntax and the respective encapsulating characters.
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SyntaxElement {
 	
@@ -118,4 +120,53 @@ public class SyntaxElement {
 		return this.toString().equals(comp.toString());
 	}
 	
+	public static SyntaxElement parseSyntaxElement(String input) throws BadSyntaxException {
+		if (input == null || (input = input.trim()).isEmpty()) {
+			throw new BadSyntaxException("The given input cannot be parsed into a syntaxElement!");
+		}
+		
+		char startingChar = input.charAt(0);
+		
+		if (!Character.isLetterOrDigit(startingChar)) {
+			CharacterPair encapsulator;
+			
+			switch (startingChar) {
+				case '(':
+					encapsulator = CharacterPair.ROUND_BRACKETS;
+					break;
+				
+				case '[':
+					encapsulator = CharacterPair.SQUARE_BRACKETS;
+					break;
+				
+				case '{':
+					encapsulator = CharacterPair.CURLY_BRACKETS;
+					break;
+				
+				case '"':
+					encapsulator = CharacterPair.DOUBLE_QUOTATION_MARKS;
+					break;
+				
+				case '\'':
+					encapsulator = CharacterPair.SINGLE_QUOTATION_MARKS;
+					break;
+				
+				default:
+					throw new BadSyntaxException(
+							"Unknown starting character \"" + startingChar + "\"");
+			}
+			
+			//TODO: figure out subSyntax
+		} else {
+			String[] elements = TextUtils.getAreas(input);
+			
+			if(elements.length > 1) {
+				//create a subSyntax with each of those elements as a syntaxElements
+			}else {
+				
+			}
+		}
+		
+		return null;
+	}
 }

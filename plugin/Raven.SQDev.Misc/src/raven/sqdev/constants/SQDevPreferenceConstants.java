@@ -75,6 +75,12 @@ public class SQDevPreferenceConstants {
 	public static final String SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY = "raven.sqdev.syntaxHighlightingColor";
 	
 	/**
+	 * The preference indicating the delay before parsing after the user typed
+	 * in something
+	 */
+	public static final String SQDEV_EDITOR_PARSE_DELAY = "raven.sqdev.parsingInterval";
+	
+	/**
 	 * The preference indicating if a directory should be cleaned without asking
 	 * for permission when exporting a project
 	 */

@@ -13,6 +13,7 @@ import raven.sqdev.preferences.util.SQDevChangeEvent;
 
 /**
  * A preference editor that let the user change a boolean preference.
+ * 
  * @author Raven
  *
  */

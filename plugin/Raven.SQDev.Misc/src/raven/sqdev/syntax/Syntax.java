@@ -4,13 +4,15 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
+
 /**
  * A class representing a syntax that consist <code>SyntaxElements</code>
  * 
  * @see SyntaxElement
- * 		
+ * 
  * @author Raven
- * 		
+ * 
  */
 public class Syntax {
 	
@@ -139,5 +141,51 @@ public class Syntax {
 		}
 		
 		return true;
+	}
+	
+	public static Syntax parseSyntax(String input, String commandName) {
+		if (input == null || input.isEmpty() || commandName == null || commandName.isEmpty()) {
+			// can't process
+			throw new IllegalArgumentException("The given input or commandName is invalid!");
+		}
+		
+		// check that the commandName is properly contained in the input
+		boolean isContained = false;
+		for (String currentElement : input.split(" ")) {
+			if (currentElement.equals(commandName)) {
+				isContained = true;
+				break;
+			}
+		}
+		
+		if (!isContained) {
+			throw new IllegalArgumentException("The command is not contained in the given input!");
+		}
+		
+		Syntax syntax = new Syntax(commandName);
+		
+		String inputBeforeCommand = input.substring(0, input.indexOf(commandName)).trim();
+		String inputAfterCommand = input
+				.substring(input.indexOf(commandName) + commandName.length()).trim();
+		
+		try {
+			if (!inputBeforeCommand.isEmpty()) {
+				// add leading syntaxElement
+				syntax.addElement(SyntaxElement.parseSyntaxElement(inputAfterCommand));
+			}
+			
+			// add the command as a syntaxElement
+			syntax.addElement(SyntaxElement.parseSyntaxElement(commandName));
+			
+			if (!inputAfterCommand.isEmpty()) {
+				// add trailing syntaxElement
+				syntax.addElement(SyntaxElement.parseSyntaxElement(inputAfterCommand));
+			}
+			
+			return syntax;
+		} catch (BadSyntaxException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

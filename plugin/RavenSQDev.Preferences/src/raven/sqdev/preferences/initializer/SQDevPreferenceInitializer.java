@@ -29,15 +29,15 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		// find the ArmA directory in programs folder
 		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_ARMA_MAIN_DIRECTORY,
 				locateArmaMainDirectory());
-				
+		
 		// find ArmA directory in documents folder
 		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY,
 				locateArmaDocumentsDirectory());
-				
+		
 		// set default profile
 		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE,
 				System.getProperty("user.name"));
-				
+		
 		// set deafult map
 		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN, "Altis");
 		
@@ -51,19 +51,22 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY, true);
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.BRACKETMATCH));
-				
+		
 		// enable currentLine highlighting
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY, true);
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.CURRENTLINE));
-				
+		
 		// enable autoComplete
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY, true);
 		
 		// set syntax highlighting
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.KEYWORD));
-				
+		
+		// set parsing interval
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, 2);
+		
 		// set autoClean
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN, false);
 		

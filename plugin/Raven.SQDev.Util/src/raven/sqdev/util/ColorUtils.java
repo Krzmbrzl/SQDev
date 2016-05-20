@@ -3,6 +3,7 @@ package raven.sqdev.util;
 import org.eclipse.swt.graphics.RGB;
 
 import raven.sqdev.exceptions.IllegalRGBSyntaxException;
+import raven.sqdev.misc.TextUtils;
 
 /**
  * A class containing various static Color functions

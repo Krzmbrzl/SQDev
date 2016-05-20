@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.graphics.Point;
 
 import raven.sqdev.interfaces.IEditorKeyHandler;
 import raven.sqdev.misc.CharacterPair;
-import raven.sqdev.util.TextUtils;
+import raven.sqdev.misc.TextUtils;
 
 /**
  * This class will handle character inputs that have a predefined partner to
@@ -17,34 +18,58 @@ import raven.sqdev.util.TextUtils;
  * registered to this handler
  * 
  * @author Raven
- * 		
+ * 
  */
 public class CharacterPairHandler implements IEditorKeyHandler {
-	
+	/**
+	 * The list of pairs to match
+	 */
 	private ArrayList<CharacterPair> pairs;
+	/**
+	 * The last matched opening character (used for caret skipping in
+	 * handleMatchedClosingCharacter())
+	 */
 	private char lastMatchedOpeningCharacter;
+	/**
+	 * The editor this Handler works on
+	 */
+	private BasicCodeEditor editor;
 	
-	public CharacterPairHandler(ArrayList<CharacterPair> list) {
+	public CharacterPairHandler(ArrayList<CharacterPair> list, BasicCodeEditor editor) {
 		this.setPairs(list);
+		
+		this.editor = editor;
 	}
 	
-	public CharacterPairHandler() {
-		this(new ArrayList<CharacterPair>());
+	public CharacterPairHandler(BasicCodeEditor editor) {
+		this(new ArrayList<CharacterPair>(), editor);
 	}
 	
 	@SuppressWarnings("serial")
-	public CharacterPairHandler(CharacterPair pair) {
+	public CharacterPairHandler(CharacterPair pair, BasicCodeEditor editor) {
 		this(new ArrayList<CharacterPair>() {
 			{
 				add(pair);
 			}
-		});
+		}, editor);
 	}
 	
 	@Override
 	public boolean willHandle(VerifyEvent event) {
 		if (!(event.getSource() instanceof StyledText)) {
 			// Don't handle events that are not caused by StyledText
+			return false;
+		}
+		
+		Point selection = ((StyledText) event.getSource()).getSelection();
+		if (selection.x != selection.y) {
+			// don't do anything when an area is modified
+			return false;
+		}
+		
+		if (editor.getBasicProvider().getPartitioner().getContentType(selection.x).toLowerCase()
+				.contains("string")) {
+			// disable in strings
 			return false;
 		}
 		
@@ -68,6 +93,15 @@ public class CharacterPairHandler implements IEditorKeyHandler {
 		boolean isOpener = isRegisteredOpeningCharacter(event.character);
 		boolean isCloser = isRegisteredClosingCharacter(event.character);
 		
+		// is always StyledText (checked in willHandle())
+		StyledText textWidget = (StyledText) event.getSource();
+		Point selection = textWidget.getSelection();
+		
+		if (selection.x != selection.y) {
+			// don't do anything when an area is modified
+			return;
+		}
+		
 		if (isOpener && isCloser) {
 			// if it's part of a CharacterPair whichs start and end are equal
 			
@@ -88,7 +122,7 @@ public class CharacterPairHandler implements IEditorKeyHandler {
 						String.valueOf(event.character));
 				int occuranceAfter = TextUtils.countMatches(followingText,
 						String.valueOf(event.character));
-						
+				
 				// TODO: handle escaped character or only consider characters
 				// outside of strings/comments
 				
@@ -139,9 +173,23 @@ public class CharacterPairHandler implements IEditorKeyHandler {
 	public void handleMatchedOpeningCharacter(VerifyEvent event) {
 		char pairingCharacter = this.getPairingCharacter(event.character);
 		
-		StyledText text = (StyledText) event.getSource();
+		StyledText textWidget = (StyledText) event.getSource();
+		int offset = textWidget.getCaretOffset();
 		
-		text.insert(String.valueOf(pairingCharacter));
+		if (textWidget.getText().length() <= offset + 1) {
+			// always complete on EOF
+			textWidget.insert(String.valueOf(pairingCharacter));
+		} else {
+			// check what comes after the addition
+			char nextChar = textWidget.getText().charAt(offset);
+			
+			if (!TextUtils.isWordPart(nextChar)) {
+				// complete only if not directly in front of a word
+				textWidget.insert(String.valueOf(pairingCharacter));
+			} else {
+				resetLastMatchedOpeningCharacter();
+			}
+		}
 	}
 	
 	/**

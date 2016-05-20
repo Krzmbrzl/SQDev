@@ -15,7 +15,7 @@ import org.eclipse.swt.SWT;
  * directories
  * 
  * @author Raven
- * 		
+ * 
  */
 public class FileSystemUtil {
 	
@@ -194,7 +194,7 @@ public class FileSystemUtil {
 	 */
 	public static void copyFilesWithExceptions(File directory, IPath destination,
 			ArrayList<String> filesToIgnore) {
-			
+		
 		if (directory.isFile() && !filesToIgnore.contains(directory.getName())) {
 			// copy the file if it shouldn't be ignored
 			try {
@@ -206,7 +206,7 @@ public class FileSystemUtil {
 				String message = "Failed at copying file \"" + directory.getName() + "\"!\nReason: "
 						+ ((e.getMessage() == null || e.getMessage().isEmpty()) ? "Unknown"
 								: e.getMessage());
-								
+				
 				SQDevInfobox info = new SQDevInfobox(message, SWT.ERROR);
 				
 				info.open();
@@ -233,7 +233,7 @@ public class FileSystemUtil {
 							+ "\"!\nReason: "
 							+ ((e.getMessage() == null || e.getMessage().isEmpty()) ? "Unknown"
 									: e.getMessage());
-									
+					
 					SQDevInfobox info = new SQDevInfobox(message, SWT.ERROR);
 					
 					info.open();
@@ -272,9 +272,12 @@ public class FileSystemUtil {
 				content += currentLine + "\n";
 			}
 			
-			// remove the last newLine so that the copied file does not differ
-			// from the original
-			content.substring(0, content.length() - 1);
+			if (!content.isEmpty()) {
+				// remove the last newLine so that the copied file does not
+				// differ
+				// from the original
+				content.substring(0, content.length() - 1);
+			}
 			
 			// write the content into the new file
 			out.write(content);
@@ -287,7 +290,7 @@ public class FileSystemUtil {
 				// directory
 				if (!destination.toFile().isDirectory()) {
 					destination.append(file.getName());
-				}else {
+				} else {
 					return;
 				}
 			}
