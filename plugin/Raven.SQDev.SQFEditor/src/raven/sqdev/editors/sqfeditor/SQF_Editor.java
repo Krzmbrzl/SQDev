@@ -1,6 +1,8 @@
 package raven.sqdev.editors.sqfeditor;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -19,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
+import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicErrorListener;
 import raven.sqdev.editors.BasicPartitionScanner;
@@ -26,7 +29,12 @@ import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.editors.sqfeditor.parsing.SQFLexer;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser;
 import raven.sqdev.exceptions.IllegalAccessStateException;
+import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
+import raven.sqdev.infoCollection.base.Keyword;
+import raven.sqdev.infoCollection.base.SQFCommand;
+import raven.sqdev.interfaces.IKeywordListChangeListener;
+import raven.sqdev.misc.ListUtils;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
@@ -42,19 +50,44 @@ import raven.sqdev.util.Util;
  * @author Raven
  * 
  */
-public class SQF_Editor extends BasicCodeEditor {
+public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeListener {
+	
+	/**
+	 * The KeywordProvider for the SQF keywords
+	 */
+	private SQFKeywordProvider provider;
+	
+	/**
+	 * A list of all commands that can be used as a binary operator
+	 */
+	private List<SQFCommand> binaryCommands;
+	/**
+	 * A list of all commands that can be used as a unary operator
+	 */
+	private List<SQFCommand> unaryCommands;
+	/**
+	 * A list of all commands that can be used as a nular operator
+	 */
+	private List<SQFCommand> nularCommands;
 	
 	public SQF_Editor() {
 		super();
 		
 		// get keywordScanner
-		KeywordScanner keywordScanner = getBasicConfiguration().getKeywordScanner();
+		KeywordScanner keywordScanner = getBasicConfiguration().getKeywordScanner(
+				SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY);
+		
+		provider = new SQFKeywordProvider();
 		
 		// set KeywordProvider
-		keywordScanner.setKeywordProvider(new SQFKeywordProvider());
+		keywordScanner.setKeywordProvider(provider);
 		
 		// make cas insensitive
 		keywordScanner.makeCaseSensitive(false);
+		
+		// configure this editor as a keyword list listener
+		provider.addKeywordListChangeListener(this);
+		keywordScanner.addKeywordListChangeListener(this);
 		
 		// get PartitionScanner
 		BasicPartitionScanner partitionScanner = getBasicProvider().getPartitionScanner();
@@ -63,6 +96,12 @@ public class SQF_Editor extends BasicCodeEditor {
 		partitionScanner.removeRule(BasicPartitionScanner.DOUBLE_QUOTE_STRING_RULE);
 		partitionScanner
 				.addRule(new SQFStringPartitionRule(new Token(BasicPartitionScanner.BASIC_STRING)));
+		
+		binaryCommands = new ArrayList<SQFCommand>();
+		unaryCommands = new ArrayList<SQFCommand>();
+		nularCommands = new ArrayList<SQFCommand>();
+		
+		categorizeCommands();
 	}
 	
 	@Override
@@ -137,11 +176,13 @@ public class SQF_Editor extends BasicCodeEditor {
 	@Override
 	protected ParseTree doParse(String input) {
 		IFile file = null;
-		if(getEditorInput() instanceof IFileEditorInput) {
+		if (getEditorInput() instanceof IFileEditorInput) {
 			file = ((IFileEditorInput) getEditorInput()).getFile();
-		}else {
-			SQDevInfobox info = new SQDevInfobox("An unexpected input occured (not a FileEditorInput)."
-					+ "\n\nPlease contact the developer", SWT.ERROR);
+		} else {
+			SQDevInfobox info = new SQDevInfobox(
+					"An unexpected input occured (not a FileEditorInput)."
+							+ "\n\nPlease contact the developer",
+					SWT.ERROR);
 			
 			info.open();
 			
@@ -155,17 +196,117 @@ public class SQF_Editor extends BasicCodeEditor {
 			info.open();
 		}
 		
+		BasicErrorListener listener = new BasicErrorListener(this);
+		
 		ANTLRInputStream in = new ANTLRInputStream(input);
 		
-		SQFLexer lexer = new SQFLexer(in); // TODO: get binary operators
+		SQFLexer lexer = new SQFLexer(in, ListUtils.toLowerCase(getBinaryKeywords()));
+		lexer.removeErrorListeners();
+		lexer.addErrorListener(listener);
 		
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		
 		SQFParser parser = new SQFParser(tokens);
 		
 		parser.removeErrorListeners();
-		parser.addErrorListener(new BasicErrorListener(this));
+		parser.addErrorListener(listener);
 		
 		return parser.code();
+	}
+	
+	/**
+	 * Categorizes the commands according to their ability to be used as a
+	 * binary/unary/nular operator
+	 */
+	private void categorizeCommands() {
+		for (Keyword currentKeyword : provider.getKeywordList().getKeywords()) {
+			if (currentKeyword instanceof SQFCommand) {
+				SQFCommand currentCommand = (SQFCommand) currentKeyword;
+				
+				if (currentCommand.isBinaryOperator()) {
+					binaryCommands.add(currentCommand);
+				}
+				
+				if (currentCommand.isUnaryOperator()) {
+					unaryCommands.add(currentCommand);
+				}
+				
+				if (currentCommand.isNularOperator()) {
+					nularCommands.add(currentCommand);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Gets all SQF commands that can be used as a binary operator
+	 */
+	public List<SQFCommand> getBinaryOperators() {
+		return binaryCommands;
+	}
+	
+	/**
+	 * Gets all SQF commands that can be used as a unary operator
+	 */
+	public List<SQFCommand> getUnaryOperators() {
+		return unaryCommands;
+	}
+	
+	/**
+	 * Gets all SQF commands that can be used as a nular operator
+	 */
+	public List<SQFCommand> getNularOperators() {
+		return nularCommands;
+	}
+	
+	/**
+	 * Gets a list of all keywords that can be used as a binary operator
+	 */
+	public List<String> getBinaryKeywords() {
+		ArrayList<String> list = new ArrayList<String>();
+		
+		for (SQFCommand currentCommand : getBinaryOperators()) {
+			list.add(currentCommand.getKeyword());
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * Gets a list of all keywords that can be used as a unnary operator
+	 */
+	public List<String> getUnnaryKeywords() {
+		ArrayList<String> list = new ArrayList<String>();
+		
+		for (SQFCommand currentCommand : getUnaryOperators()) {
+			list.add(currentCommand.getKeyword());
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * Gets a list of all keywords that can be used as a nular operator
+	 */
+	public List<String> getNularKeywords() {
+		ArrayList<String> list = new ArrayList<String>();
+		
+		for (SQFCommand currentCommand : getNularOperators()) {
+			list.add(currentCommand.getKeyword());
+		}
+		
+		return list;
+	}
+	
+	@Override
+	public void keywordListChanged(String ctx) {
+		switch (ctx) {
+			case IKeywordListChangeListener.CTX_LIST_CHANGED:
+				categorizeCommands();
+				break;
+			
+			case IKeywordListChangeListener.CTX_LIST_REMOVED:
+				throw new SQDevCoreException("Unimplemented behaviour necessary");
+		}
 	}
 }

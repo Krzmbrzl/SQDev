@@ -179,17 +179,26 @@ public class TextUtils {
 	}
 	
 	/**
-	 * Gets the different areas from an input such as words(seperated by
+	 * Gets the different areas from an input such as words(seperated
 	 * whitespace) or bracket areas (encapsulated in brackets).
 	 * 
 	 * @param input
 	 *            The input whose areas should be obtained
+	 * @param repair
+	 *            Indicates whether this function should try to repair the input
+	 *            in case the syntax is not correct (most commonly this applies
+	 *            to inserting closing brackets at the end of the input)
 	 * @return The found areas or <code>null</code> if an error occured
 	 * @throws BadSyntaxException
 	 *             If a bracket area is missing it's closing bracket
 	 */
-	public static String[] getAreas(String input) throws BadSyntaxException {
-		Assert.isTrue(input != null && !input.isEmpty());
+	public static String[] getTextAreas(String input, boolean repair) throws BadSyntaxException {
+		Assert.isNotNull(input);
+		
+		if (input.isEmpty()) {
+			// empty string results in no areas
+			return new String[0];
+		}
 		
 		StringReader reader = new StringReader(input);
 		
@@ -219,7 +228,7 @@ public class TextUtils {
 					// simply append
 					characterStream.write(currentChar);
 				} else {
-					if (currentChar == ' ') {
+					if (Character.isWhitespace(currentChar)) {
 						// check that there this is not in a bracket area
 						if (bracketPair == null) {
 							flush = true;
@@ -234,9 +243,17 @@ public class TextUtils {
 								// get the bracket pair
 								bracketPair = CharacterPair.getDefinedPairFor(currentChar);
 								
-								// manually flush
-								areaList.add(characterStream.toString());
-								characterStream.reset();
+								if (bracketPair.getOpener() == currentChar) {
+									// manually flush
+									if (characterStream.size() > 0) {
+										areaList.add(characterStream.toString());
+										characterStream.reset();
+									}
+								} else {
+									// There is a closing bracket whose starting
+									throw new BadSyntaxException(
+											"Missing opening bracket " + bracketPair.getOpener());
+								}
 							} else {
 								// check if the closer has been reached
 								if (bracketPair.getCloser() == currentChar) {
@@ -278,9 +295,27 @@ public class TextUtils {
 			}
 			
 			if (bracketPair != null) {
+				// one more bracket has to be closed
+				remainingOpenerToBeClosed++;
+				
 				// we are still in a warped area -> missing closing character
-				throw new BadSyntaxException(
-						"Missing closing bracket '" + bracketPair.getCloser() + "' in input");
+				if (remainingOpenerToBeClosed > 0 && repair && characterStream.size() > 0) {
+					// "repair" the input by inserting respective amount of
+					// closing brackets
+					String closer = "";
+					
+					while (remainingOpenerToBeClosed > 0) {
+						closer += bracketPair.getCloser();
+						
+						remainingOpenerToBeClosed--;
+					}
+					
+					// append it to buffer
+					characterStream.write(closer.getBytes());
+				} else {
+					throw new BadSyntaxException(
+							"Incomplete CharacterPair " + bracketPair + " in input!");
+				}
 			}
 			
 			if (characterStream.size() > 0) {
@@ -298,5 +333,40 @@ public class TextUtils {
 				return null;
 			}
 		}
+	}
+	
+	/**
+	 * Gets the different areas from an input such as words(seperated by blank
+	 * or newLine) or bracket areas (encapsulated in brackets).
+	 * 
+	 * @param input
+	 *            The input whose areas should be obtained
+	 * @return The found areas or <code>null</code> if an error occured
+	 * @throws BadSyntaxException
+	 *             If a bracket area is missing it's closing bracket
+	 */
+	public static String[] getTextAreas(String input) throws BadSyntaxException {
+		return getTextAreas(input, false);
+	}
+	
+	/**
+	 * Checks whether the given input conists of only one text area. That is
+	 * when getTextAreas() returns an array of size 1
+	 * 
+	 * @param input
+	 *            The input to check
+	 * @throws BadSyntaxException
+	 *             When getTextAreas() throws such an exception
+	 * 
+	 * @see #getTextAreas(String)
+	 */
+	public static boolean isSingleTextArea(String input) throws BadSyntaxException {
+		input = input.trim();
+		
+		if (input.isEmpty()) {
+			return true;
+		}
+		
+		return getTextAreas(input).length == 1;
 	}
 }

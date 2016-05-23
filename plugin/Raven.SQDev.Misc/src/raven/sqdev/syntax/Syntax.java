@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Assert;
 
 import raven.sqdev.exceptions.BadSyntaxException;
+import raven.sqdev.exceptions.SQDevCoreException;
+import raven.sqdev.misc.TextUtils;
 
 /**
  * A class representing a syntax that consist <code>SyntaxElements</code>
@@ -30,6 +32,13 @@ public class Syntax {
 		this.commandName = commandName;
 		
 		elements = new ArrayList<SyntaxElement>();
+	}
+	
+	/**
+	 * Creates a subSyntax that does not have a command name
+	 */
+	protected Syntax() {
+		this("!SubSyntax!");
 	}
 	
 	/**
@@ -143,6 +152,40 @@ public class Syntax {
 		return true;
 	}
 	
+	/**
+	 * Check if this syntax is a nular syntax (= contains only the command with
+	 * no arguments)
+	 */
+	public boolean isNular() {
+		return getArgumentCount() == 0;
+	}
+	
+	/**
+	 * Check if this syntax is an unary syntax (= contains only the command with
+	 * one argument)
+	 */
+	public boolean isUnary() {
+		return getArgumentCount() == 1;
+	}
+	
+	/**
+	 * Check if this syntax is a binary syntax (= contains the command with an
+	 * argument on both sides of it)
+	 */
+	public boolean isBinary() {
+		return getArgumentCount() == 2;
+	}
+	
+	/**
+	 * Creates a syntax out of the given input
+	 * 
+	 * @param input
+	 *            The input to derive the syntax from
+	 * @param commandName
+	 *            The name of the command this <code>Syntax</code> belongs to.
+	 *            <b>Has to be contained in input</b>
+	 * @return
+	 */
 	public static Syntax parseSyntax(String input, String commandName) {
 		if (input == null || input.isEmpty() || commandName == null || commandName.isEmpty()) {
 			// can't process
@@ -151,15 +194,35 @@ public class Syntax {
 		
 		// check that the commandName is properly contained in the input
 		boolean isContained = false;
-		for (String currentElement : input.split(" ")) {
-			if (currentElement.equals(commandName)) {
-				isContained = true;
-				break;
-			}
-		}
 		
-		if (!isContained) {
-			throw new IllegalArgumentException("The command is not contained in the given input!");
+		try {
+			String[] elements = TextUtils.getTextAreas(input);
+			String[] lowerElements = TextUtils.getTextAreas(input.toLowerCase());
+			String lowerCommandName = commandName.toLowerCase();
+			
+			for (int i = 0; i < lowerElements.length; i++) {
+				String currentElement = lowerElements[i];
+				
+				if (currentElement.equals(lowerCommandName)) {
+					// use the specified commandName
+					elements[i] = commandName;
+					isContained = true;
+					break;
+				}
+			}
+			
+			if (!isContained) {
+				throw new BadSyntaxException("The command is not contained in the given input!");
+			}
+			
+			// recreate String out of the array
+			StringBuilder builder = new StringBuilder();
+			for (String currentElement : elements) {
+				builder.append(" " + currentElement);
+			}
+			input = builder.toString().trim();
+		} catch (BadSyntaxException e) {
+			throw new SQDevCoreException("Failed at creating syntax", e);
 		}
 		
 		Syntax syntax = new Syntax(commandName);
@@ -171,7 +234,7 @@ public class Syntax {
 		try {
 			if (!inputBeforeCommand.isEmpty()) {
 				// add leading syntaxElement
-				syntax.addElement(SyntaxElement.parseSyntaxElement(inputAfterCommand));
+				syntax.addElement(SyntaxElement.parseSyntaxElement(inputBeforeCommand));
 			}
 			
 			// add the command as a syntaxElement

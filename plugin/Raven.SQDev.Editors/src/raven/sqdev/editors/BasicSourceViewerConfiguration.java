@@ -1,5 +1,12 @@
 package raven.sqdev.editors;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
@@ -18,28 +25,32 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 
 import raven.sqdev.constants.ISQDevColorConstants;
 import raven.sqdev.constants.SQDevPreferenceConstants;
+import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
  * Basic implementation of a <code>SourceViewerConfiguration</code>
  * 
  * @author Raven
- * 		
+ * 
  * @see {@linkplain SourceViewerConfiguration}
- * 		
+ * 
  */
 public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 		implements IPropertyChangeListener {
-		
+	
 	/**
 	 * The color manager
 	 */
 	protected ColorManager colorManager;
 	
 	/**
-	 * The keywordScanner providing the keywords for the syntax highlighting
+	 * The configured keywordScanner providing the keywords for the syntax
+	 * highlighting<br>
+	 * They are sorted according to the PreferenceKey they use for the color of
+	 * their keyword highlighting
 	 */
-	protected KeywordScanner keywordScanner;
+	protected Map<String, KeywordScanner> configuredKeywordScanner;
 	
 	/**
 	 * The editor this SourceViewer is applied on
@@ -54,6 +65,8 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	public BasicSourceViewerConfiguration(ColorManager manager, BasicCodeEditor editor) {
 		this.setColorManager(manager);
 		this.editor = editor;
+		
+		this.configuredKeywordScanner = new HashMap<String, KeywordScanner>();
 		
 		// register to get notified about preference changes
 		SQDevPreferenceUtil.getPreferenceStore().addPropertyChangeListener(this);
@@ -78,29 +91,128 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	}
 	
 	/**
-	 * Gets the keywordScanner for this configuration
-	 * 
+	 * Gets all configured Keywords
 	 */
-	public KeywordScanner getKeywordScanner() {
+	public List<Keyword> getAllConfiguredKeywords() {
+		ArrayList<Keyword> keywordList = new ArrayList<Keyword>();
 		
-		if (this.keywordScanner == null) {
-			this.keywordScanner = new KeywordScanner(new BasicKeywordProvider(),
-					SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY, editor);
+		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanner.entrySet()
+				.iterator();
+		
+		while (iterator.hasNext()) {
+			// add the respective keywords to the list
+			keywordList.addAll(
+					iterator.next().getValue().getKeywordProvider().getKeywordList().getKeywords());
 		}
 		
-		return this.keywordScanner;
+		return keywordList;
+	}
+	
+	/**
+	 * Gets a list of all configured Keywords starting with the given character
+	 * 
+	 * @param c
+	 *            The starting charcter
+	 */
+	public List<Keyword> getConfiguredKeywordsFor(char c) {
+		ArrayList<Keyword> keywordList = new ArrayList<Keyword>();
+		
+		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanner.entrySet()
+				.iterator();
+		
+		while (iterator.hasNext()) {
+			// add the respective keywords to the list
+			keywordList.addAll(
+					iterator.next().getValue().getKeywordProvider().getKeywordList().getListFor(c));
+		}
+		
+		return keywordList;
+	}
+	
+	/**
+	 * Gets the keywordScanner for this configuration
+	 * 
+	 * @param colorPreferenceKey
+	 *            The preference key for the color of the desired
+	 *            <code>KeywordScanner</code>
+	 * @return The <code>KeywordScanner</code> working for the given preference
+	 *         key. If none has existed yet this will be a newly created one
+	 */
+	public KeywordScanner getKeywordScanner(String colorPreferenceKey) {
+		if (!configuredKeywordScanner.containsKey(colorPreferenceKey)) {
+			// create new scanner
+			KeywordScanner scanner = new KeywordScanner(new BasicKeywordProvider(),
+					colorPreferenceKey, this.editor);
+			
+			configuredKeywordScanner.put(colorPreferenceKey, scanner);
+		}
+		
+		// return scanner
+		return configuredKeywordScanner.get(colorPreferenceKey);
+	}
+	
+	/**
+	 * Gets the <code>KeywordScanner</code> that contains the given
+	 * <code>Keyword</code>
+	 * 
+	 * @param keyword
+	 *            The <code>Keyword</code> to search for
+	 * @return The matching <code>KeywordScanner</code> or <code>null</code> if
+	 *         none could be found
+	 */
+	public KeywordScanner getKeywordScannerContaining(Keyword keyword) {
+		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanner.entrySet()
+				.iterator();
+		
+		while (iterator.hasNext()) {
+			KeywordScanner currentScanner = iterator.next().getValue();
+			
+			if (currentScanner.contains(keyword)) {
+				return currentScanner;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets the <code>KeywordScanner</code> that contains a <code>Keyword</code>
+	 * matching the given word
+	 * 
+	 * @param word
+	 *            The word to search for
+	 * @return The matching <code>KeywordScanner</code> or <code>null</code> if
+	 *         none could be found
+	 */
+	public KeywordScanner getKeywordScannerContaining(String word) {
+		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanner.entrySet()
+				.iterator();
+		
+		while (iterator.hasNext()) {
+			KeywordScanner currentScanner = iterator.next().getValue();
+			
+			if (currentScanner.contains(word)) {
+				return currentScanner;
+			}
+		}
+		
+		return null;
 	}
 	
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
 		
-		// TODO: make procedural
+		// syntax highlighting for keywords
+		Iterator<Entry<String, KeywordScanner>> mapIterator = configuredKeywordScanner.entrySet()
+				.iterator();
 		
-		// syntax highlighting
-		DefaultDamagerRepairer dr_Default = new DefaultDamagerRepairer(this.getKeywordScanner());
-		reconciler.setDamager(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
-		reconciler.setRepairer(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
+		while (mapIterator.hasNext()) {
+			DefaultDamagerRepairer dr_Default = new DefaultDamagerRepairer(
+					mapIterator.next().getValue());
+			reconciler.setDamager(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
+			reconciler.setRepairer(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
+		}
 		
 		// colorize strings
 		NonRuleBasedDamagerRepairer ndr_String = new NonRuleBasedDamagerRepairer(
@@ -139,7 +251,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	
 	@Override
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-	    return new DefaultAnnotationHover();
+		return new DefaultAnnotationHover();
 	}
 	
 	@Override
@@ -154,14 +266,15 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 			case SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY:
 				assistant.enableAutoActivation((boolean) event.getNewValue());
 				break;
-				
-			case SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY:
-				getKeywordScanner().syncToPropertyChange(event);
-				break;
-				
+			
 			default:
-				// don't update the editor
-				return;
+				if (configuredKeywordScanner.containsKey(event.getProperty())) {
+					// configure respective keyword scanner
+					configuredKeywordScanner.get(event.getProperty()).syncToPropertyChange(event);
+				} else {
+					// don't update editor
+					return;
+				}
 		}
 		
 		editor.update();

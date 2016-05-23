@@ -19,7 +19,7 @@ import raven.sqdev.util.EditorUtil;
  * content assist for them
  * 
  * @author Raven
- * 		
+ * 
  */
 public class BasicContentAssistProcessor implements IContentAssistProcessor {
 	/**
@@ -38,11 +38,9 @@ public class BasicContentAssistProcessor implements IContentAssistProcessor {
 		List<Keyword> keywords;
 		// get the respective list of keywords
 		if (prefix.isEmpty()) {
-			keywords = editor.getBasicConfiguration().getKeywordScanner().getKeywordProvider()
-					.getKeywordList().getKeywords();
+			keywords = editor.getBasicConfiguration().getAllConfiguredKeywords();
 		} else {
-			keywords = editor.getBasicConfiguration().getKeywordScanner().getKeywordProvider()
-					.getKeywordList().getListFor(prefix.charAt(0));
+			keywords = editor.getBasicConfiguration().getConfiguredKeywordsFor(prefix.charAt(0));
 		}
 		
 		ArrayList<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();

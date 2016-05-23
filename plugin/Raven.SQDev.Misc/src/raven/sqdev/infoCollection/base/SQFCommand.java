@@ -13,7 +13,7 @@ import raven.sqdev.syntax.Syntax;
  * information about it
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQFCommand extends SQFElement {
 	
@@ -188,6 +188,21 @@ public class SQFCommand extends SQFElement {
 	}
 	
 	/**
+	 * Gets the syntaxes of this command as a String representation.
+	 * 
+	 * @return The syntaxes of this command
+	 */
+	public ArrayList<String> getStringSyntaxes() {
+		ArrayList<String> syntaxes = new ArrayList<String>();
+		
+		for (Syntax currentSyntax : getSyntaxes()) {
+			syntaxes.add(currentSyntax.toString());
+		}
+		
+		return syntaxes;
+	}
+	
+	/**
 	 * Sets the syntaxes of this command
 	 * 
 	 * @param syntaxes
@@ -300,7 +315,7 @@ public class SQFCommand extends SQFElement {
 		// make sure the example is surrounded by code tags
 		taggedExample = ((taggedExample.startsWith(codeOpener)) ? "" : codeOpener) + taggedExample
 				+ ((taggedExample.endsWith(codeCloser)) ? "" : codeCloser);
-				
+		
 		// add example if it has not been added yet
 		if (!getExamples().contains(taggedExample)) {
 			getExamples().add(taggedExample);
@@ -510,6 +525,45 @@ public class SQFCommand extends SQFElement {
 		return !getRawSytaxes().isEmpty();
 	}
 	
+	/**
+	 * Checks whether this command can be used as a binary operator
+	 */
+	public boolean isBinaryOperator() {
+		for (Syntax currentSyntax : getSyntaxes()) {
+			if (currentSyntax.isBinary()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks whether this command can be used as a unary operator
+	 */
+	public boolean isUnaryOperator() {
+		for (Syntax currentSyntax : getSyntaxes()) {
+			if (currentSyntax.isUnary()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks whether this command can be used as a nular operator
+	 */
+	public boolean isNularOperator() {
+		for (Syntax currentSyntax : getSyntaxes()) {
+			if (currentSyntax.isNular()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public String toString() {
 		String representation = "";
@@ -602,17 +656,17 @@ public class SQFCommand extends SQFElement {
 			return false;
 		}
 		
-		// symtax
+		// syntax
 		String syntaxContent = savedFormat.substring(
 				savedFormat.indexOf(SYNTAX_START_SAVESEQUENCE) + SYNTAX_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(SYNTAX_END_SAVESEQUENCE)).trim();
-				
+		
 		for (String currentSyntax : syntaxContent.split(SYNTAX_SEPERATOR_SAVESEQUENCE)) {
 			// process each syntax
 			currentSyntax = currentSyntax.trim();
 			
 			if (!currentSyntax.isEmpty()) {
-				// TODO parse to Syntax
+				addSyntax(Syntax.parseSyntax(currentSyntax, getKeyword()));
 			}
 		}
 		
@@ -621,7 +675,7 @@ public class SQFCommand extends SQFElement {
 				savedFormat.indexOf(RAWSYNTAX_START_SAVESEQUENCE)
 						+ RAWSYNTAX_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(RAWSYNTAX_END_SAVESEQUENCE)).trim();
-				
+		
 		for (String currentRawSyntax : rawSyntaxContent.split(RAWSYNTAX_SEPERATOR_SAVESEQUENCE)) {
 			// process each rawSyntax
 			currentRawSyntax = currentRawSyntax.trim();
@@ -636,7 +690,7 @@ public class SQFCommand extends SQFElement {
 				savedFormat.indexOf(EXAMPLE_START_SAVESEQUENCE)
 						+ EXAMPLE_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(EXAMPLE_END_SAVESEQUENCE)).trim();
-				
+		
 		for (String currentExample : exampleContent.split(EXAMPLE_SEPERATOR_SAVESEQUENCE)) {
 			// process each example
 			currentExample = currentExample.trim();
@@ -651,14 +705,14 @@ public class SQFCommand extends SQFElement {
 				savedFormat.indexOf(LOCALITY_START_SAVESEQUENCE)
 						+ LOCALITY_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(LOCALITY_END_SAVESEQUENCE)).trim();
-				
+		
 		String argumentLocality = localityContent
 				.substring(0, localityContent.indexOf(LOCALITY_SEPERATOR_SAVESEQUENCE)).trim();
 		String effectsLocality = localityContent
 				.substring(localityContent.indexOf(LOCALITY_SEPERATOR_SAVESEQUENCE)
 						+ LOCALITY_SEPERATOR_SAVESEQUENCE.length())
 				.trim();
-				
+		
 		if (ELocality.resolve(argumentLocality) == null
 				|| ELocality.resolve(effectsLocality) == null) {
 			return false;
@@ -670,7 +724,7 @@ public class SQFCommand extends SQFElement {
 		String noteContent = savedFormat.substring(
 				savedFormat.indexOf(NOTE_START_SAVESEQUENCE) + NOTE_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(NOTE_END_SAVESEQUENCE)).trim();
-				
+		
 		for (String currentNote : noteContent.split(NOTE_SEPERATOR_SAVESEQUENCE)) {
 			// process each note
 			currentNote = currentNote.trim();
@@ -685,7 +739,7 @@ public class SQFCommand extends SQFElement {
 				savedFormat.indexOf(RETURNVALUE_START_SAVESEQUENCE)
 						+ RETURNVALUE_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(RETURNVALUE_END_SAVESEQUENCE)).trim();
-				
+		
 		if (returnType.isEmpty()) {
 			return false;
 		} else {

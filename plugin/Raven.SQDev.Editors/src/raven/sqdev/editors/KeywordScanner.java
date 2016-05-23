@@ -1,6 +1,7 @@
 package raven.sqdev.editors;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.TextAttribute;
@@ -16,16 +17,16 @@ import org.eclipse.swt.widgets.Display;
 
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
+import raven.sqdev.interfaces.IKeywordListChangeListener;
 import raven.sqdev.interfaces.IKeywordProvider;
 import raven.sqdev.util.ColorUtils;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
- * A scanner that scans for keywords and colors them with the
- * <code>ISQDevColorConstants.KEYWORD</code> color
+ * A scanner that scans for keywords and colors them with the given color
  * 
  * @author Raven
- * 		
+ * 
  */
 public class KeywordScanner extends RuleBasedScanner {
 	
@@ -36,7 +37,7 @@ public class KeywordScanner extends RuleBasedScanner {
 	 */
 	public static IToken UNRECOGNIZED_WORD_TOKEN = new Token(
 			new TextAttribute(null, null, SWT.NULL));
-			
+	
 	/**
 	 * The preferenceKey for the color of the token
 	 */
@@ -68,6 +69,11 @@ public class KeywordScanner extends RuleBasedScanner {
 	protected boolean caseSensitive;
 	
 	/**
+	 * A list of <code>IKeywordListChangeListeners</code>
+	 */
+	protected List<IKeywordListChangeListener> keywordListListeners;
+	
+	/**
 	 * Creates an instance of this scanner
 	 * 
 	 * @param provider
@@ -96,6 +102,7 @@ public class KeywordScanner extends RuleBasedScanner {
 		this.editor = editor;
 		this.caseSensitive = caseSensitive;
 		defaultToken = UNRECOGNIZED_WORD_TOKEN;
+		keywordListListeners = new ArrayList<IKeywordListChangeListener>();
 		
 		Color color = new Color(Display.getCurrent(), ColorUtils.decodeRGB(strColor));
 		
@@ -136,7 +143,7 @@ public class KeywordScanner extends RuleBasedScanner {
 			if (event.getNewValue() != null) {
 				Color color = new Color(Display.getCurrent(),
 						ColorUtils.decodeRGB((String) event.getNewValue()));
-						
+				
 				IToken token = new Token(new TextAttribute(color, null, SWT.BOLD));
 				
 				updateRules(token);
@@ -160,7 +167,7 @@ public class KeywordScanner extends RuleBasedScanner {
 		// create the respective WordRule
 		WordRule keywordRule = new WordRule(new WordDetector(), getDefaultToken(),
 				!isCaseSensitive());
-				
+		
 		// add keywords
 		for (Keyword currentKeyword : keywords) {
 			keywordRule.addWord(currentKeyword.getKeyword(), token);
@@ -191,6 +198,8 @@ public class KeywordScanner extends RuleBasedScanner {
 		this.provider = provider;
 		
 		updateRules(getToken());
+		
+		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_REMOVED);
 	}
 	
 	/**
@@ -204,6 +213,9 @@ public class KeywordScanner extends RuleBasedScanner {
 		provider.setKeywordList(list);
 		
 		setKeywordProvider(provider);
+		
+		// notify listeners about change
+		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_CHANGED);
 	}
 	
 	/**
@@ -261,5 +273,62 @@ public class KeywordScanner extends RuleBasedScanner {
 	 */
 	public IToken getDefaultToken() {
 		return defaultToken;
+	}
+	
+	/**
+	 * Checks whether this <code>KeywordScanner</code> contains the given
+	 * <code>Keyword</code>
+	 * 
+	 * @param keyword
+	 *            The <code>Keyword</code> to search for
+	 */
+	public boolean contains(Keyword keyword) {
+		return getKeywordProvider().getKeywordList().contains(keyword);
+	}
+	
+	/**
+	 * Checks whether this <code>KeywordScanner</code> contains a
+	 * <code>Keyword</code> matching the given word
+	 * 
+	 * @param word
+	 *            The word to search for
+	 */
+	public boolean contains(String word) {
+		return getKeywordProvider().getKeywordList().getKeyword(word) != null;
+	}
+	
+	/**
+	 * Notifies all <code>IKeywordListChangeListeners</code>
+	 * 
+	 * @param ctx
+	 *            The context of the change
+	 */
+	protected void notifyKeywordListChangeListeners(String ctx) {
+		for (IKeywordListChangeListener listener : keywordListListeners) {
+			listener.keywordListChanged(ctx);
+		}
+	}
+	
+	/**
+	 * Adds the given <code>IKeywordListChangeListener</code> if it is not
+	 * already registered
+	 * 
+	 * @param listener
+	 *            The listener to add
+	 */
+	public void addKeywordListChangeListener(IKeywordListChangeListener listener) {
+		if (!keywordListListeners.contains(listener)) {
+			keywordListListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given <code>IKeywordListChangeListener</code>
+	 * 
+	 * @param listener
+	 *            The listener to remove
+	 */
+	public void removeKeywordListChangeListener(IKeywordListChangeListener listener) {
+		keywordListListeners.remove(listener);
 	}
 }

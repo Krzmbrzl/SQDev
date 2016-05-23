@@ -42,7 +42,7 @@ public class CharacterPair {
 		
 		this.setPair(pair);
 		
-		if(definedPairs == null) {
+		if (definedPairs == null) {
 			definedPairs = new ArrayList<CharacterPair>();
 		}
 		
@@ -104,5 +104,10 @@ public class CharacterPair {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		return "'" + getOpener() + "' + '" + getCloser() + "'";
 	}
 }

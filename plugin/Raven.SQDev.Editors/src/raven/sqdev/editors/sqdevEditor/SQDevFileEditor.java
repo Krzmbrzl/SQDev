@@ -1,5 +1,6 @@
 package raven.sqdev.editors.sqdevEditor;
 
+import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicPartitionScanner;
 import raven.sqdev.infoCollection.base.Keyword;
@@ -11,7 +12,7 @@ import raven.sqdev.sqdevFile.ESQDevFileAttribute;
  * An editor for the SQDev file type
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQDevFileEditor extends BasicCodeEditor {
 	
@@ -23,8 +24,11 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		// remove the multi-line comment
 		getBasicProvider().getPartitionScanner()
 				.removeRule(BasicPartitionScanner.MULTILINE_COMMENT_RULE);
-				
-		getBasicConfiguration().getKeywordScanner().makeCaseSensitive(false);
+		
+		getBasicConfiguration()
+				.getKeywordScanner(
+						SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY)
+				.makeCaseSensitive(false);
 	}
 	
 	/**
@@ -50,7 +54,10 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		}
 		
 		// set the keywords
-		getBasicConfiguration().getKeywordScanner().setKeywords(keywordList);
+		getBasicConfiguration()
+				.getKeywordScanner(
+						SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY)
+				.setKeywords(keywordList);
 	}
 	
 }

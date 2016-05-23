@@ -1,6 +1,10 @@
 package raven.sqdev.editors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import raven.sqdev.infoCollection.base.KeywordList;
+import raven.sqdev.interfaces.IKeywordListChangeListener;
 import raven.sqdev.interfaces.IKeywordProvider;
 
 /**
@@ -8,7 +12,7 @@ import raven.sqdev.interfaces.IKeywordProvider;
  * syntax highlighting
  * 
  * @author Raven
- * 		
+ * 
  */
 public class BasicKeywordProvider implements IKeywordProvider {
 	
@@ -28,9 +32,15 @@ public class BasicKeywordProvider implements IKeywordProvider {
 	 */
 	protected boolean isSorting;
 	
+	/**
+	 * A list of <code>IKeywordListChangeListeners</code>
+	 */
+	protected List<IKeywordListChangeListener> keywordListListeners;
+	
 	public BasicKeywordProvider() {
 		keywordsAreSorted = false;
 		isSorting = false;
+		keywordListListeners = new ArrayList<IKeywordListChangeListener>();
 	}
 	
 	@Override
@@ -41,6 +51,24 @@ public class BasicKeywordProvider implements IKeywordProvider {
 	@Override
 	public void setKeywordList(KeywordList keywords) {
 		this.keywords = keywords;
+		
+		// notify listeners
+		for (IKeywordListChangeListener listener : keywordListListeners) {
+			listener.keywordListChanged(IKeywordListChangeListener.CTX_LIST_CHANGED);
+		}
+	}
+	
+	@Override
+	public void addKeywordListChangeListener(IKeywordListChangeListener listener) {
+		if (!keywordListListeners.contains(listener)) {
+			keywordListListeners.add(listener);
+		}
+	}
+	
+	@Override
+	public void removeKeywordListChangeListener(IKeywordListChangeListener listener) {
+		keywordListListeners.remove(listener);
+		
 	}
 	
 }
