@@ -122,6 +122,7 @@ public abstract class BasicCodeEditor extends TextEditor {
 		return viewer;
 	}
 	
+	@Override
 	protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
 		super.configureSourceViewerDecorationSupport(support);
 		

@@ -51,13 +51,13 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 				"The name of the first command in the list in the BIKI that should be"
 						+ " processed. If there is no urgent need do not change this value!",
 				keywordGroup));
-				
+		
 		addPreferenceEditor(new ValueSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND, "&Last command:",
 				"The name of the last command in the list in the BIKI that should be"
 						+ " processed. If there is no urgent need do not change this value!",
 				keywordGroup));
-				
+		
 		// SQF keyword collection
 		updateButton = new Button(createContainer(), SWT.PUSH);
 		updateButton.setToolTipText(
@@ -82,6 +82,26 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 				updateKeywords();
 			}
 		});
+		
+		Button resetButton = new Button(createContainer(), SWT.PUSH);
+		resetButton.setText("Reset Keywords");
+		
+		if (ResourceManager.getManager().isOnBackup("SQFKeywords.txt")) {
+			resetButton.setEnabled(false);
+		} else {
+			resetButton.setToolTipText("Resets the keywords to the backup version");
+			
+			resetButton.addMouseListener(new MouseAdapter() {
+				
+				@Override
+				public void mouseUp(MouseEvent e) {
+					// backup keywords
+					ResourceManager.getManager().switchToBackup("SQFKeywords.txt");
+					
+					resetButton.setEnabled(false);
+				}
+			});
+		}
 	}
 	
 	/**
@@ -100,7 +120,7 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 									+ "Scripting_Commands_Arma_3"),
 							SQDevPreferenceUtil.getFirstCommand(),
 							SQDevPreferenceUtil.getLastCommand()).collect(monitor);
-							
+					
 					if (monitor.isCanceled()) {
 						// ask whether to save the list
 						SQDevInfobox info = new SQDevInfobox(
@@ -109,7 +129,7 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 										+ " (This will override the current keword list and may"
 										+ " leed to an incomplete list)",
 								SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-								
+						
 						if (info.open() != SWT.YES) {
 							// don't save
 							return Status.OK_STATUS;
@@ -128,7 +148,7 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 							"In order for the new keywords to take effect"
 									+ " you have to restart all respective editors",
 							SWT.ICON_INFORMATION);
-							
+					
 					info.open();
 					
 				} catch (IOException | SQDevException e) {
