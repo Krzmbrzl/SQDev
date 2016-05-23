@@ -8,14 +8,13 @@ import raven.sqdev.constants.TextConstants;
  * A class containing various static text functions
  * 
  * @author Raven
- * 		
+ * 
  */
 public class TextUtils {
 	/**
-	 * An array containing all special characters that are allowed in project
-	 * names
+	 * An array containing all special characters that are allowed in file names
 	 */
-	public static final char[] ALLOWED_SPECIAL_CHARACTER_PROJECTNAME = { '.', ' ', '_' };
+	public static final char[] ALLOWED_SPECIAL_CHARACTER_FILENAME = { '.', '_' };
 	
 	/**
 	 * Counts the occurence of a String in another String
@@ -53,33 +52,7 @@ public class TextUtils {
 	 *            name. May be <code>null</code>
 	 */
 	public static boolean isValidName(String name, ArrayList<Character> allowedChars) {
-		if (name.isEmpty() || name == null) {
-			// an empty name can't be valid
-			return false;
-		}
-		
-		if (allowedChars == null) {
-			// initialize empty list
-			allowedChars = new ArrayList<Character>();
-		}
-		
-		char[] chars = name.toCharArray();
-		
-		if (!Character.isLetter(chars[0])) {
-			// name has to start with a letter
-			return false;
-		}
-		
-		for (char currentChar : chars) {
-			if (!Character.isLetterOrDigit(currentChar)) {
-				// check if special character is allowed
-				if (!allowedChars.contains((Character) currentChar)) {
-					return false;
-				}
-			}
-		}
-		
-		return true;
+		return whyIsInvalidName(name, allowedChars) == null;
 	}
 	
 	/**
@@ -92,12 +65,7 @@ public class TextUtils {
 	 *            name. May be <code>null</code>
 	 * @return The error message explaining why the given name isn't valid.
 	 */
-	public static String whyIsInvalidName(String name, ArrayList<Character> allowedChars) {
-		if (isValidName(name, allowedChars) || name == null) {
-			// if it is a valid name no error message can be found
-			return null;
-		}
-		
+	public static String whyIsInvalidName(String name, ArrayList<Character> allowedChars) {		
 		if (name.isEmpty()) {
 			return "A name must not be empty!";
 		}
@@ -118,12 +86,16 @@ public class TextUtils {
 			if (!Character.isLetterOrDigit(currentChar)) {
 				// check if special character is allowed
 				if (!allowedChars.contains((Character) currentChar)) {
+					if(currentChar == ' ') {
+						return "Blanks are not allowed in this name!";
+					}
+					
 					return "Invalid character '" + currentChar + "' in \"" + name + "\"!";
 				}
 			}
 		}
 		
-		// one of the above has to have matched
+		// all good with the given name
 		return null;
 	}
 	
@@ -134,10 +106,10 @@ public class TextUtils {
 	 *            The name to check
 	 * @see #isValidName
 	 */
-	public static boolean isValidProjectName(String name) {
+	public static boolean isValidFileName(String name) {
 		ArrayList<Character> allowedChars = new ArrayList<Character>();
 		
-		for (char currentChar : ALLOWED_SPECIAL_CHARACTER_PROJECTNAME) {
+		for (char currentChar : ALLOWED_SPECIAL_CHARACTER_FILENAME) {
 			allowedChars.add((Character) currentChar);
 		}
 		
@@ -151,10 +123,10 @@ public class TextUtils {
 	 *            The name to check (mustn't be valid)
 	 * @see #whyIsInvalidName
 	 */
-	public static String whyIsInvalidProjectName(String name) {
+	public static String whyIsInvalidFileName(String name) {
 		ArrayList<Character> allowedChars = new ArrayList<Character>();
 		
-		for (char currentChar : ALLOWED_SPECIAL_CHARACTER_PROJECTNAME) {
+		for (char currentChar : ALLOWED_SPECIAL_CHARACTER_FILENAME) {
 			allowedChars.add((Character) currentChar);
 		}
 		
