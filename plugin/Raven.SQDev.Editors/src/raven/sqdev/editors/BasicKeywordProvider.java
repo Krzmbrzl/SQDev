@@ -3,6 +3,7 @@ package raven.sqdev.editors;
 import java.util.ArrayList;
 import java.util.List;
 
+import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.interfaces.IKeywordListChangeListener;
 import raven.sqdev.interfaces.IKeywordProvider;
@@ -45,17 +46,18 @@ public class BasicKeywordProvider implements IKeywordProvider {
 	
 	@Override
 	public KeywordList getKeywordList() {
-		return (keywords == null) ? new KeywordList() : keywords;
+		if (keywords == null) {
+			keywords = new KeywordList();
+		}
+		
+		return keywords;
 	}
 	
 	@Override
 	public void setKeywordList(KeywordList keywords) {
 		this.keywords = keywords;
 		
-		// notify listeners
-		for (IKeywordListChangeListener listener : keywordListListeners) {
-			listener.keywordListChanged(IKeywordListChangeListener.CTX_LIST_CHANGED);
-		}
+		notifyKeywordListChangeListener();
 	}
 	
 	@Override
@@ -69,6 +71,32 @@ public class BasicKeywordProvider implements IKeywordProvider {
 	public void removeKeywordListChangeListener(IKeywordListChangeListener listener) {
 		keywordListListeners.remove(listener);
 		
+	}
+	
+	@Override
+	public void addKeyword(Keyword keyword) {
+		if (!getKeywordList().contains(keyword)) {
+			getKeywordList().addKeyword(keyword);
+			
+			notifyKeywordListChangeListener();
+		}
+	}
+	
+	@Override
+	public void removeKeyword(Keyword keyword) {
+		getKeywordList().removeKeyword(keyword);
+		
+		notifyKeywordListChangeListener();
+	}
+	
+	/**
+	 * Notifies all registered listeners that the keyword list has changed
+	 */
+	private void notifyKeywordListChangeListener() {		
+		// notify listeners
+		for (IKeywordListChangeListener listener : keywordListListeners) {
+			listener.keywordListChanged(IKeywordListChangeListener.CTX_LIST_CHANGED);
+		}
 	}
 	
 }

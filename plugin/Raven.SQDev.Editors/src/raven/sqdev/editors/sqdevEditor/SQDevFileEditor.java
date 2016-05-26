@@ -27,7 +27,7 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		
 		getBasicConfiguration()
 				.getKeywordScanner(
-						SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY)
+						SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)
 				.makeCaseSensitive(false);
 	}
 	
@@ -56,7 +56,7 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		// set the keywords
 		getBasicConfiguration()
 				.getKeywordScanner(
-						SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY)
+						SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)
 				.setKeywords(keywordList);
 	}
 	

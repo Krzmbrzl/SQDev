@@ -6,6 +6,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
@@ -25,6 +26,8 @@ import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.misc.CharacterPair;
+import raven.sqdev.misc.MultiPreferenceStore;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 /***
  * A default implementation of a code editor. This contains the autoCompletion
@@ -64,7 +67,7 @@ public abstract class BasicCodeEditor extends TextEditor {
 	/**
 	 * The parse tree representing the input of this editor
 	 */
-	protected ParseTree syntaxTree;
+	protected ParseTree parseTree;
 	
 	/**
 	 * The document provider of this editor
@@ -198,9 +201,19 @@ public abstract class BasicCodeEditor extends TextEditor {
 		
 		
 		if (fSourceViewerDecorationSupport != null) {
-			// set the plugin's shared preference store instead of the default
-			// one
-			// fSourceViewerDecorationSupport.install(SQDevPreferenceUtil.getPreferenceStore());
+			// combine the SQDev PreferenceStore with the editor's one
+			
+			// use the SQDev preferenceStore as the baseStore
+			MultiPreferenceStore multiStore = new MultiPreferenceStore(
+					SQDevPreferenceUtil.getPreferenceStore());
+			
+			// add the editor's preferenceStore if available
+			IPreferenceStore editorStore = this.getPreferenceStore();
+			if (editorStore != null) {
+				multiStore.addPreferenceStore(editorStore);
+			}
+			
+			fSourceViewerDecorationSupport.install(multiStore);
 		}
 		
 		// parse the input for the first time
@@ -221,6 +234,8 @@ public abstract class BasicCodeEditor extends TextEditor {
 				((ISourceViewerExtension2) getSourceViewer()).unconfigure();
 				getSourceViewer().configure(getBasicConfiguration());
 			}
+			
+			System.out.println("Updated");
 		}
 	}
 	
@@ -257,11 +272,12 @@ public abstract class BasicCodeEditor extends TextEditor {
 	 *         set so far
 	 */
 	public ParseTree getParseTree() {
-		return syntaxTree;
+		return parseTree;
 	}
 	
 	/**
-	 * Parses the input of this editor and updates the parseTree automatically
+	 * Parses the input of this editor, updates the parseTree and sends it to
+	 * the {@link #processParseTree(ParseTree)} method automatically
 	 * 
 	 * @return <code>True</code> if the parsing could be done successfully and
 	 *         <code>False</code> otherwise
@@ -288,14 +304,25 @@ public abstract class BasicCodeEditor extends TextEditor {
 		if (output == null) {
 			return false;
 		} else {
-			syntaxTree = output;
+			parseTree = output;
+			
+			processParseTree(parseTree);
 			
 			return true;
 		}
 	}
 	
 	/**
-	 * Parses the input of this editor in order to set the {@link #syntaxTree}
+	 * Processes whatever needs to be processed when the ParseTree has cahnged
+	 * 
+	 * @param tree
+	 *            The generated tree
+	 */
+	protected void processParseTree(ParseTree parseTree) {
+	}
+	
+	/**
+	 * Parses the input of this editor in order to set the {@link #parseTree}
 	 * for this editor. <br>
 	 * It is recommended to do the parsing in an extra thread
 	 * 

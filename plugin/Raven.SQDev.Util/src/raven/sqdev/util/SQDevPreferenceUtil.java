@@ -225,7 +225,7 @@ public class SQDevPreferenceUtil {
 	 */
 	public static Color getSyntaxHighlightingColor() {
 		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY)));
+				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)));
 	}
 	
 	/**

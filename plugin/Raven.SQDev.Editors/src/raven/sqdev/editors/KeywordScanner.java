@@ -23,21 +23,16 @@ import raven.sqdev.util.ColorUtils;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
- * A scanner that scans for keywords and colors them with the given color
+ * A scanner that scans for keywords and colors them with the given color.<br>
+ * <br>
+ * <b>Note:</b> This <code>KeywordScanner</code> can only handle one set of
+ * keywords that are all colored in the same way. If you need support for
+ * multiple catgeories see {@link MultiKeywordScanner}
  * 
  * @author Raven
  * 
  */
-public class KeywordScanner extends RuleBasedScanner {
-	
-	/**
-	 * A token that indicates an unrecognized word meaning any word, that is not
-	 * part of the keywords the respective Keywordcanner works on.<br>
-	 * These words are not colored in any way.
-	 */
-	public static IToken UNRECOGNIZED_WORD_TOKEN = new Token(
-			new TextAttribute(null, null, SWT.NULL));
-	
+public class KeywordScanner extends RuleBasedScanner implements IKeywordListChangeListener {
 	/**
 	 * The preferenceKey for the color of the token
 	 */
@@ -74,6 +69,12 @@ public class KeywordScanner extends RuleBasedScanner {
 	protected List<IKeywordListChangeListener> keywordListListeners;
 	
 	/**
+	 * Indicates whether this scanner is part of a
+	 * <code>MultiKeywordScanner</code>
+	 */
+	protected boolean isPartOfMultiScanner;
+	
+	/**
 	 * Creates an instance of this scanner
 	 * 
 	 * @param provider
@@ -101,14 +102,17 @@ public class KeywordScanner extends RuleBasedScanner {
 		this.provider = provider;
 		this.editor = editor;
 		this.caseSensitive = caseSensitive;
-		defaultToken = UNRECOGNIZED_WORD_TOKEN;
+		defaultToken = Token.UNDEFINED;
 		keywordListListeners = new ArrayList<IKeywordListChangeListener>();
 		
 		Color color = new Color(Display.getCurrent(), ColorUtils.decodeRGB(strColor));
 		
 		IToken keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));
 		
-		updateRules(keywordToken);
+		updateRules(keywordToken, provider.getKeywordList().getKeywords().size() > 0);
+		
+		// add this as a listener for the keyword provider
+		this.provider.addKeywordListChangeListener(this);
 	}
 	
 	/**
@@ -146,7 +150,7 @@ public class KeywordScanner extends RuleBasedScanner {
 				
 				IToken token = new Token(new TextAttribute(color, null, SWT.BOLD));
 				
-				updateRules(token);
+				updateRules(token, true);
 			}
 		}
 	}
@@ -158,8 +162,11 @@ public class KeywordScanner extends RuleBasedScanner {
 	 * 
 	 * @param token
 	 *            The token the rule should use
+	 * 
+	 * @param updateEditor
+	 *            Indicates if the editor shoukd be updated
 	 */
-	protected void updateRules(IToken token) {
+	protected void updateRules(IToken token, boolean updateEditor) {
 		ArrayList<Keyword> keywordList = provider.getKeywordList().getKeywords();
 		
 		Keyword[] keywords = keywordList.toArray(new Keyword[keywordList.size()]);
@@ -177,7 +184,25 @@ public class KeywordScanner extends RuleBasedScanner {
 		
 		this.setRules(rules);
 		
-		editor.update();
+		if (!isPartOfMultiScanner && updateEditor) {
+			// only update editor if this scanner is autonomous
+			editor.update();
+		}
+	}
+	
+	/**
+	 * Gets the rule for this <code>KeywordScanner</code> that describes which
+	 * keywords to color in the respective color of this scanner
+	 * 
+	 * @return The respective <code>IRule</code> or <code>null</code> if no such
+	 *         rule exists
+	 */
+	public IRule getRule() {
+		if (fRules == null || fRules.length == 0) {
+			return null;
+		}
+		
+		return fRules[0];
 	}
 	
 	/**
@@ -197,7 +222,7 @@ public class KeywordScanner extends RuleBasedScanner {
 	public void setKeywordProvider(IKeywordProvider provider) {
 		this.provider = provider;
 		
-		updateRules(getToken());
+		updateRules(getToken(), true);
 		
 		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_REMOVED);
 	}
@@ -222,7 +247,11 @@ public class KeywordScanner extends RuleBasedScanner {
 	 * Gets the token of this scanner
 	 */
 	public IToken getToken() {
-		return (token != null) ? token : new Token(new TextAttribute(getColor(), null, SWT.BOLD));
+		if (token == null) {
+			token = new Token(new TextAttribute(getColor(), null, SWT.BOLD));
+		}
+		
+		return token;
 	}
 	
 	/**
@@ -243,7 +272,7 @@ public class KeywordScanner extends RuleBasedScanner {
 		caseSensitive = sensitive;
 		
 		// apply changes
-		updateRules(getToken());
+		updateRules(getToken(), true);
 	}
 	
 	/**
@@ -330,5 +359,18 @@ public class KeywordScanner extends RuleBasedScanner {
 	 */
 	public void removeKeywordListChangeListener(IKeywordListChangeListener listener) {
 		keywordListListeners.remove(listener);
+	}
+	
+	@Override
+	public void keywordListChanged(String ctx) {
+		if (ctx.equals(IKeywordListChangeListener.CTX_LIST_CHANGED)) {
+			// update rules
+			IToken token = new Token(new TextAttribute(getColor(), null, SWT.BOLD));
+			
+			updateRules(token, true);
+		}
+		
+		// forward event
+		notifyKeywordListChangeListeners(ctx);
 	}
 }

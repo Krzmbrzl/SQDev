@@ -60,9 +60,13 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		// enable autoComplete
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY, true);
 		
-		// set syntax highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY,
+		// set keyword highlighting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.KEYWORD));
+		
+		// set variable highlighting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_VARIABLEHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.VARIABLE));
 		
 		// set parsing interval
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, 2);

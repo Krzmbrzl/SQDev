@@ -50,7 +50,13 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	 * They are sorted according to the PreferenceKey they use for the color of
 	 * their keyword highlighting
 	 */
-	protected Map<String, KeywordScanner> configuredKeywordScanner;
+	protected Map<String, KeywordScanner> configuredKeywordScanners;
+	
+	/**
+	 * The <code>MultiKeywordScanner</code> that will be applied for this
+	 * <code>SourceViewerConfiguration</code>
+	 */
+	protected MultiKeywordScanner multiScanner;
 	
 	/**
 	 * The editor this SourceViewer is applied on
@@ -66,7 +72,8 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 		this.setColorManager(manager);
 		this.editor = editor;
 		
-		this.configuredKeywordScanner = new HashMap<String, KeywordScanner>();
+		this.configuredKeywordScanners = new HashMap<String, KeywordScanner>();
+		this.multiScanner = new MultiKeywordScanner(editor);
 		
 		// register to get notified about preference changes
 		SQDevPreferenceUtil.getPreferenceStore().addPropertyChangeListener(this);
@@ -96,7 +103,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	public List<Keyword> getAllConfiguredKeywords() {
 		ArrayList<Keyword> keywordList = new ArrayList<Keyword>();
 		
-		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanner.entrySet()
+		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanners.entrySet()
 				.iterator();
 		
 		while (iterator.hasNext()) {
@@ -117,7 +124,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	public List<Keyword> getConfiguredKeywordsFor(char c) {
 		ArrayList<Keyword> keywordList = new ArrayList<Keyword>();
 		
-		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanner.entrySet()
+		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanners.entrySet()
 				.iterator();
 		
 		while (iterator.hasNext()) {
@@ -139,16 +146,19 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	 *         key. If none has existed yet this will be a newly created one
 	 */
 	public KeywordScanner getKeywordScanner(String colorPreferenceKey) {
-		if (!configuredKeywordScanner.containsKey(colorPreferenceKey)) {
+		if (!configuredKeywordScanners.containsKey(colorPreferenceKey)) {
 			// create new scanner
 			KeywordScanner scanner = new KeywordScanner(new BasicKeywordProvider(),
 					colorPreferenceKey, this.editor);
 			
-			configuredKeywordScanner.put(colorPreferenceKey, scanner);
+			configuredKeywordScanners.put(colorPreferenceKey, scanner);
+			
+			// add to multiScanner
+			multiScanner.addScanner(scanner);
 		}
 		
 		// return scanner
-		return configuredKeywordScanner.get(colorPreferenceKey);
+		return configuredKeywordScanners.get(colorPreferenceKey);
 	}
 	
 	/**
@@ -161,7 +171,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	 *         none could be found
 	 */
 	public KeywordScanner getKeywordScannerContaining(Keyword keyword) {
-		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanner.entrySet()
+		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanners.entrySet()
 				.iterator();
 		
 		while (iterator.hasNext()) {
@@ -185,7 +195,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	 *         none could be found
 	 */
 	public KeywordScanner getKeywordScannerContaining(String word) {
-		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanner.entrySet()
+		Iterator<Entry<String, KeywordScanner>> iterator = configuredKeywordScanners.entrySet()
 				.iterator();
 		
 		while (iterator.hasNext()) {
@@ -204,15 +214,9 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 		PresentationReconciler reconciler = new PresentationReconciler();
 		
 		// syntax highlighting for keywords
-		Iterator<Entry<String, KeywordScanner>> mapIterator = configuredKeywordScanner.entrySet()
-				.iterator();
-		
-		while (mapIterator.hasNext()) {
-			DefaultDamagerRepairer dr_Default = new DefaultDamagerRepairer(
-					mapIterator.next().getValue());
-			reconciler.setDamager(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
-			reconciler.setRepairer(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
-		}
+		DefaultDamagerRepairer dr_Default = new DefaultDamagerRepairer(multiScanner);
+		reconciler.setDamager(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
+		reconciler.setRepairer(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
 		
 		// colorize strings
 		NonRuleBasedDamagerRepairer ndr_String = new NonRuleBasedDamagerRepairer(
@@ -268,9 +272,9 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 				break;
 			
 			default:
-				if (configuredKeywordScanner.containsKey(event.getProperty())) {
+				if (configuredKeywordScanners.containsKey(event.getProperty())) {
 					// configure respective keyword scanner
-					configuredKeywordScanner.get(event.getProperty()).syncToPropertyChange(event);
+					configuredKeywordScanners.get(event.getProperty()).syncToPropertyChange(event);
 				} else {
 					// don't update editor
 					return;

@@ -65,11 +65,7 @@ public enum EFileType {
 			content += "\n * Description:\n * Not given\n * ";
 			content += "\n * Parameter(s):";
 			content += "\n * 0: None <Any>\n * ";
-<<<<<<< HEAD
 			content += "\n * Return Value:\n * None <Any>\n * \n */\n\n";
-=======
-			content += "\n * Return Value:\n * None <Any>\n * \n */";
->>>>>>> master
 			
 			return content;
 		}

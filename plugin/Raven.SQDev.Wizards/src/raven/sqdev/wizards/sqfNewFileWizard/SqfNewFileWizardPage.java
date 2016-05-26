@@ -18,11 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-<<<<<<< HEAD
 import raven.sqdev.misc.TextUtils;
-=======
-import raven.sqdev.util.TextUtils;
->>>>>>> master
 
 /**
  * The "New" wizard page allows setting the container for the new file as well

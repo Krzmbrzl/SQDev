@@ -7,6 +7,7 @@ import java.util.List;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -27,6 +28,7 @@ import raven.sqdev.editors.BasicErrorListener;
 import raven.sqdev.editors.BasicPartitionScanner;
 import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.editors.sqfeditor.parsing.SQFLexer;
+import raven.sqdev.editors.sqfeditor.parsing.SQFParseListener;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
@@ -34,6 +36,7 @@ import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.interfaces.IKeywordListChangeListener;
+import raven.sqdev.interfaces.IKeywordProvider;
 import raven.sqdev.misc.ListUtils;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
@@ -75,7 +78,7 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 		
 		// get keywordScanner
 		KeywordScanner keywordScanner = getBasicConfiguration().getKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY);
+				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY);
 		
 		provider = new SQFKeywordProvider();
 		
@@ -212,6 +215,30 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 		parser.addErrorListener(listener);
 		
 		return parser.code();
+	}
+	
+	@Override
+	public void processParseTree(ParseTree parseTree) {
+		ParseTreeWalker walker = new ParseTreeWalker();
+		
+		IKeywordProvider provider = getBasicConfiguration()
+				.getKeywordScanner(
+						SQDevPreferenceConstants.SQDEV_EDITOR_VARIABLEHIGHLIGHTING_COLOR_KEY)
+				.getKeywordProvider();
+		
+		SQFParseListener listener;
+		if (SQFParseListener.instanceExists(provider)) {
+			listener = SQFParseListener.getInstance(provider);
+		} else {
+			listener = new SQFParseListener(provider, this);
+		}
+		
+		walker.walk(listener, parseTree);
+		
+		if (listener.updated) {
+			// update editor
+			update();
+		}
 	}
 	
 	/**

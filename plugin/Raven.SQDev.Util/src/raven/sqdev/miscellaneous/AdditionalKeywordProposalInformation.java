@@ -69,10 +69,13 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 					overviewContent += command.getDescription() + "\n\n";
 				}
 				
-				// syntax
-				overviewContent += SQDev.BOLD.getOpener() + "Possible syntax: "
-						+ SQDev.BOLD.getCloser()
-						+ command.getRawSytaxes().get(command.getRawSytaxes().size() - 1) + "\n\n";
+				if (command.hasRawSyntax()) {
+					// syntax
+					overviewContent += SQDev.BOLD.getOpener() + "Possible syntax: "
+							+ SQDev.BOLD.getCloser()
+							+ command.getRawSytaxes().get(command.getRawSytaxes().size() - 1)
+							+ "\n\n";
+				}
 				
 				// locality
 				if (command.isArgumentLocalityDefined()) {
@@ -86,9 +89,11 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 							+ SQDev.BOLD.getCloser() + command.getEffectLocality() + "\n\n";
 				}
 				
-				// return value
-				overviewContent += SQDev.BOLD.getOpener() + "Return Value: "
-						+ SQDev.BOLD.getCloser() + command.getReturnType();
+				if (command.hasReturnValue()) {
+					// return value
+					overviewContent += SQDev.BOLD.getOpener() + "Return Value: "
+							+ SQDev.BOLD.getCloser() + command.getReturnType();
+				}
 				
 				if (!overviewContent.isEmpty()) {
 					categories.add(0,
