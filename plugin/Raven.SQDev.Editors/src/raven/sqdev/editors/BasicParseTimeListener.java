@@ -34,7 +34,11 @@ public class BasicParseTimeListener implements VerifyKeyListener {
 		
 		@Override
 		public void run() {
-			editor.parseInput();
+			try {
+				editor.parseInput();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	};
 	

@@ -70,14 +70,19 @@ public class SQDevPreferenceConstants {
 	public static final String SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY = "raven.sqdev.currentLineHighlightingColor";
 	
 	/**
-	 * The preferences indicating the color of the variable highlighting
+	 * The preferences indicating the color of the keyword highlighting
 	 */
 	public static final String SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY = "raven.sqdev.keywordHighlightingColor";
 	
 	/**
-	 * the preference indicating the color of the variablehighlighting
+	 * The preference indicating the color of the local variable highlighting
 	 */
-	public static final String SQDEV_EDITOR_VARIABLEHIGHLIGHTING_COLOR_KEY = "raven.sqdev.variableHighlightingColor";
+	public static final String SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY = "raven.sqdev.localVariableHighlightingColor";
+	
+	/**
+	 * The preference indicating the color of the global variable highlighting
+	 */
+	public static final String SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY = "raven.sqdev.globalVariableHighlightingColor";
 	
 	/**
 	 * The preference indicating the delay before parsing after the user typed

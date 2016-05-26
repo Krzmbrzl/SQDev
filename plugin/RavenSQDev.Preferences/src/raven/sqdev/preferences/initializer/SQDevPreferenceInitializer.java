@@ -64,9 +64,13 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.KEYWORD));
 		
-		// set variable highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_VARIABLEHIGHLIGHTING_COLOR_KEY,
-				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.VARIABLE));
+		// set local variable highlighting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.LOCAL_VARIABLE));
+		
+		// set global variable highlighting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.GLOBAL_VARIABLE));
 		
 		// set parsing interval
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, 2);

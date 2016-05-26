@@ -70,11 +70,17 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				colors);
 		addPreferenceEditor(keywordHighlightingColorEditor);
 		
-		ColorSQDevPreferenceEditor variableHighlightingEditor = new ColorSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_EDITOR_VARIABLEHIGHLIGHTING_COLOR_KEY,
-				"&Variable highlighting:", "Defines the color in which variables get highlighted",
-				colors);
-		addPreferenceEditor(variableHighlightingEditor);
+		ColorSQDevPreferenceEditor localVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				"&Local variable highlighting:",
+				"Defines the color in which local variables are highlighted", colors);
+		addPreferenceEditor(localVariableHighlightingEditor);
+		
+		ColorSQDevPreferenceEditor globalVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				"&Global variable highlighting:",
+				"Defines the color in which global variables are highlighted", colors);
+		addPreferenceEditor(globalVariableHighlightingEditor);
 		
 		ColorSQDevPreferenceEditor currentLineHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,

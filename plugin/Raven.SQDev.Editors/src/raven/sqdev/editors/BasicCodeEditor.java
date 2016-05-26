@@ -20,6 +20,7 @@ import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 
@@ -223,20 +224,30 @@ public abstract class BasicCodeEditor extends TextEditor {
 	/**
 	 * Updates the editor. Needed when some changes are made to the way the
 	 * editor content should be displayed or when the behaviour of the editor
-	 * should change
+	 * should change.<br>
+	 * <br>
+	 * <b>Note:</b> This method can be called from any Thread
+	 * 
+	 * @param reconfigureSourceViewer
+	 *            Whether it is necessary to reconfigure the sourceVieweer
 	 */
-	public void update() {
-		if (getSourceViewer() != null) {
-			getSourceViewer().invalidateTextPresentation();
+	public void update(boolean reconfigureSourceViewer) {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			
-			if (getSourceViewer() instanceof ISourceViewerExtension2) {
-				// reconfigure the SourceViewer
-				((ISourceViewerExtension2) getSourceViewer()).unconfigure();
-				getSourceViewer().configure(getBasicConfiguration());
+			@Override
+			public void run() {
+				if (getSourceViewer() != null) {
+					getSourceViewer().invalidateTextPresentation();
+					
+					if ((getSourceViewer() instanceof ISourceViewerExtension2)
+							&& reconfigureSourceViewer) {
+						// reconfigure the SourceViewer
+						((ISourceViewerExtension2) getSourceViewer()).unconfigure();
+						getSourceViewer().configure(getBasicConfiguration());
+					}
+				}
 			}
-			
-			System.out.println("Updated");
-		}
+		});
 	}
 	
 	/**

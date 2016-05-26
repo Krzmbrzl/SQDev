@@ -19,6 +19,7 @@ import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.interfaces.IKeywordListChangeListener;
 import raven.sqdev.interfaces.IKeywordProvider;
+import raven.sqdev.interfaces.IUpdateListener;
 import raven.sqdev.util.ColorUtils;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
@@ -69,6 +70,11 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	protected List<IKeywordListChangeListener> keywordListListeners;
 	
 	/**
+	 * A list of <code>IUpdateListener</code>
+	 */
+	protected List<IUpdateListener> updateListeners;
+	
+	/**
 	 * Indicates whether this scanner is part of a
 	 * <code>MultiKeywordScanner</code>
 	 */
@@ -104,12 +110,13 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 		this.caseSensitive = caseSensitive;
 		defaultToken = Token.UNDEFINED;
 		keywordListListeners = new ArrayList<IKeywordListChangeListener>();
+		updateListeners = new ArrayList<IUpdateListener>();
 		
 		Color color = new Color(Display.getCurrent(), ColorUtils.decodeRGB(strColor));
 		
-		IToken keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));
+		token = new Token(new TextAttribute(color, null, SWT.BOLD));
 		
-		updateRules(keywordToken, provider.getKeywordList().getKeywords().size() > 0);
+		updateRules(provider.getKeywordList().getKeywords().size() > 0);
 		
 		// add this as a listener for the keyword provider
 		this.provider.addKeywordListChangeListener(this);
@@ -148,25 +155,22 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 				Color color = new Color(Display.getCurrent(),
 						ColorUtils.decodeRGB((String) event.getNewValue()));
 				
-				IToken token = new Token(new TextAttribute(color, null, SWT.BOLD));
+				token = new Token(new TextAttribute(color, null, SWT.BOLD));
 				
-				updateRules(token, true);
+				updateRules(true);
 			}
 		}
 	}
 	
 	/**
 	 * Will update the applied rules for this scanner according to the
-	 * keywordProvider.<br>
+	 * keywordProvider and the {@link #token}.<br>
 	 * Will apply the newly created rule immediately
-	 * 
-	 * @param token
-	 *            The token the rule should use
 	 * 
 	 * @param updateEditor
 	 *            Indicates if the editor shoukd be updated
 	 */
-	protected void updateRules(IToken token, boolean updateEditor) {
+	protected void updateRules(boolean updateEditor) {
 		ArrayList<Keyword> keywordList = provider.getKeywordList().getKeywords();
 		
 		Keyword[] keywords = keywordList.toArray(new Keyword[keywordList.size()]);
@@ -186,8 +190,10 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 		
 		if (!isPartOfMultiScanner && updateEditor) {
 			// only update editor if this scanner is autonomous
-			editor.update();
+			editor.update(false);
 		}
+		
+		notifyUpdateListener();
 	}
 	
 	/**
@@ -222,7 +228,7 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	public void setKeywordProvider(IKeywordProvider provider) {
 		this.provider = provider;
 		
-		updateRules(getToken(), true);
+		updateRules(true);
 		
 		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_REMOVED);
 	}
@@ -272,7 +278,7 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 		caseSensitive = sensitive;
 		
 		// apply changes
-		updateRules(getToken(), true);
+		updateRules(true);
 	}
 	
 	/**
@@ -339,6 +345,15 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	}
 	
 	/**
+	 * Notifies all <code>IUpdateListeners</code>
+	 */
+	protected void notifyUpdateListener() {
+		for (IUpdateListener listener : updateListeners) {
+			listener.updated();
+		}
+	}
+	
+	/**
 	 * Adds the given <code>IKeywordListChangeListener</code> if it is not
 	 * already registered
 	 * 
@@ -361,13 +376,34 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 		keywordListListeners.remove(listener);
 	}
 	
+	/**
+	 * Adds the given listener if it is not already added
+	 * 
+	 * @param listener
+	 *            The <code>IUpdateListener</code> to add
+	 */
+	public void addUpdateListener(IUpdateListener listener) {
+		if (!updateListeners.contains(listener)) {
+			updateListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given listener
+	 * 
+	 * @param listener
+	 *            The <code>IUpdateListener</code> to remove
+	 */
+	public void removeUpdateListener(IUpdateListener listener) {
+		updateListeners.remove(listener);
+	}
+	
 	@Override
 	public void keywordListChanged(String ctx) {
 		if (ctx.equals(IKeywordListChangeListener.CTX_LIST_CHANGED)) {
 			// update rules
-			IToken token = new Token(new TextAttribute(getColor(), null, SWT.BOLD));
 			
-			updateRules(token, true);
+			updateRules(true);
 		}
 		
 		// forward event

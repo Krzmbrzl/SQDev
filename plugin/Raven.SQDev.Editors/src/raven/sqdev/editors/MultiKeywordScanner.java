@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.rules.Token;
 
 import raven.sqdev.interfaces.IKeywordListChangeListener;
+import raven.sqdev.interfaces.IUpdateListener;
 
 /**
  * This is a keyword scanner that can handle multiple keyword categories that
@@ -20,7 +24,8 @@ import raven.sqdev.interfaces.IKeywordListChangeListener;
  * @author Raven
  *
  */
-public class MultiKeywordScanner extends RuleBasedScanner implements IKeywordListChangeListener {
+public class MultiKeywordScanner extends RuleBasedScanner
+		implements IKeywordListChangeListener, IUpdateListener {
 	
 	/**
 	 * A list of all <code>KeywordScanners</code> that are combined in this
@@ -93,6 +98,7 @@ public class MultiKeywordScanner extends RuleBasedScanner implements IKeywordLis
 	private void addScanner(KeywordScanner scanner, boolean update) {
 		if (!scannerList.contains(scanner)) {
 			scanner.addKeywordListChangeListener(this);
+			scanner.addUpdateListener(this);
 			
 			scanner.isPartOfMultiScanner = true;
 			
@@ -140,6 +146,7 @@ public class MultiKeywordScanner extends RuleBasedScanner implements IKeywordLis
 	 */
 	private void removeScanner(KeywordScanner scanner, boolean update) {
 		scanner.removeKeywordListChangeListener(this);
+		scanner.removeUpdateListener(this);
 		
 		scannerList.remove(scanner);
 		
@@ -192,13 +199,42 @@ public class MultiKeywordScanner extends RuleBasedScanner implements IKeywordLis
 			rules.add(currentScanner.getRule());
 		}
 		
+		// add one final rule that will match every possible word as an
+		// uncolored token in order to prevent partly highlighted words
+		rules.add(new IRule() {
+			
+			@Override
+			public IToken evaluate(ICharacterScanner scanner) {
+				WordDetector detector = new WordDetector();
+				
+				char c = (char) scanner.read();
+				
+				if (!detector.isWordStart(c)) {
+					scanner.unread();
+					return Token.UNDEFINED;
+				}
+				
+				while (detector.isWordPart(c)) {
+					c = (char) scanner.read();
+				}
+				scanner.unread();
+				
+				return new Token(null);
+			}
+		});
+		
 		setRules(rules.toArray(new IRule[rules.size()]));
 		
-		editor.update();
+		editor.update(false);
 	}
 	
 	@Override
 	public void keywordListChanged(String ctx) {
+		updateRules();
+	}
+	
+	@Override
+	public void updated() {
 		updateRules();
 	}
 }

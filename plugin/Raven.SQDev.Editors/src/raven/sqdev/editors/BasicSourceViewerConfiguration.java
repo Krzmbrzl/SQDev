@@ -143,22 +143,54 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	 *            The preference key for the color of the desired
 	 *            <code>KeywordScanner</code>
 	 * @return The <code>KeywordScanner</code> working for the given preference
-	 *         key. If none has existed yet this will be a newly created one
+	 *         key or <code>null</code> if no such scanne could be found
 	 */
 	public KeywordScanner getKeywordScanner(String colorPreferenceKey) {
+		if (!configuredKeywordScanners.containsKey(colorPreferenceKey)) {
+			return null;
+		}
+		
+		// return scanner
+		return configuredKeywordScanners.get(colorPreferenceKey);
+	}
+	
+	/**
+	 * Creates a <code>KeywordScanner</code> for the given preference key that
+	 * is automatically registered to this
+	 * <code>BasicSourceViewerConfiguration</code> if there is no other scanner
+	 * for that key
+	 * 
+	 * @param colorPreferenceKey
+	 *            The key the scanner should be configured for
+	 * @param caseSensitive
+	 *            Whether or not the created scanner should be case sensitive
+	 */
+	public void createKeywordScanner(String colorPreferenceKey, boolean caseSensitive) {
 		if (!configuredKeywordScanners.containsKey(colorPreferenceKey)) {
 			// create new scanner
 			KeywordScanner scanner = new KeywordScanner(new BasicKeywordProvider(),
 					colorPreferenceKey, this.editor);
+			
+			if (!caseSensitive) {
+				scanner.makeCaseSensitive(caseSensitive);
+			}
 			
 			configuredKeywordScanners.put(colorPreferenceKey, scanner);
 			
 			// add to multiScanner
 			multiScanner.addScanner(scanner);
 		}
-		
-		// return scanner
-		return configuredKeywordScanners.get(colorPreferenceKey);
+	}
+	
+	/**
+	 * Checks if a <code>KeywordScanner</code> for the given preference key does
+	 * exist in this <code>BasicSourceViewerConfiguration</code>
+	 * 
+	 * @param colorPreferenceKey
+	 *            The preference key the scanner has to work on
+	 */
+	public boolean scannerExists(String colorPreferenceKey) {
+		return configuredKeywordScanners.containsKey(colorPreferenceKey);
 	}
 	
 	/**
@@ -281,6 +313,6 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 				}
 		}
 		
-		editor.update();
+		editor.update(true);
 	}
 }

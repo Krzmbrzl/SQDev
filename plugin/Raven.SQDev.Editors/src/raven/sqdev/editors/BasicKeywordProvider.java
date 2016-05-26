@@ -92,8 +92,8 @@ public class BasicKeywordProvider implements IKeywordProvider {
 	/**
 	 * Notifies all registered listeners that the keyword list has changed
 	 */
-	private void notifyKeywordListChangeListener() {		
-		// notify listeners
+	private void notifyKeywordListChangeListener() {
+		// notify listeners_
 		for (IKeywordListChangeListener listener : keywordListListeners) {
 			listener.keywordListChanged(IKeywordListChangeListener.CTX_LIST_CHANGED);
 		}
