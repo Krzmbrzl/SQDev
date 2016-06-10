@@ -17,6 +17,13 @@
             id="raven.sqdev.editors.sqdevfileeditor"
             name="SQDevFileEditor">
       </editor>
+      <editor
+            class="raven.sqdev.editors.stringTableEditor.StringTableEditor"
+            default="true"
+            filenames="stringtable.xml"
+            id="raven.sqdev.editors.stringtableeditor"
+            name="StringTableEditor">
+      </editor>
    </extension>
 
 </plugin>

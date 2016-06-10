@@ -1,25 +1,10 @@
+// Generated from SQF.g4 by ANTLR 4.5.3
 package raven.sqdev.editors.sqfeditor.parsing;
-
-//Generated from SQF.g4 by ANTLR 4.5.3
-import org.antlr.v4.runtime.FailedPredicateException;
-import org.antlr.v4.runtime.NoViableAltException;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.RuntimeMetaData;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.Vocabulary;
-import org.antlr.v4.runtime.VocabularyImpl;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -294,7 +279,7 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitAssignment(this);
- 		}
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitAssignment(this);
@@ -417,63 +402,237 @@ public class SQFParser extends Parser {
 	}
 
 	public static class ExpressionContext extends ParserRuleContext {
-		public UnaryExpressionContext unaryExpression() {
-			return getRuleContext(UnaryExpressionContext.class,0);
+		public ExpressionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
 		}
-		public NularExpressionContext nularExpression() {
-			return getRuleContext(NularExpressionContext.class,0);
+		@Override public int getRuleIndex() { return RULE_expression; }
+	 
+		public ExpressionContext() { }
+		public void copyFrom(ExpressionContext ctx) {
+			super.copyFrom(ctx);
 		}
-		public TerminalNode OPENING_ROUND_BRACKET() { return getToken(SQFParser.OPENING_ROUND_BRACKET, 0); }
+	}
+	public static class ArrayContext extends ExpressionContext {
+		public TerminalNode OPENING_SQUARE_BRACKET() { return getToken(SQFParser.OPENING_SQUARE_BRACKET, 0); }
+		public TerminalNode CLOSING_SQUARE_BRACKET() { return getToken(SQFParser.CLOSING_SQUARE_BRACKET, 0); }
 		public List<BinaryExpressionContext> binaryExpression() {
 			return getRuleContexts(BinaryExpressionContext.class);
 		}
 		public BinaryExpressionContext binaryExpression(int i) {
 			return getRuleContext(BinaryExpressionContext.class,i);
 		}
+		public List<TerminalNode> COMMA() { return getTokens(SQFParser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(SQFParser.COMMA, i);
+		}
+		public ArrayContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterArray(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitArray(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitArray(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class BooleanExpressionContext extends ExpressionContext {
+		public TerminalNode NOT() { return getToken(SQFParser.NOT, 0); }
+		public BinaryExpressionContext binaryExpression() {
+			return getRuleContext(BinaryExpressionContext.class,0);
+		}
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode COMPARATOR() { return getToken(SQFParser.COMPARATOR, 0); }
+		public TerminalNode CONFIG_OPERATOR() { return getToken(SQFParser.CONFIG_OPERATOR, 0); }
+		public TerminalNode AND() { return getToken(SQFParser.AND, 0); }
+		public TerminalNode OR() { return getToken(SQFParser.OR, 0); }
+		public BooleanExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterBooleanExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitBooleanExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitBooleanExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class MacroExpressionContext extends ExpressionContext {
+		public MacroContext macro() {
+			return getRuleContext(MacroContext.class,0);
+		}
+		public MacroExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterMacroExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitMacroExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitMacroExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ElseExpressionContext extends ExpressionContext {
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode ELSE() { return getToken(SQFParser.ELSE, 0); }
+		public BinaryExpressionContext binaryExpression() {
+			return getRuleContext(BinaryExpressionContext.class,0);
+		}
+		public ElseExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterElseExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitElseExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitElseExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ModifyExpressionContext extends ExpressionContext {
+		public TerminalNode ADDITION_OPERATOR() { return getToken(SQFParser.ADDITION_OPERATOR, 0); }
+		public BinaryExpressionContext binaryExpression() {
+			return getRuleContext(BinaryExpressionContext.class,0);
+		}
+		public ModifyExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterModifyExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitModifyExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitModifyExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class BinaryContext extends ExpressionContext {
+		public NularExpressionContext nularExpression() {
+			return getRuleContext(NularExpressionContext.class,0);
+		}
+		public BinaryContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterBinary(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitBinary(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitBinary(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ParentheseContext extends ExpressionContext {
+		public TerminalNode OPENING_ROUND_BRACKET() { return getToken(SQFParser.OPENING_ROUND_BRACKET, 0); }
+		public BinaryExpressionContext binaryExpression() {
+			return getRuleContext(BinaryExpressionContext.class,0);
+		}
 		public TerminalNode CLOSING_ROUND_BRACKET() { return getToken(SQFParser.CLOSING_ROUND_BRACKET, 0); }
+		public ParentheseContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterParenthese(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitParenthese(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitParenthese(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class InlineCodeContext extends ExpressionContext {
 		public TerminalNode OPENING_CURLY_BRACKET() { return getToken(SQFParser.OPENING_CURLY_BRACKET, 0); }
 		public TerminalNode CLOSING_CURLY_BRACKET() { return getToken(SQFParser.CLOSING_CURLY_BRACKET, 0); }
 		public CodeContext code() {
 			return getRuleContext(CodeContext.class,0);
 		}
-		public TerminalNode OPENING_SQUARE_BRACKET() { return getToken(SQFParser.OPENING_SQUARE_BRACKET, 0); }
-		public TerminalNode CLOSING_SQUARE_BRACKET() { return getToken(SQFParser.CLOSING_SQUARE_BRACKET, 0); }
-		public List<TerminalNode> COMMA() { return getTokens(SQFParser.COMMA); }
-		public TerminalNode COMMA(int i) {
-			return getToken(SQFParser.COMMA, i);
+		public InlineCodeContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterInlineCode(this);
 		}
-		public TerminalNode NOT() { return getToken(SQFParser.NOT, 0); }
-		public TerminalNode ADDITION_OPERATOR() { return getToken(SQFParser.ADDITION_OPERATOR, 0); }
-		public MacroContext macro() {
-			return getRuleContext(MacroContext.class,0);
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitInlineCode(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitInlineCode(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ArithmeticExpressionContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public TerminalNode EXP() { return getToken(SQFParser.EXP, 0); }
+		public BinaryExpressionContext binaryExpression() {
+			return getRuleContext(BinaryExpressionContext.class,0);
+		}
 		public TerminalNode MULTIPLICATION_OPERATOR() { return getToken(SQFParser.MULTIPLICATION_OPERATOR, 0); }
 		public TerminalNode MODULO_OPERATOR() { return getToken(SQFParser.MODULO_OPERATOR, 0); }
+		public TerminalNode ADDITION_OPERATOR() { return getToken(SQFParser.ADDITION_OPERATOR, 0); }
 		public TerminalNode MIN_MAX_OPERATOR() { return getToken(SQFParser.MIN_MAX_OPERATOR, 0); }
-		public TerminalNode ELSE() { return getToken(SQFParser.ELSE, 0); }
-		public TerminalNode COMPARATOR() { return getToken(SQFParser.COMPARATOR, 0); }
-		public TerminalNode CONFIG_OPERATOR() { return getToken(SQFParser.CONFIG_OPERATOR, 0); }
-		public TerminalNode AND() { return getToken(SQFParser.AND, 0); }
-		public TerminalNode OR() { return getToken(SQFParser.OR, 0); }
-		public ExpressionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_expression; }
+		public ArithmeticExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterExpression(this);
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterArithmeticExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitExpression(this);
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitArithmeticExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitExpression(this);
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitArithmeticExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class UnaryContext extends ExpressionContext {
+		public UnaryExpressionContext unaryExpression() {
+			return getRuleContext(UnaryExpressionContext.class,0);
+		}
+		public UnaryContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterUnary(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitUnary(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitUnary(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -499,18 +658,28 @@ public class SQFParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 			case 1:
 				{
+				_localctx = new UnaryContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+
 				setState(52);
 				unaryExpression();
 				}
 				break;
 			case 2:
 				{
+				_localctx = new BinaryContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(53);
 				nularExpression();
 				}
 				break;
 			case 3:
 				{
+				_localctx = new ParentheseContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(54);
 				match(OPENING_ROUND_BRACKET);
 				setState(55);
@@ -521,6 +690,9 @@ public class SQFParser extends Parser {
 				break;
 			case 4:
 				{
+				_localctx = new InlineCodeContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(58);
 				match(OPENING_CURLY_BRACKET);
 				setState(60);
@@ -538,6 +710,9 @@ public class SQFParser extends Parser {
 				break;
 			case 5:
 				{
+				_localctx = new ArrayContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(63);
 				match(OPENING_SQUARE_BRACKET);
 				setState(72);
@@ -571,6 +746,9 @@ public class SQFParser extends Parser {
 				break;
 			case 6:
 				{
+				_localctx = new BooleanExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(75);
 				match(NOT);
 				setState(76);
@@ -579,6 +757,9 @@ public class SQFParser extends Parser {
 				break;
 			case 7:
 				{
+				_localctx = new ModifyExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(77);
 				match(ADDITION_OPERATOR);
 				setState(78);
@@ -587,6 +768,9 @@ public class SQFParser extends Parser {
 				break;
 			case 8:
 				{
+				_localctx = new MacroExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(79);
 				macro();
 				}
@@ -606,7 +790,7 @@ public class SQFParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 					case 1:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new ArithmeticExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(82);
 						if (!(precpred(_ctx, 15))) throw new FailedPredicateException(this, "precpred(_ctx, 15)");
@@ -618,7 +802,7 @@ public class SQFParser extends Parser {
 						break;
 					case 2:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new ArithmeticExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(85);
 						if (!(precpred(_ctx, 14))) throw new FailedPredicateException(this, "precpred(_ctx, 14)");
@@ -635,7 +819,7 @@ public class SQFParser extends Parser {
 						break;
 					case 3:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new ArithmeticExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(88);
 						if (!(precpred(_ctx, 13))) throw new FailedPredicateException(this, "precpred(_ctx, 13)");
@@ -652,7 +836,7 @@ public class SQFParser extends Parser {
 						break;
 					case 4:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new ElseExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(91);
 						if (!(precpred(_ctx, 12))) throw new FailedPredicateException(this, "precpred(_ctx, 12)");
@@ -664,7 +848,7 @@ public class SQFParser extends Parser {
 						break;
 					case 5:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new BooleanExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(94);
 						if (!(precpred(_ctx, 11))) throw new FailedPredicateException(this, "precpred(_ctx, 11)");
@@ -681,7 +865,7 @@ public class SQFParser extends Parser {
 						break;
 					case 6:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new BooleanExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(97);
 						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
@@ -693,7 +877,7 @@ public class SQFParser extends Parser {
 						break;
 					case 7:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new BooleanExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(100);
 						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");

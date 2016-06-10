@@ -81,6 +81,11 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 	 * A list of global variables in this editor
 	 */
 	private List<Variable> globalVariables;
+	/**
+	 * The <code>CommonTokenStream</code> that is associated with the current
+	 * parse tree
+	 */
+	private CommonTokenStream currentStream;
 	
 	public SQF_Editor() {
 		super();
@@ -216,6 +221,7 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 		}
 		
 		try {
+			// TODO: use marker manager
 			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
 		} catch (CoreException e) {
 			SQDevInfobox info = new SQDevInfobox("Problem while removing markers...", e);
@@ -230,9 +236,9 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 		lexer.removeErrorListeners();
 		lexer.addErrorListener(listener);
 		
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		currentStream = new CommonTokenStream(lexer);
 		
-		SQFParser parser = new SQFParser(tokens);
+		SQFParser parser = new SQFParser(currentStream);
 		
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
@@ -244,7 +250,9 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 	public void processParseTree(ParseTree parseTree) {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		
-		walker.walk(new SQFParseListener(this), parseTree);
+		walker.walk(new SQFParseListener(this, currentStream), parseTree);
+		
+		applyParseChanges();
 	}
 	
 	/**

@@ -1,5 +1,9 @@
 package raven.sqdev.editors;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -11,11 +15,13 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.ITextViewerExtension;
+import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.widgets.Composite;
@@ -26,6 +32,7 @@ import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.exceptions.SQDevCoreException;
+import raven.sqdev.interfaces.IManager;
 import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.misc.MultiPreferenceStore;
 import raven.sqdev.util.SQDevPreferenceUtil;
@@ -48,7 +55,7 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  * @see {@linkplain EditorKeyEventManager}
  * 
  */
-public abstract class BasicCodeEditor extends TextEditor {
+public class BasicCodeEditor extends TextEditor {
 	
 	/**
 	 * The color manager
@@ -74,6 +81,10 @@ public abstract class BasicCodeEditor extends TextEditor {
 	 * The document provider of this editor
 	 */
 	protected BasicDocumentProvider provider;
+	/**
+	 * A list of <code>IManager</code> working on this editor
+	 */
+	protected List<IManager> managerList;
 	
 	public BasicCodeEditor() {
 		super();
@@ -86,6 +97,8 @@ public abstract class BasicCodeEditor extends TextEditor {
 		
 		this.setSourceViewerConfiguration(getBasicConfiguration());
 		this.setDocumentProvider(getBasicProvider());
+		
+		managerList = new ArrayList<IManager>();
 	}
 	
 	@Override
@@ -217,6 +230,8 @@ public abstract class BasicCodeEditor extends TextEditor {
 			fSourceViewerDecorationSupport.install(multiStore);
 		}
 		
+		createManagers(managerList);
+		
 		// parse the input for the first time
 		parseInput();
 	}
@@ -255,7 +270,7 @@ public abstract class BasicCodeEditor extends TextEditor {
 	 * 
 	 * @see {@linkplain BasicSourceViewerConfiguration}
 	 */
-	protected BasicSourceViewerConfiguration getBasicConfiguration() {
+	public BasicSourceViewerConfiguration getBasicConfiguration() {
 		if (configuration == null) {
 			configuration = new BasicSourceViewerConfiguration(getColorManager(), this);
 		}
@@ -268,7 +283,7 @@ public abstract class BasicCodeEditor extends TextEditor {
 	 * 
 	 * @see {@linkplain BasicDocumentProvider}
 	 */
-	protected BasicDocumentProvider getBasicProvider() {
+	public BasicDocumentProvider getBasicProvider() {
 		if (provider == null) {
 			provider = new BasicDocumentProvider();
 		}
@@ -350,6 +365,19 @@ public abstract class BasicCodeEditor extends TextEditor {
 	}
 	
 	/**
+	 * Creates all managers that should work on this editor
+	 * 
+	 * @param managerList
+	 *            The list of managers. The newly created ones have to be added
+	 *            to this list
+	 */
+	protected void createManagers(List<IManager> managerList) {
+		// add folding manager
+		managerList.add(new BasicFoldingManager(
+				((ProjectionViewer) getSourceViewer()).getProjectionAnnotationModel()));
+	}
+	
+	/**
 	 * Creates a problem marker that will be visible in the editor
 	 * 
 	 * @param offset
@@ -370,7 +398,7 @@ public abstract class BasicCodeEditor extends TextEditor {
 			return null;
 		}
 		
-		Assert.isTrue(offset > 0 && length > 0);
+		Assert.isTrue(offset >= 0 && length >= 0);
 		
 		IDocument document = getBasicProvider().getDocument(getEditorInput());
 		
@@ -404,10 +432,61 @@ public abstract class BasicCodeEditor extends TextEditor {
 		}
 	}
 	
+	@Override
 	public void doSave(IProgressMonitor progressMonitor) {
 		super.doSave(progressMonitor);
 		
 		// reparse on save
 		parseInput();
+	}
+	
+	/**
+	 * Applies the changes detected by the parsing by notifying the respective
+	 * managers to apply their work
+	 */
+	public void applyParseChanges() {
+		for (IManager manager : managerList) {
+			manager.apply();
+		}
+	}
+	
+	/**
+	 * Gets a manager working on this editor of the given type
+	 * 
+	 * @param type
+	 *            The type of the editor
+	 * @return The respective editor or <code>null</code> if none could be found
+	 */
+	public IManager getManager(String type) {
+		for (IManager manager : managerList) {
+			if (manager.getType().equals(type)) {
+				return manager;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Adds a foldable area to the editor if a {@link BasicFoldingManager} has
+	 * been installed.<br>
+	 * In order of the changes to take effect {@link #applyParseChanges()} has
+	 * to be called
+	 * 
+	 * @param position
+	 *            The <code>Position</code> this area should be on
+	 */
+	public void addFoldingArea(Position position) {
+		ProjectionAnnotation annotation = new ProjectionAnnotation();
+		
+		BasicFoldingManager foldingManager = (BasicFoldingManager) getManager(
+				BasicFoldingManager.getManagerType());
+		
+		if (foldingManager == null) {
+			return;
+		}
+		
+		foldingManager.addFoldingArea(
+				new AbstractMap.SimpleEntry<ProjectionAnnotation, Position>(annotation, position));
 	}
 }

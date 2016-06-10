@@ -1,6 +1,5 @@
-package raven.sqdev.editors.sqfeditor.parsing;
-
 // Generated from SQF.g4 by ANTLR 4.5.3
+package raven.sqdev.editors.sqfeditor.parsing;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -36,11 +35,75 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBinaryExpression(SQFParser.BinaryExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SQFParser#expression}.
+	 * Visit a parse tree produced by the {@code Array}
+	 * labeled alternative in {@link SQFParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpression(SQFParser.ExpressionContext ctx);
+	T visitArray(SQFParser.ArrayContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code BooleanExpression}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBooleanExpression(SQFParser.BooleanExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code MacroExpression}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMacroExpression(SQFParser.MacroExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ElseExpression}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseExpression(SQFParser.ElseExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ModifyExpression}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitModifyExpression(SQFParser.ModifyExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Binary}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinary(SQFParser.BinaryContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Parenthese}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParenthese(SQFParser.ParentheseContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code InlineCode}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInlineCode(SQFParser.InlineCodeContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ArithmeticExpression}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArithmeticExpression(SQFParser.ArithmeticExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Unary}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnary(SQFParser.UnaryContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SQFParser#unaryExpression}.
 	 * @param ctx the parse tree
