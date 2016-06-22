@@ -17,10 +17,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import raven.sqdev.misc.TextUtils;
 import raven.sqdev.util.EProjectType;
 import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.util.SQDevPreferenceUtil;
-import raven.sqdev.util.TextUtils;
 import raven.sqdev.util.Util;
 
 /**
@@ -90,6 +90,7 @@ public class SQDevProjectWizardPage extends WizardPage {
 		getNameText().setToolTipText(nameTooltip);
 		getNameText().setLayoutData(gd);
 		getNameText().addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				dialogChanged();
 			}

@@ -7,7 +7,7 @@
             class="raven.sqdev.editors.sqfeditor.SQF_Editor"
             default="true"
             extensions="sqf"
-            icon="platform:plugin/raven.sqdev.util/resources/icons/SQF_image.gif"
+            icon="platform:plugin/raven.sqdev.util/resources/icons/SQFIcon.png"
             id="raven.sqdev.sqfEditor"
             name="sqfEditor">
       </editor>

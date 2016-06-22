@@ -18,7 +18,7 @@ import raven.sqdev.misc.StyledProposalInformationCategory;
  * An additional proposal information based on a <code>Keyword</code>
  * 
  * @author Raven
- * 		
+ * 
  */
 public class AdditionalKeywordProposalInformation extends AbstractAdditionalProposalInformation {
 	
@@ -69,11 +69,14 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 					overviewContent += command.getDescription() + "\n\n";
 				}
 				
-				// syntax
-				overviewContent += SQDev.BOLD.getOpener() + "Possible syntax: "
-						+ SQDev.BOLD.getCloser()
-						+ command.getRawSytaxes().get(command.getRawSytaxes().size() - 1) + "\n\n";
-						
+				if (command.hasRawSyntax()) {
+					// syntax
+					overviewContent += SQDev.BOLD.getOpener() + "Possible syntax: "
+							+ SQDev.BOLD.getCloser()
+							+ command.getRawSytaxes().get(command.getRawSytaxes().size() - 1)
+							+ "\n\n";
+				}
+				
 				// locality
 				if (command.isArgumentLocalityDefined()) {
 					overviewContent += SQDev.BOLD.getOpener() + "Argument locality: "
@@ -86,10 +89,12 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 							+ SQDev.BOLD.getCloser() + command.getEffectLocality() + "\n\n";
 				}
 				
-				// return value
-				overviewContent += SQDev.BOLD.getOpener() + "Return Value: "
-						+ SQDev.BOLD.getCloser() + command.getReturnType();
-						
+				if (command.hasReturnValue()) {
+					// return value
+					overviewContent += SQDev.BOLD.getOpener() + "Return Value: "
+							+ SQDev.BOLD.getCloser() + command.getReturnType();
+				}
+				
 				if (!overviewContent.isEmpty()) {
 					categories.add(0,
 							new StyledProposalInformationCategory("Overview", overviewContent));
@@ -112,7 +117,8 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 				}
 				
 				if (command.hasSyntax()) {
-					// TODO: add syntaxes
+					categories.add(new StyledProposalInformationCategory("Syntax",
+							command.getStringSyntaxes()));
 				}
 			}
 		}

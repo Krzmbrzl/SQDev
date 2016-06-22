@@ -65,7 +65,7 @@ public enum EFileType {
 			content += "\n * Description:\n * Not given\n * ";
 			content += "\n * Parameter(s):";
 			content += "\n * 0: None <Any>\n * ";
-			content += "\n * Return Value:\n * None <Any>\n * \n */";
+			content += "\n * Return Value:\n * None <Any>\n * \n */\n\n";
 			
 			return content;
 		}
@@ -221,7 +221,28 @@ public enum EFileType {
 			
 			return initialContent;
 		}
+	},
+	STRINGTABLE {
+		
+		@Override
+		public String getExtension() {
+			return ".xml";
+		}
+		
+		@Override
+		public String getInitialContent() {
+			return "";
+		}
+		
+		@Override
+		public void create(String name, boolean open) {
+			name = "StringTable";
+			
+			super.create(name, open);
+		}
+		
 	};
+	
 	
 	/**
 	 * The path where the file should be created
@@ -245,8 +266,8 @@ public enum EFileType {
 	 * 
 	 * @param name
 	 *            The name of the new file (<b>without extension!</b>)<br>
-	 *            Will be overriden in {@linkplain #EXT} and {@linkplain #SQM};
-	 *            <br>
+	 *            Will be overriden in {@linkplain #EXT}, {@link #STRINGTABLE}
+	 *            and {@linkplain #SQM}; <br>
 	 *            For {@linkplain #SQDEV} it has to be of type
 	 *            {@link ESQDevFileType}
 	 * @see ESQDevFileType
@@ -436,6 +457,7 @@ public enum EFileType {
 		// run in UI thread because it may depend on UI elements
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			
+			@Override
 			public void run() {
 				
 				if (path == null || path.isEmpty()) {

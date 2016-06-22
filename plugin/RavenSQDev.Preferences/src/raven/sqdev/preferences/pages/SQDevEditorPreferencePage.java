@@ -6,12 +6,13 @@ import org.eclipse.ui.IWorkbench;
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.preferences.preferenceEditors.BooleanSQDevPreferenceEditor;
 import raven.sqdev.preferences.preferenceEditors.ColorSQDevPreferenceEditor;
+import raven.sqdev.preferences.preferenceEditors.IntegerSQDevPreferenceEditor;
 
 /**
  * The preferencePage that contains all settings concerning the editor
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 	
@@ -48,18 +49,38 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				"&Enable autoComplete:",
 				"Enables/Disables autoComplete meaning that content assist will insert the proposal automatically if there is only one choice",
 				behaviour));
-				
-				
+		
+		IntegerSQDevPreferenceEditor parseDelayEditor = new IntegerSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, "&Parse delay:",
+				"Specifies the delay in seconds between a user input in the editor and the actual parsing of the editor's content",
+				behaviour);
+		parseDelayEditor.setMinValue(1);
+		
+		addPreferenceEditor(parseDelayEditor);
+		
+		
 		// preferences for the coloring
 		Group colors = createGroup("Colors");
 		
 		createDescription(colors, "Here you can change the colors of the editor");
 		
-		ColorSQDevPreferenceEditor syntaxHighlightingColorEditor = new ColorSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY,
-				"&Syntax highlighting:", "Defines the color in which keywords are highlighted",
+		ColorSQDevPreferenceEditor keywordHighlightingColorEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
+				"&Keyword highlighting:", "Defines the color in which keywords are highlighted",
 				colors);
-		addPreferenceEditor(syntaxHighlightingColorEditor);
+		addPreferenceEditor(keywordHighlightingColorEditor);
+		
+		ColorSQDevPreferenceEditor localVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				"&Local variable highlighting:",
+				"Defines the color in which local variables are highlighted", colors);
+		addPreferenceEditor(localVariableHighlightingEditor);
+		
+		ColorSQDevPreferenceEditor globalVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				"&Global variable highlighting:",
+				"Defines the color in which global variables are highlighted", colors);
+		addPreferenceEditor(globalVariableHighlightingEditor);
 		
 		ColorSQDevPreferenceEditor currentLineHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,

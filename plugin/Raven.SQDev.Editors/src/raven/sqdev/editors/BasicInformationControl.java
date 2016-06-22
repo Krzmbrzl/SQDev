@@ -2,6 +2,7 @@ package raven.sqdev.editors;
 
 import java.util.ArrayList;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControl;
@@ -50,7 +51,7 @@ import raven.sqdev.miscellaneous.AdditionalKeywordProposalInformation;
  */
 public class BasicInformationControl extends AbstractInformationControl
 		implements IInformationControlExtension2 {
-		
+	
 	/**
 	 * The <code>TabFolder</code> used to display information
 	 */
@@ -172,10 +173,15 @@ public class BasicInformationControl extends AbstractInformationControl
 			
 			if (input instanceof AdditionalKeywordProposalInformation) {
 				// add the respective toolbar action this info does provide
-				getToolBarManager()
-						.add(((AdditionalKeywordProposalInformation) input).getToolbarAction());
-						
-				getToolBarManager().update(false);
+				
+				Action action = ((AdditionalKeywordProposalInformation) input).getToolbarAction();
+				
+				if (action != null) {
+					// add action if available
+					getToolBarManager().add(action);
+					
+					getToolBarManager().update(false);
+				}
 			}
 		} else {
 			setInfo(new AbstractAdditionalProposalInformation(true) {
@@ -185,7 +191,7 @@ public class BasicInformationControl extends AbstractInformationControl
 						ArrayList<IProposalInformationCategory> categories) {
 					categories.add(
 							new StringProposalInformationCategory("General", input.toString()));
-							
+					
 					return categories;
 				}
 			});
@@ -224,7 +230,7 @@ public class BasicInformationControl extends AbstractInformationControl
 					int width = scroller.getSize().x - 2 * border;
 					int height = content.computeSize(scroller.getSize().x, SWT.DEFAULT, true).y
 							+ getToolBarManager().createControl(getShell()).getSize().y;
-							
+					
 					scroller.setMinSize(width, height);
 					
 					ScrollBar scrollBar = scroller.getVerticalBar();

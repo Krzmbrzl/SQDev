@@ -1,6 +1,7 @@
 package raven.sqdev.infoCollection.base;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import raven.sqdev.interfaces.ISaveable;
  * A list containing multiple <code>Keyword</code>s
  * 
  * @author Raven
- * 		
+ * 
  */
 public class KeywordList implements ISaveable {
 	
@@ -70,12 +71,37 @@ public class KeywordList implements ISaveable {
 	}
 	
 	/**
+	 * Creates a <code>KeywordList</code> out of the given list of keywords
+	 * 
+	 * @param keywords
+	 *            The list of variables that should be transformed into a
+	 *            <code>KeywordList</code>
+	 */
+	public KeywordList(List<? extends Keyword> keywords) {
+		this();
+		
+		addKeywords(keywords);
+	}
+	
+	/**
 	 * Adds a keyword to this list
 	 * 
 	 * @param keyword
-	 *            Th keyword to add
+	 *            The keyword to add
 	 */
 	public void addKeyword(Keyword keyword) {
+		addKeyword(keyword, true);
+	}
+	
+	/**
+	 * Adds a keyword to this list
+	 * 
+	 * @param keyword
+	 *            The keyword to add
+	 * @param sort
+	 *            Whether to sort the respective list after addition
+	 */
+	private void addKeyword(Keyword keyword, boolean sort) {
 		Assert.isNotNull(keyword);
 		
 		int listIndex;
@@ -86,10 +112,32 @@ public class KeywordList implements ISaveable {
 			listIndex = 0;
 		}
 		
-		keywords.get(listIndex).add(keyword);
+		if (!keywords.get(listIndex).contains(keyword)) {
+			keywords.get(listIndex).add(keyword);
+		}
 		
-		// sort the list the keywords has been added to
-		Collections.sort(keywords.get(listIndex));
+		if (sort) {
+			// sort the list the keywords has been added to
+			Collections.sort(keywords.get(listIndex));
+		}
+	}
+	
+	/**
+	 * Adds all given keywords to this list
+	 * 
+	 * @param keywords
+	 *            The <code>Collection</code> of keywords to add
+	 */
+	public void addKeywords(Collection<? extends Keyword> keywords) {
+		// add all keywords
+		for (Keyword currentKeyword : keywords) {
+			addKeyword(currentKeyword, false);
+		}
+		
+		// sort list
+		for (List<Keyword> current : this.keywords) {
+			Collections.sort(current);
+		}
 	}
 	
 	/**
@@ -204,7 +252,7 @@ public class KeywordList implements ISaveable {
 		String listContent = savedFormat.substring(
 				savedFormat.indexOf(LIST_START_SAVESEQUENCE) + LIST_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(LIST_END_SAVESEQUENCE)).trim();
-				
+		
 		for (String currentKeywordContent : listContent.split(LIST_SEPERATOR_SAVESEQUENCE)) {
 			currentKeywordContent = currentKeywordContent.trim();
 			

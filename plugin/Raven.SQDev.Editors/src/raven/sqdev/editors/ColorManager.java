@@ -24,7 +24,7 @@ public class ColorManager {
 	public void dispose() {
 		Iterator<Color> e = colorTable.values().iterator();
 		while (e.hasNext())
-			((Color) e.next()).dispose();
+			e.next().dispose();
 	}
 	
 	/**
@@ -36,7 +36,7 @@ public class ColorManager {
 	 */
 	public Color getColor(RGB rgb) {
 		// check if the color has already been stored
-		Color color = (Color) colorTable.get(rgb);
+		Color color = colorTable.get(rgb);
 		
 		if (color == null) {
 			color = new Color(Display.getCurrent(), rgb);

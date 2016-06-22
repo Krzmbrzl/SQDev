@@ -3,6 +3,8 @@ package raven.sqdev.util;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IDocument;
 
+import raven.sqdev.misc.TextUtils;
+
 /**
  * A class containing various static util methods for usage with editors
  * 

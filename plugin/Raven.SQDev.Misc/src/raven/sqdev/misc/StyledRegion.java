@@ -81,6 +81,7 @@ public class StyledRegion extends Pair<SQDevStyle, String> {
 		return true;
 	}
 	
+	@Override
 	public String toString() {
 		return "Style: \n\t" + getStyle() + "\nContent: \n\t" + getContent().replace("\n", "\n\t");
 	}

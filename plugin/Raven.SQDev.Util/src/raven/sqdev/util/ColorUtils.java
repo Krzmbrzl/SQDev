@@ -3,6 +3,7 @@ package raven.sqdev.util;
 import org.eclipse.swt.graphics.RGB;
 
 import raven.sqdev.exceptions.IllegalRGBSyntaxException;
+import raven.sqdev.misc.TextUtils;
 
 /**
  * A class containing various static Color functions
@@ -21,7 +22,7 @@ public class ColorUtils {
 	 * @return The newly created String
 	 */
 	public static String getRGBValuesAsString(RGB rgb) {
-		return (String) (rgb.red + "," + rgb.green + "," + rgb.blue);
+		return rgb.red + "," + rgb.green + "," + rgb.blue;
 	}
 	
 	/**

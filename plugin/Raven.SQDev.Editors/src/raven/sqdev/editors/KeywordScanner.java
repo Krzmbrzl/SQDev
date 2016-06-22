@@ -1,6 +1,7 @@
 package raven.sqdev.editors;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.TextAttribute;
@@ -16,27 +17,23 @@ import org.eclipse.swt.widgets.Display;
 
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
+import raven.sqdev.interfaces.IKeywordListChangeListener;
 import raven.sqdev.interfaces.IKeywordProvider;
+import raven.sqdev.interfaces.IUpdateListener;
 import raven.sqdev.util.ColorUtils;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
- * A scanner that scans for keywords and colors them with the
- * <code>ISQDevColorConstants.KEYWORD</code> color
+ * A scanner that scans for keywords and colors them with the given color.<br>
+ * <br>
+ * <b>Note:</b> This <code>KeywordScanner</code> can only handle one set of
+ * keywords that are all colored in the same way. If you need support for
+ * multiple catgeories see {@link MultiKeywordScanner}
  * 
  * @author Raven
- * 		
+ * 
  */
-public class KeywordScanner extends RuleBasedScanner {
-	
-	/**
-	 * A token that indicates an unrecognized word meaning any word, that is not
-	 * part of the keywords the respective Keywordcanner works on.<br>
-	 * These words are not colored in any way.
-	 */
-	public static IToken UNRECOGNIZED_WORD_TOKEN = new Token(
-			new TextAttribute(null, null, SWT.NULL));
-			
+public class KeywordScanner extends RuleBasedScanner implements IKeywordListChangeListener {
 	/**
 	 * The preferenceKey for the color of the token
 	 */
@@ -68,6 +65,22 @@ public class KeywordScanner extends RuleBasedScanner {
 	protected boolean caseSensitive;
 	
 	/**
+	 * A list of <code>IKeywordListChangeListeners</code>
+	 */
+	protected List<IKeywordListChangeListener> keywordListListeners;
+	
+	/**
+	 * A list of <code>IUpdateListener</code>
+	 */
+	protected List<IUpdateListener> updateListeners;
+	
+	/**
+	 * Indicates whether this scanner is part of a
+	 * <code>MultiKeywordScanner</code>
+	 */
+	protected boolean isPartOfMultiScanner;
+	
+	/**
 	 * Creates an instance of this scanner
 	 * 
 	 * @param provider
@@ -95,13 +108,18 @@ public class KeywordScanner extends RuleBasedScanner {
 		this.provider = provider;
 		this.editor = editor;
 		this.caseSensitive = caseSensitive;
-		defaultToken = UNRECOGNIZED_WORD_TOKEN;
+		defaultToken = Token.UNDEFINED;
+		keywordListListeners = new ArrayList<IKeywordListChangeListener>();
+		updateListeners = new ArrayList<IUpdateListener>();
 		
 		Color color = new Color(Display.getCurrent(), ColorUtils.decodeRGB(strColor));
 		
-		IToken keywordToken = new Token(new TextAttribute(color, null, SWT.BOLD));
+		token = new Token(new TextAttribute(color, null, SWT.BOLD));
 		
-		updateRules(keywordToken);
+		updateRules(provider.getKeywordList().getKeywords().size() > 0);
+		
+		// add this as a listener for the keyword provider
+		this.provider.addKeywordListChangeListener(this);
 	}
 	
 	/**
@@ -136,23 +154,23 @@ public class KeywordScanner extends RuleBasedScanner {
 			if (event.getNewValue() != null) {
 				Color color = new Color(Display.getCurrent(),
 						ColorUtils.decodeRGB((String) event.getNewValue()));
-						
-				IToken token = new Token(new TextAttribute(color, null, SWT.BOLD));
 				
-				updateRules(token);
+				token = new Token(new TextAttribute(color, null, SWT.BOLD));
+				
+				updateRules(true);
 			}
 		}
 	}
 	
 	/**
 	 * Will update the applied rules for this scanner according to the
-	 * keywordProvider.<br>
+	 * keywordProvider and the {@link #token}.<br>
 	 * Will apply the newly created rule immediately
 	 * 
-	 * @param token
-	 *            The token the rule should use
+	 * @param updateEditor
+	 *            Indicates if the editor shoukd be updated
 	 */
-	protected void updateRules(IToken token) {
+	protected void updateRules(boolean updateEditor) {
 		ArrayList<Keyword> keywordList = provider.getKeywordList().getKeywords();
 		
 		Keyword[] keywords = keywordList.toArray(new Keyword[keywordList.size()]);
@@ -160,7 +178,7 @@ public class KeywordScanner extends RuleBasedScanner {
 		// create the respective WordRule
 		WordRule keywordRule = new WordRule(new WordDetector(), getDefaultToken(),
 				!isCaseSensitive());
-				
+		
 		// add keywords
 		for (Keyword currentKeyword : keywords) {
 			keywordRule.addWord(currentKeyword.getKeyword(), token);
@@ -170,7 +188,27 @@ public class KeywordScanner extends RuleBasedScanner {
 		
 		this.setRules(rules);
 		
-		editor.update();
+		if (!isPartOfMultiScanner && updateEditor) {
+			// only update editor if this scanner is autonomous
+			editor.update(false);
+		}
+		
+		notifyUpdateListener();
+	}
+	
+	/**
+	 * Gets the rule for this <code>KeywordScanner</code> that describes which
+	 * keywords to color in the respective color of this scanner
+	 * 
+	 * @return The respective <code>IRule</code> or <code>null</code> if no such
+	 *         rule exists
+	 */
+	public IRule getRule() {
+		if (fRules == null || fRules.length == 0) {
+			return null;
+		}
+		
+		return fRules[0];
 	}
 	
 	/**
@@ -190,7 +228,9 @@ public class KeywordScanner extends RuleBasedScanner {
 	public void setKeywordProvider(IKeywordProvider provider) {
 		this.provider = provider;
 		
-		updateRules(getToken());
+		updateRules(true);
+		
+		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_REMOVED);
 	}
 	
 	/**
@@ -204,13 +244,20 @@ public class KeywordScanner extends RuleBasedScanner {
 		provider.setKeywordList(list);
 		
 		setKeywordProvider(provider);
+		
+		// notify listeners about change
+		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_CHANGED);
 	}
 	
 	/**
 	 * Gets the token of this scanner
 	 */
 	public IToken getToken() {
-		return (token != null) ? token : new Token(new TextAttribute(getColor(), null, SWT.BOLD));
+		if (token == null) {
+			token = new Token(new TextAttribute(getColor(), null, SWT.BOLD));
+		}
+		
+		return token;
 	}
 	
 	/**
@@ -231,7 +278,7 @@ public class KeywordScanner extends RuleBasedScanner {
 		caseSensitive = sensitive;
 		
 		// apply changes
-		updateRules(getToken());
+		updateRules(true);
 	}
 	
 	/**
@@ -261,5 +308,105 @@ public class KeywordScanner extends RuleBasedScanner {
 	 */
 	public IToken getDefaultToken() {
 		return defaultToken;
+	}
+	
+	/**
+	 * Checks whether this <code>KeywordScanner</code> contains the given
+	 * <code>Keyword</code>
+	 * 
+	 * @param keyword
+	 *            The <code>Keyword</code> to search for
+	 */
+	public boolean contains(Keyword keyword) {
+		return getKeywordProvider().getKeywordList().contains(keyword);
+	}
+	
+	/**
+	 * Checks whether this <code>KeywordScanner</code> contains a
+	 * <code>Keyword</code> matching the given word
+	 * 
+	 * @param word
+	 *            The word to search for
+	 */
+	public boolean contains(String word) {
+		return getKeywordProvider().getKeywordList().getKeyword(word) != null;
+	}
+	
+	/**
+	 * Notifies all <code>IKeywordListChangeListeners</code>
+	 * 
+	 * @param ctx
+	 *            The context of the change
+	 */
+	protected void notifyKeywordListChangeListeners(String ctx) {
+		for (IKeywordListChangeListener listener : keywordListListeners) {
+			listener.keywordListChanged(ctx);
+		}
+	}
+	
+	/**
+	 * Notifies all <code>IUpdateListeners</code>
+	 */
+	protected void notifyUpdateListener() {
+		for (IUpdateListener listener : updateListeners) {
+			listener.updated();
+		}
+	}
+	
+	/**
+	 * Adds the given <code>IKeywordListChangeListener</code> if it is not
+	 * already registered
+	 * 
+	 * @param listener
+	 *            The listener to add
+	 */
+	public void addKeywordListChangeListener(IKeywordListChangeListener listener) {
+		if (!keywordListListeners.contains(listener)) {
+			keywordListListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given <code>IKeywordListChangeListener</code>
+	 * 
+	 * @param listener
+	 *            The listener to remove
+	 */
+	public void removeKeywordListChangeListener(IKeywordListChangeListener listener) {
+		keywordListListeners.remove(listener);
+	}
+	
+	/**
+	 * Adds the given listener if it is not already added
+	 * 
+	 * @param listener
+	 *            The <code>IUpdateListener</code> to add
+	 */
+	public void addUpdateListener(IUpdateListener listener) {
+		if (!updateListeners.contains(listener)) {
+			updateListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given listener
+	 * 
+	 * @param listener
+	 *            The <code>IUpdateListener</code> to remove
+	 */
+	public void removeUpdateListener(IUpdateListener listener) {
+		updateListeners.remove(listener);
+	}
+	
+	@Override
+	public void keywordListChanged(String ctx) {
+		if (ctx.equals(IKeywordListChangeListener.CTX_LIST_CHANGED)) {
+			// update rules
+			
+			updateRules(true);
+		}
+		
+		// forward event
+		notifyKeywordListChangeListeners(ctx);
 	}
 }

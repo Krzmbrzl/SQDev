@@ -22,7 +22,7 @@ import raven.sqdev.util.FileUtil;
  * of this plugin including reading and writing
  * 
  * @author Raven
- * 		
+ * 
  */
 public class ResourceManager {
 	/**
@@ -40,6 +40,11 @@ public class ResourceManager {
 	 * plugins
 	 */
 	public static final String VERSION_RESOURCE = "versions.txt";
+	/**
+	 * The name of the resource containing the stored keywords and the
+	 * respective information about them
+	 */
+	public static final String KEYWORDS_RESOURCE = "SQFKeywords.txt";
 	/**
 	 * The internal path to the icons folder
 	 */
@@ -67,11 +72,31 @@ public class ResourceManager {
 	/**
 	 * The internal path to the SQF icon resource
 	 */
-	public static final String SQF_ICON = ICON_FOLDER + "/SQF_image.gif";
+	public static final String SQF_ICON = ICON_FOLDER + "/SQFIcon.png";
 	/**
 	 * The internal path to the SQFCommand icon resource
 	 */
 	public static final String SQFCOMMAND_ICON = ICON_FOLDER + "/SQFCommandIcon.png";
+	/**
+	 * The internal path to the plus icon resource
+	 */
+	public static final String PLUS_ICON = ICON_FOLDER + "/plusIcon.png";
+	/**
+	 * The internal path to the remove icon
+	 */
+	public static final String REMOVE_ICON = ICON_FOLDER + "/removeIcon.png";
+	/**
+	 * The internal path to the minus icon
+	 */
+	public static final String MINUS_ICON = ICON_FOLDER + "/minusIcon.png";
+	/**
+	 * The internal path to the Stringtable icon
+	 */
+	public static final String STRINGTABLE_ICON = ICON_FOLDER + "/StringTableIcon.png";
+	/**
+	 * The internal path to the keyword file
+	 */
+	public static final String INTERNAL_KEYWORDS = "/resources/sqf/SQFKeywords.txt";
 	
 	private ClassLoader loader;
 	private URL locationURL;
@@ -135,7 +160,7 @@ public class ResourceManager {
 			case "file":
 				in = getLoader().getResourceAsStream(path);
 				break;
-				
+			
 			case "jar":
 				try {
 					in = new JarInputStream(getLoader().getResourceAsStream(path));
@@ -160,7 +185,7 @@ public class ResourceManager {
 	 * @param content
 	 *            The new content of this resourcefile
 	 * @throws IOException
-	 * @throws SQDevException 
+	 * @throws SQDevException
 	 */
 	public void updateResource(String name, String content) throws IOException, SQDevException {
 		if (!resourceExists(name)) {
@@ -323,7 +348,7 @@ public class ResourceManager {
 				
 				String content = FileUtil
 						.readAll(getInternalResourceStream("/resources/sqf/SQFKeywords.txt"));
-						
+				
 				// put content in respective resource files
 				FileWriter writer = new FileWriter(getResource("SQFKeywords.txt").toFile());
 				writer.write(content);
@@ -438,7 +463,7 @@ public class ResourceManager {
 	 * @param name
 	 *            The name of the backup resource file. If it does not contain
 	 *            an extension the extension ".txt" will be added
-	 * @throws SQDevException 
+	 * @throws SQDevException
 	 */
 	private void backupResource(String name) throws SQDevException {
 		if (!name.contains(".")) {

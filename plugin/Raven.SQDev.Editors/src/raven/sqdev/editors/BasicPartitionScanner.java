@@ -2,6 +2,7 @@ package raven.sqdev.editors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IDocument;
@@ -12,12 +13,12 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.Token;
 
 /**
- * A partionScanner for the basic partitions. <br>It's default rules are
- * MULTILINE_COMMENT_RULE, SINGLELINE_COMMENT_RULE, DOUBLE_QUOTE_STRING_RULE and
- * SINGLE_QUOTE_STRING_RULE
+ * A partionScanner for the basic partitions. <br>
+ * It's default rules are MULTILINE_COMMENT_RULE, SINGLELINE_COMMENT_RULE,
+ * DOUBLE_QUOTE_STRING_RULE and SINGLE_QUOTE_STRING_RULE
  * 
  * @author Raven
- * 		
+ * 
  */
 public class BasicPartitionScanner extends RuleBasedPartitionScanner {
 	
@@ -46,7 +47,7 @@ public class BasicPartitionScanner extends RuleBasedPartitionScanner {
 	 */
 	public static final IPredicateRule SINGLE_QUOTE_STRING_RULE = new MultiLineRule("'", "'",
 			new Token(BASIC_STRING));
-			
+	
 	/**
 	 * An array containing all currently used rules
 	 */
@@ -63,7 +64,7 @@ public class BasicPartitionScanner extends RuleBasedPartitionScanner {
 				DOUBLE_QUOTE_STRING_RULE,
 				// rule for strings in single quotes
 				SINGLE_QUOTE_STRING_RULE };
-				
+		
 		setRules(rules);
 	}
 	
@@ -87,7 +88,7 @@ public class BasicPartitionScanner extends RuleBasedPartitionScanner {
 	 * @param rules
 	 *            The new set of rules
 	 */
-	public void setRules(ArrayList<IPredicateRule> rules) {
+	public void setRules(List<IPredicateRule> rules) {
 		setRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}
 	

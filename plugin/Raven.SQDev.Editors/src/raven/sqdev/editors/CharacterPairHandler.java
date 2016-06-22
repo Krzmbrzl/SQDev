@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Point;
 
 import raven.sqdev.interfaces.IEditorKeyHandler;
 import raven.sqdev.misc.CharacterPair;
-import raven.sqdev.util.TextUtils;
+import raven.sqdev.misc.TextUtils;
 
 /**
  * This class will handle character inputs that have a predefined partner to
@@ -67,15 +67,15 @@ public class CharacterPairHandler implements IEditorKeyHandler {
 			return false;
 		}
 		
+		if (IEditorKeyHandler.isDeletion(event.character)) {
+			// handle deletions
+			return true;
+		}
+		
 		if (editor.getBasicProvider().getPartitioner().getContentType(selection.x).toLowerCase()
 				.contains("string")) {
 			// disable in strings
 			return false;
-		}
-		
-		if (IEditorKeyHandler.isDeletion(event.character)) {
-			// handle deletions
-			return true;
 		}
 		
 		if (isRegisteredOpeningCharacter(event.character)

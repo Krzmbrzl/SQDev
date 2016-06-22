@@ -10,7 +10,6 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.widgets.Shell;
 
-import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.miscellaneous.AdditionalKeywordProposalInformation;
 import raven.sqdev.util.EditorUtil;
 
@@ -59,17 +58,18 @@ public class BasicTextHover implements ITextHover, ITextHoverExtension, ITextHov
 		// get the respective word
 		String word = EditorUtil.getWordAroundOffset(textViewer.getDocument(),
 				hoverRegion.getOffset());
-				
+		
 		AdditionalKeywordProposalInformation info = null;
 		
 		if (!word.isEmpty()) {
 			// check if there is a corresponding keyword
-			Keyword keyword = editor.getBasicConfiguration().getKeywordScanner()
-					.getKeywordProvider().getKeywordList().getKeyword(word);
-					
-			if (keyword != null) {
+			KeywordScanner scanner = editor.getBasicConfiguration()
+					.getKeywordScannerContaining(word);
+			
+			if (scanner != null) {
 				// create the info for this keyword
-				info = new AdditionalKeywordProposalInformation(keyword);
+				info = new AdditionalKeywordProposalInformation(
+						scanner.getKeywordProvider().getKeywordList().getKeyword(word));
 			}
 		}
 		return info;

@@ -2,7 +2,9 @@ package raven.sqdev.syntax;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.misc.CharacterPair;
+import raven.sqdev.misc.TextUtils;
 
 /**
  * A class representing a syntax element.<br>
@@ -11,7 +13,7 @@ import raven.sqdev.misc.CharacterPair;
  * of another sub-syntax and the respective encapsulating characters.
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SyntaxElement {
 	
@@ -40,7 +42,7 @@ public class SyntaxElement {
 	 *            <code>SyntaxElement</code>. It may only be one word
 	 */
 	public SyntaxElement(String leafElement) {
-		Assert.isTrue(leafElement != null && !leafElement.isEmpty() && !leafElement.contains(" "));
+		Assert.isTrue(leafElement != null && !leafElement.isEmpty());
 		
 		this.leafElement = leafElement;
 	}
@@ -59,6 +61,7 @@ public class SyntaxElement {
 		Assert.isTrue(subSyntax != null && !subSyntax.isEmpty());
 		
 		this.subSyntax = subSyntax;
+		this.encapsulator = encapsulator;
 	}
 	
 	/**
@@ -76,8 +79,12 @@ public class SyntaxElement {
 		if (isLeafElement()) {
 			return leafElement;
 		} else {
-			return getEncapsulator().getOpener() + subSyntax.toString()
-					+ getEncapsulator().getCloser();
+			if (encapsulator != null) {
+				return getEncapsulator().getOpener() + subSyntax.toString()
+						+ getEncapsulator().getCloser();
+			} else {
+				return subSyntax.toString();
+			}
 		}
 	}
 	
@@ -118,4 +125,59 @@ public class SyntaxElement {
 		return this.toString().equals(comp.toString());
 	}
 	
+	public static SyntaxElement parseSyntaxElement(String input) throws BadSyntaxException {
+		if (input == null || (input = input.trim()).isEmpty()) {
+			throw new BadSyntaxException("The given input cannot be parsed into a syntaxElement!");
+		}
+		
+		char startingChar = input.charAt(0);
+		CharacterPair encapsulator = null;
+		
+		if (!Character.isLetterOrDigit(startingChar)) {
+			// find the respective encapsulator
+			encapsulator = CharacterPair.getDefinedPairFor(startingChar);
+		}
+		
+		String[] elements = TextUtils.getTextAreas(input);
+		
+		if (elements == null || elements.length == 0) {
+			throw new BadSyntaxException(
+					"TextUtils.getAreas() was not able to find areas in input");
+		}
+		
+		if (elements.length > 1) {
+			// create a subSyntax with each of those elements as a
+			// syntaxElements
+			
+			Syntax subSyntax = new Syntax();
+			
+			for (String currentArea : elements) {
+				if (TextUtils.isSingleTextArea(currentArea)) {
+					// add as leaf node
+					subSyntax.addElement(new SyntaxElement(currentArea));
+				} else {
+					// add as sub node
+					subSyntax.addElement(parseSyntaxElement(currentArea));
+				}
+			}
+			
+			return new SyntaxElement(subSyntax, encapsulator);
+		} else {
+			if (encapsulator == null) {
+				// There is just one area -> leaf element
+				return new SyntaxElement(elements[0]);
+			} else {
+				Syntax subSyntax = new Syntax();
+				
+				String value = elements[0];
+				// remove encapsulating characters
+				value = value.substring(value.indexOf(encapsulator.getOpener()) + 1,
+						value.lastIndexOf(encapsulator.getCloser()));
+				
+				subSyntax.addElement(new SyntaxElement(value));
+				
+				return new SyntaxElement(subSyntax, encapsulator);
+			}
+		}
+	}
 }

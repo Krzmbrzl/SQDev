@@ -18,6 +18,7 @@ public class SQFStringPartitionRule extends PatternRule {
 	 */
 	@SuppressWarnings("rawtypes")
 	private static class DecreasingCharArrayLengthComparator implements Comparator {
+		@Override
 		public int compare(Object o1, Object o2) {
 			return ((char[]) o2).length - ((char[]) o1).length;
 		}
@@ -103,6 +104,7 @@ public class SQFStringPartitionRule extends PatternRule {
 		}
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	protected boolean endSequenceDetected(ICharacterScanner scanner) {
 		

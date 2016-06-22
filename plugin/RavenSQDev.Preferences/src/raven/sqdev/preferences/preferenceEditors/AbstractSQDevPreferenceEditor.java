@@ -446,6 +446,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	 * 			
 	 * @see #getComponentCount()
 	 */
+	@Override
 	public void matchComponentCount(int count) {
 		if (count < getComponentCount()) {
 			throw new IllegalArgumentException(
@@ -517,6 +518,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	 * Creates the required components for this editor in the set container.<br>
 	 * <b>Should call {@linkplain #createEmptyComponents()} in the end!</b>
 	 */
+	@Override
 	public void createComponents() {
 		createComponents(getContainer());
 	}
