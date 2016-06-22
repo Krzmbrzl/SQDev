@@ -141,7 +141,8 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 					monitor.beginTask("Storing keywords...", IProgressMonitor.UNKNOWN);
 					
 					ResourceManager manager = ResourceManager.getManager();
-					manager.updateResource("SQFKeywords.txt", list.getSaveableFormat());
+					manager.updateResource(ResourceManager.KEYWORDS_RESOURCE,
+							list.getSaveableFormat());
 					
 					// tell the user to restart
 					SQDevInfobox info = new SQDevInfobox(

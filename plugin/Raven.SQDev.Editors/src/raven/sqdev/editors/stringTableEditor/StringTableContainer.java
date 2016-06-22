@@ -14,7 +14,7 @@ import raven.sqdev.misc.UpdateReporter;
  * @author Raven
  *
  */
-public class StringTableContainer extends UpdateReporter {
+public class StringTableContainer extends UpdateReporter implements Cloneable {
 	
 	/**
 	 * A list of <code>StringTableKeys</code> contained in this container
@@ -151,5 +151,27 @@ public class StringTableContainer extends UpdateReporter {
 		String representation = builder.toString().trim().replace("\n", "\n\t");
 		
 		return representation + "\n</Container>";
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!this.getClass().equals(obj.getClass())) {
+			return false;
+		}
+		
+		StringTableContainer comparer = (StringTableContainer) obj;
+		
+		return getXMLRepresentation().equals(comparer.getXMLRepresentation());
+	}
+	
+	@Override
+	public StringTableContainer clone() {
+		StringTableContainer container = new StringTableContainer(getName());
+		
+		for(StringTableKey currentKey : getKeys()) {
+			container.addKey(currentKey.clone());
+		}
+		
+		return container;
 	}
 }

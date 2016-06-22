@@ -6,12 +6,9 @@ package raven.sqdev.editors.sqfeditor.parsing;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class SQFLexer extends Lexer {
@@ -143,19 +140,19 @@ public class SQFLexer extends Lexer {
 	public void action(RuleContext _localctx, int ruleIndex, int actionIndex) {
 		switch (ruleIndex) {
 		case 22:
-			ID_action((RuleContext)_localctx, actionIndex);
+			ID_action(_localctx, actionIndex);
 			break;
 		case 23:
-			PREPROCESSOR_action((RuleContext)_localctx, actionIndex);
+			PREPROCESSOR_action(_localctx, actionIndex);
 			break;
 		case 24:
-			DOC_action((RuleContext)_localctx, actionIndex);
+			DOC_action(_localctx, actionIndex);
 			break;
 		case 25:
-			COMMENT_action((RuleContext)_localctx, actionIndex);
+			COMMENT_action(_localctx, actionIndex);
 			break;
 		case 26:
-			WS_action((RuleContext)_localctx, actionIndex);
+			WS_action(_localctx, actionIndex);
 			break;
 		}
 	}

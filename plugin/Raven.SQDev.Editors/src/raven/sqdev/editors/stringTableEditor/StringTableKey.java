@@ -2,12 +2,13 @@ package raven.sqdev.editors.stringTableEditor;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.Assert;
 
 import raven.sqdev.misc.UpdateReporter;
 
-public class StringTableKey extends UpdateReporter {
+public class StringTableKey extends UpdateReporter implements Cloneable {
 	
 	/**
 	 * The respective key
@@ -139,5 +140,31 @@ public class StringTableKey extends UpdateReporter {
 		String representation = builder.toString().trim().replace("\n", "\n\t");
 		
 		return representation + "\n</Key>";
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!this.getClass().equals(obj.getClass())) {
+			return false;
+		}
+		
+		StringTableKey comparer = (StringTableKey) obj;
+		
+		return getXMLRepresentation().equals(comparer.getXMLRepresentation());
+	}
+	
+	@Override
+	public StringTableKey clone() {
+		StringTableKey key = new StringTableKey(getKey());
+		
+		Iterator<Entry<Language, String>> it = localizedStrings.entrySet().iterator();
+		
+		while (it.hasNext()) {
+			Entry<Language, String> entry = it.next();
+			
+			key.setString(entry.getKey(), entry.getValue());
+		}
+		
+		return key;
 	}
 }

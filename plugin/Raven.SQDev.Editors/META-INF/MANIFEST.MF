@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Editors
 Bundle-SymbolicName: raven.sqdev.editors;singleton:=true
-Bundle-Version: 0.3.1
+Bundle-Version: 0.4.0
 Bundle-Activator: raven.sqdev.editors.activator.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -24,6 +24,7 @@ Export-Package: org.antlr.v4.runtime;
    org.antlr.v4.runtime.tree.pattern",
  org.antlr.v4.runtime.atn;uses:="org.antlr.v4.runtime,org.antlr.v4.runtime.dfa,org.antlr.v4.runtime.misc",
  org.antlr.v4.runtime.dfa;uses:="org.antlr.v4.runtime,org.antlr.v4.runtime.atn",
+ org.antlr.v4.runtime.misc,
  org.antlr.v4.runtime.tree;uses:="org.antlr.v4.runtime,org.antlr.v4.runtime.misc",
  raven.sqdev.editors;
   uses:="org.eclipse.ui.editors.text,

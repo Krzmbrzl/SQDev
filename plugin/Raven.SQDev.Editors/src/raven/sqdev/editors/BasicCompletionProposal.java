@@ -134,6 +134,7 @@ public class BasicCompletionProposal implements ICompletionProposal, ICompletion
 	/*
 	 * @see ICompletionProposal#apply(IDocument)
 	 */
+	@Override
 	public void apply(IDocument document) {
 		try {
 			document.replace(replacementOffset, replacementLength, replacementString);
@@ -145,6 +146,7 @@ public class BasicCompletionProposal implements ICompletionProposal, ICompletion
 	/*
 	 * @see ICompletionProposal#getSelection(IDocument)
 	 */
+	@Override
 	public Point getSelection(IDocument document) {
 		return new Point(replacementOffset + cursorPosition, 0);
 	}
@@ -152,6 +154,7 @@ public class BasicCompletionProposal implements ICompletionProposal, ICompletion
 	/*
 	 * @see ICompletionProposal#getContextInformation()
 	 */
+	@Override
 	public IContextInformation getContextInformation() {
 		return contextInformation;
 	}
@@ -159,6 +162,7 @@ public class BasicCompletionProposal implements ICompletionProposal, ICompletion
 	/*
 	 * @see ICompletionProposal#getImage()
 	 */
+	@Override
 	public Image getImage() {
 		return image;
 	}
@@ -166,6 +170,7 @@ public class BasicCompletionProposal implements ICompletionProposal, ICompletion
 	/*
 	 * @see ICompletionProposal#getDisplayString()
 	 */
+	@Override
 	public String getDisplayString() {
 		if (displayString != null)
 			return displayString;
@@ -175,6 +180,7 @@ public class BasicCompletionProposal implements ICompletionProposal, ICompletion
 	@Override
 	public IInformationControlCreator getInformationControlCreator() {
 		return new IInformationControlCreator() {
+			@Override
 			public IInformationControl createInformationControl(Shell parent) {
 				return new BasicInformationControl(parent);
 			}

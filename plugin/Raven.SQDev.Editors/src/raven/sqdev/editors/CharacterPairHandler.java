@@ -67,15 +67,15 @@ public class CharacterPairHandler implements IEditorKeyHandler {
 			return false;
 		}
 		
+		if (IEditorKeyHandler.isDeletion(event.character)) {
+			// handle deletions
+			return true;
+		}
+		
 		if (editor.getBasicProvider().getPartitioner().getContentType(selection.x).toLowerCase()
 				.contains("string")) {
 			// disable in strings
 			return false;
-		}
-		
-		if (IEditorKeyHandler.isDeletion(event.character)) {
-			// handle deletions
-			return true;
 		}
 		
 		if (isRegisteredOpeningCharacter(event.character)

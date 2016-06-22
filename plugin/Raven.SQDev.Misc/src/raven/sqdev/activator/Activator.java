@@ -14,6 +14,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.
 	 * BundleContext)
 	 */
+	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		super.start(bundleContext);
 		SQDevPluginManager.getManager().register(this);
@@ -25,6 +26,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @see
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
+	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
 		SQDevPluginManager.getManager().unregister(this);
 		

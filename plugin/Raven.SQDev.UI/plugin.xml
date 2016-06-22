@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.ui.main.toolbar">
+         <toolbar
+               id="raven.sqdev.ui.toolbar">
+            <command
+                  commandId="raven.sqdev.command.showParseTree"
+                  label="Show parseTree"
+                  style="push">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="raven.sqdev.ui.commands.ShowParseTreeHandler"
+            description="Displays the parse tree graphically"
+            id="raven.sqdev.command.showParseTree"
+            name="Show parse tree">
+      </command>
+   </extension>
+
+</plugin>

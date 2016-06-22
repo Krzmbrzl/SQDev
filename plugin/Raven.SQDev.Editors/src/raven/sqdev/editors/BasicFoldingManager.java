@@ -55,6 +55,7 @@ public class BasicFoldingManager implements IManager {
 		annotationQueue.put(entry.getKey(), entry.getValue());
 	}
 	
+	@Override
 	public void apply() {
 		// clear
 		model.removeAllAnnotations();

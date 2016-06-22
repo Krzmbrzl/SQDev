@@ -90,6 +90,7 @@ public class SQDevProjectWizardPage extends WizardPage {
 		getNameText().setToolTipText(nameTooltip);
 		getNameText().setLayoutData(gd);
 		getNameText().addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				dialogChanged();
 			}

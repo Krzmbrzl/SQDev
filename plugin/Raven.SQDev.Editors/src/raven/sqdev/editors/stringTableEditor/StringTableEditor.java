@@ -102,6 +102,14 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 */
 	protected boolean isDirty;
 	/**
+	 * The index of the user interface for editing the stringTable
+	 */
+	protected int GUI_INDEX = -1;
+	/**
+	 * The index of the actual XML editor
+	 */
+	protected int EDITOR_INDEX = -1;
+	/**
 	 * The <code>TableViewer</code> for displaying the table
 	 */
 	private TableViewer viewer;
@@ -143,6 +151,10 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 * A list of packages that exist in this stringTable
 	 */
 	private List<StringTablePackage> packageList;
+	/**
+	 * A list of "old" packages
+	 */
+	private List<StringTablePackage> oldPackageList;
 	
 	
 	public StringTableEditor() {
@@ -151,6 +163,7 @@ public class StringTableEditor extends MultiPageEditorPart {
 		displayedLanguages = new HashMap<Language, Integer>();
 		tableInputList = new ArrayList<Object>();
 		packageList = new ArrayList<StringTablePackage>();
+		oldPackageList = new ArrayList<StringTablePackage>();
 		
 		addPageChangedListener(new IPageChangedListener() {
 			
@@ -163,6 +176,20 @@ public class StringTableEditor extends MultiPageEditorPart {
 				} else {
 					if (event.getSelectedPage() instanceof SashForm) {
 						// the GUI/table was selected
+						if (!editor.isValid()) {
+							// don't allow switching editor when there are
+							// errors
+							setActivePage(EDITOR_INDEX);
+							
+							SQDevInfobox info = new SQDevInfobox(
+									"Can't change to UI as there are errors in the source code!",
+									SWT.ICON_WARNING);
+							
+							info.open(false);
+							
+							return;
+						}
+						
 						List<StringTablePackage> packages = editor.getPackageList();
 						
 						if (packages.isEmpty()) {
@@ -200,8 +227,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		
 		sashForm.setWeights(new int[] { 1, 4 });
 		
-		int index = addPage(sashForm);
-		setPageText(index, "GUI");
+		GUI_INDEX = addPage(sashForm);
+		setPageText(GUI_INDEX, "GUI");
 	}
 	
 	/**
@@ -304,30 +331,9 @@ public class StringTableEditor extends MultiPageEditorPart {
 				Text newEditor = new Text(packageTree, SWT.NONE);
 				newEditor.setText(item.getText());
 				newEditor.addModifyListener(new ModifyListener() {
+					@Override
 					public void modifyText(ModifyEvent e) {
-						Text textField = (Text) editor.getEditor();
 						
-						String text = textField.getText();
-						
-						if (text.isEmpty()) {
-							return;
-						}
-						
-						editor.getItem().setText(textField.getText());
-						
-						Object data = item.getData();
-						
-						if (data == null) {
-							return;
-						}
-						
-						if (data instanceof StringTableContainer) {
-							((StringTableContainer) data).setName(text);
-						} else {
-							if (data instanceof StringTablePackage) {
-								((StringTablePackage) data).setName(text);
-							}
-						}
 					}
 				});
 				
@@ -336,6 +342,25 @@ public class StringTableEditor extends MultiPageEditorPart {
 					@Override
 					public void keyPressed(KeyEvent e) {
 						if (e.character == '\n' || e.character == '\r') {
+							Text textField = (Text) editor.getEditor();
+							
+							String text = textField.getText();
+							
+							if (!text.isEmpty() && item.getData() != null) {
+								
+								editor.getItem().setText(textField.getText());
+								
+								Object data = item.getData();
+								
+								if (data instanceof StringTableContainer) {
+									((StringTableContainer) data).setName(text);
+								} else {
+									if (data instanceof StringTablePackage) {
+										((StringTablePackage) data).setName(text);
+									}
+								}
+							}
+							
 							newEditor.dispose();
 						}
 					}
@@ -472,6 +497,12 @@ public class StringTableEditor extends MultiPageEditorPart {
 			
 			List<Language> languages = new ArrayList<Language>();
 			
+			if (tableInputList.isEmpty()) {
+				viewer.getTable().setEnabled(false);
+				viewer.getTable().setRedraw(true);
+				return;
+			}
+			
 			// find out the configured languages
 			for (Object current : tableInputList) {
 				if (current instanceof StringTableKey) {
@@ -492,6 +523,10 @@ public class StringTableEditor extends MultiPageEditorPart {
 			
 			// update table
 			viewer.getTable().setRedraw(true);
+			if (!viewer.getTable().isEnabled()) {
+				viewer.getTable().setEnabled(true);
+				viewer.getTable().update();
+			}
 		}
 	}
 	
@@ -551,6 +586,7 @@ public class StringTableEditor extends MultiPageEditorPart {
 		
 		ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(
 				viewer) {
+			@Override
 			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
 				// Enable editor only with mouse double click
 				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
@@ -983,7 +1019,7 @@ public class StringTableEditor extends MultiPageEditorPart {
 		}
 		
 		updateTree();
-		syncXMLPresentation();
+		changed();
 	}
 	
 	/**
@@ -1081,8 +1117,18 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 * Gets called whenever the UI part of this editor has changed
 	 */
 	private void changed() {
-		isDirty = true;
-		syncXMLPresentation();
+		if (!oldPackageList.equals(packageList)) {
+			if (!oldPackageList.isEmpty()) {
+				isDirty = true;
+				syncXMLPresentation();
+			}
+			
+			oldPackageList.clear();
+			// update old package list
+			for (StringTablePackage currentPackage : packageList) {
+				oldPackageList.add(currentPackage.clone());
+			}
+		}
 	}
 	
 	/**
@@ -1092,10 +1138,10 @@ public class StringTableEditor extends MultiPageEditorPart {
 		try {
 			editor = new StringTableXMLEditor();
 			
-			int index = addPage(editor, getEditorInput());
-			setPageText(index, "XML");
+			EDITOR_INDEX = addPage(editor, getEditorInput());
+			setPageText(EDITOR_INDEX, "XML");
 			
-			syncXMLPresentation();
+			// syncXMLPresentation();
 		} catch (PartInitException e) {
 			throw new SQDevCoreException("Couldn't create stringTableEditor", e);
 		}

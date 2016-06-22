@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -262,7 +262,7 @@ public class ProjectUtil {
 	 */
 	public static boolean exists(String name) {
 		for (IProject currentProject : ResourcesPlugin.getWorkspace().getRoot()
-				.getProjects(IWorkspaceRoot.INCLUDE_HIDDEN)) {
+				.getProjects(IContainer.INCLUDE_HIDDEN)) {
 			if (currentProject.getName().equals(name)) {
 				return true;
 			}

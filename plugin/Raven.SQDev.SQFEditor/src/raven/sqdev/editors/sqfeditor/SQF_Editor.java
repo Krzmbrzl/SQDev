@@ -2,23 +2,19 @@ package raven.sqdev.editors.sqfeditor;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
@@ -206,28 +202,6 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 	
 	@Override
 	protected ParseTree doParse(String input) {
-		IFile file = null;
-		if (getEditorInput() instanceof IFileEditorInput) {
-			file = ((IFileEditorInput) getEditorInput()).getFile();
-		} else {
-			SQDevInfobox info = new SQDevInfobox(
-					"An unexpected input occured (not a FileEditorInput)."
-							+ "\n\nPlease contact the developer",
-					SWT.ERROR);
-			
-			info.open();
-			
-			return null;
-		}
-		
-		try {
-			// TODO: use marker manager
-			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
-		} catch (CoreException e) {
-			SQDevInfobox info = new SQDevInfobox("Problem while removing markers...", e);
-			info.open();
-		}
-		
 		BasicErrorListener listener = new BasicErrorListener(this);
 		
 		ANTLRInputStream in = new ANTLRInputStream(input);
@@ -239,6 +213,10 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 		currentStream = new CommonTokenStream(lexer);
 		
 		SQFParser parser = new SQFParser(currentStream);
+		
+		if (parseRuleNames == null) {
+			parseRuleNames = Arrays.asList(parser.getRuleNames());
+		}
 		
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
@@ -429,5 +407,10 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 		if (localUpdate || globalUpdate) {
 			update(false);
 		}
+	}
+	
+	@Override
+	public void createMarker(String type, int offset, int length, String message, int severity) {
+		// do nothing TODO: remove + fix macros
 	}
 }

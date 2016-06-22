@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: UI
+Bundle-SymbolicName: raven.sqdev.ui;singleton:=true
+Bundle-Version: 0.1.0
+Bundle-Activator: raven.sqdev.ui.Activator
+Bundle-Vendor: Raven
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ raven.sqdev.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.editors;bundle-version="3.8.200"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: Abedo/org.abego.treelayout.core-1.0.3.jar,
+ .

@@ -93,7 +93,7 @@ public class TextUtils {
 		for (char currentChar : chars) {
 			if (!Character.isLetterOrDigit(currentChar)) {
 				// check if special character is allowed
-				if (!allowedChars.contains((Character) currentChar)) {
+				if (!allowedChars.contains(currentChar)) {
 					if (currentChar == ' ') {
 						return "Blanks are not allowed in this name!";
 					}
@@ -118,7 +118,7 @@ public class TextUtils {
 		ArrayList<Character> allowedChars = new ArrayList<Character>();
 		
 		for (char currentChar : ALLOWED_SPECIAL_CHARACTER_FILENAME) {
-			allowedChars.add((Character) currentChar);
+			allowedChars.add(currentChar);
 		}
 		
 		return isValidName(name, allowedChars);
@@ -135,7 +135,7 @@ public class TextUtils {
 		ArrayList<Character> allowedChars = new ArrayList<Character>();
 		
 		for (char currentChar : ALLOWED_SPECIAL_CHARACTER_FILENAME) {
-			allowedChars.add((Character) currentChar);
+			allowedChars.add(currentChar);
 		}
 		
 		return whyIsInvalidName(name, allowedChars);

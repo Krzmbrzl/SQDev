@@ -250,17 +250,37 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 		reconciler.setDamager(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr_Default, IDocument.DEFAULT_CONTENT_TYPE);
 		
-		// colorize strings
-		NonRuleBasedDamagerRepairer ndr_String = new NonRuleBasedDamagerRepairer(
-				new TextAttribute(colorManager.getColor(ISQDevColorConstants.STRING)));
-		reconciler.setDamager(ndr_String, BasicPartitionScanner.BASIC_STRING);
-		reconciler.setRepairer(ndr_String, BasicPartitionScanner.BASIC_STRING);
+		boolean containsString = false;
+		boolean containsComment = false;
 		
-		// colorize comments
-		NonRuleBasedDamagerRepairer ndr_Comment = new NonRuleBasedDamagerRepairer(
-				new TextAttribute(colorManager.getColor(ISQDevColorConstants.COMMENT)));
-		reconciler.setDamager(ndr_Comment, BasicPartitionScanner.BASIC_COMMENT);
-		reconciler.setRepairer(ndr_Comment, BasicPartitionScanner.BASIC_COMMENT);
+		for (String currentType : editor.getBasicProvider().getPartitionScanner()
+				.getConfiguredContentTypes()) {
+			switch (currentType) {
+				case BasicPartitionScanner.BASIC_STRING:
+					containsString = true;
+					break;
+				
+				case BasicPartitionScanner.BASIC_COMMENT:
+					containsComment = true;
+					break;
+			}
+		}
+		
+		if (containsString) {
+			// colorize strings
+			NonRuleBasedDamagerRepairer ndr_String = new NonRuleBasedDamagerRepairer(
+					new TextAttribute(colorManager.getColor(ISQDevColorConstants.STRING)));
+			reconciler.setDamager(ndr_String, BasicPartitionScanner.BASIC_STRING);
+			reconciler.setRepairer(ndr_String, BasicPartitionScanner.BASIC_STRING);
+		}
+		
+		if (containsComment) {
+			// colorize comments
+			NonRuleBasedDamagerRepairer ndr_Comment = new NonRuleBasedDamagerRepairer(
+					new TextAttribute(colorManager.getColor(ISQDevColorConstants.COMMENT)));
+			reconciler.setDamager(ndr_Comment, BasicPartitionScanner.BASIC_COMMENT);
+			reconciler.setRepairer(ndr_Comment, BasicPartitionScanner.BASIC_COMMENT);
+		}
 		
 		return reconciler;
 	}

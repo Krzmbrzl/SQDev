@@ -36,6 +36,7 @@ public class SqfNewFileWizard extends Wizard implements INewWizard {
 	 * Adding the page to the wizard.
 	 */
 	
+	@Override
 	public void addPages() {
 		page = new SqfNewFileWizardPage(selection);
 		addPage(page);
@@ -45,6 +46,7 @@ public class SqfNewFileWizard extends Wizard implements INewWizard {
 	 * This method is called when 'Finish' button is pressed in the wizard. We
 	 * will create an operation and run it using wizard as execution context.
 	 */
+	@Override
 	public boolean performFinish() {
 		final String fileName = page.getFileName();
 		
@@ -105,6 +107,7 @@ public class SqfNewFileWizard extends Wizard implements INewWizard {
 	 * 
 	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
 	 */
+	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
 	}

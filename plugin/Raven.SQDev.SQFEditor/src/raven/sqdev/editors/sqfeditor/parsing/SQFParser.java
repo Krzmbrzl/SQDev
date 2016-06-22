@@ -3,11 +3,8 @@ package raven.sqdev.editors.sqfeditor.parsing;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class SQFParser extends Parser {
@@ -104,7 +101,7 @@ public class SQFParser extends Parser {
 		public TerminalNode SEMICOLON(int i) {
 			return getToken(SQFParser.SEMICOLON, i);
 		}
-		public TerminalNode EOF() { return getToken(SQFParser.EOF, 0); }
+		public TerminalNode EOF() { return getToken(Recognizer.EOF, 0); }
 		public CodeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1113,6 +1110,7 @@ public class SQFParser extends Parser {
 		return _localctx;
 	}
 
+	@Override
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
 		case 4:

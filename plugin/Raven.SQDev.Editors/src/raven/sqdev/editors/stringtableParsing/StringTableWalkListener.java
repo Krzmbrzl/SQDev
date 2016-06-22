@@ -89,6 +89,11 @@ public class StringTableWalkListener extends StringTableBaseListener {
 	@Override
 	public void enterKeyStartTag(KeyStartTagContext ctx) {
 		String name = ctx.children.get(ctx.children.size() - 2).getText();
+		
+		if (name.length() <= 2) {
+			return;
+		}
+		
 		name = name.substring(1, name.length() - 1);
 		
 		currentKey = new StringTableKey(name);

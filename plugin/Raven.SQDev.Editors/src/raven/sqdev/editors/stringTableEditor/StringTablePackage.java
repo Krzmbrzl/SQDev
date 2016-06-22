@@ -14,7 +14,7 @@ import raven.sqdev.misc.UpdateReporter;
  * @author Raven
  *
  */
-public class StringTablePackage extends UpdateReporter {
+public class StringTablePackage extends UpdateReporter implements Cloneable {
 	
 	/**
 	 * The name of this package
@@ -146,6 +146,28 @@ public class StringTablePackage extends UpdateReporter {
 		String representation = builder.toString().trim().replace("\n", "\n\t");
 		
 		return representation + "\n</Package>";
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!this.getClass().equals(obj.getClass())) {
+			return false;
+		}
+		
+		StringTablePackage comparer = (StringTablePackage) obj;
+		
+		return getXMLRepresentation().equals(comparer.getXMLRepresentation());
+	}
+	
+	@Override
+	public StringTablePackage clone() {
+		StringTablePackage pkg = new StringTablePackage(getName());
+		
+		for (StringTableContainer currentContainer : getContainer()) {
+			pkg.addContainer(currentContainer.clone());
+		}
+		
+		return pkg;
 	}
 	
 }

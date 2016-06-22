@@ -18,6 +18,7 @@ public class CharacterPair {
 	public static final CharacterPair ROUND_BRACKETS = new CharacterPair('(', ')');
 	public static final CharacterPair SQUARE_BRACKETS = new CharacterPair('[', ']');
 	public static final CharacterPair CURLY_BRACKETS = new CharacterPair('{', '}');
+	public static final CharacterPair TAG = new CharacterPair('<', '>');
 	
 	/**
 	 * A list of all defined <code>CharacterPairs</code>

@@ -6,8 +6,8 @@
       <editor
             class="raven.sqdev.editors.BasicCodeEditor"
             default="false"
-            id="Raven.SQDev.Editors.BasicTextEditor"
-            name="BasicTextEditor">
+            id="Raven.SQDev.Editors.BasicCodeEditor"
+            name="BasicCodeEditor">
       </editor>
       <editor
             class="raven.sqdev.editors.sqdevEditor.SQDevFileEditor"
@@ -21,6 +21,7 @@
             class="raven.sqdev.editors.stringTableEditor.StringTableEditor"
             default="true"
             filenames="stringtable.xml"
+            icon="platform:plugin/raven.sqdev.util/resources/icons/StringTableIcon.png"
             id="raven.sqdev.editors.stringtableeditor"
             name="StringTableEditor">
       </editor>

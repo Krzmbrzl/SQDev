@@ -22,7 +22,7 @@ public class ColorUtils {
 	 * @return The newly created String
 	 */
 	public static String getRGBValuesAsString(RGB rgb) {
-		return (String) (rgb.red + "," + rgb.green + "," + rgb.blue);
+		return rgb.red + "," + rgb.green + "," + rgb.blue;
 	}
 	
 	/**

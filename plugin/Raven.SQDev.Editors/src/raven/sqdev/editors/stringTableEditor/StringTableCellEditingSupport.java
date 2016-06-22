@@ -212,7 +212,7 @@ public class StringTableCellEditingSupport extends EditingSupport {
 			}
 			
 			// update cellText
-			activeCell.setText((String) value);
+			activeCell.setText(value);
 		}
 	}
 	

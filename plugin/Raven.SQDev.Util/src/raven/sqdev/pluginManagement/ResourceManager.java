@@ -41,6 +41,11 @@ public class ResourceManager {
 	 */
 	public static final String VERSION_RESOURCE = "versions.txt";
 	/**
+	 * The name of the resource containing the stored keywords and the
+	 * respective information about them
+	 */
+	public static final String KEYWORDS_RESOURCE = "SQFKeywords.txt";
+	/**
 	 * The internal path to the icons folder
 	 */
 	public static final String ICON_FOLDER = "/resources/icons";
@@ -67,7 +72,7 @@ public class ResourceManager {
 	/**
 	 * The internal path to the SQF icon resource
 	 */
-	public static final String SQF_ICON = ICON_FOLDER + "/SQF_image.gif";
+	public static final String SQF_ICON = ICON_FOLDER + "/SQFIcon.png";
 	/**
 	 * The internal path to the SQFCommand icon resource
 	 */
@@ -84,6 +89,14 @@ public class ResourceManager {
 	 * The internal path to the minus icon
 	 */
 	public static final String MINUS_ICON = ICON_FOLDER + "/minusIcon.png";
+	/**
+	 * The internal path to the Stringtable icon
+	 */
+	public static final String STRINGTABLE_ICON = ICON_FOLDER + "/StringTableIcon.png";
+	/**
+	 * The internal path to the keyword file
+	 */
+	public static final String INTERNAL_KEYWORDS = "/resources/sqf/SQFKeywords.txt";
 	
 	private ClassLoader loader;
 	private URL locationURL;

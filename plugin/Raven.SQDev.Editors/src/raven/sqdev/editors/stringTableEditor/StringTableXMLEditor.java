@@ -1,17 +1,23 @@
 package raven.sqdev.editors.stringTableEditor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.eclipse.jface.text.rules.IPredicateRule;
+import org.eclipse.jface.text.rules.MultiLineRule;
+import org.eclipse.jface.text.rules.Token;
 
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicErrorListener;
+import raven.sqdev.editors.BasicSourceViewerConfiguration;
 import raven.sqdev.editors.stringtableParsing.StringTableLexer;
 import raven.sqdev.editors.stringtableParsing.StringTableParser;
 import raven.sqdev.editors.stringtableParsing.StringTableWalkListener;
+import raven.sqdev.misc.CharacterPair;
 
 /**
  * The editor used in the StringTableEditor for editing the XML file
@@ -20,6 +26,9 @@ import raven.sqdev.editors.stringtableParsing.StringTableWalkListener;
  *
  */
 public class StringTableXMLEditor extends BasicCodeEditor {
+	
+	public static final String TAG = "__stringTableEditor_Tag";
+	public static final IPredicateRule TAG_RULE = new MultiLineRule("<", ">", new Token(TAG));
 	/**
 	 * The token stream corresponding to the current parse tree
 	 */
@@ -28,6 +37,11 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 	 * The package list contained in this editor
 	 */
 	private List<StringTablePackage> packageList;
+	
+	
+	public StringTableXMLEditor() {
+		getBasicProvider().getPartitionScanner().setRules(new IPredicateRule[] { TAG_RULE });
+	}
 	
 	@Override
 	protected ParseTree doParse(String input) {
@@ -57,6 +71,29 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 		walker.walk(listener, tree);
 		
 		packageList = listener.getPackageList();
+		
+		applyParseChanges();
+	}
+	
+	@Override
+	protected List<CharacterPair> getCharacterPairs() {
+		List<CharacterPair> pairs = new ArrayList<CharacterPair>();
+		
+		pairs.add(CharacterPair.DOUBLE_QUOTATION_MARKS);
+		pairs.add(CharacterPair.SINGLE_QUOTATION_MARKS);
+		pairs.add(CharacterPair.TAG);
+		
+		return pairs;
+	}
+	
+	@Override
+	public BasicSourceViewerConfiguration getBasicConfiguration() {
+		if (configuration == null
+				|| !(configuration instanceof StringTableSourceViewerConfiguration)) {
+			configuration = new StringTableSourceViewerConfiguration(getColorManager(), this);
+		}
+		
+		return configuration;
 	}
 	
 	/**
@@ -65,6 +102,11 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 	 */
 	public List<StringTablePackage> getPackageList() {
 		return packageList;
+	}
+	
+	@Override
+	public boolean isDirty() {
+		return super.isDirty();
 	}
 	
 }

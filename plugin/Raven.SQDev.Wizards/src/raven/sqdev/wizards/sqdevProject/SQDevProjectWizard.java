@@ -17,6 +17,7 @@ public class SQDevProjectWizard extends Wizard implements INewWizard {
 		super();
 	}
 	
+	@Override
 	public void addPages() {
 		page = new SQDevProjectWizardPage("SQDevProjectWizardPage");
 		addPage(page);

@@ -395,6 +395,12 @@ public class SQFCommandCollector {
 		String syntax = categories[CATEGORY_SYNTAX];
 		
 		if (!syntax.isEmpty()) {
+			if (command.getKeyword().toLowerCase().equals("private")) {
+				// exception for private as a keyword
+				syntax = syntax.substring(0,
+						syntax.toLowerCase().lastIndexOf("alternative syntax"));
+			}
+			
 			applySyntax(command, syntax);
 		} else {
 			throw new SQDevCollectionException(

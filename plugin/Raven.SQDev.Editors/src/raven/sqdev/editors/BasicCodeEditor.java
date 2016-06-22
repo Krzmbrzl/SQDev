@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -31,7 +27,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
-import raven.sqdev.exceptions.SQDevCoreException;
+import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.interfaces.IManager;
 import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.misc.MultiPreferenceStore;
@@ -76,6 +72,10 @@ public class BasicCodeEditor extends TextEditor {
 	 * The parse tree representing the input of this editor
 	 */
 	protected ParseTree parseTree;
+	/**
+	 * The name sof the rules used for parsing this editor's input
+	 */
+	protected List<String> parseRuleNames;
 	
 	/**
 	 * The document provider of this editor
@@ -85,6 +85,10 @@ public class BasicCodeEditor extends TextEditor {
 	 * A list of <code>IManager</code> working on this editor
 	 */
 	protected List<IManager> managerList;
+	/**
+	 * A list of character pairs that shoud be used in this editor
+	 */
+	protected List<CharacterPair> characterPairs;
 	
 	public BasicCodeEditor() {
 		super();
@@ -92,13 +96,14 @@ public class BasicCodeEditor extends TextEditor {
 		setColorManager(new ColorManager());
 		setEditorKeyEventQueue(new EditorKeyEventQueue());
 		
-		// add a implementation for the autoCompletion of pairing characters
-		addCharacterPairHandler();
-		
 		this.setSourceViewerConfiguration(getBasicConfiguration());
 		this.setDocumentProvider(getBasicProvider());
 		
 		managerList = new ArrayList<IManager>();
+		characterPairs = getCharacterPairs();
+		
+		// add a implementation for the autoCompletion of pairing characters
+		configureCharacterPairHandler();
 	}
 	
 	@Override
@@ -175,27 +180,50 @@ public class BasicCodeEditor extends TextEditor {
 	}
 	
 	/**
-	 * Adds a default implementation of <code>CharacterPairHandler</code>
-	 * including <b>all</b> pairs defined in <code>CharacterPair</code><br>
-	 * <br>
-	 * If you want a different <code>CharacterPairHandler</code> override this
-	 * method and provide your own CharacterPairHandler and add it to the
-	 * <code>EditorKeyEventQueue</code> of <code>BasicTextEditor</code>
+	 * Adds the configured <code>CharacterPairs</code> as a
+	 * <code>CharacterPairHandler</code> to this editor.<br>
+	 * If you want to change the pairs you have to override
+	 * {@link #getCharacterPairs()}
 	 * 
 	 * @see CharacterPairHandler
 	 * @see CharacterPair
 	 */
-	public void addCharacterPairHandler() {
+	protected void configureCharacterPairHandler() {
 		CharacterPairHandler pairHandler = new CharacterPairHandler(this);
 		
-		// TODO: make all completions optional via preference
-		pairHandler.addPair(CharacterPair.DOUBLE_QUOTATION_MARKS);
-		pairHandler.addPair(CharacterPair.SINGLE_QUOTATION_MARKS);
-		pairHandler.addPair(CharacterPair.ROUND_BRACKETS);
-		pairHandler.addPair(CharacterPair.SQUARE_BRACKETS);
-		pairHandler.addPair(CharacterPair.CURLY_BRACKETS);
+		for (CharacterPair currentPair : getConfiguredCharacterPairs()) {
+			pairHandler.addPair(currentPair);
+		}
 		
 		getEditorKeyEventQueue().queueEditorKeyHandler(pairHandler);
+	}
+	
+	/**
+	 * Gets the <code>CharacterPairs</code> that should be used by this editor
+	 * 
+	 * @return A <code>List</code> of CharacterPairs
+	 */
+	protected List<CharacterPair> getCharacterPairs() {
+		List<CharacterPair> pairList = new ArrayList<CharacterPair>();
+		
+		pairList.add(CharacterPair.DOUBLE_QUOTATION_MARKS);
+		pairList.add(CharacterPair.SINGLE_QUOTATION_MARKS);
+		pairList.add(CharacterPair.ROUND_BRACKETS);
+		pairList.add(CharacterPair.SQUARE_BRACKETS);
+		pairList.add(CharacterPair.CURLY_BRACKETS);
+		
+		return pairList;
+	}
+	
+	/**
+	 * Gets a list of all configured character pairs from this editor
+	 */
+	public List<CharacterPair> getConfiguredCharacterPairs() {
+		if (characterPairs == null) {
+			characterPairs = new ArrayList<CharacterPair>(0);
+		}
+		
+		return characterPairs;
 	}
 	
 	@Override
@@ -302,6 +330,15 @@ public class BasicCodeEditor extends TextEditor {
 	}
 	
 	/**
+	 * Gets the names of the rules used for parsing this editor's input
+	 * 
+	 * @return The default implementation returns <code>null</code>
+	 */
+	public List<String> getParseRuleNames() {
+		return parseRuleNames;
+	}
+	
+	/**
 	 * Parses the input of this editor, updates the parseTree and sends it to
 	 * the {@link #processParseTree(ParseTree)} method automatically
 	 * 
@@ -339,7 +376,10 @@ public class BasicCodeEditor extends TextEditor {
 	}
 	
 	/**
-	 * Processes whatever needs to be processed when the ParseTree has cahnged
+	 * Processes whatever needs to be processed when the ParseTree has changed
+	 * <br>
+	 * Note: You might want to call {@link #applyParseChanges()} after the
+	 * processing
 	 * 
 	 * @param tree
 	 *            The generated tree
@@ -350,7 +390,9 @@ public class BasicCodeEditor extends TextEditor {
 	/**
 	 * Parses the input of this editor in order to set the {@link #parseTree}
 	 * for this editor. <br>
-	 * It is recommended to do the parsing in an extra thread
+	 * It is recommended to do the parsing in an extra thread<br>
+	 * Note: You might want to call {@link #applyParseChanges()} after parsing
+	 * (or rather after {@link #processParseTree(ParseTree)}
 	 * 
 	 * @param input
 	 *            The input to parse
@@ -375,11 +417,16 @@ public class BasicCodeEditor extends TextEditor {
 		// add folding manager
 		managerList.add(new BasicFoldingManager(
 				((ProjectionViewer) getSourceViewer()).getProjectionAnnotationModel()));
+		managerList.add(new BasicMarkerManager(this));
 	}
 	
 	/**
-	 * Creates a problem marker that will be visible in the editor
+	 * Creates a problem marker that will be visible in the editor.<br>
+	 * Note: Can only be called if {@link #getEditorInput()} does not return
+	 * null and is of type {@linkplain IFileEditorInput}
 	 * 
+	 * @param type
+	 *            The marker type
 	 * @param offset
 	 *            The offset of this marker area
 	 * @param length
@@ -389,47 +436,27 @@ public class BasicCodeEditor extends TextEditor {
 	 * @param severity
 	 *            The severity of the marker (has to be one specified by
 	 *            <code>IMarker</code>)
-	 * @return The created marker or <code>null</code> if the marker couldn't be
-	 *         created
 	 */
-	public IMarker createProblemMarker(int offset, int length, String message, int severity) {
-		if (getEditorInput() == null || !(getEditorInput() instanceof IFileEditorInput)) {
-			// can't access the editor input as needed
-			return null;
+	public void createMarker(String type, int offset, int length, String message, int severity) {
+		if (getEditorInput() == null) {
+			return;
 		}
 		
-		Assert.isTrue(offset >= 0 && length >= 0);
-		
-		IDocument document = getBasicProvider().getDocument(getEditorInput());
-		
-		if (document == null) {
-			return null;
-		}
-		
-		if (offset + length > document.getLength()) {
-			throw new SQDevCoreException(
-					"The given offset and length do not correspond to the document!");
-		}
-		
+		int line;
 		try {
-			// create marker
-			int line = document.getLineOfOffset(offset) + 1;
-			
-			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-			
-			IMarker marker = file.createMarker(IMarker.PROBLEM);
-			marker.setAttribute(IMarker.LINE_NUMBER, line);
-			marker.setAttribute(IMarker.MESSAGE, message);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			marker.setAttribute(IMarker.CHAR_START, offset);
-			marker.setAttribute(IMarker.CHAR_END, offset + length);
-			
-			return marker;
-		} catch (BadLocationException | CoreException e) {
-			e.printStackTrace();
-			
-			return null;
+			line = getBasicProvider().getDocument(getEditorInput()).getLineOfOffset(offset);
+		} catch (BadLocationException e) {
+			try {
+				throw new SQDevEditorException("Can't create marker", e);
+			} catch (SQDevEditorException e1) {
+				e1.printStackTrace();
+				
+				return;
+			}
 		}
+		
+		((BasicMarkerManager) getManager(BasicMarkerManager.TYPE)).addMarker(type, line, offset,
+				length, severity, message);
 	}
 	
 	@Override
@@ -488,5 +515,13 @@ public class BasicCodeEditor extends TextEditor {
 		
 		foldingManager.addFoldingArea(
 				new AbstractMap.SimpleEntry<ProjectionAnnotation, Position>(annotation, position));
+	}
+	
+	/**
+	 * Checks whether this editor is in a valid state (no errors in the source
+	 * code)
+	 */
+	public boolean isValid() {
+		return ((BasicMarkerManager) getManager(BasicMarkerManager.TYPE)).isValidState();
 	}
 }

@@ -14,7 +14,7 @@ import org.eclipse.ui.PlatformUI;
  * automatically
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQDevInfobox {
 	
@@ -82,7 +82,7 @@ public class SQDevInfobox {
 			public void run() {
 				Shell activeShell = Display.getCurrent().getActiveShell();
 				
-				if(activeShell == null) {
+				if (activeShell == null) {
 					// can't report error because user is not in eclipse anymore
 					return;
 				}
@@ -106,6 +106,50 @@ public class SQDevInfobox {
 		
 		
 		return result.get();
+	}
+	
+	/**
+	 * Makes the dialog visible and brings it to the front of the display.<br>
+	 * Note: This method can't return any value
+	 * 
+	 * @param suspend
+	 *            Whether or not to suspend the calling thread.
+	 */
+	public void open(boolean suspend) {
+		if (suspend) {
+			open();
+		} else {
+			Display display = PlatformUI.getWorkbench().getDisplay();
+			
+			display.syncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					Shell activeShell = Display.getCurrent().getActiveShell();
+					
+					if (activeShell == null) {
+						// can't report error because user is not in eclipse
+						// anymore
+						return;
+					}
+					
+					MessageBox box = new MessageBox(activeShell, style);
+					
+					box.setText("SQDev Info");
+					box.setMessage(message);
+					
+					box.open();
+					
+					Shell active = Display.getCurrent().getActiveShell();
+					
+					if (style == SWT.ERROR && !active.equals(
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())) {
+						// close every other opened window
+						active.close();
+					}
+				}
+			});
+		}
 	}
 	
 }
