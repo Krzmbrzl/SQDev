@@ -67,7 +67,7 @@ public class UpdateReporter {
 	/**
 	 * Notifies all registered <code>IUpdateListener</code>
 	 */
-	protected void notifyUpdateListener() {
+	public void notifyUpdateListener() {
 		for (IUpdateListener listener : updateListenerList) {
 			listener.updated();
 		}

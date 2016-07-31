@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +61,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.interfaces.IUpdateListener;
+import raven.sqdev.misc.TreeUtils;
 import raven.sqdev.pluginManagement.ResourceManager;
 import raven.sqdev.util.SQDevInfobox;
 
@@ -118,6 +120,14 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 */
 	private Tree packageTree;
 	/**
+	 * A list of all packages that were expanded in the UI-packageTree
+	 */
+	private List<StringTablePackage> expandedPackages;
+	/**
+	 * The object that was selected last in the UI-packageTree
+	 */
+	private Object lastSelectedObjectData;
+	/**
 	 * The plus icon image
 	 */
 	private Image plusIcon;
@@ -173,6 +183,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 					// The XML editor was selected
 					// refresh parse
 					editor.parseInput();
+					
+					saveTreeState();
 				} else {
 					if (event.getSelectedPage() instanceof SashForm) {
 						// the GUI/table was selected
@@ -195,7 +207,10 @@ public class StringTableEditor extends MultiPageEditorPart {
 						if (packages.isEmpty()) {
 							setPackages(null);
 						} else {
+							setTableInput(null);
 							setPackages(packages);
+							
+							restoreTreeState();
 						}
 					}
 				}
@@ -239,6 +254,7 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 */
 	private void createPackageTree(Composite parent) {
 		packageTree = new Tree(parent, SWT.SINGLE);
+		expandedPackages = new ArrayList<StringTablePackage>();
 		
 		TreeEditor editor = new TreeEditor(packageTree);
 		editor.horizontalAlignment = SWT.LEFT;
@@ -384,6 +400,55 @@ public class StringTableEditor extends MultiPageEditorPart {
 	}
 	
 	/**
+	 * Saves the current state (selection and expanded items) of the packageTree
+	 */
+	private void saveTreeState() {
+		// save the expanded tree nodes
+		expandedPackages.clear();
+		for (TreeItem currentItem : packageTree.getItems()) {
+			if (currentItem.getExpanded()) {
+				expandedPackages.add((StringTablePackage) currentItem.getData());
+			}
+		}
+		
+		// save selected TreeItem
+		if (packageTree.getSelection().length > 0) {
+			lastSelectedObjectData = packageTree.getSelection()[0].getData();
+		} else {
+			lastSelectedObjectData = null;
+		}
+	}
+	
+	/**
+	 * Restores the state of the packageTree (selection + expanded items)
+	 */
+	private void restoreTreeState() {
+		// restore expanded state of packages
+		for (TreeItem currentItem : packageTree.getItems()) {
+			if (expandedPackages.contains(currentItem.getData())) {
+				currentItem.setExpanded(true);
+			}
+		}
+		
+		// restore selection
+		if (lastSelectedObjectData != null) {
+			TreeItem lastSelectedItem = TreeUtils.findTreeItemWithData(packageTree,
+					lastSelectedObjectData);
+			
+			if (lastSelectedItem != null) {
+				packageTree.setSelection(lastSelectedItem);
+			}
+			
+			if (lastSelectedItem != null
+					&& lastSelectedItem.getData() instanceof StringTableContainer) {
+				setTableInput((StringTableContainer) lastSelectedItem.getData());
+			} else {
+				setTableInput(null);
+			}
+		}
+	}
+	
+	/**
 	 * Adds the MenuItems for the package context menu
 	 * 
 	 * @param menu
@@ -405,9 +470,12 @@ public class StringTableEditor extends MultiPageEditorPart {
 				newKey.setString(Language.ORIGINAL, "");
 				newContainer.addKey(newKey);
 				
+				configureContainerListener(newContainer);
+				
 				pkg.addContainer(newContainer);
 				
 				updateTree();
+				changed();
 			}
 		});
 		
@@ -492,16 +560,16 @@ public class StringTableEditor extends MultiPageEditorPart {
 				currentColumn.dispose();
 			}
 			
-			createBasicColumns();
-			
-			
-			List<Language> languages = new ArrayList<Language>();
-			
 			if (tableInputList.isEmpty()) {
+				viewer.getTable().clearAll();
 				viewer.getTable().setEnabled(false);
 				viewer.getTable().setRedraw(true);
 				return;
 			}
+			
+			createBasicColumns();
+			
+			List<Language> languages = new ArrayList<Language>();
 			
 			// find out the configured languages
 			for (Object current : tableInputList) {
@@ -571,6 +639,11 @@ public class StringTableEditor extends MultiPageEditorPart {
 							openAddRowMenu();
 						}
 					} else {
+						if (cell == null
+								|| viewer.getTable().getColumn(cell.getColumnIndex()) == null) {
+							return;
+						}
+						
 						if (data instanceof StringTableKey && viewer.getTable()
 								.getColumn(cell.getColumnIndex()).getData().equals(REMOVE_COLUMN)) {
 							// open when clicked on a key row
@@ -617,7 +690,7 @@ public class StringTableEditor extends MultiPageEditorPart {
 		// key column
 		TableViewerColumn keyColumn = new TableViewerColumn(viewer, SWT.NONE);
 		keyColumn.getColumn().setText("Key");
-		keyColumn.getColumn().setToolTipText("They for usage in scripts or config");
+		keyColumn.getColumn().setToolTipText("The key for usage in scripts or config");
 		keyColumn.getColumn().setWidth(100);
 		keyColumn.getColumn().setResizable(true);
 		keyColumn.getColumn().setData(KEY_COLUMN);
@@ -773,6 +846,18 @@ public class StringTableEditor extends MultiPageEditorPart {
 				contextMenu.setVisible(true);
 			}
 		});
+		
+		// add the respective language to the keys if they don't contain it
+		// already
+		for (Object current : tableInputList) {
+			if (current instanceof StringTableKey) {
+				StringTableKey currentKey = ((StringTableKey) current);
+				
+				if (!currentKey.containsString(language)) {
+					currentKey.setString(language, "");
+				}
+			}
+		}
 	}
 	
 	/**
@@ -866,7 +951,16 @@ public class StringTableEditor extends MultiPageEditorPart {
 					tableInputList.add(tableInputList.size() - 1, newKey);
 					currentTableContainer.addKey(newKey);
 					
+					// configure the new key with all displayed languages
+					Iterator<Language> it = displayedLanguages.keySet().iterator();
+					while (it.hasNext()) {
+						newKey.setString(it.next(), "");
+					}
+					
+					configureKeyListener(newKey);
+					
 					updateTableInput();
+					changed();
 				}
 			});
 		}
@@ -939,6 +1033,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 */
 	private void updateTree() {
 		if (packageTree != null) {
+			saveTreeState();
+			
 			packageTree.removeAll();
 			
 			for (StringTablePackage currentPackage : packageList) {
@@ -964,6 +1060,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 			}
 			
 			packageTree.update();
+			
+			restoreTreeState();
 		}
 	}
 	
@@ -1002,7 +1100,7 @@ public class StringTableEditor extends MultiPageEditorPart {
 			packages.add(defaultPackage);
 		}
 		
-		packageList.addAll(packages);
+		packageList.addAll(packages); // TODO: find
 		
 		boolean isSelectionContained = false;
 		
@@ -1167,7 +1265,7 @@ public class StringTableEditor extends MultiPageEditorPart {
 			
 			if (project != null) {
 				projectName = project.getName();
-				;
+				
 			}
 		}
 		

@@ -41,6 +41,10 @@ public class StringTableCellEditingSupport extends EditingSupport {
 		
 		ViewerCell cell = getViewer().getCell(relMousePos);
 		
+		if(cell == null) {
+			return null;
+		}
+		
 		if (cell.getColumnIndex() == 0) {
 			// add validator to key cell
 			editor.setValidator(new ICellEditorValidator() {

@@ -25,10 +25,10 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		getBasicProvider().getPartitionScanner()
 				.removeRule(BasicPartitionScanner.MULTILINE_COMMENT_RULE);
 		
-		getBasicConfiguration()
-				.getKeywordScanner(
-						SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)
-				.makeCaseSensitive(false);
+		// getBasicConfiguration()
+		// .getKeywordScanner(
+		// SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)
+		// .makeCaseSensitive(false);
 	}
 	
 	/**
@@ -51,6 +51,13 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		for (ESQDevFileAnnotation currentAnnotation : ESQDevFileAnnotation.values()) {
 			keywordList.addKeyword(new Keyword("@" + currentAnnotation.toString(),
 					currentAnnotation.getDescription()));
+		}
+		
+		if (!getBasicConfiguration().scannerExists(
+				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)) {
+			// create keyword scanner
+			getBasicConfiguration().createKeywordScanner(
+					SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
 		}
 		
 		// set the keywords

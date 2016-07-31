@@ -187,7 +187,7 @@ public class Util {
 	 * @return An array of terrain names
 	 */
 	public static String[] getTerrains() {
-		return new String[] { "Altis", "Stratis", "VR" };
+		return new String[] { "Altis", "Stratis", "VR", "Tanoa" };
 	}
 	
 }

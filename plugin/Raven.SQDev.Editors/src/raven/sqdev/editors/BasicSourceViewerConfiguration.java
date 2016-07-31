@@ -143,7 +143,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	 *            The preference key for the color of the desired
 	 *            <code>KeywordScanner</code>
 	 * @return The <code>KeywordScanner</code> working for the given preference
-	 *         key or <code>null</code> if no such scanne could be found
+	 *         key or <code>null</code> if no such scanner could be found
 	 */
 	public KeywordScanner getKeywordScanner(String colorPreferenceKey) {
 		if (!configuredKeywordScanners.containsKey(colorPreferenceKey)) {
