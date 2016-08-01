@@ -2,6 +2,7 @@ package raven.sqdev.editors.stringTableEditor;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -784,6 +785,20 @@ public class StringTableEditor extends MultiPageEditorPart {
 		// TODO: sort alphabetically
 		int index = viewer.getTable().getColumnCount() - 2;
 		
+		Language[] langs = displayedLanguages.keySet()
+				.toArray(new Language[displayedLanguages.keySet().size()]);
+		
+		Arrays.sort(langs);
+		
+		for (int i = 0; i < langs.length; i++) {
+			Language currentLanguage = langs[i];
+			
+			if (currentLanguage.compareTo(language) > 0) {
+				index = index - ((langs.length) - i);
+				break; // Place has been found
+			}
+		}
+		
 		// store index for this language
 		displayedLanguages.put(language, index);
 		
@@ -1100,7 +1115,7 @@ public class StringTableEditor extends MultiPageEditorPart {
 			packages.add(defaultPackage);
 		}
 		
-		packageList.addAll(packages); // TODO: find
+		packageList.addAll(packages);
 		
 		boolean isSelectionContained = false;
 		
