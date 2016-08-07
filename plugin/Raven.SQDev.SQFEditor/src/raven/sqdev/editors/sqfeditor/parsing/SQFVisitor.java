@@ -17,6 +17,12 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCode(SQFParser.CodeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link SQFParser#preprocessor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPreprocessor(SQFParser.PreprocessorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link SQFParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -49,13 +55,6 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBooleanExpression(SQFParser.BooleanExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code MacroExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMacroExpression(SQFParser.MacroExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code ElseExpression}
 	 * labeled alternative in {@link SQFParser#expression}.
 	 * @param ctx the parse tree
@@ -70,12 +69,12 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitModifyExpression(SQFParser.ModifyExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Binary}
+	 * Visit a parse tree produced by the {@code Nular}
 	 * labeled alternative in {@link SQFParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBinary(SQFParser.BinaryContext ctx);
+	T visitNular(SQFParser.NularContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Parenthese}
 	 * labeled alternative in {@link SQFParser#expression}.

@@ -3,8 +3,11 @@ package raven.sqdev.editors.sqfeditor.parsing;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class SQFParser extends Parser {
@@ -18,20 +21,22 @@ public class SQFParser extends Parser {
 		CONFIG_OPERATOR=10, ADDITION_OPERATOR=11, MIN_MAX_OPERATOR=12, MULTIPLICATION_OPERATOR=13, 
 		MODULO_OPERATOR=14, OPENING_ROUND_BRACKET=15, CLOSING_ROUND_BRACKET=16, 
 		OPENING_SQUARE_BRACKET=17, CLOSING_SQUARE_BRACKET=18, OPENING_CURLY_BRACKET=19, 
-		CLOSING_CURLY_BRACKET=20, NUMBER=21, STRING=22, ID=23, PREPROCESSOR=24, 
-		DOC=25, COMMENT=26, WS=27, BINARY_OPERATOR=28;
+		CLOSING_CURLY_BRACKET=20, NUMBER=21, STRING=22, ID=23, PREPRO=24, IFDEF=25, 
+		IFNDEF=26, PRE_ELSE=27, ENDIF=28, DOC=29, COMMENT=30, LINEBREAK=31, WS=32, 
+		ANY=33, BINARY_OPERATOR=34, MACRO_EXPRESSION=35;
 	public static final int
-		RULE_code = 0, RULE_statement = 1, RULE_assignment = 2, RULE_binaryExpression = 3, 
-		RULE_expression = 4, RULE_unaryExpression = 5, RULE_nularExpression = 6, 
-		RULE_macro = 7;
+		RULE_code = 0, RULE_preprocessor = 1, RULE_statement = 2, RULE_assignment = 3, 
+		RULE_binaryExpression = 4, RULE_expression = 5, RULE_unaryExpression = 6, 
+		RULE_nularExpression = 7, RULE_macro = 8;
 	public static final String[] ruleNames = {
-		"code", "statement", "assignment", "binaryExpression", "expression", "unaryExpression", 
-		"nularExpression", "macro"
+		"code", "preprocessor", "statement", "assignment", "binaryExpression", 
+		"expression", "unaryExpression", "nularExpression", "macro"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
 		null, "','", "';'", "'='", null, null, null, null, "'^'", null, "'>>'", 
-		null, null, null, null, "'('", "')'", "'['", "']'", "'{'", "'}'"
+		null, null, null, null, "'('", "')'", "'['", "']'", "'{'", "'}'", null, 
+		null, null, null, "'#ifdef'", "'#ifndef'", "'#else'", "'#endif'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, "COMMA", "SEMICOLON", "EQUALS", "ELSE", "OR", "AND", "NOT", "EXP", 
@@ -39,7 +44,8 @@ public class SQFParser extends Parser {
 		"MULTIPLICATION_OPERATOR", "MODULO_OPERATOR", "OPENING_ROUND_BRACKET", 
 		"CLOSING_ROUND_BRACKET", "OPENING_SQUARE_BRACKET", "CLOSING_SQUARE_BRACKET", 
 		"OPENING_CURLY_BRACKET", "CLOSING_CURLY_BRACKET", "NUMBER", "STRING", 
-		"ID", "PREPROCESSOR", "DOC", "COMMENT", "WS", "BINARY_OPERATOR"
+		"ID", "PREPRO", "IFDEF", "IFNDEF", "PRE_ELSE", "ENDIF", "DOC", "COMMENT", 
+		"LINEBREAK", "WS", "ANY", "BINARY_OPERATOR", "MACRO_EXPRESSION"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -97,11 +103,23 @@ public class SQFParser extends Parser {
 		public StatementContext statement(int i) {
 			return getRuleContext(StatementContext.class,i);
 		}
+		public List<MacroContext> macro() {
+			return getRuleContexts(MacroContext.class);
+		}
+		public MacroContext macro(int i) {
+			return getRuleContext(MacroContext.class,i);
+		}
+		public List<PreprocessorContext> preprocessor() {
+			return getRuleContexts(PreprocessorContext.class);
+		}
+		public PreprocessorContext preprocessor(int i) {
+			return getRuleContext(PreprocessorContext.class,i);
+		}
 		public List<TerminalNode> SEMICOLON() { return getTokens(SQFParser.SEMICOLON); }
 		public TerminalNode SEMICOLON(int i) {
 			return getToken(SQFParser.SEMICOLON, i);
 		}
-		public TerminalNode EOF() { return getToken(Recognizer.EOF, 0); }
+		public TerminalNode EOF() { return getToken(SQFParser.EOF, 0); }
 		public CodeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -126,8 +144,7 @@ public class SQFParser extends Parser {
 		enterRule(_localctx, 0, RULE_code);
 		int _la;
 		try {
-			int _alt;
-			setState(28);
+			setState(32);
 			switch (_input.LA(1)) {
 			case NOT:
 			case ADDITION_OPERATOR:
@@ -137,49 +154,136 @@ public class SQFParser extends Parser {
 			case NUMBER:
 			case STRING:
 			case ID:
+			case PREPRO:
 			case BINARY_OPERATOR:
+			case MACRO_EXPRESSION:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(16);
-				statement();
-				setState(21);
+				setState(27); 
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
-				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-					if ( _alt==1 ) {
+				_la = _input.LA(1);
+				do {
+					{
+					setState(27);
+					_errHandler.sync(this);
+					switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
+					case 1:
 						{
-						{
-						setState(17);
-						match(SEMICOLON);
 						setState(18);
 						statement();
+						setState(20);
+						_la = _input.LA(1);
+						if (_la==SEMICOLON) {
+							{
+							setState(19);
+							match(SEMICOLON);
+							}
 						}
-						} 
-					}
-					setState(23);
-					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
-				}
-				setState(25);
-				_la = _input.LA(1);
-				if (_la==SEMICOLON) {
-					{
-					setState(24);
-					match(SEMICOLON);
-					}
-				}
 
+						}
+						break;
+					case 2:
+						{
+						setState(22);
+						macro();
+						setState(24);
+						_la = _input.LA(1);
+						if (_la==SEMICOLON) {
+							{
+							setState(23);
+							match(SEMICOLON);
+							}
+						}
+
+						}
+						break;
+					case 3:
+						{
+						setState(26);
+						preprocessor();
+						}
+						break;
+					}
+					}
+					setState(29); 
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << ADDITION_OPERATOR) | (1L << OPENING_ROUND_BRACKET) | (1L << OPENING_SQUARE_BRACKET) | (1L << OPENING_CURLY_BRACKET) | (1L << NUMBER) | (1L << STRING) | (1L << ID) | (1L << PREPRO) | (1L << BINARY_OPERATOR) | (1L << MACRO_EXPRESSION))) != 0) );
 				}
 				break;
 			case EOF:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(27);
+				setState(31);
 				match(EOF);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class PreprocessorContext extends ParserRuleContext {
+		public List<TerminalNode> PREPRO() { return getTokens(SQFParser.PREPRO); }
+		public TerminalNode PREPRO(int i) {
+			return getToken(SQFParser.PREPRO, i);
+		}
+		public PreprocessorContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_preprocessor; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterPreprocessor(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitPreprocessor(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitPreprocessor(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final PreprocessorContext preprocessor() throws RecognitionException {
+		PreprocessorContext _localctx = new PreprocessorContext(_ctx, getState());
+		enterRule(_localctx, 2, RULE_preprocessor);
+		try {
+			int _alt;
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(35); 
+			_errHandler.sync(this);
+			_alt = 1;
+			do {
+				switch (_alt) {
+				case 1:
+					{
+					{
+					setState(34);
+					match(PREPRO);
+					}
+					}
+					break;
+				default:
+					throw new NoViableAltException(this);
+				}
+				setState(37); 
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
+			} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
 			}
 		}
 		catch (RecognitionException re) {
@@ -221,22 +325,22 @@ public class SQFParser extends Parser {
 
 	public final StatementContext statement() throws RecognitionException {
 		StatementContext _localctx = new StatementContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_statement);
+		enterRule(_localctx, 4, RULE_statement);
 		try {
-			setState(32);
+			setState(41);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(30);
+				setState(39);
 				assignment();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(31);
+				setState(40);
 				binaryExpression();
 				}
 				break;
@@ -255,15 +359,18 @@ public class SQFParser extends Parser {
 
 	public static class AssignmentContext extends ParserRuleContext {
 		public TerminalNode EQUALS() { return getToken(SQFParser.EQUALS, 0); }
-		public BinaryExpressionContext binaryExpression() {
-			return getRuleContext(BinaryExpressionContext.class,0);
-		}
 		public List<TerminalNode> ID() { return getTokens(SQFParser.ID); }
 		public TerminalNode ID(int i) {
 			return getToken(SQFParser.ID, i);
 		}
-		public MacroContext macro() {
-			return getRuleContext(MacroContext.class,0);
+		public List<MacroContext> macro() {
+			return getRuleContexts(MacroContext.class);
+		}
+		public MacroContext macro(int i) {
+			return getRuleContext(MacroContext.class,i);
+		}
+		public BinaryExpressionContext binaryExpression() {
+			return getRuleContext(BinaryExpressionContext.class,0);
 		}
 		public AssignmentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -286,40 +393,64 @@ public class SQFParser extends Parser {
 
 	public final AssignmentContext assignment() throws RecognitionException {
 		AssignmentContext _localctx = new AssignmentContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_assignment);
+		enterRule(_localctx, 6, RULE_assignment);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(35);
+			setState(44);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 			case 1:
 				{
-				setState(34);
+				setState(43);
 				match(ID);
 				}
 				break;
 			}
-			setState(39);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
-			case 1:
+			setState(48);
+			switch (_input.LA(1)) {
+			case ID:
 				{
-				setState(37);
+				setState(46);
 				match(ID);
 				}
 				break;
-			case 2:
+			case MACRO_EXPRESSION:
 				{
-				setState(38);
+				setState(47);
 				macro();
 				}
 				break;
+			default:
+				throw new NoViableAltException(this);
 			}
-			setState(41);
+			setState(50);
 			match(EQUALS);
-			setState(42);
-			binaryExpression();
+			setState(53);
+			switch (_input.LA(1)) {
+			case NOT:
+			case ADDITION_OPERATOR:
+			case OPENING_ROUND_BRACKET:
+			case OPENING_SQUARE_BRACKET:
+			case OPENING_CURLY_BRACKET:
+			case NUMBER:
+			case STRING:
+			case ID:
+			case BINARY_OPERATOR:
+				{
+				setState(51);
+				binaryExpression();
+				}
+				break;
+			case MACRO_EXPRESSION:
+				{
+				setState(52);
+				macro();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -362,26 +493,26 @@ public class SQFParser extends Parser {
 
 	public final BinaryExpressionContext binaryExpression() throws RecognitionException {
 		BinaryExpressionContext _localctx = new BinaryExpressionContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_binaryExpression);
+		enterRule(_localctx, 8, RULE_binaryExpression);
 		try {
-			setState(49);
+			setState(60);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(44);
+				setState(55);
 				expression(0);
-				setState(45);
+				setState(56);
 				match(BINARY_OPERATOR);
-				setState(46);
+				setState(57);
 				binaryExpression();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(48);
+				setState(59);
 				expression(0);
 				}
 				break;
@@ -464,25 +595,6 @@ public class SQFParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class MacroExpressionContext extends ExpressionContext {
-		public MacroContext macro() {
-			return getRuleContext(MacroContext.class,0);
-		}
-		public MacroExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterMacroExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitMacroExpression(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitMacroExpression(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 	public static class ElseExpressionContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
@@ -526,22 +638,22 @@ public class SQFParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class BinaryContext extends ExpressionContext {
+	public static class NularContext extends ExpressionContext {
 		public NularExpressionContext nularExpression() {
 			return getRuleContext(NularExpressionContext.class,0);
 		}
-		public BinaryContext(ExpressionContext ctx) { copyFrom(ctx); }
+		public NularContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterBinary(this);
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).enterNular(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitBinary(this);
+			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitNular(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitBinary(this);
+			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitNular(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -643,32 +755,32 @@ public class SQFParser extends Parser {
 		int _parentState = getState();
 		ExpressionContext _localctx = new ExpressionContext(_ctx, _parentState);
 		ExpressionContext _prevctx = _localctx;
-		int _startState = 8;
-		enterRecursionRule(_localctx, 8, RULE_expression, _p);
+		int _startState = 10;
+		enterRecursionRule(_localctx, 10, RULE_expression, _p);
 		int _la;
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(80);
+			setState(90);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,14,_ctx) ) {
 			case 1:
 				{
 				_localctx = new UnaryContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(52);
+				setState(63);
 				unaryExpression();
 				}
 				break;
 			case 2:
 				{
-				_localctx = new BinaryContext(_localctx);
+				_localctx = new NularContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(53);
+				setState(64);
 				nularExpression();
 				}
 				break;
@@ -677,11 +789,11 @@ public class SQFParser extends Parser {
 				_localctx = new ParentheseContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(54);
+				setState(65);
 				match(OPENING_ROUND_BRACKET);
-				setState(55);
+				setState(66);
 				binaryExpression();
-				setState(56);
+				setState(67);
 				match(CLOSING_ROUND_BRACKET);
 				}
 				break;
@@ -690,18 +802,18 @@ public class SQFParser extends Parser {
 				_localctx = new InlineCodeContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(58);
+				setState(69);
 				match(OPENING_CURLY_BRACKET);
-				setState(60);
+				setState(71);
 				_la = _input.LA(1);
-				if (((((_la - -1)) & ~0x3f) == 0 && ((1L << (_la - -1)) & ((1L << (EOF - -1)) | (1L << (NOT - -1)) | (1L << (ADDITION_OPERATOR - -1)) | (1L << (OPENING_ROUND_BRACKET - -1)) | (1L << (OPENING_SQUARE_BRACKET - -1)) | (1L << (OPENING_CURLY_BRACKET - -1)) | (1L << (NUMBER - -1)) | (1L << (STRING - -1)) | (1L << (ID - -1)) | (1L << (BINARY_OPERATOR - -1)))) != 0)) {
+				if (((((_la - -1)) & ~0x3f) == 0 && ((1L << (_la - -1)) & ((1L << (EOF - -1)) | (1L << (NOT - -1)) | (1L << (ADDITION_OPERATOR - -1)) | (1L << (OPENING_ROUND_BRACKET - -1)) | (1L << (OPENING_SQUARE_BRACKET - -1)) | (1L << (OPENING_CURLY_BRACKET - -1)) | (1L << (NUMBER - -1)) | (1L << (STRING - -1)) | (1L << (ID - -1)) | (1L << (PREPRO - -1)) | (1L << (BINARY_OPERATOR - -1)) | (1L << (MACRO_EXPRESSION - -1)))) != 0)) {
 					{
-					setState(59);
+					setState(70);
 					code();
 					}
 				}
 
-				setState(62);
+				setState(73);
 				match(CLOSING_CURLY_BRACKET);
 				}
 				break;
@@ -710,34 +822,34 @@ public class SQFParser extends Parser {
 				_localctx = new ArrayContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(63);
+				setState(74);
 				match(OPENING_SQUARE_BRACKET);
-				setState(72);
+				setState(83);
 				_la = _input.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << ADDITION_OPERATOR) | (1L << OPENING_ROUND_BRACKET) | (1L << OPENING_SQUARE_BRACKET) | (1L << OPENING_CURLY_BRACKET) | (1L << NUMBER) | (1L << STRING) | (1L << ID) | (1L << BINARY_OPERATOR))) != 0)) {
 					{
-					setState(64);
+					setState(75);
 					binaryExpression();
-					setState(69);
+					setState(80);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					while (_la==COMMA) {
 						{
 						{
-						setState(65);
+						setState(76);
 						match(COMMA);
-						setState(66);
+						setState(77);
 						binaryExpression();
 						}
 						}
-						setState(71);
+						setState(82);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					}
 					}
 				}
 
-				setState(74);
+				setState(85);
 				match(CLOSING_SQUARE_BRACKET);
 				}
 				break;
@@ -746,9 +858,9 @@ public class SQFParser extends Parser {
 				_localctx = new BooleanExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(75);
+				setState(86);
 				match(NOT);
-				setState(76);
+				setState(87);
 				binaryExpression();
 				}
 				break;
@@ -757,43 +869,34 @@ public class SQFParser extends Parser {
 				_localctx = new ModifyExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(77);
+				setState(88);
 				match(ADDITION_OPERATOR);
-				setState(78);
+				setState(89);
 				binaryExpression();
-				}
-				break;
-			case 8:
-				{
-				_localctx = new MacroExpressionContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(79);
-				macro();
 				}
 				break;
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(105);
+			setState(115);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(103);
+					setState(113);
 					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
+					switch ( getInterpreter().adaptivePredict(_input,15,_ctx) ) {
 					case 1:
 						{
 						_localctx = new ArithmeticExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(82);
-						if (!(precpred(_ctx, 15))) throw new FailedPredicateException(this, "precpred(_ctx, 15)");
-						setState(83);
+						setState(92);
+						if (!(precpred(_ctx, 14))) throw new FailedPredicateException(this, "precpred(_ctx, 14)");
+						setState(93);
 						match(EXP);
-						setState(84);
+						setState(94);
 						binaryExpression();
 						}
 						break;
@@ -801,16 +904,16 @@ public class SQFParser extends Parser {
 						{
 						_localctx = new ArithmeticExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(85);
-						if (!(precpred(_ctx, 14))) throw new FailedPredicateException(this, "precpred(_ctx, 14)");
-						setState(86);
+						setState(95);
+						if (!(precpred(_ctx, 13))) throw new FailedPredicateException(this, "precpred(_ctx, 13)");
+						setState(96);
 						_la = _input.LA(1);
 						if ( !(_la==MULTIPLICATION_OPERATOR || _la==MODULO_OPERATOR) ) {
 						_errHandler.recoverInline(this);
 						} else {
 							consume();
 						}
-						setState(87);
+						setState(97);
 						binaryExpression();
 						}
 						break;
@@ -818,16 +921,16 @@ public class SQFParser extends Parser {
 						{
 						_localctx = new ArithmeticExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(88);
-						if (!(precpred(_ctx, 13))) throw new FailedPredicateException(this, "precpred(_ctx, 13)");
-						setState(89);
+						setState(98);
+						if (!(precpred(_ctx, 12))) throw new FailedPredicateException(this, "precpred(_ctx, 12)");
+						setState(99);
 						_la = _input.LA(1);
 						if ( !(_la==ADDITION_OPERATOR || _la==MIN_MAX_OPERATOR) ) {
 						_errHandler.recoverInline(this);
 						} else {
 							consume();
 						}
-						setState(90);
+						setState(100);
 						binaryExpression();
 						}
 						break;
@@ -835,11 +938,11 @@ public class SQFParser extends Parser {
 						{
 						_localctx = new ElseExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(91);
-						if (!(precpred(_ctx, 12))) throw new FailedPredicateException(this, "precpred(_ctx, 12)");
-						setState(92);
+						setState(101);
+						if (!(precpred(_ctx, 11))) throw new FailedPredicateException(this, "precpred(_ctx, 11)");
+						setState(102);
 						match(ELSE);
-						setState(93);
+						setState(103);
 						binaryExpression();
 						}
 						break;
@@ -847,16 +950,16 @@ public class SQFParser extends Parser {
 						{
 						_localctx = new BooleanExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(94);
-						if (!(precpred(_ctx, 11))) throw new FailedPredicateException(this, "precpred(_ctx, 11)");
-						setState(95);
+						setState(104);
+						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
+						setState(105);
 						_la = _input.LA(1);
 						if ( !(_la==COMPARATOR || _la==CONFIG_OPERATOR) ) {
 						_errHandler.recoverInline(this);
 						} else {
 							consume();
 						}
-						setState(96);
+						setState(106);
 						binaryExpression();
 						}
 						break;
@@ -864,11 +967,11 @@ public class SQFParser extends Parser {
 						{
 						_localctx = new BooleanExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(97);
-						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
-						setState(98);
+						setState(107);
+						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
+						setState(108);
 						match(AND);
-						setState(99);
+						setState(109);
 						binaryExpression();
 						}
 						break;
@@ -876,20 +979,20 @@ public class SQFParser extends Parser {
 						{
 						_localctx = new BooleanExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(100);
-						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
-						setState(101);
+						setState(110);
+						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
+						setState(111);
 						match(OR);
-						setState(102);
+						setState(112);
 						binaryExpression();
 						}
 						break;
 					}
 					} 
 				}
-				setState(107);
+				setState(117);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
 			}
 			}
 		}
@@ -931,25 +1034,25 @@ public class SQFParser extends Parser {
 
 	public final UnaryExpressionContext unaryExpression() throws RecognitionException {
 		UnaryExpressionContext _localctx = new UnaryExpressionContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_unaryExpression);
+		enterRule(_localctx, 12, RULE_unaryExpression);
 		try {
-			setState(112);
+			setState(122);
 			switch (_input.LA(1)) {
 			case ID:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(108);
+				setState(118);
 				match(ID);
-				setState(109);
+				setState(119);
 				binaryExpression();
 				}
 				break;
 			case BINARY_OPERATOR:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(110);
+				setState(120);
 				match(BINARY_OPERATOR);
-				setState(111);
+				setState(121);
 				binaryExpression();
 				}
 				break;
@@ -993,12 +1096,12 @@ public class SQFParser extends Parser {
 
 	public final NularExpressionContext nularExpression() throws RecognitionException {
 		NularExpressionContext _localctx = new NularExpressionContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_nularExpression);
+		enterRule(_localctx, 14, RULE_nularExpression);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(114);
+			setState(124);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NUMBER) | (1L << STRING) | (1L << ID))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -1019,23 +1122,14 @@ public class SQFParser extends Parser {
 	}
 
 	public static class MacroContext extends ParserRuleContext {
-		public List<TerminalNode> ID() { return getTokens(SQFParser.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(SQFParser.ID, i);
+		public TerminalNode MACRO_EXPRESSION() { return getToken(SQFParser.MACRO_EXPRESSION, 0); }
+		public List<TerminalNode> OPENING_ROUND_BRACKET() { return getTokens(SQFParser.OPENING_ROUND_BRACKET); }
+		public TerminalNode OPENING_ROUND_BRACKET(int i) {
+			return getToken(SQFParser.OPENING_ROUND_BRACKET, i);
 		}
-		public TerminalNode OPENING_ROUND_BRACKET() { return getToken(SQFParser.OPENING_ROUND_BRACKET, 0); }
-		public TerminalNode CLOSING_ROUND_BRACKET() { return getToken(SQFParser.CLOSING_ROUND_BRACKET, 0); }
-		public List<TerminalNode> STRING() { return getTokens(SQFParser.STRING); }
-		public TerminalNode STRING(int i) {
-			return getToken(SQFParser.STRING, i);
-		}
-		public List<TerminalNode> NUMBER() { return getTokens(SQFParser.NUMBER); }
-		public TerminalNode NUMBER(int i) {
-			return getToken(SQFParser.NUMBER, i);
-		}
-		public List<TerminalNode> COMMA() { return getTokens(SQFParser.COMMA); }
-		public TerminalNode COMMA(int i) {
-			return getToken(SQFParser.COMMA, i);
+		public List<TerminalNode> CLOSING_ROUND_BRACKET() { return getTokens(SQFParser.CLOSING_ROUND_BRACKET); }
+		public TerminalNode CLOSING_ROUND_BRACKET(int i) {
+			return getToken(SQFParser.CLOSING_ROUND_BRACKET, i);
 		}
 		public MacroContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1058,44 +1152,35 @@ public class SQFParser extends Parser {
 
 	public final MacroContext macro() throws RecognitionException {
 		MacroContext _localctx = new MacroContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_macro);
+		enterRule(_localctx, 16, RULE_macro);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(116);
-			match(ID);
-			setState(117);
+			setState(126);
+			match(MACRO_EXPRESSION);
+			setState(127);
 			match(OPENING_ROUND_BRACKET);
-			setState(118);
-			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NUMBER) | (1L << STRING) | (1L << ID))) != 0)) ) {
-			_errHandler.recoverInline(this);
-			} else {
-				consume();
-			}
-			setState(123);
+			setState(131);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==COMMA) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << COMMA) | (1L << SEMICOLON) | (1L << EQUALS) | (1L << ELSE) | (1L << OR) | (1L << AND) | (1L << NOT) | (1L << EXP) | (1L << COMPARATOR) | (1L << CONFIG_OPERATOR) | (1L << ADDITION_OPERATOR) | (1L << MIN_MAX_OPERATOR) | (1L << MULTIPLICATION_OPERATOR) | (1L << MODULO_OPERATOR) | (1L << OPENING_SQUARE_BRACKET) | (1L << CLOSING_SQUARE_BRACKET) | (1L << OPENING_CURLY_BRACKET) | (1L << CLOSING_CURLY_BRACKET) | (1L << NUMBER) | (1L << STRING) | (1L << ID) | (1L << PREPRO) | (1L << IFDEF) | (1L << IFNDEF) | (1L << PRE_ELSE) | (1L << ENDIF) | (1L << DOC) | (1L << COMMENT) | (1L << LINEBREAK) | (1L << WS) | (1L << ANY) | (1L << BINARY_OPERATOR) | (1L << MACRO_EXPRESSION))) != 0)) {
 				{
 				{
-				setState(119);
-				match(COMMA);
-				setState(120);
+				setState(128);
 				_la = _input.LA(1);
-				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NUMBER) | (1L << STRING) | (1L << ID))) != 0)) ) {
+				if ( _la <= 0 || (_la==OPENING_ROUND_BRACKET || _la==CLOSING_ROUND_BRACKET) ) {
 				_errHandler.recoverInline(this);
 				} else {
 					consume();
 				}
 				}
 				}
-				setState(125);
+				setState(133);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(126);
+			setState(134);
 			match(CLOSING_ROUND_BRACKET);
 			}
 		}
@@ -1110,10 +1195,9 @@ public class SQFParser extends Parser {
 		return _localctx;
 	}
 
-	@Override
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 4:
+		case 5:
 			return expression_sempred((ExpressionContext)_localctx, predIndex);
 		}
 		return true;
@@ -1121,58 +1205,62 @@ public class SQFParser extends Parser {
 	private boolean expression_sempred(ExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 15);
-		case 1:
 			return precpred(_ctx, 14);
-		case 2:
+		case 1:
 			return precpred(_ctx, 13);
-		case 3:
+		case 2:
 			return precpred(_ctx, 12);
-		case 4:
+		case 3:
 			return precpred(_ctx, 11);
-		case 5:
+		case 4:
 			return precpred(_ctx, 10);
-		case 6:
+		case 5:
 			return precpred(_ctx, 9);
+		case 6:
+			return precpred(_ctx, 8);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\36\u0083\4\2\t\2"+
-		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\2\7"+
-		"\2\26\n\2\f\2\16\2\31\13\2\3\2\5\2\34\n\2\3\2\5\2\37\n\2\3\3\3\3\5\3#"+
-		"\n\3\3\4\5\4&\n\4\3\4\3\4\5\4*\n\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\5\5"+
-		"\64\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6?\n\6\3\6\3\6\3\6\3\6\3"+
-		"\6\7\6F\n\6\f\6\16\6I\13\6\5\6K\n\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6S\n\6\3"+
-		"\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6"+
-		"\3\6\3\6\3\6\7\6j\n\6\f\6\16\6m\13\6\3\7\3\7\3\7\3\7\5\7s\n\7\3\b\3\b"+
-		"\3\t\3\t\3\t\3\t\3\t\7\t|\n\t\f\t\16\t\177\13\t\3\t\3\t\3\t\2\3\n\n\2"+
-		"\4\6\b\n\f\16\20\2\6\3\2\17\20\3\2\r\16\3\2\13\f\3\2\27\31\u0094\2\36"+
-		"\3\2\2\2\4\"\3\2\2\2\6%\3\2\2\2\b\63\3\2\2\2\nR\3\2\2\2\fr\3\2\2\2\16"+
-		"t\3\2\2\2\20v\3\2\2\2\22\27\5\4\3\2\23\24\7\4\2\2\24\26\5\4\3\2\25\23"+
-		"\3\2\2\2\26\31\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\33\3\2\2\2\31\27"+
-		"\3\2\2\2\32\34\7\4\2\2\33\32\3\2\2\2\33\34\3\2\2\2\34\37\3\2\2\2\35\37"+
-		"\7\2\2\3\36\22\3\2\2\2\36\35\3\2\2\2\37\3\3\2\2\2 #\5\6\4\2!#\5\b\5\2"+
-		"\" \3\2\2\2\"!\3\2\2\2#\5\3\2\2\2$&\7\31\2\2%$\3\2\2\2%&\3\2\2\2&)\3\2"+
-		"\2\2\'*\7\31\2\2(*\5\20\t\2)\'\3\2\2\2)(\3\2\2\2*+\3\2\2\2+,\7\5\2\2,"+
-		"-\5\b\5\2-\7\3\2\2\2./\5\n\6\2/\60\7\36\2\2\60\61\5\b\5\2\61\64\3\2\2"+
-		"\2\62\64\5\n\6\2\63.\3\2\2\2\63\62\3\2\2\2\64\t\3\2\2\2\65\66\b\6\1\2"+
-		"\66S\5\f\7\2\67S\5\16\b\289\7\21\2\29:\5\b\5\2:;\7\22\2\2;S\3\2\2\2<>"+
-		"\7\25\2\2=?\5\2\2\2>=\3\2\2\2>?\3\2\2\2?@\3\2\2\2@S\7\26\2\2AJ\7\23\2"+
-		"\2BG\5\b\5\2CD\7\3\2\2DF\5\b\5\2EC\3\2\2\2FI\3\2\2\2GE\3\2\2\2GH\3\2\2"+
-		"\2HK\3\2\2\2IG\3\2\2\2JB\3\2\2\2JK\3\2\2\2KL\3\2\2\2LS\7\24\2\2MN\7\t"+
-		"\2\2NS\5\b\5\2OP\7\r\2\2PS\5\b\5\2QS\5\20\t\2R\65\3\2\2\2R\67\3\2\2\2"+
-		"R8\3\2\2\2R<\3\2\2\2RA\3\2\2\2RM\3\2\2\2RO\3\2\2\2RQ\3\2\2\2Sk\3\2\2\2"+
-		"TU\f\21\2\2UV\7\n\2\2Vj\5\b\5\2WX\f\20\2\2XY\t\2\2\2Yj\5\b\5\2Z[\f\17"+
-		"\2\2[\\\t\3\2\2\\j\5\b\5\2]^\f\16\2\2^_\7\6\2\2_j\5\b\5\2`a\f\r\2\2ab"+
-		"\t\4\2\2bj\5\b\5\2cd\f\f\2\2de\7\b\2\2ej\5\b\5\2fg\f\13\2\2gh\7\7\2\2"+
-		"hj\5\b\5\2iT\3\2\2\2iW\3\2\2\2iZ\3\2\2\2i]\3\2\2\2i`\3\2\2\2ic\3\2\2\2"+
-		"if\3\2\2\2jm\3\2\2\2ki\3\2\2\2kl\3\2\2\2l\13\3\2\2\2mk\3\2\2\2no\7\31"+
-		"\2\2os\5\b\5\2pq\7\36\2\2qs\5\b\5\2rn\3\2\2\2rp\3\2\2\2s\r\3\2\2\2tu\t"+
-		"\5\2\2u\17\3\2\2\2vw\7\31\2\2wx\7\21\2\2x}\t\5\2\2yz\7\3\2\2z|\t\5\2\2"+
-		"{y\3\2\2\2|\177\3\2\2\2}{\3\2\2\2}~\3\2\2\2~\u0080\3\2\2\2\177}\3\2\2"+
-		"\2\u0080\u0081\7\22\2\2\u0081\21\3\2\2\2\21\27\33\36\"%)\63>GJRikr}";
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3%\u008b\4\2\t\2\4"+
+		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\3\2"+
+		"\5\2\27\n\2\3\2\3\2\5\2\33\n\2\3\2\6\2\36\n\2\r\2\16\2\37\3\2\5\2#\n\2"+
+		"\3\3\6\3&\n\3\r\3\16\3\'\3\4\3\4\5\4,\n\4\3\5\5\5/\n\5\3\5\3\5\5\5\63"+
+		"\n\5\3\5\3\5\3\5\5\58\n\5\3\6\3\6\3\6\3\6\3\6\5\6?\n\6\3\7\3\7\3\7\3\7"+
+		"\3\7\3\7\3\7\3\7\3\7\5\7J\n\7\3\7\3\7\3\7\3\7\3\7\7\7Q\n\7\f\7\16\7T\13"+
+		"\7\5\7V\n\7\3\7\3\7\3\7\3\7\3\7\5\7]\n\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3"+
+		"\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\7\7t\n\7\f\7\16"+
+		"\7w\13\7\3\b\3\b\3\b\3\b\5\b}\n\b\3\t\3\t\3\n\3\n\3\n\7\n\u0084\n\n\f"+
+		"\n\16\n\u0087\13\n\3\n\3\n\3\n\2\3\f\13\2\4\6\b\n\f\16\20\22\2\7\3\2\17"+
+		"\20\3\2\r\16\3\2\13\f\3\2\27\31\3\2\21\22\u009f\2\"\3\2\2\2\4%\3\2\2\2"+
+		"\6+\3\2\2\2\b.\3\2\2\2\n>\3\2\2\2\f\\\3\2\2\2\16|\3\2\2\2\20~\3\2\2\2"+
+		"\22\u0080\3\2\2\2\24\26\5\6\4\2\25\27\7\4\2\2\26\25\3\2\2\2\26\27\3\2"+
+		"\2\2\27\36\3\2\2\2\30\32\5\22\n\2\31\33\7\4\2\2\32\31\3\2\2\2\32\33\3"+
+		"\2\2\2\33\36\3\2\2\2\34\36\5\4\3\2\35\24\3\2\2\2\35\30\3\2\2\2\35\34\3"+
+		"\2\2\2\36\37\3\2\2\2\37\35\3\2\2\2\37 \3\2\2\2 #\3\2\2\2!#\7\2\2\3\"\35"+
+		"\3\2\2\2\"!\3\2\2\2#\3\3\2\2\2$&\7\32\2\2%$\3\2\2\2&\'\3\2\2\2\'%\3\2"+
+		"\2\2\'(\3\2\2\2(\5\3\2\2\2),\5\b\5\2*,\5\n\6\2+)\3\2\2\2+*\3\2\2\2,\7"+
+		"\3\2\2\2-/\7\31\2\2.-\3\2\2\2./\3\2\2\2/\62\3\2\2\2\60\63\7\31\2\2\61"+
+		"\63\5\22\n\2\62\60\3\2\2\2\62\61\3\2\2\2\63\64\3\2\2\2\64\67\7\5\2\2\65"+
+		"8\5\n\6\2\668\5\22\n\2\67\65\3\2\2\2\67\66\3\2\2\28\t\3\2\2\29:\5\f\7"+
+		"\2:;\7$\2\2;<\5\n\6\2<?\3\2\2\2=?\5\f\7\2>9\3\2\2\2>=\3\2\2\2?\13\3\2"+
+		"\2\2@A\b\7\1\2A]\5\16\b\2B]\5\20\t\2CD\7\21\2\2DE\5\n\6\2EF\7\22\2\2F"+
+		"]\3\2\2\2GI\7\25\2\2HJ\5\2\2\2IH\3\2\2\2IJ\3\2\2\2JK\3\2\2\2K]\7\26\2"+
+		"\2LU\7\23\2\2MR\5\n\6\2NO\7\3\2\2OQ\5\n\6\2PN\3\2\2\2QT\3\2\2\2RP\3\2"+
+		"\2\2RS\3\2\2\2SV\3\2\2\2TR\3\2\2\2UM\3\2\2\2UV\3\2\2\2VW\3\2\2\2W]\7\24"+
+		"\2\2XY\7\t\2\2Y]\5\n\6\2Z[\7\r\2\2[]\5\n\6\2\\@\3\2\2\2\\B\3\2\2\2\\C"+
+		"\3\2\2\2\\G\3\2\2\2\\L\3\2\2\2\\X\3\2\2\2\\Z\3\2\2\2]u\3\2\2\2^_\f\20"+
+		"\2\2_`\7\n\2\2`t\5\n\6\2ab\f\17\2\2bc\t\2\2\2ct\5\n\6\2de\f\16\2\2ef\t"+
+		"\3\2\2ft\5\n\6\2gh\f\r\2\2hi\7\6\2\2it\5\n\6\2jk\f\f\2\2kl\t\4\2\2lt\5"+
+		"\n\6\2mn\f\13\2\2no\7\b\2\2ot\5\n\6\2pq\f\n\2\2qr\7\7\2\2rt\5\n\6\2s^"+
+		"\3\2\2\2sa\3\2\2\2sd\3\2\2\2sg\3\2\2\2sj\3\2\2\2sm\3\2\2\2sp\3\2\2\2t"+
+		"w\3\2\2\2us\3\2\2\2uv\3\2\2\2v\r\3\2\2\2wu\3\2\2\2xy\7\31\2\2y}\5\n\6"+
+		"\2z{\7$\2\2{}\5\n\6\2|x\3\2\2\2|z\3\2\2\2}\17\3\2\2\2~\177\t\5\2\2\177"+
+		"\21\3\2\2\2\u0080\u0081\7%\2\2\u0081\u0085\7\21\2\2\u0082\u0084\n\6\2"+
+		"\2\u0083\u0082\3\2\2\2\u0084\u0087\3\2\2\2\u0085\u0083\3\2\2\2\u0085\u0086"+
+		"\3\2\2\2\u0086\u0088\3\2\2\2\u0087\u0085\3\2\2\2\u0088\u0089\7\22\2\2"+
+		"\u0089\23\3\2\2\2\25\26\32\35\37\"\'+.\62\67>IRU\\su|\u0085";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

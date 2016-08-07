@@ -574,7 +574,7 @@ public class SQFCommand extends SQFElement {
 		representation += "hasRawSyntax: " + hasRawSyntax() + "\n";
 		representation += "hasExamples: " + hasExample() + "\n";
 		representation += "hasNotes: " + hasNote() + "\n";
-		representation += "hasReturnValue" + hasReturnValue() + "\n";
+		representation += "hasReturnValue: " + hasReturnValue() + "\n";
 		
 		return representation;
 	}

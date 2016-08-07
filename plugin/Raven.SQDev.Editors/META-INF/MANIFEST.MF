@@ -44,7 +44,8 @@ Export-Package: org.antlr.v4.runtime;
    org.eclipse.swt.custom,
    org.antlr.v4.runtime.tree,
    raven.sqdev.interfaces,
-   org.eclipse.jface.text.rules"
+   org.eclipse.jface.text.rules",
+ raven.sqdev.editors.parser.preprocessor
 Bundle-Vendor: Raven
 Import-Package: raven.sqdev.preferences.util
 Bundle-ClassPath: ANTLR/antlr-runtime-4.5.3.jar,

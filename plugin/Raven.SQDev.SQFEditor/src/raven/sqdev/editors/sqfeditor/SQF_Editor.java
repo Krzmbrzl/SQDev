@@ -23,7 +23,13 @@ import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicErrorListener;
 import raven.sqdev.editors.BasicPartitionScanner;
 import raven.sqdev.editors.BasicSourceViewerConfiguration;
+import raven.sqdev.editors.IMacroSupport;
 import raven.sqdev.editors.KeywordScanner;
+import raven.sqdev.editors.Macro;
+import raven.sqdev.editors.parser.preprocessor.PreprocessorLexer;
+import raven.sqdev.editors.parser.preprocessor.PreprocessorParseListener;
+import raven.sqdev.editors.parser.preprocessor.PreprocessorParser;
+import raven.sqdev.editors.sqfeditor.parsing.PreprocessorErrorListener;
 import raven.sqdev.editors.sqfeditor.parsing.SQFLexer;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParseListener;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser;
@@ -50,7 +56,8 @@ import raven.sqdev.util.Util;
  * @author Raven
  * 
  */
-public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeListener {
+public class SQF_Editor extends BasicCodeEditor
+		implements IKeywordListChangeListener, IMacroSupport {
 	
 	/**
 	 * The KeywordProvider for the SQF keywords
@@ -77,6 +84,14 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 	 * A list of global variables in this editor
 	 */
 	private List<Variable> globalVariables;
+	/**
+	 * A list of defined macros for this editor
+	 */
+	private List<Macro> macros;
+	/**
+	 * A list of the macro-names defined for this editor
+	 */
+	private List<String> macroNames;
 	/**
 	 * The <code>CommonTokenStream</code> that is associated with the current
 	 * parse tree
@@ -126,6 +141,9 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 		nularCommands = new ArrayList<SQFCommand>();
 		localVariables = new ArrayList<Variable>();
 		globalVariables = new ArrayList<Variable>();
+		
+		macros = new ArrayList<Macro>();
+		macroNames = new ArrayList<String>();
 		
 		
 		categorizeCommands();
@@ -202,11 +220,32 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 	
 	@Override
 	protected ParseTree doParse(String input) {
+		macros.clear();
+		macroNames.clear();
+		
+		// preprocess
+		ANTLRInputStream prepIn = new ANTLRInputStream(input.toString());
+		
+		PreprocessorLexer prepLexer = new PreprocessorLexer(prepIn);
+		
+		CommonTokenStream prepTokens = new CommonTokenStream(prepLexer);
+		
+		PreprocessorParser prepParser = new PreprocessorParser(prepTokens);
+		
+		prepParser.removeErrorListeners();
+		prepParser.addErrorListener(new PreprocessorErrorListener(this, 0));
+		
+		ParseTreeWalker prepWalker = new ParseTreeWalker();
+		
+		prepWalker.walk(new PreprocessorParseListener(this), prepParser.start());
+		
+		
+		// SQF parsing
 		BasicErrorListener listener = new BasicErrorListener(this);
 		
 		ANTLRInputStream in = new ANTLRInputStream(input);
 		
-		SQFLexer lexer = new SQFLexer(in, ListUtils.toLowerCase(getBinaryKeywords()));
+		SQFLexer lexer = new SQFLexer(in, ListUtils.toLowerCase(getBinaryKeywords()), macroNames);
 		lexer.removeErrorListeners();
 		lexer.addErrorListener(listener);
 		
@@ -410,7 +449,14 @@ public class SQF_Editor extends BasicCodeEditor implements IKeywordListChangeLis
 	}
 	
 	@Override
-	public void createMarker(String type, int offset, int length, String message, int severity) {
-		// do nothing TODO: remove + fix macros
+	public void addMacro(Macro macro) {
+		macros.add(macro);
+		macroNames.add(macro.getKeyword());
+	}
+	
+	@Override
+	public void removeMacro(Macro macro) {
+		macros.remove(macro);
+		macroNames.remove(macro.getKeyword());
 	}
 }

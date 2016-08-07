@@ -44,7 +44,20 @@ public class BasicErrorListener extends BaseErrorListener {
 		int length = (offendingToken.getType() == Token.EOF) ? 0
 				: offendingToken.getText().length();
 		
-		editor.createMarker(IMarker.PROBLEM, offendingToken.getStartIndex(), length, msg,
-				IMarker.SEVERITY_ERROR);
+		reportError(offendingToken.getStartIndex(), length, msg);
+	}
+	
+	/**
+	 * Reports an error to the respective editor
+	 * 
+	 * @param offset
+	 *            The offset of the error start
+	 * @param length
+	 *            The length of the error
+	 * @param msg
+	 *            The error message
+	 */
+	public void reportError(int offset, int length, String msg) {
+		editor.createMarker(IMarker.PROBLEM, offset, length, msg, IMarker.SEVERITY_ERROR);
 	}
 }

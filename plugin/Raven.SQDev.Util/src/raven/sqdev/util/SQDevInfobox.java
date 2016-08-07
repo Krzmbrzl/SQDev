@@ -66,6 +66,35 @@ public class SQDevInfobox {
 	}
 	
 	/**
+	 * Creates an instance of this Infobox. This constructor will automatically
+	 * use the Yes/No-Option for the popup in order to allow the user to answer
+	 * the given question.
+	 * 
+	 * @param message
+	 *            The message exlpaining what went wrong. The message will be
+	 *            enhanced by a paragraph that states the reason (The message of
+	 *            the given exception)
+	 * @param exception
+	 *            The exception whose message will be used for the explaination
+	 *            for what went wrong.
+	 * @param question
+	 *            A question the user should answer with yes or no
+	 */
+	public SQDevInfobox(String message, Exception exception, String question) {
+		this(((exception.getMessage() != null) ? message + "\n\nReason:\n" + exception.getMessage()
+				: message + "\n\nReason: Unknown") + "\n\n" + question,
+				SWT.ICON_ERROR | SWT.YES | SWT.NO);
+	}
+	
+	/**
+	 * Adds the given style to the popup
+	 * @param style The style to add has to be one defined in {@linkplain SWT}
+	 */
+	public void addStyle(int style) {
+		this.style = this.style | style;
+	}
+	
+	/**
 	 * Makes the dialog visible and brings it to the front of the display.
 	 * 
 	 * @return the ID of the button that was selected to dismiss the message box
