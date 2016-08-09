@@ -55,6 +55,13 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBooleanExpression(SQFParser.BooleanExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code MacroExpression}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMacroExpression(SQFParser.MacroExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code ElseExpression}
 	 * labeled alternative in {@link SQFParser#expression}.
 	 * @param ctx the parse tree

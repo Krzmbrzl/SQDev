@@ -92,9 +92,7 @@ public class Syntax {
 	 *            The element to add
 	 */
 	public void addElement(SyntaxElement element) {
-		if (!getElements().contains(element)) {
-			getElements().add(element);
-		}
+		getElements().add(element);
 	}
 	
 	/**

@@ -100,6 +100,18 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMacroExpression(SQFParser.MacroExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMacroExpression(SQFParser.MacroExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterElseExpression(SQFParser.ElseExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}

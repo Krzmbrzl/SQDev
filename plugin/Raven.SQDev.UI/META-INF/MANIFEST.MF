@@ -12,5 +12,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors;bundle-version="3.8.200"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: Abedo/org.abego.treelayout.core-1.0.3.jar,
- .
+Bundle-ClassPath: .,
+ Abego/org.abego.treelayout.core-1.0.3.jar

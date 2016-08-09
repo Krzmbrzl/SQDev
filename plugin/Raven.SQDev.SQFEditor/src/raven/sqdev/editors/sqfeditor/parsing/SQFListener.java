@@ -82,6 +82,18 @@ public interface SQFListener extends ParseTreeListener {
 	 */
 	void exitBooleanExpression(SQFParser.BooleanExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code MacroExpression}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMacroExpression(SQFParser.MacroExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MacroExpression}
+	 * labeled alternative in {@link SQFParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMacroExpression(SQFParser.MacroExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code ElseExpression}
 	 * labeled alternative in {@link SQFParser#expression}.
 	 * @param ctx the parse tree

@@ -79,7 +79,8 @@ public class SQDevStarter implements IStartup, IVersionListener {
 	}
 	
 	private void miscVersionChanged(VersionChangeEvent event) {
-		if (event.getNewVersion().compareTo(new Version(0, 2, 0)) > 0) {
+		if (event.getNewVersion().compareTo(new Version(0, 2, 0)) > 0
+				&& event.getNewVersion().compareTo(new Version(0, 6, 0)) < 0) {
 			// update the keyword list on the hard drive as there is the new
 			// syntax attribute
 			ResourceManager manager = ResourceManager.getManager();
