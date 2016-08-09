@@ -21,6 +21,7 @@ import raven.sqdev.exceptions.SQDevCollectionException;
 import raven.sqdev.infoCollection.base.ELocality;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
+import raven.sqdev.infoCollection.base.SQFElement;
 import raven.sqdev.misc.SQDev;
 import raven.sqdev.misc.TextUtils;
 import raven.sqdev.syntax.Syntax;
@@ -90,6 +91,14 @@ public class SQFCommandCollector {
 	 * The name of the last command in the list on the base site
 	 */
 	private String lastCommandName;
+	/**
+	 * The list of processed Keywords
+	 */
+	private KeywordList list;
+	/**
+	 * A flag indicating whether the next command should be skipped
+	 */
+	private boolean skipNext = false;
 	
 	/**
 	 * Creates an instance of this collector
@@ -122,10 +131,16 @@ public class SQFCommandCollector {
 	 * @throws SQDevCollectionException
 	 */
 	public KeywordList collect(IProgressMonitor monitor) throws SQDevCollectionException {
-		String siteContent = getSite(baseSite);
-		
-		// get relevant content only
-		siteContent = trimToRelevantListOnly(siteContent);
+		String siteContent;
+		try {
+			siteContent = getSite(baseSite);
+			
+			// get relevant content only
+			siteContent = trimToRelevantListOnly(siteContent);
+		} catch (IOException e) {
+			// rethrow
+			throw new SQDevCollectionException(e, null, null);
+		}
 		
 		// compose the line where the collecting should start at
 		String relevanStarttLine = "<li><a href=\"/wiki/" + firstCommandName + "\" title=\""
@@ -135,9 +150,11 @@ public class SQFCommandCollector {
 				+ lastCommandName + "\">" + lastCommandName + "</a></li>";
 		
 		if (!siteContent.contains(relevanStarttLine) || !siteContent.contains(relevantEndLine)) {
-			throw new SQDevCollectionException("The specified base site \"" + baseSite.toString()
-					+ "\" does not contain a line corresponding to the specified first command \""
-					+ firstCommandName + "\" or last command \"" + lastCommandName + "\"");
+			throw new SQDevCollectionException(
+					"The specified base site \"" + baseSite.toString()
+							+ "\" does not contain a line corresponding to the specified first command \""
+							+ firstCommandName + "\" or last command \"" + lastCommandName + "\"",
+					null, list);
 		}
 		
 		// start the list at the first command
@@ -146,7 +163,7 @@ public class SQFCommandCollector {
 		
 		
 		// create keywordList
-		KeywordList list = new KeywordList();
+		list = new KeywordList();
 		
 		monitor.beginTask("Gathering SQF commands", siteContent.split("\n").length);
 		
@@ -155,6 +172,11 @@ public class SQFCommandCollector {
 			if (monitor.isCanceled()) {
 				// if the job was canceled return the current state of the list
 				return list;
+			}
+			
+			if (skipNext) {
+				skipNext = false;
+				continue;
 			}
 			
 			// get the postfix for the wiki page of the current command
@@ -181,7 +203,7 @@ public class SQFCommandCollector {
 				e.printStackTrace();
 				
 				// rethrow
-				throw new SQDevCollectionException(e);
+				throw new SQDevCollectionException(e, null, list);
 			}
 			
 			if (!CONTROL_STRUCTURE_KEYWORDS.contains(name)) {
@@ -237,7 +259,13 @@ public class SQFCommandCollector {
 		// set wiki URL
 		control.setWikiPage(commandPage);
 		
-		String content = formatCommandPageContent(getSite(commandPage));
+		String content;
+		try {
+			content = formatCommandPageContent(getSite(commandPage));
+		} catch (IOException e) {
+			// rethrow
+			throw new SQDevCollectionException(e, null, list);
+		}
 		
 		String[] categories = categorizeContent(content);
 		
@@ -259,56 +287,49 @@ public class SQFCommandCollector {
 	 * @return
 	 * @throws SQDevCollectionException
 	 */
-	private String getSite(URL url) throws SQDevCollectionException {
-		try {
-			// read the site's content
-			InputStream in = url.openStream();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			
-			byte[] bArray = new byte[in.available()];
-			
-			in.read(bArray);
-			
-			out.write(bArray);
-			
-			int next;
-			while ((next = in.read()) > 0) {
-				out.write((char) next);
-			}
-			
-			String content = out.toString();
-			
-			// replace html escape characters
-			Pattern escapePattern = Pattern.compile("&#[0-9]+;");
-			Matcher matcher = escapePattern.matcher(content);
-			
-			while (matcher.find()) {
-				int pos1 = matcher.start();
-				int pos2 = matcher.end();
-				
-				String prefix = content.substring(0, pos1);
-				String fragment = content.substring(pos1, pos2);
-				char escapeCharacter = (char) Integer
-						.parseInt(fragment.substring(2, fragment.length() - 1));
-				String postfix = content.substring(pos2);
-				
-				if (escapeCharacter == (char) 160) {
-					// replace non-breaking spaces with normal ones
-					escapeCharacter = ' ';
-				}
-				
-				content = prefix + escapeCharacter + postfix;
-				
-				matcher = escapePattern.matcher(content);
-			}
-			
-			return content;
-		} catch (IOException e) {
-			e.printStackTrace();
-			
-			// rethrow
-			throw new SQDevCollectionException(e);
+	private String getSite(URL url) throws IOException {
+		// read the site's content
+		InputStream in = url.openStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		
+		byte[] bArray = new byte[in.available()];
+		
+		in.read(bArray);
+		
+		out.write(bArray);
+		
+		int next;
+		while ((next = in.read()) > 0) {
+			out.write((char) next);
 		}
+		
+		String content = out.toString();
+		
+		// replace html escape characters
+		Pattern escapePattern = Pattern.compile("&#[0-9]+;");
+		Matcher matcher = escapePattern.matcher(content);
+		
+		while (matcher.find()) {
+			int pos1 = matcher.start();
+			int pos2 = matcher.end();
+			
+			String prefix = content.substring(0, pos1);
+			String fragment = content.substring(pos1, pos2);
+			char escapeCharacter = (char) Integer
+					.parseInt(fragment.substring(2, fragment.length() - 1));
+			String postfix = content.substring(pos2);
+			
+			if (escapeCharacter == (char) 160) {
+				// replace non-breaking spaces with normal ones
+				escapeCharacter = ' ';
+			}
+			
+			content = prefix + escapeCharacter + postfix;
+			
+			matcher = escapePattern.matcher(content);
+		}
+		
+		return content;
 	}
 	
 	/**
@@ -319,28 +340,21 @@ public class SQFCommandCollector {
 	 *            The content to trim
 	 * @throws SQDevCollectionException
 	 */
-	private String trimToRelevantListOnly(String htmlContent) throws SQDevCollectionException {
+	private String trimToRelevantListOnly(String htmlContent) throws IOException {
 		BufferedReader reader = new BufferedReader(new StringReader(htmlContent));
 		
 		String content = "";
 		
 		String currentLine = "";
 		
-		try {
-			while ((currentLine = reader.readLine()) != null) {
-				// only consider lines containing a link to the wiki
-				if (currentLine.contains("<li><a href=\"/wiki/")) {
-					content += currentLine + "\n";
-				}
+		while ((currentLine = reader.readLine()) != null) {
+			// only consider lines containing a link to the wiki
+			if (currentLine.contains("<li><a href=\"/wiki/")) {
+				content += currentLine + "\n";
 			}
-			
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			
-			// rethrow
-			throw new SQDevCollectionException(e);
 		}
+		
+		reader.close();
 		
 		return content.trim();
 	}
@@ -359,12 +373,18 @@ public class SQFCommandCollector {
 	private SQFCommand processCommand(SQFCommand command, URL commandPage)
 			throws SQDevCollectionException {
 		// get site content
-		String siteContent = formatCommandPageContent(getSite(commandPage));
+		String siteContent;
+		try {
+			siteContent = formatCommandPageContent(getSite(commandPage));
+		} catch (IOException e) {
+			// rethrow
+			throw new SQDevCollectionException(e, command, list);
+		}
 		
 		String[] categories = categorizeContent(siteContent);
 		
-		if (!commandPage.toString().endsWith(command.getKeyword())
-				|| !categories[CATEGORY_SYNTAX].contains(command.getKeyword())) {
+		if (!commandPage.toString().endsWith(command.getKeyword()) || !categories[CATEGORY_SYNTAX]
+				.toLowerCase().contains(command.getKeyword().toLowerCase())) {
 			// The current command should be integrated in the previous command
 			// with this name TODO
 			return null;
@@ -404,7 +424,8 @@ public class SQFCommandCollector {
 			applySyntax(command, syntax);
 		} else {
 			throw new SQDevCollectionException(
-					"The command \"" + command.getKeyword() + "\" does not specify a syntax!");
+					"The command \"" + command.getKeyword() + "\" does not specify a syntax!",
+					command, list);
 		}
 		
 		// examples
@@ -700,7 +721,8 @@ public class SQFCommandCollector {
 		if (!name.toLowerCase().equals(command.getKeyword().toLowerCase())) {
 			throw new SQDevCollectionException(
 					"The given commandInfo does not specify the same name (\"" + name
-							+ "\") as the SQFCommand object (\"" + command.getKeyword() + "\")!");
+							+ "\") as the SQFCommand object (\"" + command.getKeyword() + "\")!",
+					command, list);
 		}
 		
 		// remove processed line
@@ -802,7 +824,8 @@ public class SQFCommandCollector {
 		
 		if (!notes.contains("Posted on")) {
 			throw new SQDevCollectionException(
-					"The notes of " + command.getKeyword() + "arenot in the proper format!");
+					"The notes of " + command.getKeyword() + "arenot in the proper format!",
+					command, list);
 		}
 		
 		for (String currentLine : notes.split("\n")) {
@@ -858,7 +881,7 @@ public class SQFCommandCollector {
 	 */
 	private void applySyntax(SQFCommand command, String syntaxContent)
 			throws SQDevCollectionException {
-		String[][] syntaxes = splitSyntaxes(syntaxContent);
+		String[][] syntaxes = splitSyntaxes(syntaxContent, command);
 		
 		for (String[] currentSyntax : syntaxes) {
 			String syntax = currentSyntax[SYNTAXPART_SYNTAX];
@@ -876,7 +899,7 @@ public class SQFCommandCollector {
 				arrayMatcher = arrayPattern.matcher(syntax);
 			}
 			
-			syntax = processSyntax(syntax, currentSyntax[SYNTAXPART_PARAMETERS]);
+			syntax = processSyntax(syntax, currentSyntax[SYNTAXPART_PARAMETERS], command);
 			
 			command.addSyntax(Syntax.parseSyntax(syntax, command.getKeyword()));
 		}
@@ -900,10 +923,13 @@ public class SQFCommandCollector {
 	 *            The raw syntax
 	 * @param parameter
 	 *            The list of parameters with their corresponding data type
+	 * @param The
+	 *            <code>SQFElement</code> this syntax applies to
 	 * @return The processed syntax with data types instead of placeholders
 	 * @throws SQDevCollectionException
 	 */
-	private String processSyntax(String syntax, String parameter) throws SQDevCollectionException {
+	private String processSyntax(String syntax, String parameter, SQFElement element)
+			throws SQDevCollectionException {
 		for (String currentParameter : parameter.split("param:\n")) {
 			// process each listed parameter
 			currentParameter = currentParameter.trim();
@@ -921,14 +947,16 @@ public class SQFCommandCollector {
 				
 				// make sure parameter are in proper format
 				if (!elements[0].contains(":") || elements.length == 1) {
-					if (elements.length > 2 && elements[1].equals(":")) {
+					if (elements.length > 2
+							&& (elements[1].equals(":") || elements[1].equals("-"))) {
 						// add needed colon
 						elements[0] = elements[0] + ":";
 						// Move parameter data type
 						elements[1] = elements[2];
 					} else {
 						throw new SQDevCollectionException(
-								"Unexpected parameter format - missing\":\" at " + elements[0]);
+								"Unexpected parameter format - missing\":\" at " + elements[0],
+								element, list);
 					}
 				}
 				
@@ -958,7 +986,7 @@ public class SQFCommandCollector {
 				
 				syntax = builder.toString().trim();
 			} catch (BadSyntaxException e) {
-				throw new SQDevCollectionException("Failed at processing syntax", e);
+				throw new SQDevCollectionException("Failed at processing syntax", e, element, list);
 			}
 		}
 		
@@ -1029,6 +1057,8 @@ public class SQFCommandCollector {
 	 * 
 	 * @param syntaxContent
 	 *            The syntaxes with the respective information
+	 * @param The
+	 *            <code>SQFElement</code> the syntaxes belong to
 	 * @return A two-dimensional array where the first dimension stands for
 	 *         different syntaxes (alternatives syntaxes) and the second
 	 *         dimension is as following:
@@ -1038,7 +1068,8 @@ public class SQFCommandCollector {
 	 *         <li>index 2: The return value</li>
 	 * @throws SQDevCollectionException
 	 */
-	private String[][] splitSyntaxes(String syntaxContent) throws SQDevCollectionException {
+	private String[][] splitSyntaxes(String syntaxContent, SQFElement element)
+			throws SQDevCollectionException {
 		// split the syntaxes and their components
 		ArrayList<ArrayList<String>> syntaxes = new ArrayList<ArrayList<String>>(1);
 		
@@ -1071,7 +1102,8 @@ public class SQFCommandCollector {
 			
 			// store the gathered values
 			currentSyntaxComponents.add(SYNTAXPART_SYNTAX, formatRawSyntax(currentSyntax));
-			currentSyntaxComponents.add(SYNTAXPART_PARAMETERS, formatParameters(currentParameter));
+			currentSyntaxComponents.add(SYNTAXPART_PARAMETERS,
+					formatParameters(currentParameter, element));
 			currentSyntaxComponents.add(SYNTAXPART_RETURN_VALUE,
 					formatReturnValue(currentReturnValue));
 			
@@ -1113,10 +1145,13 @@ public class SQFCommandCollector {
 	 * 
 	 * @param parameters
 	 *            The parameters to format
+	 * @param element
+	 *            The <code>SQFElement</code> the given parameters belong to
 	 * @return The formatted parameters
 	 * @throws SQDevCollectionException
 	 */
-	private String formatParameters(String parameters) throws SQDevCollectionException {
+	private String formatParameters(String parameters, SQFElement element)
+			throws SQDevCollectionException {
 		String[] paramArray = parameters.split("param:\n");
 		parameters = "";
 		
@@ -1132,7 +1167,7 @@ public class SQFCommandCollector {
 		try {
 			areas = TextUtils.getTextAreas(parameters);
 		} catch (BadSyntaxException e) {
-			throw new SQDevCollectionException("Can't format parameter", e);
+			throw new SQDevCollectionException("Can't format parameter", e, element, list);
 		}
 		
 		StringBuilder builder = new StringBuilder();
@@ -1253,5 +1288,12 @@ public class SQFCommandCollector {
 		returnValue = returnValue.trim();
 		// TODO
 		return returnValue;
+	}
+	
+	/**
+	 * Sets the respective flag so that the next command will be skipped
+	 */
+	public void skipFNext() {
+		skipNext = true;
 	}
 }

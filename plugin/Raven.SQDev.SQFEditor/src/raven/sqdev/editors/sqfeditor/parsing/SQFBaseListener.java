@@ -28,6 +28,18 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPreprocessor(SQFParser.PreprocessorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPreprocessor(SQFParser.PreprocessorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterStatement(SQFParser.StatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -124,13 +136,13 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBinary(SQFParser.BinaryContext ctx) { }
+	@Override public void enterNular(SQFParser.NularContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBinary(SQFParser.BinaryContext ctx) { }
+	@Override public void exitNular(SQFParser.NularContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

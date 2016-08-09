@@ -18,6 +18,16 @@ public interface SQFListener extends ParseTreeListener {
 	 */
 	void exitCode(SQFParser.CodeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SQFParser#preprocessor}.
+	 * @param ctx the parse tree
+	 */
+	void enterPreprocessor(SQFParser.PreprocessorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SQFParser#preprocessor}.
+	 * @param ctx the parse tree
+	 */
+	void exitPreprocessor(SQFParser.PreprocessorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SQFParser#statement}.
 	 * @param ctx the parse tree
 	 */
@@ -108,17 +118,17 @@ public interface SQFListener extends ParseTreeListener {
 	 */
 	void exitModifyExpression(SQFParser.ModifyExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code Binary}
+	 * Enter a parse tree produced by the {@code Nular}
 	 * labeled alternative in {@link SQFParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterBinary(SQFParser.BinaryContext ctx);
+	void enterNular(SQFParser.NularContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code Binary}
+	 * Exit a parse tree produced by the {@code Nular}
 	 * labeled alternative in {@link SQFParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitBinary(SQFParser.BinaryContext ctx);
+	void exitNular(SQFParser.NularContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Parenthese}
 	 * labeled alternative in {@link SQFParser#expression}.

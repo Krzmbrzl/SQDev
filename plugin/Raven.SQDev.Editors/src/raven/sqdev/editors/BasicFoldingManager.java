@@ -27,6 +27,10 @@ public class BasicFoldingManager implements IManager {
 	 * The annotation model of the editor this manager should contribute to
 	 */
 	protected ProjectionAnnotationModel model;
+	/**
+	 * Indicates that the annotation Queue has changed
+	 */
+	protected boolean annotationQueueChanged;
 	
 	
 	/**
@@ -53,10 +57,15 @@ public class BasicFoldingManager implements IManager {
 	 */
 	public void addFoldingArea(Entry<ProjectionAnnotation, Position> entry) {
 		annotationQueue.put(entry.getKey(), entry.getValue());
+		
+		// indicate change
+		annotationQueueChanged = true;
 	}
 	
 	@Override
 	public void apply() {
+		annotationQueueChanged = false;
+		
 		// clear
 		model.removeAllAnnotations();
 		
@@ -64,6 +73,13 @@ public class BasicFoldingManager implements IManager {
 				.iterator();
 		
 		while (mapIterator.hasNext()) {
+			if (annotationQueueChanged) {
+				// the queue has been modified by another thread -> reapply to
+				// avoid concurrent exception
+				apply();
+				break;
+			}
+			
 			// add the foladable areas TODO: implement some overlap logic
 			Entry<ProjectionAnnotation, Position> entry = mapIterator.next();
 			

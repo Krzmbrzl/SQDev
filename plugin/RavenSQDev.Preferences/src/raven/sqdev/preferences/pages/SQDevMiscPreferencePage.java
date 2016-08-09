@@ -16,6 +16,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
+import raven.sqdev.exceptions.SQDevCollectionException;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.SQFCommandCollector;
 import raven.sqdev.infoCollection.base.KeywordList;
@@ -34,6 +35,10 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 	 * The button corresponding to the update function
 	 */
 	private Button updateButton;
+	/**
+	 * The list storing previously processed commands
+	 */
+	private KeywordList commandList;
 	
 	public SQDevMiscPreferencePage() {
 		super();
@@ -105,9 +110,28 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 	}
 	
 	/**
-	 * Schedules the keyword update Job
+	 * Schedules the keyword update job
 	 */
 	private void updateKeywords() {
+		commandList = new KeywordList();
+		
+		updateKeywords(SQDevPreferenceUtil.getFirstCommand(), SQDevPreferenceUtil.getLastCommand(),
+				false);
+	}
+	
+	/**
+	 * Schedules the keyword update Job
+	 * 
+	 * @param firstCommand
+	 *            The command to start with
+	 * @param lastCommand
+	 *            The command to stop at
+	 * @param previous
+	 *            A list of already gathered commands
+	 * @param skipFirst
+	 *            Indicating whether the first command should be skipped
+	 */
+	private void updateKeywords(String firstCommand, String lastCommand, boolean skipFirst) {
 		collectionJob = new Job("Updating keywords") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -115,11 +139,21 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 				
 				try {
 					// gather keywords from the wiki
-					KeywordList list = new SQFCommandCollector(
+					SQFCommandCollector collector = new SQFCommandCollector(
 							new URL("https://community.bistudio.com/wiki/Category:"
 									+ "Scripting_Commands_Arma_3"),
-							SQDevPreferenceUtil.getFirstCommand(),
-							SQDevPreferenceUtil.getLastCommand()).collect(monitor);
+							firstCommand, lastCommand);
+					
+					if (skipFirst) {
+						collector.skipFNext();
+					}
+					
+					KeywordList list = collector.collect(monitor);
+					
+					list.addKeywords(commandList.getKeywords()); // add
+																	// previously
+																	// gathered
+																	// commands
 					
 					if (monitor.isCanceled()) {
 						// ask whether to save the list
@@ -153,8 +187,36 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 					info.open();
 					
 				} catch (IOException | SQDevException e) {
-					SQDevInfobox info = new SQDevInfobox("Failed at updating keywords", e);
-					info.open();
+					if (e instanceof SQDevCollectionException
+							&& ((SQDevCollectionException) e).getFailedKeyword() != null) {
+						SQDevCollectionException ex = (SQDevCollectionException) e;
+						
+						commandList.addKeywords(ex.getPreviouslyProcessedKeywords().getKeywords());
+						
+						SQDevInfobox info = new SQDevInfobox(
+								"Failed at updating keywords at \""
+										+ ex.getFailedKeyword().getKeyword() + "\"",
+								ex, "Do you want to retry this command?");
+						info.addStyle(SWT.CANCEL);
+						
+						int result = info.open();
+						// TODO: store prev-Keywords in case of multiple
+						// interruptions
+						switch (result) {
+							case SWT.YES:
+								updateKeywords(ex.getFailedKeyword().getKeyword(),
+										SQDevPreferenceUtil.getLastCommand(), false);
+								break;
+							
+							case SWT.NO:
+								updateKeywords(ex.getFailedKeyword().getKeyword(),
+										SQDevPreferenceUtil.getLastCommand(), true);
+								break;
+						}
+					} else {
+						SQDevInfobox info = new SQDevInfobox("Failed at updating keywords!", e);
+						info.open();
+					}
 					
 					e.printStackTrace();
 					return Status.CANCEL_STATUS;

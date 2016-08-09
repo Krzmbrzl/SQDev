@@ -174,6 +174,14 @@ MMB: MouseButton 2 = actionKeys 65538 (65536 + 2)
 4MB: MouseButton 3 = actionKeys 65539 (65536 + 3)
 5MB: MouseButton 4 = actionKeys 65540 (65536 + 4)
 The values above are valid for a right-handed mouse configuration, and may or may not differ for a left-handed config.
+%NextNote%
+(August 6, 2016)
+The method described by @AgentRev does not work.
+All numbers in SQF are floats and those are only precise up to 6...7 digits.
+$Code$486539264 + 19 == 486539264 + 20
+- true
+$/Code$
+The DIK codes for 'LCtrl + R' and 'LCtrl + T' are indistinguishable.
 //NoteEnd//
 ReturnValueStart:
 Array of Numbers
@@ -517,9 +525,10 @@ KeywordStart:
 addAction
 //KeywordEnd//
 DescriptionStart:
-Adds an entry to the action menu of an object (scroll wheel menu). The action can only be activated when in proximity to the object (eg: building). Adding an action to the player obviously makes that action available to the player at all times.
-This command has local effect. Created action is only available on the computer where command was executed. To make action available to all players, command must be executed on all connected clients.
-Note: addAction will be ignored on dedicated server, probably because no UI.
+This command syntax is for Arma 3 only. For TKOH and older versions see addAction TKOH
+Adds an entry to the action menu of an object (scroll wheel menu). The action can only be activated when in proximity to the object (eg: building). Adding an action to the player obviously makes that action available to the player at all times. The appearance of onscreen text could be further tweaked with setUserActionText. For event handling of user interaction see inGameUISetEventHandler
+This command has local effect. Created action is only available on the computer where command was executed. To make action available to all players, command must be executed on all connected clients (see remoteExec ). addAction is also ignored on dedicated server, because of no user interface. In Arma 3 addAction does not work on animals. This is intended behavior.
+Since Arma 3 v1.63.136787, two new params are available: radius and unconscious.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/addAction
@@ -528,17 +537,60 @@ SyntaxStart:
 Object addAction Array
 //SyntaxEnd//
 RawSyntaxStart:
-unit addAction [title, script, arguments, priority, showWindow, hideOnUse, shortcut, condition, positionInModel, radius, radiusView, showIn3D, available, textDefault, textToolTip]
+unit addAction [title, script, arguments, priority, showWindow, hideOnUse, shortcut, condition, radius, unconscious]
 //RawSyntaxEnd//
 ExampleStart:
 $Code$// Short and sweet:
-player addAction ["A Useless Action", ""];
-player addAction [" t color='#FF0000' This Useless Action Is RED /t ", ""];
-player addAction ["Hint Hello!", { hint format ["Hello %1!", _this select 3] }, name player ];
-player addAction ["string exec", "hint 'this is also compiled'"];$/Code$
+player addAction ["A Useless Action That Does Nothing", {}];
+player addAction [" t color='#FF0000' This Useless Action Is RED /t ", { hint "RED"}];
+player addAction ["Hint Hello!", { hint format ["Hello %1!", _this select 3]}, name player ];
+player addAction ["String Exec", " hint 'this is also compiled'"];$/Code$
 %NextExample%
-$Code$// Actionception:
-actions = [];
+$Code$// SQF file example:
+_act = player addAction ["Exec the file", "somescript.sqf"]
+// somescript.sqf: hint str _this;$/Code$
+%NextExample%
+$Code$// SQS file example:
+_genAct = generator addAction ["Switch on generator", "activate_generator.sqs"]
+// activate_generator.sqs:_gen = _this select 0
+_caller = _this select 1
+_id = _this select 2
+; remove the action once it is activated
+_gen removeAction _id
+// This example shows an action called "Switch on generator" added to an object with the name 'generator'. As soon as the player gets close to this object, he can execute the given action via the action menu. Then the script 'activate_generator.sqs' is executed, which in our example only removes the action from the generator.$/Code$
+%NextExample%
+$Code$// Create object on dedicated server and add action to the object on every client:
+if ( isDedicated ) then
+{
+_obj = "some_obj_class" createVehicle [1234, 1234, 0];
+[_obj, ["Greetings!", { hint "Hello!"}]] remoteExec ["addAction", -2, _obj];
+};$/Code$
+//ExampleEnd//
+LocalityStart:
+global / local
+//LocalityEnd//
+NoteStart:
+(August 2, 2006)
+An easy way to keep track of and remove actions is to store the IDs of the actions in variables.
+This can be accomplished by doing the following:
+$Code$_myaction = player addAction ["Hello", "hello.sqs"];$/Code$
+This stores the action's ID in the local variable "_myaction" and assists in keeping track of the action ID.
+To remove the above action, you would use the following line:
+$Code$ player removeAction _myaction;$/Code$
+%NextNote%
+(June 19, 2014)
+If executing actual script code like this:
+$Code$_unit addAction [ "yourAction", { hint "A line of code" } ];$/Code$
+you can have a user action that uses and/or affects variables used elsewhere in the script that adds the action.
+But beware!
+The variable(s) must be global otherwise it won't work! i.e.
+Fail
+$Code$_variable = false ; _unit addAction [ "action", { _variable = true } ];$/Code$
+Succeed
+$Code$variable = false ; _unit addAction [ "action", { variable = true } ];$/Code$
+%NextNote%
+(March 10, 2015)
+Actionception: $Code$actions = [];
 actions set [0, player addAction ["Actionception", {
 if ( count actions == 1) then {
 actions set [1, player addAction [" Actionception ", {
@@ -556,65 +608,6 @@ player removeAction _x ;
 }, [], 10, false, false ]];
 };
 }, [], 10, false, false ]];$/Code$
-%NextExample%
-$Code$// SQS example:
-_genAct = generator addAction ["Switch on generator", "activate_generator.sqs"]
-// activate_generator.sqs:_gen = _this select 0
-_caller = _this select 1
-_id = _this select 2
-; remove the action once it is activated
-_gen removeAction _id
-// This example shows an action called "Switch on generator" added to an object with the name 'generator'. As soon as the player gets close to this object, he can execute the given action via the action menu. Then the script 'activate_generator.sqs' is executed, which in our example only removes the action from the generator.$/Code$
-%NextExample%
-$Code$// TKOH example:
-_heli addAction [
-"Test",
-"myTest.sqf",
-"",
-1,
-true,
-true,
-"",
-"true",
-"display1",
-2,
-0.25,
-9,
-0,
-" img image='\HSim\UI_H\data\ui_action_autohover_ca.paa' size='1.8' shadow=0 / ",
-" br / My test tooltip"
-]$/Code$
-//ExampleEnd//
-LocalityStart:
-global / local
-//LocalityEnd//
-NoteStart:
-(August 2, 2006)
-An easy way to keep track of and remove actions is to store the IDs of the actions in variables.
-This can be accomplished by doing the following:
-$Code$_myaction = player addAction ["Hello", "hello.sqs"];$/Code$
-This stores the action's ID in the local variable "_myaction" and assists in keeping track of the action ID.
-To remove the above action, you would use the following line:
-$Code$ player removeAction _myaction;$/Code$
-%NextNote%
-(17:35, 24 August 2013 (CEST))
-In Arma 3 addAction does not work on animals. This is intended behavior.
-%NextNote%
-(June 19, 2014)
-If executing actual script code like this:
-$Code$_unit addAction [ "yourAction", { hint "A line of code" } ];$/Code$
-you can have a user action that uses and/or affects variables used elsewhere in the script that adds the action.
-But beware!
-The variable(s) must be global otherwise it won't work! i.e.
-Fail
-$Code$_variable = false ; _unit addAction [ "action", { _variable = true } ];$/Code$
-Succeed
-$Code$variable = false ; _unit addAction [ "action", { variable = true } ];$/Code$
-%NextNote%
-(August 15, 2014)
-Be aware that function names are essentially just global variables for code, so you can use function names as the script parameter.
-%NextNote%
-(March 10, 2015)
 Function to remove user actions with unknown ids:
 $Code$KK_fnc_removeUnknownUserActions = {
 for "_i" from 0 to ( player addAction ["",""]) do {
@@ -631,6 +624,9 @@ player addAction ["Action #" + str _i, {
 };
 $/Code$
 Removes all user actions but 0, 5 and 6.
+%NextNote%
+(July 18, 2016)
+A3 v1.62.137494 : Condition is not evaluated when map is opened (and probably also true for other displays or opened dialog)
 //NoteEnd//
 ReturnValueStart:
 Number
@@ -986,8 +982,7 @@ KeywordStart:
 addEventHandler
 //KeywordEnd//
 DescriptionStart:
-Adds an event handler to a given unit. For more information about event handlers and their types check the scripting topic Event handlers in this reference. You may add as many event handlers of any type as you like to every unit. For instance, if you add an event handler of type "killed" and one already exists, the old one doesn't get overwritten. Use removeEventHandler to delete event handlers.
-Every event will create an array named _this, which contains specific information about the particular event. (e.g. the "killed" EH will return an array with 2 elements: the killed unit, and the killer.)
+Adds event handler (EH) to the given object and returns EH handle. If EH has some data to return upon event (e.g. the "killed" EH will return an array with 2 elements: the killed unit, and the killer), it is passed in _this variable. Since Arma 3 v.1.63.137807 the EH handle is also stored in _thisEventHandler variable and is available during EH code execution. For more information about event handlers and their types check the scripting topic Event handlers in this reference. You may add as many event handlers of any type as you like to every unit. For instance, if you add an event handler of type "killed" and one already exists, the old one doesn't get overwritten. Use removeEventHandler to delete event handlers.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/addEventHandler
@@ -1705,13 +1700,7 @@ KeywordStart:
 addMissionEventHandler
 //KeywordEnd//
 DescriptionStart:
-Adds mission event handler. Every event will create an array named _this, which contains specific information about the particular event. Available mission event handlers:
-"Loaded"
-"EntityRespawned"
-"EntityKilled"
-"Ended" - Triggered when the mission is successfully ended. The variable _this, stores the type of the ending ("END1","END2", "LOSER", etc.).
-"Draw3D" - It seems "Draw3D" mission EH is connected to your primary display. It will stop firing as soon as you Alt+Tab from the game and resume when you come back (unless Arma 3 client is launched with -window -nopause params). "Draw3D" does not fire at all on a dedicated server.
-"HandleDisconnect" - Triggered when player disconnects from the game. Similar to onPlayerDisconnected event but can be stacked and contains the unit occupied by player before disconnect. Must be added on the server and triggers only on the server. For more info: HandleDisconnect
+Adds event handler (EH) attached to the current mission and returns EH handle. If EH has some data to return upon event, it is passed in _this variable. Since Arma 3 v.1.63.137807 the EH handle is also stored in _thisEventHandler variable and is available during EH code execution. For the list of available mission event handlers see: Arma_3:_Event_Handlers/addMissionEventHandler
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/addMissionEventHandler
@@ -1741,7 +1730,7 @@ KeywordStart:
 addMPEventHandler
 //KeywordEnd//
 DescriptionStart:
-The format of handler is [type,command]. Check scripting topic Event handlers for more information. The index of the current handler is returned.
+Adds MP event handler (EH) to the given object and returns EH handle. MP event handlers are added globally to every client on network in multiplayer and will fire on every client too upon event. If EH has some data to return upon event (e.g. the "MPKilled" EH will return an array with 2 elements: the killed unit, and the killer), it is passed in _this variable. Since Arma 3 v.1.63.137807 the EH handle is also stored in _thisEventHandler variable and is available during EH code execution. For more information see: Arma_3:_Event_Handlers#addMPEventHandler
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/addMPEventHandler
@@ -1750,7 +1739,7 @@ SyntaxStart:
 Object addMPEventHandler Array
 //SyntaxEnd//
 RawSyntaxStart:
-unitName addMPEventHandler [type, command]
+object addMPEventHandler [type, expression]
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_index = player addMPEventHandler ["mpkilled", {Null = _this execVM "playerkilled.sqf";}];$/Code$
@@ -1799,6 +1788,65 @@ MusicStop - It is triggered when the music is ended (command playMusic ). In var
 //NoteEnd//
 ReturnValueStart:
 Number - event handler id
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+addOwnedMine
+//KeywordEnd//
+DescriptionStart:
+Sets ownership over a remotely detonatable mine to the unit.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/addOwnedMine
+//WikiPageEnd//
+SyntaxStart:
+unti addOwnedMine Object
+//SyntaxEnd//
+RawSyntaxStart:
+unti addOwnedMine mine
+//RawSyntaxEnd//
+ExampleStart:
+$Code$player addOwnedMine SuperMine;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+addPlayerScores
+//KeywordEnd//
+DescriptionStart:
+MP server only: Adds player score.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/addPlayerScores
+//WikiPageEnd//
+SyntaxStart:
+Object addPlayerScores Array
+//SyntaxEnd//
+RawSyntaxStart:
+unit addPlayerScores values
+//RawSyntaxEnd//
+ExampleStart:
+$Code$player addPlayerScores [0, 1, 0, 0, 1];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+This scripting command must be executed on the server to work properly in multiplayer
+//NoteEnd//
+ReturnValueStart:
+Nothing
 //ReturnValueEnd//
 
 %NextListItem%
@@ -2116,7 +2164,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/addTeamMember
 //WikiPageEnd//
 SyntaxStart:
-TeamMember addTeamMember
+TeamMember addTeamMember TeamMember
 //SyntaxEnd//
 RawSyntaxStart:
 team addTeamMember member
@@ -3717,13 +3765,13 @@ allVariables
 //KeywordEnd//
 DescriptionStart:
 Returns a list of all variables from desired namespace. Namespaces supported:
-CONTROL
-TEAM_MEMBER
-NAMESPACE
-OBJECT
-GROUP
-TASK
-LOCATION
+Control
+Team_Member
+Namespace
+Object
+Group
+Task
+Location
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/allVariables
@@ -3735,15 +3783,19 @@ RawSyntaxStart:
 allVariables namespace
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_allVars = allVariables uiNamespace ;$/Code$
+$Code$_allVarsUINamespace = allVariables uiNamespace ;$/Code$
+%NextExample%
+$Code$_allVarsTrigger = allVariables trigger1;$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
 //LocalityEnd//
 NoteStart:
+(June 11, 2016)
+Using profileNamespace and uiNamespace with this command has been disabled in multiplayer. [1]
 //NoteEnd//
 ReturnValueStart:
-Array of Strings - array of variable names
+Array of Strings - array of variable names. All names are in lower case (see toLower )
 //ReturnValueEnd//
 
 %NextListItem%
@@ -3793,7 +3845,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/and
 //WikiPageEnd//
 SyntaxStart:
-Boolean and
+Boolean and Boolean
 %NextSyntax%
 Boolean and Code
 //SyntaxEnd//
@@ -4194,7 +4246,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/append
 //WikiPageEnd//
 SyntaxStart:
-Array append
+Array append Array
 //SyntaxEnd//
 RawSyntaxStart:
 array1 append array2
@@ -4336,7 +4388,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/arrayIntersect
 //WikiPageEnd//
 SyntaxStart:
-Array arrayIntersect
+Array arrayIntersect Array
 //SyntaxEnd//
 RawSyntaxStart:
 array1 arrayIntersect array2
@@ -4511,7 +4563,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/assignAsCargo
 //WikiPageEnd//
 SyntaxStart:
-Object assignAsCargo
+Object assignAsCargo Object
 //SyntaxEnd//
 RawSyntaxStart:
 unitName assignAsCargo vehicleName
@@ -4570,7 +4622,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/assignAsCommander
 //WikiPageEnd//
 SyntaxStart:
-Object assignAsCommander
+Object assignAsCommander Object
 //SyntaxEnd//
 RawSyntaxStart:
 unitName assignAsCommander vehicleName
@@ -4600,7 +4652,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/assignAsDriver
 //WikiPageEnd//
 SyntaxStart:
-Object assignAsDriver
+Object assignAsDriver Object
 //SyntaxEnd//
 RawSyntaxStart:
 unitName assignAsDriver vehicleName
@@ -4630,7 +4682,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/assignAsGunner
 //WikiPageEnd//
 SyntaxStart:
-Object assignAsGunner
+Object assignAsGunner Object
 //SyntaxEnd//
 RawSyntaxStart:
 unitName assignAsGunner vehicleName
@@ -4688,7 +4740,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/assignCurator
 //WikiPageEnd//
 SyntaxStart:
-Object assignCurator
+Object assignCurator Object
 //SyntaxEnd//
 RawSyntaxStart:
 player assignCurator curatorObj
@@ -5078,6 +5130,8 @@ LocalityStart:
 global / local
 //LocalityEnd//
 NoteStart:
+(July 12, 2016)
+Since Arma 3 v1.62 this command has global effects and is persistent even on machines that join in progress.
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -5154,7 +5208,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/atan2
 //WikiPageEnd//
 SyntaxStart:
-Number atan2
+Number atan2 Number
 //SyntaxEnd//
 RawSyntaxStart:
 x atan2 y
@@ -5695,7 +5749,7 @@ KeywordStart:
 behaviour
 //KeywordEnd//
 DescriptionStart:
-Return the behaviour of a unit.
+Return the behaviour of a unit. For Arma 3 behaviour explanation see Arma_3_AI_Behavior
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/behaviour
@@ -5707,9 +5761,8 @@ RawSyntaxStart:
 behaviour unitName
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_soldier setBehaviour CARELESS
-_b = behaviour _soldier
-returns "CARELESS"$/Code$
+$Code$_soldier setBehaviour "CARELESS";
+_b = behaviour _soldier; //returns "CARELESS"$/Code$
 //ExampleEnd//
 LocalityStart:
 global / undefined
@@ -6209,6 +6262,13 @@ buttonSetAction [100, hint format[ %1 bar, _foo]; ];
 %NextNote%
 (February 15, 2016)
 This command does not overwride the buttonaction which was set via "action" in the hpp of the dialog
+%NextNote%
+(June 11, 2016)
+To use variables local to the defining script, a syntax like the one below needs to be used:
+$Code$_foo = "foo";
+buttonSetAction [100, format["hint '%1 bar'", _foo]];
+$/Code$
+works! thanks to Kronzky for commenting this workaround in the VBS wiki
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -6358,7 +6418,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/callExtension
 //WikiPageEnd//
 SyntaxStart:
-String callExtension
+String callExtension String
 //SyntaxEnd//
 RawSyntaxStart:
 extension callExtension functionWithArguments
@@ -7133,7 +7193,7 @@ https://community.bistudio.com/wiki/camPrepareTarget
 SyntaxStart:
 Object camPrepareTarget Array
 %NextSyntax%
-Object camPrepareTarget
+Object camPrepareTarget Object
 //SyntaxEnd//
 RawSyntaxStart:
 camera camPrepareTarget position
@@ -7424,7 +7484,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/camSetTarget
 //WikiPageEnd//
 SyntaxStart:
-Object camSetTarget
+Object camSetTarget Object
 %NextSyntax%
 Object camSetTarget Array
 //SyntaxEnd//
@@ -7792,6 +7852,8 @@ LocalityStart:
 global / undefined
 //LocalityEnd//
 NoteStart:
+(08:17, 22 Juil 2016 (UTC))
+This command will return true for a car or a tank out of fuel, but false for an helicopter or a plane for the same condition.
 //NoteEnd//
 ReturnValueStart:
 Boolean -
@@ -7809,7 +7871,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/canSlingLoad
 //WikiPageEnd//
 SyntaxStart:
-Object canSlingLoad
+Object canSlingLoad Object
 //SyntaxEnd//
 RawSyntaxStart:
 vehicle canSlingLoad cargo
@@ -7935,6 +7997,46 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Boolean
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+canVehicleCargo
+//KeywordEnd//
+DescriptionStart:
+Returns bool array if it is possible to load cargo inside vehicle and if possible to load cargo into empty vehicle
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/canVehicleCargo
+//WikiPageEnd//
+SyntaxStart:
+Object canVehicleCargo Object
+//SyntaxEnd//
+RawSyntaxStart:
+vehicle canVehicleCargo cargo
+//RawSyntaxEnd//
+ExampleStart:
+$Code$// Blackfish with no vehicle cargo loaded
+_result = blackfish canVehicleCargo offroad; //[true, true]$/Code$
+%NextExample%
+$Code$// Blackfish with one vehicle cargo called offroad already loaded
+_result = blackfish canVehicleCargo offroad; //[false, false]
+
+// Even if the Blackfish was empty offroad can't be loaded because it's already in a cargo space$/Code$
+%NextExample%
+$Code$// Blackfish with one vehicle cargo called offroad already loaded
+_result = blackfish canVehicleCargo offroad2; //[false, true]
+
+// offroad2 can't be loaded because there isn't enough space in the Blackfish, but if there was space offroad2 could be loaded into the Blackfish$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - [Possible to load cargo inside vehicle, possible to load cargo into empty vehicle]
 //ReturnValueEnd//
 
 %NextListItem%
@@ -8258,10 +8360,10 @@ WikiPageStart:
 https://community.bistudio.com/wiki/checkVisibility
 //WikiPageEnd//
 SyntaxStart:
-Array checkVisibility
+Array checkVisibility Array
 //SyntaxEnd//
 RawSyntaxStart:
-[ignore, LOD] checkVisibility [beg, end]
+[ignore, LOD, ignore2] checkVisibility [beg, end]
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_cansee = [ objNull, "VIEW"] checkVisibility [ eyePos player, eyePos unit1];$/Code$
@@ -9035,25 +9137,25 @@ KeywordStart:
 commandChat
 //KeywordEnd//
 DescriptionStart:
-Types text to the command radio channel. Note: This function only types text to the list, it does not broadcast the message. If you want the message to show on all computers, you have to execute it on all of them.
+Types text to the command radio channel. Must have assigned "ItemRadio" to see or transmit the messages. The text will be visible only on the PC where command was executed. If you need the message to show on all computers, you have to execute it globally (see remoteExec )
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/commandChat
 //WikiPageEnd//
 SyntaxStart:
-Object/Array commandChat String
+Object commandChat String
 %NextSyntax%
 Array commandChat String
 //SyntaxEnd//
 RawSyntaxStart:
-unit commandChat chatText
+unitName commandChat chatText
 %NextRawSyntax%
-[side, string] commandChat chatText
+[side, identity] commandChat chatText
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_soldierOne commandChat "Show this text";$/Code$
 %NextExample%
-$Code$[ playerSide,"HQ"] commandChat "Do this! That's an order!";$/Code$
+$Code$[ playerSide, "HQ"] commandChat "Do this! That's an order!";$/Code$
 %NextExample%
 $Code$driver vehicle player sideChat "sideChat";
 driver vehicle player globalChat "globalChat";
@@ -9316,22 +9418,31 @@ KeywordStart:
 commandRadio
 //KeywordEnd//
 DescriptionStart:
-Sends the message to the command radio channel. The message is defined in the description.ext file or radio protocol.
+Sends the audio message to the command radio channel. Must have assigned "ItemRadio" to send or receive the transmission. The message is defined in CfgRadio in the description.ext file or config radio protocol. The transmission will play only on the PC where command was executed. If you need the transmission to play on all computers, you have to execute it globally (see remoteExec ).
+Note: When transmitting unit gets killed, transmission will be interrupted, however when receiving unit gets killed, the transmission continues to play.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/commandRadio
 //WikiPageEnd//
 SyntaxStart:
-Object/Array commandRadio String
+Object commandRadio String
+%NextSyntax%
+Array commandRadio String
 //SyntaxEnd//
 RawSyntaxStart:
 unit commandRadio radioName
+%NextRawSyntax%
+[side, identity] commandRadio radioName
 //RawSyntaxEnd//
 ExampleStart:
-$Code$player commandRadio "messageOne";$/Code$
+$Code$_soldierOne commandRadio "messageOne";$/Code$
+%NextExample%
+$Code$player commandRadio configName selectRandom ("true" configClasses ( configFile "CfgRadio"));$/Code$
+%NextExample%
+$Code$[ west, "Base"] commandRadio configName selectRandom ("true" configClasses ( configFile "CfgRadio"));$/Code$
 //ExampleEnd//
 LocalityStart:
-undefined / undefined
+global / local
 //LocalityEnd//
 NoteStart:
 (June 24, 2010)
@@ -9379,6 +9490,37 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+commandSuppressiveFire
+//KeywordEnd//
+DescriptionStart:
+Order the given unit to suppress a given position or target (via the radio).
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/commandSuppressiveFire
+//WikiPageEnd//
+SyntaxStart:
+Object/Array commandSuppressiveFire Object/Array
+//SyntaxEnd//
+RawSyntaxStart:
+unitName commandSuppressiveFire target
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_soldier commandSuppressiveFire [1869.508,5760.962,0.000]$/Code$
+%NextExample%
+$Code$_soldier commandSuppressiveFire cursorTarget$/Code$
+//ExampleEnd//
+LocalityStart:
+local / local
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 commandTarget
 //KeywordEnd//
 DescriptionStart:
@@ -9388,7 +9530,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/commandTarget
 //WikiPageEnd//
 SyntaxStart:
-Object commandTarget
+Object commandTarget Object
 //SyntaxEnd//
 RawSyntaxStart:
 unitName commandTarget target
@@ -9675,30 +9817,6 @@ LocalityStart:
 undefined / undefined
 //LocalityEnd//
 NoteStart:
-(Jul 19, 2014)
-(ArmA3 1.24) It is recommended to use configClasses instead of BIS_fnc_getCfgSubClasses and BIS_fnc_uniqueClasses on subclasses collection or conditional selection.
-$Code$
-_faces = " true " configClasses ( configFile "Cfgfaces");
-//same as: _faces = (configfile "CfgFaces") call BIS_fnc_getCfgSubClasses ;
-$/Code$
-$Code$
-//Extract all animals:
-animals = "(( configName _x) isKindOf 'animal')" configClasses ( configFile "CfgVehicles");
-/*same as:
-aniamls = [];
-[( configFile "CfgVehicles"),{
-if (( configName _this) isKindOf “animal�?) then {
-animals set [ count animals, _this]
-}
-}
-] call BIS_fnc_uniqueClasses ;*/
-$/Code$
-Return nested subclasses, currently still BIS_fnc_returnChildren
-$Code$
-//Return all nested config classes.
-[( configFile "CfgFaces"),1, true, true ] call BIS_fnc_returnChildren ;
-$/Code$
-%NextNote%
 (oct 19, 2014)
 A fantastic way to filter stuff. eg; Create an array of west vehicles and spawn then in front of the player in rows of 5
 $Code$
@@ -9721,6 +9839,10 @@ _xPos = _xPos + 20;
 };
 } forEach _cfgArray;
 $/Code$
+%NextNote%
+(May 28, 2016)
+configClasses does not account for inherited subclasses, use configProperties with isClass filter instead
+$Code$ configProperties [_config, " isClass _x", true ];$/Code$
 //NoteEnd//
 ReturnValueStart:
 Array - Array of Configs
@@ -9917,6 +10039,36 @@ Array - Array of Configs
 %NextListItem%
 
 KeywordStart:
+configSourceAddonList
+//KeywordEnd//
+DescriptionStart:
+Returns an array of addons ( CfgPatches ) in which the given config class is defined.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/configSourceAddonList
+//WikiPageEnd//
+SyntaxStart:
+configSourceAddonList Config
+//SyntaxEnd//
+RawSyntaxStart:
+configSourceAddonList config
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_addons = configSourceAddonList ( configFile "CfgVehicles" "Man");
+hint str _addons; // ["A3_Data_F","A3_Characters_F","A3_Data_F_Curator","A3_Air_F_Heli"]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array of Strings
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 configSourceMod
 //KeywordEnd//
 DescriptionStart:
@@ -9951,7 +10103,7 @@ KeywordStart:
 configSourceModList
 //KeywordEnd//
 DescriptionStart:
-Returns an array of mods which modified the given config class.
+Returns an array of mods (CfgMods) in which the given config class is defined.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/configSourceModList
@@ -9964,7 +10116,7 @@ configSourceModList config
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_mods = configSourceModList (configFile "CfgVehicles" "Man");
-hint str _mods; //["curator","heli"]$/Code$
+hint str _mods; // ["A3","curator","heli"]$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -9972,7 +10124,7 @@ undefined / undefined
 NoteStart:
 //NoteEnd//
 ReturnValueStart:
-Array Array of mods
+Array of Strings
 //ReturnValueEnd//
 
 %NextListItem%
@@ -9987,7 +10139,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/connectTerminalToUAV
 //WikiPageEnd//
 SyntaxStart:
-Object connectTerminalToUAV
+Object connectTerminalToUAV Object
 //SyntaxEnd//
 RawSyntaxStart:
 person connectTerminalToUAV uav
@@ -10150,7 +10302,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/copyWaypoints
 //WikiPageEnd//
 SyntaxStart:
-Group copyWaypoints
+Group copyWaypoints Group
 //SyntaxEnd//
 RawSyntaxStart:
 groupTo copyWaypoints groupFrom
@@ -10532,6 +10684,9 @@ undefined / undefined
 NoteStart:
 (March 29, 2016)
 The classnames for triggers can be found in the config class CfgNonAIVehicles
+%NextNote%
+(June 14, 2016)
+Mode can also be "Logic". Not sure if it's a replacement for "System" or a it's a completely separate mode.
 //NoteEnd//
 ReturnValueStart:
 Eden Entity
@@ -10845,6 +11000,38 @@ Nothing or ( Since Arma 3 v1.49.131653 ) Display
 %NextListItem%
 
 KeywordStart:
+createGearDialog
+//KeywordEnd//
+DescriptionStart:
+Opens gear dialog for given unit.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/createGearDialog
+//WikiPageEnd//
+SyntaxStart:
+createGearDialog Array
+//SyntaxEnd//
+RawSyntaxStart:
+CreateGearDialog [unit,resource]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$createGearDialog [player, "RscDisplayGear"];
+createGearDialog [player, "RscMyDisplayGear"];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+(April 12, 2015)
+Arma 3 v. 1.42 crashes when executing examples above in debug panel.
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 createGroup
 //KeywordEnd//
 DescriptionStart:
@@ -11109,6 +11296,60 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Display
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+createSimpleObject
+//KeywordEnd//
+DescriptionStart:
+Create object with given shape defined as path to.p3d model. Supported LODs include Geometry, Fire Geometry, Roadway, View Geometry and ShadowVolume. Supported features include collision, texturing, animation, penetration, AI spotting occlusion, and surface specific sounds (like footsteps). Unsupported features include PhysX, damage, AI pathfinding (causes walking through walls), and built in lights.
+Given the simulation limitations, global decorative objects can be created with very little network traffic. Objects that could be exclusively created with this command are: trees, bushes, rocks, bridges, roads, vehicle wrecks, custom models in mission, and other objects without a class in config. The height of the placement position might need to be adjusted experimentally. Some of the model examples could be found here: createSimpleObject/objects
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/createSimpleObject
+//WikiPageEnd//
+SyntaxStart:
+createSimpleObject Array;
+//SyntaxEnd//
+RawSyntaxStart:
+createSimpleObject [shapeName, position];
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_pos = player getRelPos [10, 0];
+_tank = createSimpleObject ["a3\armor_f_beta\apc_tracked_01\apc_tracked_01_rcws_f.p3d", _pos];
+_tank setPos (_pos vectorAdd ( getPosWorld _tank vectorDiff (_tank modelToWorld [0,0,0])));
+_tank hideSelection ["zasleh", true ];
+_tank hideSelection ["zasleh2", true ];
+_tank hideSelection ["clan", true ];
+_tank animate ["Wheel_podkoloL3", 1, true ];
+_tank animate ["Wheel_podkoloL6", 1, true ];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / global
+//LocalityEnd//
+NoteStart:
+(April 18, 2016)
+The easiest way to correctly place simple object is to create normal object of the same shape from class (if possible), then copy getPosWorld, vectorDir and vectorUp from it. Then create the simple object and apply copied values to it, this will position simple object exactly as normal object was positioned:
+$Code$_heli = "B_Heli_Light_01_F" createVehicleLocal ( player getRelPos [10, 0]);
+_position = getPosWorld _heli;
+_vectorDirUp = [ vectorDir _heli, vectorUp _heli];
+_model = getModelInfo _heli select 1;
+deleteVehicle _heli;
+_simpleHeli = createSimpleObject [_model, _position];
+_simpleHeli setVectorDirAndUp _vectorDirUp;$/Code$
+%NextNote%
+(April 28, 2016)
+Models from within the mission file/folder can be created, but full system path is needed. Use:
+$Code$(str missionConfigFile select [0, count str missionConfigFile - 15]) + "myModel.p3d"
+//mission folder path code from: http://killzonekid.com/arma-scripting-tutorials-mission-root/ $/Code$
+%NextNote%
+(May 11, 2016)
+simulationEnabled returns false.
+//NoteEnd//
+ReturnValueStart:
+Object - Created simple object
 //ReturnValueEnd//
 
 %NextListItem%
@@ -11726,7 +11967,7 @@ KeywordStart:
 ctrlAngle
 //KeywordEnd//
 DescriptionStart:
-WIP
+Gets array of rotation info of the control
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/ctrlAngle
@@ -11738,6 +11979,7 @@ RawSyntaxStart:
 ctrlAngle control
 //RawSyntaxEnd//
 ExampleStart:
+$Code$ctrlAngle _control;$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -11745,7 +11987,7 @@ undefined / undefined
 NoteStart:
 //NoteEnd//
 ReturnValueStart:
-Nothing
+Array - format [angle, xCenter, yCenter]
 //ReturnValueEnd//
 
 %NextListItem%
@@ -12438,7 +12680,7 @@ KeywordStart:
 ctrlMapMouseOver
 //KeywordEnd//
 DescriptionStart:
-Returns description of map sign mouse cursor is over.
+Returns description of map sign mouse cursor is over. Works with in-game map as well as 2D editor map in edit mode.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/ctrlMapMouseOver
@@ -12450,25 +12692,27 @@ RawSyntaxStart:
 ctrlMapMouseOver control
 //RawSyntaxEnd//
 ExampleStart:
-$Code$(uiNamespace getVariable _map ) ctrlMapCursor [ Track, HC_overFriendly ];
-_mouseover = if (count (ctrlMapMouseOver (uiNamespace getVariable _map )) 0) then
+$Code$( uiNamespace getVariable "_map") ctrlMapCursor ["Track","HC_overFriendly"];
+_mouseover = if ( count ( ctrlMapMouseOver (uiNamespace getVariable "_map")) 0) then
 {
-ctrlMapMouseOver (uiNamespace getVariable _map )
+ctrlMapMouseOver ( uiNamespace getVariable "_map")
 }
 else
 {
-[ ]
+[""]
 };
-if (_mouseover select 0 == task str(_logic getVariable onTaskAssigned ) != str{}) then
+if (_mouseover select 0 == "task" str (_logic getVariable "onTaskAssigned") != str {}) then
 {
 //--- Task
-(uiNamespace getVariable _map ) ctrlMapCursor [ Track, HC_overMission ];
+( uiNamespace getVariable "_map") ctrlMapCursor ["Track","HC_overMission"];
 }
 else
 {
 //--- Waypoint
-(uiNamespace getVariable _map ) ctrlMapCursor [ Track, HC_move ];
+( uiNamespace getVariable "_map") ctrlMapCursor ["Track","HC_move"];
 };$/Code$
+%NextExample%
+$Code$onEachFrame { hintSilent str ctrlMapMouseOver ( findDisplay 12 displayCtrl 51)};$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -12476,7 +12720,7 @@ undefined / undefined
 NoteStart:
 //NoteEnd//
 ReturnValueStart:
-Array
+Array - Possible values:
 //ReturnValueEnd//
 
 %NextListItem%
@@ -12706,6 +12950,36 @@ Display
 %NextListItem%
 
 KeywordStart:
+ctrlParentControlsGroup
+//KeywordEnd//
+DescriptionStart:
+Returns the parent control of a given child control
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/ctrlParentControlsGroup
+//WikiPageEnd//
+SyntaxStart:
+ctrlParentControlsGroup Child
+//SyntaxEnd//
+RawSyntaxStart:
+ctrlParentControlsGroup Control
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_ctrlCombo = _ctrl controlsGroupCtrl 100;//Control
+ctrlParentControlsGroup _ctrlCombo;//Parent control group (_ctrl)$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Control
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 ctrlPosition
 //KeywordEnd//
 DescriptionStart:
@@ -12837,6 +13111,35 @@ display ctrlSetActiveColor color
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_control ctrlSetActiveColor [1, 0, 0, 1]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+ctrlSetAngle
+//KeywordEnd//
+DescriptionStart:
+Sets the rotation of the control.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/ctrlSetAngle
+//WikiPageEnd//
+SyntaxStart:
+Control ctrlSetAngle Array
+//SyntaxEnd//
+RawSyntaxStart:
+ctrl ctrlSetAngle angle
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_control ctrlSetAngle [25, 0.5, 0.5];$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -13676,6 +13979,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+ctrlSetFontHeightSecondary
+//KeywordEnd//
+DescriptionStart:
+Sets the font size of the secondary text of given control.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/ctrlSetFontHeightSecondary
+//WikiPageEnd//
+SyntaxStart:
+Control ctrlSetFontHeightSecondary Number
+//SyntaxEnd//
+RawSyntaxStart:
+ctrl ctrlSetFontHeightSecondary value
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_control ctrlSetFontHeightSecondary 0.05;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 ctrlSetFontP
 //KeywordEnd//
 DescriptionStart:
@@ -13723,6 +14055,35 @@ controlName ctrlSetFontPB fontName
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_control ctrlSetFontPB TahomaB$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+ctrlSetFontSecondary
+//KeywordEnd//
+DescriptionStart:
+Sets the font size of the secondary text of given control.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/ctrlSetFontSecondary
+//WikiPageEnd//
+SyntaxStart:
+Control ctrlSetFontSecondary String
+//SyntaxEnd//
+RawSyntaxStart:
+ctrl ctrlSetFontSecondary fontClass
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_control ctrlSetFontSecondary "TahomaB";$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -13838,7 +14199,7 @@ RawSyntaxStart:
 control ctrlSetModelScale scale
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_ctrl3D ctrlModelScale 1.5;$/Code$
+$Code$_ctrl3D ctrlSetModelScale 1.5;$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -15444,7 +15805,7 @@ ExampleStart:
 $Code$_soldierOne customRadio [1, "WordEnemy"];$/Code$
 //ExampleEnd//
 LocalityStart:
-undefined / undefined
+global / local
 //LocalityEnd//
 NoteStart:
 //NoteEnd//
@@ -15465,7 +15826,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/cutFadeOut
 //WikiPageEnd//
 SyntaxStart:
-Number cutFadeOut
+Number cutFadeOut Number
 %NextSyntax%
 String cutFadeOut Number
 //SyntaxEnd//
@@ -15483,6 +15844,11 @@ LocalityStart:
 undefined / undefined
 //LocalityEnd//
 NoteStart:
+(July 9, 2016)
+(ArmA v1.60)
+The actual fadeout-duration can be dependent on the duration for the fadein (e.g. specified by cutText ). If the fadein-duration is set to a value less than 1 the fadeout-duration will be the given number divided by the fadein-duration.
+test cutText [, BLACK, 0.5, true]; // fadein is 0
+test cutFadeout 2; // The actual fadeout-time is 2 / 0.5 = 1
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -15642,6 +16008,10 @@ undefined / local
 NoteStart:
 (September 20, 2013)
 In Arma 3 "PLAIN" param will display your text where the crosshair is, "PLAIN DOWN" will push the text further down, closer to the bottom of the screen.
+%NextNote%
+(July 6, 2016)
+The value for speed has to be greater 0. If 0 is used as speed the default value (1) will be used.
+If you want to create an "instant" effect you can use a really small value (e.g. 0.001)
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -16325,7 +16695,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/deleteRange
 //WikiPageEnd//
 SyntaxStart:
-Array deleteRange
+Array deleteRange Array
 //SyntaxEnd//
 RawSyntaxStart:
 array deleteRange [from, count]
@@ -16533,7 +16903,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/deleteVehicleCrew
 //WikiPageEnd//
 SyntaxStart:
-Object deleteVehicleCrew
+Object deleteVehicleCrew Object
 //SyntaxEnd//
 RawSyntaxStart:
 vehicle deleteVehicleCrew unit
@@ -17421,6 +17791,7 @@ vonID
 mapContent
 autoReport
 multipleSaves
+squadRadar
 //NoteEnd//
 ReturnValueStart:
 Number
@@ -17462,7 +17833,8 @@ KeywordStart:
 directSay
 //KeywordEnd//
 DescriptionStart:
-Sends the message to the direct channel. The message is defined in the description.ext file, radio protocol, or a kbAddTopic.
+Sends given audio message to the direct channel. Command operates just like xxxxRadio commands, but the sound is played over direct channel and is independent of fadeRadio. The message is defined in CfgRadio in the description.ext file or config radio protocol or a kbAddTopic. The transmission will play only on the PC where command was executed. If you need the transmission to play on all computers, you have to execute it globally (see remoteExec ).
+Note: When transmitting unit gets killed, transmission will be interrupted, however when receiving unit gets killed, the transmission continues to play.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/directSay
@@ -17474,9 +17846,10 @@ RawSyntaxStart:
 unit directSay radioName
 //RawSyntaxEnd//
 ExampleStart:
+$Code$player directSay configName selectRandom ("true" configClasses ( configFile "CfgRadio"));$/Code$
 //ExampleEnd//
 LocalityStart:
-undefined / undefined
+global / local
 //LocalityEnd//
 NoteStart:
 //NoteEnd//
@@ -17504,7 +17877,6 @@ Possible values are:
 "COVER" - disables usage of cover positions by the AI Available only since Arma 3 v1.56.
 "AUTOCOMBAT" - disables autonomous switching to COMBAT when in danger Available only since Arma 3 v1.56.
 "PATH" - stops the AI’s movement but not the target alignment Available only since Arma 3 v1.61.
-Note: All effects of disableAI command are cancelled after mission save or load.
 Note: In OFP is no way to undo this command.
 //DescriptionEnd//
 WikiPageStart:
@@ -17563,7 +17935,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/disableCollisionWith
 //WikiPageEnd//
 SyntaxStart:
-Object disableCollisionWith
+Object disableCollisionWith Object
 //SyntaxEnd//
 RawSyntaxStart:
 vehicle disableCollisionWith vehicle
@@ -18160,9 +18532,9 @@ WikiPageStart:
 https://community.bistudio.com/wiki/distance
 //WikiPageEnd//
 SyntaxStart:
-Object/Array distance
+Object/Array distance Object/Array
 %NextSyntax%
-Location/Array distance
+Location/Array distance Location/Array
 //SyntaxEnd//
 RawSyntaxStart:
 param1 distance param2
@@ -18215,7 +18587,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/distance2D
 //WikiPageEnd//
 SyntaxStart:
-Object/Array distance2D
+Object/Array distance2D Object/Array
 //SyntaxEnd//
 RawSyntaxStart:
 param1 distance2D param2
@@ -18244,7 +18616,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/distanceSqr
 //WikiPageEnd//
 SyntaxStart:
-Object/Position distanceSqr
+Object/Position distanceSqr Object/Position
 //SyntaxEnd//
 RawSyntaxStart:
 var1 distanceSqr var2
@@ -18634,6 +19006,37 @@ This command will make the unit stop where he is until the unit's group engages 
 In ArmA 1.14, this command will not stop a unit that has been given a move order by selecting the unit, then clicking on the in game map (or ground).
 %NextNote%
 doStop'ed units WILL return to formation if their leader's behaviour isn't set to "COMBAT". The squad leader will also order everyone to return to formation if there are no enemies nearby in a set period of time, overwriting the doStop command. doStop can be best used to simply stop the unit from doing whatever he is currently doing without radio messages.
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+doSuppressiveFire
+//KeywordEnd//
+DescriptionStart:
+Order the given unit to suppress a given position or target (without radio messages).
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/doSuppressiveFire
+//WikiPageEnd//
+SyntaxStart:
+Object/Array doSuppressiveFire Object/Array
+//SyntaxEnd//
+RawSyntaxStart:
+unitName doSuppressiveFire target
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_soldier doSuppressiveFire [1869.508,5760.962,0.000]$/Code$
+%NextExample%
+$Code$_soldier doSuppressiveFire cursorTarget$/Code$
+//ExampleEnd//
+LocalityStart:
+local / local
+//LocalityEnd//
+NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -19553,6 +19956,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+enableAimPrecision
+//KeywordEnd//
+DescriptionStart:
+Set whether animation's aim precision affects weapon sway.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/enableAimPrecision
+//WikiPageEnd//
+SyntaxStart:
+Object enableAimPrecision Boolean
+//SyntaxEnd//
+RawSyntaxStart:
+unit enableAimPrecision enable
+//RawSyntaxEnd//
+ExampleStart:
+$Code$player enableAimPrecision false$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 enableAttack
 //KeywordEnd//
 DescriptionStart:
@@ -19577,6 +20009,35 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+enableAudioFeature
+//KeywordEnd//
+DescriptionStart:
+Enable/disable an audio feature, features are: "lowpass", "building_interior". Return previous state
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/enableAudioFeature
+//WikiPageEnd//
+SyntaxStart:
+enableAudioFeature Array
+//SyntaxEnd//
+RawSyntaxStart:
+enableAudioFeature [feature, enable]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$prevState = enableAudioFeature ["lowpass", true ];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Bool - Previous state
 //ReturnValueEnd//
 
 %NextListItem%
@@ -19680,6 +20141,11 @@ LocalityStart:
 undefined / local
 //LocalityEnd//
 NoteStart:
+(June 17, 2016)
+If the user is admin, global channel is fully enabled, regardless of this command.
+%NextNote%
+(July 30, 2016)
+Alternative Syntax supports Custom Radio Channels
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -19697,7 +20163,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/enableCollisionWith
 //WikiPageEnd//
 SyntaxStart:
-Object enableCollisionWith
+Object enableCollisionWith Object
 //SyntaxEnd//
 RawSyntaxStart:
 vehicle enableCollisionWith vehicle
@@ -20474,6 +20940,37 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+enableVehicleCargo
+//KeywordEnd//
+DescriptionStart:
+Enable/disable option to transport other vehicles (if configured) or be transported.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/enableVehicleCargo
+//WikiPageEnd//
+SyntaxStart:
+Object enableVehicleCargo Boolean
+//SyntaxEnd//
+RawSyntaxStart:
+vehicle enableVehicleCargo enable
+//RawSyntaxEnd//
+ExampleStart:
+$Code$vehicle enableVehicleCargo true ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+(June 20, 2016)
+Setting enableVehicleCargo to true does not mean a vehicle can now load vehicles as cargo. They are still required to be correctly setup as shown on the Vehicle in Vehicle Transport page.
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 endLoadingScreen
 //KeywordEnd//
 DescriptionStart:
@@ -20688,7 +21185,7 @@ KeywordStart:
 entities
 //KeywordEnd//
 DescriptionStart:
-Returns a list of all dead or alive entities with given type.
+Returns a list of all dead or alive entities with given type. Units in vehicles are ignored.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/entities
@@ -20708,6 +21205,9 @@ undefined / undefined
 NoteStart:
 (Mar 27, 2014)
 In ArmA3 ver 1.14 type (string) can be any children class under configfile "CfgVehicles". e.g. $Code$ entities "All"; //or entities "CAManBase"; etc.$/Code$
+%NextNote%
+(July 12, 2016)
+In A3 1.62 $Code$entities "CAManBase"$/Code$ does not include entities inside vehicles (crew).
 //NoteEnd//
 ReturnValueStart:
 Array
@@ -20972,9 +21472,7 @@ KeywordStart:
 execFSM
 //KeywordEnd//
 DescriptionStart:
-Execute the scripted FSM. The FSM file is first searched in the mission folder, then in the campaign scripts folder and finally in the global scripts folder.
-Argument(s) (if any) is/are passed as _this to the FSM.
-Returns the FSM handle or 0 when failed.
+Executes scripted FSM and returns the FSM handle or 0 when failed. The FSM file is first searched in the mission folder, then in the campaign scripts folder and finally in the global scripts folder. Argument (if any) are available in _this variable inside FSM. In Arma 3 FSM handle is also available in _thisFSM variable.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/execFSM
@@ -20985,7 +21483,7 @@ Anything execFSM String
 execFSM String
 //SyntaxEnd//
 RawSyntaxStart:
-argument execFSM filename
+arguments execFSM filename
 %NextRawSyntax%
 execFSM filename
 //RawSyntaxEnd//
@@ -21012,6 +21510,11 @@ execVM
 //KeywordEnd//
 DescriptionStart:
 Compiles and adds SQF Script to the scheduler queue and returns script handle. The script is first searched for in the mission folder, then in the campaign scripts folder and finally in the global scripts folder. The script does not execute immediately upon running execVM command, but with some delay. How much delay is unknown as it largely depends on how many other scripts there are in the queue and how busy is VM. The optional argument is passed to the script in private variable _this. In Arma 3 the script handle is also passed to the script in _thisScript variable.
+In order to understand execVM consider the following comparison:
+$Code$ private _handle = _args execVM "someFile.sqf";
+// is practically identical to
+private _handle = _args spawn compile preprocessFileLineNumbers "someFile.sqf";$/Code$
+So if you need multiple execution of the same file, you might want to store it in a function ( Functions Library ), otherwise, for a single execution, execVM is a good choice.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/execVM
@@ -21022,7 +21525,7 @@ Anything execVM String
 execVM String
 //SyntaxEnd//
 RawSyntaxStart:
-argument execVM filename
+arguments execVM filename
 %NextRawSyntax%
 execVM filename
 //RawSyntaxEnd//
@@ -21054,7 +21557,7 @@ _myunit = _this select 0;
 _myvar = _this select 1;
 //NoteEnd//
 ReturnValueStart:
-Script Handle - can be used to determine (via scriptDone (also via isNull in Arma 3)) when the execVMed script has finished. In Arma 3, the handle is also available inside the execVMed script in _thisScript variable.
+Script - script handle, can be used to determine (via scriptDone (also via isNull in Arma 3)) when the execVMed script has finished. In Arma 3, the handle is also available inside the execVMed script in _thisScript variable.
 //ReturnValueEnd//
 
 %NextListItem%
@@ -21093,7 +21596,7 @@ KeywordStart:
 exitWith
 //KeywordEnd//
 DescriptionStart:
-Exits current scope {...} it is executed from, creates new scope {...code...} and executes the given code in it. Often used for exiting do, for, count or forEach. Simply exiting waitUntil or onEachFrame scopes with exitWith will have no effect as these scopes are called repeatedly by the engine and require different handling to terminate (see Example 3).
+Exits current scope {...} it is executed from if condition evaluates true, creates new scope {...code...} and executes the given code in it. Often used for exiting do, for, count or forEach. Simply exiting waitUntil or onEachFrame scopes with exitWith will have no effect as these scopes are called repeatedly by the engine and require different handling to terminate (see Example 3).
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/exitWith
@@ -21296,7 +21799,7 @@ global / undefined
 //LocalityEnd//
 NoteStart:
 (May 26, 2014)
-This command should have really been named headDirection instead of eyeDirection as one could mistakenly think that eyes direction of your avatar correspond to the direction of the centre of your screen. In fact the direction returned by eyeDirection is avatar's head direction relative to the torso (minus ambient head animation factor). Play with the script in example 1 to find out limitations. If you need centre of screen direction, use positionCameraToWorld instead.
+This command should have really been named headDirection instead of eyeDirection as one could mistakenly think that eyes direction of your avatar correspond to the direction of the centre of your screen. Play with the script in example 1 to find out limitations. If you need centre of screen direction, use positionCameraToWorld instead.
 //NoteEnd//
 ReturnValueStart:
 Array - 3D Vector
@@ -21422,7 +21925,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/fadeMusic
 //WikiPageEnd//
 SyntaxStart:
-Number fadeMusic
+Number fadeMusic Number
 //SyntaxEnd//
 RawSyntaxStart:
 time fadeMusic volume
@@ -21451,7 +21954,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/fadeRadio
 //WikiPageEnd//
 SyntaxStart:
-Number fadeRadio
+Number fadeRadio Number
 //SyntaxEnd//
 RawSyntaxStart:
 time fadeRadio volume
@@ -21482,7 +21985,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/fadeSound
 //WikiPageEnd//
 SyntaxStart:
-Number fadeSound
+Number fadeSound Number
 //SyntaxEnd//
 RawSyntaxStart:
 time fadeSound volume
@@ -21513,7 +22016,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/fadeSpeech
 //WikiPageEnd//
 SyntaxStart:
-Number fadeSpeech
+Number fadeSpeech Number
 //SyntaxEnd//
 RawSyntaxStart:
 time fadeSpeech volume
@@ -21644,7 +22147,7 @@ https://community.bistudio.com/wiki/find
 SyntaxStart:
 Array find Anything
 %NextSyntax%
-String find
+String find String
 //SyntaxEnd//
 RawSyntaxStart:
 array find x
@@ -21682,6 +22185,9 @@ $Code$"abcßdef" find "c"
 - 3
 "abcßdef" find "d"
 - 5$/Code$
+%NextNote%
+(July 7, 2016 10:56 (UTC))
+Not quite unreliable, just unexpected! Strings are tracked in terms of bytes rather than in actual character positions; all strings are stored in UTF-8 format. In other words, the eszett character is in Unicode, which takes up two bytes rather than one as it is within the 128-255 range of Unicode. (Similar results would be expected for the division symbol, the umlaut, accented e's, etc.) Symbols that are particularly high in the Unicode range may take up three bytes, or even four for the truly exceptional characters, although Arma 3's default fonts are unlikely to render them. This definitely complicates any script which assumes any printable character is a single byte, however, and unfortunately I'm not skilled enough with internationalisation to recommend any robust fix.
 //NoteEnd//
 ReturnValueStart:
 Number - 0 based position of the first array element that matches x, -1 if not found
@@ -21821,7 +22327,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/findEmptyPosition
 //WikiPageEnd//
 SyntaxStart:
-Array findEmptyPosition
+Array findEmptyPosition Array
 //SyntaxEnd//
 RawSyntaxStart:
 center findEmptyPosition [minDistance, maxDistance, vehicleType]
@@ -21871,7 +22377,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/findEmptyPositionReady
 //WikiPageEnd//
 SyntaxStart:
-Array findEmptyPositionReady
+Array findEmptyPositionReady Array
 //SyntaxEnd//
 RawSyntaxStart:
 center findEmptyPositionReady [radius,maxDistance]
@@ -22427,6 +22933,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+flyInHeightASL
+//KeywordEnd//
+DescriptionStart:
+Sets the minimal ASL height. Final height is max(flyInHeight, flyInHeightASL).
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/flyInHeightASL
+//WikiPageEnd//
+SyntaxStart:
+Object flyInHeightASL Array
+//SyntaxEnd//
+RawSyntaxStart:
+aircraft flyInHeightASL params
+//RawSyntaxEnd//
+ExampleStart:
+$Code$cobraOne flyInHeightASL [200, 100, 400];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 fog
 //KeywordEnd//
 DescriptionStart:
@@ -22571,6 +23106,36 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+forcedMap
+//KeywordEnd//
+DescriptionStart:
+Returns if map was forced by using forceMap command or openMap command with force option
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/forcedMap
+//WikiPageEnd//
+SyntaxStart:
+forcedMap
+//SyntaxEnd//
+RawSyntaxStart:
+forcedMap
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_forceMapForced = forcedMap select 0;
+_openMapForced = forcedMap select 1;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - in format [forceMapForced, openMapForced] where:
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 forceEnd
 //KeywordEnd//
 DescriptionStart:
@@ -22604,7 +23169,7 @@ KeywordStart:
 forceMap
 //KeywordEnd//
 DescriptionStart:
-Displays the map on the screen during a mission.
+Opens non-interactive main map in background that overrides user screen. The user is able to fire but cannot see the world just the map. To force open interactive map use openMap command.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/forceMap
@@ -22899,6 +23464,23 @@ $Code$_result = {
 if(_x isEqualTo 3) exitWith {"Hello"}
 } forEach [1,2,3,4,5];
 //_result = "Hello"$/Code$
+%NextNote%
+(June 17, 2016)
+To be more precise, _forEachIndex represents NOT the index of the current array element, but the number of the loop iteration. If array is modified by reference while it is iterated through with forEach loop, _forEachIndex will NOT change to reflect that. For example:
+$Code$_array = ["1","2","3","4","5","6","7","8","9"];
+{
+systemChat str [_x, _forEachIndex, _array];
+_array deleteAt _forEachIndex;
+}
+forEach _array;
+/*result:
+[_x, _forEachIndex, _array]
+["1",0,["1","2","3","4","5","6","7","8","9"]]
+["3",1,["2","3","4","5","6","7","8","9"]]
+["5",2,["2","4","5","6","7","8","9"]]
+["7",3,["2","4","6","7","8","9"]]
+["9",4,["2","4","6","8","9"]]*/
+$/Code$
 //NoteEnd//
 ReturnValueStart:
 Anything - will return the value of last executed statement
@@ -23844,7 +24426,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/get3DENMissionAttribute
 //WikiPageEnd//
 SyntaxStart:
-String get3DENMissionAttribute
+String get3DENMissionAttribute String
 //SyntaxEnd//
 RawSyntaxStart:
 section get3DENMissionAttribute class
@@ -23943,6 +24525,35 @@ Array of Eden Entities
 %NextListItem%
 
 KeywordStart:
+getAimingCoef
+//KeywordEnd//
+DescriptionStart:
+Get current aiming coefficient (higher ~ less precise, default is 1)
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getAimingCoef
+//WikiPageEnd//
+SyntaxStart:
+getAimingCoef Object
+//SyntaxEnd//
+RawSyntaxStart:
+getAimingCoef unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_coef = getAimingCoef player$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 getAllHitPointsDamage
 //KeywordEnd//
 DescriptionStart:
@@ -23974,6 +24585,35 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Array - [] if entity is null or has no shape, otherwise [hitpointsNamesArray, selectionsNamesArray, damageValuesArray]
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+getAllOwnedMines
+//KeywordEnd//
+DescriptionStart:
+Gets all mine objects this unit has ownership over.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getAllOwnedMines
+//WikiPageEnd//
+SyntaxStart:
+getAllOwnedMines Object
+//SyntaxEnd//
+RawSyntaxStart:
+getAllOwnedMines unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_mines = getAllOwnedMines player;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array of mine object
 //ReturnValueEnd//
 
 %NextListItem%
@@ -24418,7 +25058,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/getCargoIndex
 //WikiPageEnd//
 SyntaxStart:
-Object getCargoIndex
+Object getCargoIndex Object
 //SyntaxEnd//
 RawSyntaxStart:
 vehicle getCargoIndex unit
@@ -24640,6 +25280,35 @@ Object
 %NextListItem%
 
 KeywordStart:
+getCustomAimingCoef
+//KeywordEnd//
+DescriptionStart:
+Returns custom aiming coefficient for weapon sway
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getCustomAimingCoef
+//WikiPageEnd//
+SyntaxStart:
+getCustomAimingCoef Object
+//SyntaxEnd//
+RawSyntaxStart:
+getCustomAimingCoef unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_coef = getCustomAimingCoef player$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 getDammage
 //KeywordEnd//
 DescriptionStart:
@@ -24721,7 +25390,7 @@ https://community.bistudio.com/wiki/getDir
 SyntaxStart:
 getDir Object
 %NextSyntax%
-Object/Position2D/Position3D getDir
+Object/Position2D/Position3D getDir Object/Position2D/Position3D
 //SyntaxEnd//
 RawSyntaxStart:
 getDir object
@@ -24821,6 +25490,11 @@ To add to the note above, app ID can be found in CfgMods. Here is an example pat
 $Code$configfile "CfgMods" "Curator" "appId"$/Code$
 This method can be used to find app IDs without having to find a list like the one above.
 I am also pretty sure you are able to define your own app ID for your own mods using this method.
+%NextNote%
+(July 1, 2016)
+The required DLC-IDs equal to the Steam App-IDs of each obtainable DLC.
+To extend Sniperwolfs list:
+395180 - Arma 3 Apex
 //NoteEnd//
 ReturnValueStart:
 Array - array of numbers
@@ -24984,7 +25658,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/getFriend
 //WikiPageEnd//
 SyntaxStart:
-Side getFriend
+Side getFriend Side
 //SyntaxEnd//
 RawSyntaxStart:
 side1 getFriend side2
@@ -25169,7 +25843,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/getHideFrom
 //WikiPageEnd//
 SyntaxStart:
-Object getHideFrom
+Object getHideFrom Object
 //SyntaxEnd//
 RawSyntaxStart:
 object getHideFrom enemy
@@ -25380,7 +26054,7 @@ KeywordStart:
 getMarkerColor
 //KeywordEnd//
 DescriptionStart:
-Returns the color of a given map marker.
+Returns marker color for given marker. See setMarkerColor. Note: This function is identical to markerColor.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/getMarkerColor
@@ -25392,9 +26066,8 @@ RawSyntaxStart:
 getMarkerColor markerName
 //RawSyntaxEnd//
 ExampleStart:
-$Code$MarkerOne setMarkerColor ColorBlack
-_color = getMarkerColor MarkerOne
-returns "ColorBlack"$/Code$
+$Code$"MarkerOne" setMarkerColor "ColorBlack";
+_color = getMarkerColor "MarkerOne"; //returns "ColorBlack"$/Code$
 //ExampleEnd//
 LocalityStart:
 global / undefined
@@ -25402,7 +26075,7 @@ global / undefined
 NoteStart:
 //NoteEnd//
 ReturnValueStart:
-String -
+String
 //ReturnValueEnd//
 
 %NextListItem%
@@ -25538,7 +26211,7 @@ KeywordStart:
 getMissionConfig
 //KeywordEnd//
 DescriptionStart:
-Returns Config class of a scenario attribute from the 1st tier. The attribute can be defined on multiple places, the commands checks them in the following order:
+Returns Config entry for the given scenario attribute from the 1st tier. The attribute can be config class or config property. If it is defined in multiple places, the command checks them in the following order:
 External Description.ext file
 Eden Editor scenario attribute
 So if attribute exists in both places, attribute from description.ext is used. Previously, scenario attributes were extracted from Description.ext using missionConfigFile. That still works, but it ignores attributes set directly in the editor and it should not be used anymore.
@@ -25547,10 +26220,10 @@ WikiPageStart:
 https://community.bistudio.com/wiki/getMissionConfig
 //WikiPageEnd//
 SyntaxStart:
-getMissionConfig class
+getMissionConfig String
 //SyntaxEnd//
 RawSyntaxStart:
-getMissionConfig class
+getMissionConfig attribute
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_header = getMissionConfig "Header"
@@ -25571,7 +26244,7 @@ KeywordStart:
 getMissionConfigValue
 //KeywordEnd//
 DescriptionStart:
-Returns value of given scenario attribute from the 1st tier. The attribute can be defined on multiple places, the commands checks them in the following order:
+Returns value of the given scenario attribute from the 1st tier. Since only config properties have values, the attribute should be config property. If it is not found or config class is given, the return is nil. If the attribute defined in multiple places, the command checks them in the following order:
 External Description.ext file
 Eden Editor scenario attribute
 So if attribute exists in both places, attribute from description.ext is used. Previously, scenario attributes were extracted from Description.ext using missionConfigFile. That still works, but it ignores attributes set directly in the editor and it should not be used anymore.
@@ -25600,6 +26273,35 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Number, String or Array, depending on the attribute value type. Nil when the attribute is undefined.
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+getMissionDLCs
+//KeywordEnd//
+DescriptionStart:
+Returns list of DLCs that are used in the mission. List is created only from units listed in mission.sqm and doesn't detect units created by scripts!
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getMissionDLCs
+//WikiPageEnd//
+SyntaxStart:
+getMissionDLCs
+//SyntaxEnd//
+RawSyntaxStart:
+getMissionDLCs
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_list = getMissionDLCs$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - list of DLCs detected for the mission
 //ReturnValueEnd//
 
 %NextListItem%
@@ -26642,6 +27344,35 @@ Number
 %NextListItem%
 
 KeywordStart:
+getShotParents
+//KeywordEnd//
+DescriptionStart:
+Get the shot's parent and a unit which caused the shot to happen.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getShotParents
+//WikiPageEnd//
+SyntaxStart:
+getShotParents Object
+//SyntaxEnd//
+RawSyntaxStart:
+getShotParents projectile
+//RawSyntaxEnd//
+ExampleStart:
+$Code$shotParents = getShotParents myProjectile;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - [owner, instigator]
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 getSlingLoad
 //KeywordEnd//
 DescriptionStart:
@@ -26739,7 +27470,7 @@ KeywordStart:
 getSuppression
 //KeywordEnd//
 DescriptionStart:
-Gets the suppression value of given unit.
+Gets the suppression value of given unit. Returns SCALAR between 0 and 1.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/getSuppression
@@ -26850,6 +27581,74 @@ String
 %NextListItem%
 
 KeywordStart:
+getUnitLoadout
+//KeywordEnd//
+DescriptionStart:
+Returns an array with all assigned items, weapons, containers and their stored items.
+Detailed explanation of the returned array: Talk:getUnitLoadout
+This command is not final and might be changed in a near future.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getUnitLoadout
+//WikiPageEnd//
+SyntaxStart:
+getUnitLoadout Object
+//SyntaxEnd//
+RawSyntaxStart:
+getUnitLoadout unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$getUnitLoadout player;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - Array containing all inventory items
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+getUnitTrait
+//KeywordEnd//
+DescriptionStart:
+Gets the current value of a trait of the given unit.
+Default traits are:
+audibleCoef (scalar)
+camouflageCoef (scalar)
+engineer (bool)
+explosiveSpecialist (bool)
+loadCoef (scalar)
+medic (bool)
+UAVHacker (bool)
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getUnitTrait
+//WikiPageEnd//
+SyntaxStart:
+Object getUnitTrait String
+//SyntaxEnd//
+RawSyntaxStart:
+unit getUnitTrait skill_name
+//RawSyntaxEnd//
+ExampleStart:
+$Code$player getUnitTrait "Medic";$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Bool or Scalar - Value of the trait
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 getVariable
 //KeywordEnd//
 DescriptionStart:
@@ -26922,6 +27721,39 @@ Anything or Nothing if the variable doesn't exist
 %NextListItem%
 
 KeywordStart:
+getVehicleCargo
+//KeywordEnd//
+DescriptionStart:
+Gets a list of vehicles loaded as cargo inside this vehicle. The returned array is in the order the cargo vehicles were added to containing vehicle.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getVehicleCargo
+//WikiPageEnd//
+SyntaxStart:
+getVehicleCargo Object
+//SyntaxEnd//
+RawSyntaxStart:
+getVehicleCargo vehicle
+//RawSyntaxEnd//
+ExampleStart:
+$Code$// Blackfish with no cargo vehicles
+_vehicleCargo = getVehicleCargo blackfish; //returns []$/Code$
+%NextExample%
+$Code$// Blackfish with cargo vehicles loaded in the order quad_3, quad_1, quad_2
+_vehicleCargo = getVehicleCargo blackfish; //returns [quad_3, quad_1, quad_2]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - if there are no vehicles loaded as cargo an empty array ([]) will be returned, otherwise an array of objects will be returned representing the cargo vehicles
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 getWeaponCargo
 //KeywordEnd//
 DescriptionStart:
@@ -26950,6 +27782,35 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Array - format [all_types_array, all_counts_array]. Eg: [["a", "b"], [3, 2]]
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+getWeaponSway
+//KeywordEnd//
+DescriptionStart:
+Returns current size of weapon sway of a given unit, in radians
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/getWeaponSway
+//WikiPageEnd//
+SyntaxStart:
+getWeaponSway Object
+//SyntaxEnd//
+RawSyntaxStart:
+getWeaponSway unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_sway = getWeaponSway player ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number : weapon sway
 //ReturnValueEnd//
 
 %NextListItem%
@@ -26995,7 +27856,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/glanceAt
 //WikiPageEnd//
 SyntaxStart:
-Object/Array glanceAt
+Object/Array glanceAt Object/Array
 //SyntaxEnd//
 RawSyntaxStart:
 unit glanceAt position
@@ -27020,7 +27881,7 @@ KeywordStart:
 globalChat
 //KeywordEnd//
 DescriptionStart:
-Make a unit send a text message over the global radio channel. Does not need to have assigned "itemRadio" to see or transmit the messages.
+Types text to the global radio channel. The text will be visible only on the PC where command was executed. If you need the message to show on all computers, you have to execute it globally (see remoteExec )
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/globalChat
@@ -27029,7 +27890,7 @@ SyntaxStart:
 Object globalChat String
 //SyntaxEnd//
 RawSyntaxStart:
-unit globalChat chatText
+unitName globalChat chatText
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_soldierOne globalChat "Show this text";$/Code$
@@ -27058,7 +27919,8 @@ KeywordStart:
 globalRadio
 //KeywordEnd//
 DescriptionStart:
-Make a unit send a message over the global radio channel. The message is defined in the description.ext of the mission and may contain text and sound.
+Sends the audio message to the global radio channel. The message is defined in CfgRadio in the description.ext file or config radio protocol. The transmission will play only on the PC where command was executed. If you need the transmission to play on all computers, you have to execute it globally (see remoteExec ).
+Note: When transmitting unit gets killed, transmission will be interrupted, however when receiving unit gets killed, the transmission continues to play.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/globalRadio
@@ -27070,7 +27932,9 @@ RawSyntaxStart:
 unit globalRadio radioName
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_soldierOne globalRadio messageOne$/Code$
+$Code$_soldierOne globalRadio "messageOne";$/Code$
+%NextExample%
+$Code$player globalRadio configName selectRandom ("true" configClasses ( configFile "CfgRadio"));$/Code$
 //ExampleEnd//
 LocalityStart:
 global / local
@@ -27087,7 +27951,7 @@ KeywordStart:
 goggles
 //KeywordEnd//
 DescriptionStart:
-Returns name of currently used goggles (not NVGoggles).
+Returns name of currently used goggles (for NVGoggles use hmd ).
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/goggles
@@ -27200,7 +28064,7 @@ KeywordStart:
 groupChat
 //KeywordEnd//
 DescriptionStart:
-Make a unit send a text message over the group radio channel. Must have assigned "itemRadio" to see or transmit the messages.
+Types text to the group radio channel. Must have assigned "ItemRadio" to see or transmit the messages. The text will be visible only on the PC where command was executed. If you need the message to show on all computers, you have to execute it globally (see remoteExec )
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/groupChat
@@ -27209,7 +28073,7 @@ SyntaxStart:
 Object groupChat String
 //SyntaxEnd//
 RawSyntaxStart:
-unit groupChat chatText
+unitName groupChat chatText
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_soldierOne groupChat "Show this text";$/Code$
@@ -27384,7 +28248,8 @@ KeywordStart:
 groupRadio
 //KeywordEnd//
 DescriptionStart:
-Make a unit send a message over the group radio channel. The message is defined in the description.ext of the mission and may contain text and sound.
+Sends the audio message to the group radio channel. Must have assigned "ItemRadio" to send or receive the transmission. The message is defined in CfgRadio in the description.ext file or config radio protocol. The transmission will play only on the PC where command was executed. If you need the transmission to play on all computers, you have to execute it globally (see remoteExec ).
+Note: When transmitting unit gets killed, transmission will be interrupted, however when receiving unit gets killed, the transmission continues to play.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/groupRadio
@@ -27396,7 +28261,9 @@ RawSyntaxStart:
 unit groupRadio radioName
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_soldierOne groupRadio messageOne$/Code$
+$Code$_soldierOne groupRadio "messageOne";$/Code$
+%NextExample%
+$Code$player groupRadio configName selectRandom ("true" configClasses ( configFile "CfgRadio"));$/Code$
 //ExampleEnd//
 LocalityStart:
 global / local
@@ -28150,7 +29017,7 @@ KeywordStart:
 hideBody
 //KeywordEnd//
 DescriptionStart:
-Hides the body of the given person.
+Hides dead body of the given unit. After a short delay, the body slowly sinks into the ground. After awhile, when group of the unit becomes grpNull, the body gets deleted and becomes objNull.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/hideBody
@@ -28159,10 +29026,10 @@ SyntaxStart:
 hideBody Object
 //SyntaxEnd//
 RawSyntaxStart:
-hideBody person
+hideBody unit
 //RawSyntaxEnd//
 ExampleStart:
-$Code$hideBody player$/Code$
+$Code$hideBody player1;$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -28278,6 +29145,36 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+hideSelection
+//KeywordEnd//
+DescriptionStart:
+Hides or enables the given selection for the object
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/hideSelection
+//WikiPageEnd//
+SyntaxStart:
+object hideSelection Array;
+//SyntaxEnd//
+RawSyntaxStart:
+object hideSelection [selection, hidden];
+//RawSyntaxEnd//
+ExampleStart:
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+(April 28, 2016)
+Only seems to work for objects created with createSimpleObject, and will only work for certain selections.
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 hint
 //KeywordEnd//
 DescriptionStart:
@@ -28352,7 +29249,7 @@ KeywordStart:
 hintC
 //KeywordEnd//
 DescriptionStart:
-Displays attractive hint in the center of the screen. Player control is taken away until user presses "Continue". After user confirmation, the content of the hintC is repeated again in a normal hint. This type of hint can also have a title.
+Displays attractive hint in the center of the screen. Player control is taken away until user presses "Continue". After user confirmation, the content of the hintC is repeated again in a normal hint. This type of hint can also have a title. It is also possible to drag this type of hint around the screen.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/hintC
@@ -28364,7 +29261,7 @@ String hintC Array
 %NextSyntax%
 String hintC StructuredText
 %NextSyntax%
-String hintC
+String hintC String
 //SyntaxEnd//
 RawSyntaxStart:
 hintC content
@@ -28825,7 +29722,7 @@ https://community.bistudio.com/wiki/in
 SyntaxStart:
 Anyth in g in Array
 %NextSyntax%
-Object in
+Object in Object
 %NextSyntax%
 Array in Location
 //SyntaxEnd//
@@ -28993,7 +29890,7 @@ RawSyntaxStart:
 fireplace inflame burn
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_fireplaceOne inflame true$/Code$
+$Code$_fireplaceOne inflame true ;$/Code$
 //ExampleEnd//
 LocalityStart:
 global / global
@@ -29010,7 +29907,7 @@ KeywordStart:
 inflamed
 //KeywordEnd//
 DescriptionStart:
-Check if fireplace is inflamed (burning) or not.
+Checks if fireplace is inflamed (burning) or not. To check if a unit is receiving damage from fire, use isBurning command.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/inflamed
@@ -29022,7 +29919,7 @@ RawSyntaxStart:
 inflamed fireplace
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_IsAlight = inflamed _fireplaceOne$/Code$
+$Code$_inflamed = inflamed _fireplaceOne;$/Code$
 //ExampleEnd//
 LocalityStart:
 global / undefined
@@ -29108,7 +30005,7 @@ undefined / local
 //LocalityEnd//
 NoteStart:
 (May 12, 2016)
-In case of the "Action" event, param 9 (action menu visibility) also denotes if the action is performed or not. For example, if the action menu is closed or fading off, pressing Spacebar will bring it up and trigger an "Action" event; in that case, param 9 is false. But if the action menu is open, and Spacebar is pressed to perform the selected action, then param 9 will be true.
+In case of the "Action" event, (param 6 || param 9) also denotes if the action is performed or not. For example, if the action menu is closed or fading off, pressing Spacebar will bring it up and trigger an "Action" event; in that case, param 9 (action menu visibility) is false. But if the action menu is open, and Spacebar is pressed to perform the selected action, then param 9 will be true. If param 6 (showWindow) is true, then it means the action was performed, regardless of param 9.
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -29195,7 +30092,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/inPolygon
 //WikiPageEnd//
 SyntaxStart:
-Array inPolygon
+Array inPolygon Array
 //SyntaxEnd//
 RawSyntaxStart:
 position inPolygon polygon
@@ -29336,7 +30233,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/intersect
 //WikiPageEnd//
 SyntaxStart:
-Array intersect
+Array intersect Array
 //SyntaxEnd//
 RawSyntaxStart:
 [object, lodName] intersect [begPos, endPos]
@@ -29657,6 +30554,7 @@ isBurning
 //KeywordEnd//
 DescriptionStart:
 Returns whether the unit is burning.
+This returns true only if unit is damaged by nearby fire, it does not check whether a fireplace is burning, use inflamed command for that.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/isBurning
@@ -29934,7 +30832,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/isEqualTo
 //WikiPageEnd//
 SyntaxStart:
-Anything isEqualTo
+Anything isEqualTo Anything
 //SyntaxEnd//
 RawSyntaxStart:
 var1 isEqualTo var2
@@ -29995,7 +30893,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/isEqualType
 //WikiPageEnd//
 SyntaxStart:
-Anything isEqualType
+Anything isEqualType Anything
 //SyntaxEnd//
 RawSyntaxStart:
 val1 isEqualType val2
@@ -30093,7 +30991,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/isEqualTypeArray
 //WikiPageEnd//
 SyntaxStart:
-Array isEqualTypeArray
+Array isEqualTypeArray Array
 //SyntaxEnd//
 RawSyntaxStart:
 arr1 isEqualTypeArray arr2
@@ -30228,7 +31126,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/isFlatEmpty
 //WikiPageEnd//
 SyntaxStart:
-Array isFlatEmpty
+Array isFlatEmpty Array
 //SyntaxEnd//
 RawSyntaxStart:
 position isFlatEmpty [minDistance, mode, maxGradient, maxGradientRadius, overLandOrWater, shoreLine, ignoreObject]
@@ -30505,7 +31403,7 @@ https://community.bistudio.com/wiki/isKindOf
 SyntaxStart:
 Object isKindOf String
 %NextSyntax%
-String isKindOf
+String isKindOf String
 %NextSyntax%
 String isKindOf Array
 //SyntaxEnd//
@@ -31003,6 +31901,9 @@ global / undefined
 NoteStart:
 (1 August, 2006)
 This is not the same as testing object == player, because in MP it tests for any player, not only for the local one. If object is a vehicle, the test is done for the vehicle commander.
+%NextNote%
+(June 3, 2016)
+This command reports true for headless client objects.
 //NoteEnd//
 ReturnValueStart:
 Boolean
@@ -31444,6 +32345,39 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Boolean
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+isVehicleCargo
+//KeywordEnd//
+DescriptionStart:
+Return transporting vehicle if vehicle is loaded in one.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/isVehicleCargo
+//WikiPageEnd//
+SyntaxStart:
+isVehicleCargo Object
+//SyntaxEnd//
+RawSyntaxStart:
+isVehicleCargo vehicle
+//RawSyntaxEnd//
+ExampleStart:
+$Code$// Blackfish with given variable name blackfish, with a vehicle inside called quad
+_transportingVehicle = isVehicleCargo quad; //returns blackfish$/Code$
+%NextExample%
+$Code$// Vehicle called quad that is not being transported as cargo
+_transportingVehicle = getVehicleCargo quad; //returns objNull$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Object - returns the transporting vehicle of a vehicle in cargo, if the vehicle is not being transported it will return objNull
 //ReturnValueEnd//
 
 %NextListItem%
@@ -32386,7 +33320,8 @@ Altis :
 3 = Selakeno Airfield
 4 = Molos Airfield
 5 = Almyra Salt Lake Airstrip
-tom_48_97 17:56, 21 September 2010 (CEST)
+Posted 17:56, 21 September 2010 (CEST)
+%NextNote%
 ARMA 2 OA:
 Takistan :
 0 = Airport NorthWest
@@ -32410,6 +33345,16 @@ Sahrani :
 %NextNote%
 (November 8, 2014)
 In Arma 3 (1.34) landAt only works for fixed-wing aircraft. Rotary-wing craft ignore this command.
+%NextNote%
+(June 19, 2016)
+ARMA 3 : Tanoa
+0 = Aeroport de Tanoa
+1 = Tuvanaka Airbase
+2 = Saint-George Airstrip
+3 = Bala Airstrip
+4 = La Rochelle Aerodome
+ARMA 3 : Stratis
+0 = Stratis Airbase
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -36707,7 +37652,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/lookAt
 //WikiPageEnd//
 SyntaxStart:
-Object/Array lookAt
+Object/Array lookAt Object/Array
 //SyntaxEnd//
 RawSyntaxStart:
 unit lookAt position
@@ -37490,7 +38435,7 @@ KeywordStart:
 markerColor
 //KeywordEnd//
 DescriptionStart:
-Get marker colour. See setMarkerColor. Note: This function is identical to getMarkerColor.
+Returns marker color for given marker. See setMarkerColor. Note: This function is identical to getMarkerColor.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/markerColor
@@ -37599,6 +38544,8 @@ LocalityStart:
 global / undefined
 //LocalityEnd//
 NoteStart:
+(May 30, 2016)
+Free hand drawn markers return "POLYLINE"
 //NoteEnd//
 ReturnValueStart:
 String
@@ -37705,7 +38652,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/max
 //WikiPageEnd//
 SyntaxStart:
-Number max
+Number max Number
 //SyntaxEnd//
 RawSyntaxStart:
 a max b
@@ -37764,7 +38711,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/min
 //WikiPageEnd//
 SyntaxStart:
-Number min
+Number min Number
 //SyntaxEnd//
 RawSyntaxStart:
 a min b
@@ -37902,6 +38849,34 @@ $Code$ getNumber ( missionConfigFile "MissionSQM" "version"); //12 - version par
 //NoteEnd//
 ReturnValueStart:
 Config
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+missionDifficulty
+//KeywordEnd//
+DescriptionStart:
+Return difficulty that has been forced for this mission, returns -1 if difficulty is not forced and it's used one from player's options.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/missionDifficulty
+//WikiPageEnd//
+SyntaxStart:
+missionDifficulty
+//SyntaxEnd//
+RawSyntaxStart:
+missionDifficulty
+//RawSyntaxEnd//
+ExampleStart:
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
 //ReturnValueEnd//
 
 %NextListItem%
@@ -38056,7 +39031,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/mod
 //WikiPageEnd//
 SyntaxStart:
-Number mod
+Number mod Number
 //SyntaxEnd//
 RawSyntaxStart:
 a mod b
@@ -38088,16 +39063,16 @@ KeywordStart:
 modelToWorld
 //KeywordEnd//
 DescriptionStart:
-Converts position from object model space to world space. This command will take into account vectorUp of the object when calculating relative coordinates.
+Translates relative position from object model space into world position. This command will take into account vectorUp of the object when calculating relative coordinates.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/modelToWorld
 //WikiPageEnd//
 SyntaxStart:
-Object modelToWorld PositionRelative
+Object modelToWorld Array
 //SyntaxEnd//
 RawSyntaxStart:
-object modelToWorld modelPos
+model modelToWorld position
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_aboveAndBehindPlayer = player modelToWorld [0,-1,3];$/Code$
@@ -38129,7 +39104,7 @@ but it does not give the same result, therefore
 (_obj modelToWorld [0.0, 0.0, 0.0]) is not the same as (getPos _obj).
 //NoteEnd//
 ReturnValueStart:
-Array - world position in format PositionAGL
+Array - translated world position, format PositionAGL
 //ReturnValueEnd//
 
 %NextListItem%
@@ -38159,6 +39134,35 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Array - world position in format PositionAGL
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+modParams
+//KeywordEnd//
+DescriptionStart:
+Returns list of mod paramters according to given options, values are in same order as the given options. Available options: name, picture, logo, logoOver, logoSmall, tooltip, tooltipowned, action, actionName, overview, hidePicture, hideName, defaultMod, serverOnly, active
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/modParams
+//WikiPageEnd//
+SyntaxStart:
+modParams Array
+//SyntaxEnd//
+RawSyntaxStart:
+modParams [modClass, options]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_data = modParams ["Kart", ["name", "logo", "picture"]];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - Retrieved data if any
 //ReturnValueEnd//
 
 %NextListItem%
@@ -38354,7 +39358,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/moveInAny
 //WikiPageEnd//
 SyntaxStart:
-Object moveInAny
+Object moveInAny Object
 //SyntaxEnd//
 RawSyntaxStart:
 unit moveInAny vehicle
@@ -38383,7 +39387,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/moveInCargo
 //WikiPageEnd//
 SyntaxStart:
-Object moveInCargo
+Object moveInCargo Object
 %NextSyntax%
 Object moveInCargo Array
 //SyntaxEnd//
@@ -38432,7 +39436,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/moveInCommander
 //WikiPageEnd//
 SyntaxStart:
-Object moveInCommander
+Object moveInCommander Object
 //SyntaxEnd//
 RawSyntaxStart:
 unitName moveInCommander vehicle
@@ -38466,7 +39470,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/moveInDriver
 //WikiPageEnd//
 SyntaxStart:
-Object moveInDriver
+Object moveInDriver Object
 //SyntaxEnd//
 RawSyntaxStart:
 unitName moveInDriver vehicle
@@ -38500,7 +39504,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/moveInGunner
 //WikiPageEnd//
 SyntaxStart:
-Object moveInGunner
+Object moveInGunner Object
 //SyntaxEnd//
 RawSyntaxStart:
 unitName moveInGunner vehicle
@@ -39932,7 +40936,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/objStatus
 //WikiPageEnd//
 SyntaxStart:
-String objStatus
+String objStatus String
 //SyntaxEnd//
 RawSyntaxStart:
 objectivenumber objStatus status
@@ -40705,6 +41709,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+openDLCPage
+//KeywordEnd//
+DescriptionStart:
+Opens a Steam page of the app with given appId. Only works for known appId (game + linked DLCs)
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/openDLCPage
+//WikiPageEnd//
+SyntaxStart:
+openDLCPage Number
+//SyntaxEnd//
+RawSyntaxStart:
+openDLCPage dlcID
+//RawSyntaxEnd//
+ExampleStart:
+$Code$openDLCPage 288520$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Bool - result
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 openMap
 //KeywordEnd//
 DescriptionStart:
@@ -40734,7 +41767,7 @@ undefined / undefined
 NoteStart:
 //NoteEnd//
 ReturnValueStart:
-Boolean
+Boolean - equivalent of visibleMap
 //ReturnValueEnd//
 
 %NextListItem%
@@ -40812,7 +41845,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/or
 //WikiPageEnd//
 SyntaxStart:
-Boolean or
+Boolean or Boolean
 %NextSyntax%
 Boolean or Code
 //SyntaxEnd//
@@ -41451,6 +42484,152 @@ Number
 %NextListItem%
 
 KeywordStart:
+pixelGrid
+//KeywordEnd//
+DescriptionStart:
+Returns grid size based on screen resolution, UI size and configs: uiScaleFactor, uiScaleMaxGrids.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/pixelGrid
+//WikiPageEnd//
+SyntaxStart:
+pixelGrid
+//SyntaxEnd//
+RawSyntaxStart:
+pixelGrid
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_gridHeight = pixelH * pixelGrid ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Scalar -
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+pixelGridBase
+//KeywordEnd//
+DescriptionStart:
+Returns grid size based on screen resolution.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/pixelGridBase
+//WikiPageEnd//
+SyntaxStart:
+pixelGridBase
+//SyntaxEnd//
+RawSyntaxStart:
+pixelGridBase
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_gridBaseHeight = pixelH * pixelGridBase ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Scalar -
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+pixelGridNoUIScale
+//KeywordEnd//
+DescriptionStart:
+Returns grid size based on screen resolution and configs: uiScaleFactor, uiScaleMaxGrids
+As mentioned in the name of this command, the user interface scale is ignored.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/pixelGridNoUIScale
+//WikiPageEnd//
+SyntaxStart:
+pixelGridNoUIScale
+//SyntaxEnd//
+RawSyntaxStart:
+pixelGridNoUIScale
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_gridHeightNoUIScale = pixelH * pixelGridNoUIScale ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Scalar -
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+pixelH
+//KeywordEnd//
+DescriptionStart:
+Returns the height of one pixel for current resolution.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/pixelH
+//WikiPageEnd//
+SyntaxStart:
+pixelH
+//SyntaxEnd//
+RawSyntaxStart:
+pixelH
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_pixelHeight = pixelH ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Scalar -
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+pixelW
+//KeywordEnd//
+DescriptionStart:
+Returns width of one pixel for current resolution.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/pixelW
+//WikiPageEnd//
+SyntaxStart:
+pixelW
+//SyntaxEnd//
+RawSyntaxStart:
+pixelW
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_pixelWidth = pixelW ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Scalar -
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 playableSlotsNumber
 //KeywordEnd//
 DescriptionStart:
@@ -41908,8 +43087,8 @@ KeywordStart:
 playMusic
 //KeywordEnd//
 DescriptionStart:
-Plays music defined in CfgMusic. To stop the music execute playMusic "" or give the start time which is beyond the music duration playMusic ["SomeMusic", 1000];
-For Arma 3 music, see Arma 3 CfgMusic
+Plays music defined in Description.ext#CfgMusic or config.cpp. To stop the music execute playMusic "" or give the start time which is beyond the music duration playMusic ["SomeMusic", 1000];
+For Arma 3 music, see Arma 3 CfgMusic.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/playMusic
@@ -42019,7 +43198,7 @@ KeywordStart:
 playSound
 //KeywordEnd//
 DescriptionStart:
-selects Sound from CfgSounds declared in the Description.ext file.
+Selects sound from Description.ext#CfgSounds or config.cpp. For Arma 3 sounds see CfgSounds.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/playSound
@@ -42319,7 +43498,7 @@ https://community.bistudio.com/wiki/ppEffectCommit
 SyntaxStart:
 String ppEffectCommit Number
 %NextSyntax%
-Number ppEffectCommit
+Number ppEffectCommit Number
 %NextSyntax%
 Array ppEffectCommit Number
 //SyntaxEnd//
@@ -42996,15 +44175,11 @@ SyntaxStart:
 private String
 %NextSyntax%
 private Array
-%NextSyntax%
-private Assignment
 //SyntaxEnd//
 RawSyntaxStart:
 private variableName
 %NextRawSyntax%
 private variableNameList
-%NextRawSyntax%
-private assignment
 //RawSyntaxEnd//
 ExampleStart:
 $Code$private "_varname";$/Code$
@@ -43716,551 +44891,6 @@ Number
 %NextListItem%
 
 KeywordStart:
-rad
-//KeywordEnd//
-DescriptionStart:
-Convert x from Degrees to Radians. 360 degrees is equal to 2 multiplied with pi.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/rad
-//WikiPageEnd//
-SyntaxStart:
-rad Number
-//SyntaxEnd//
-RawSyntaxStart:
-rad x
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_radians = rad 180
-// Result is 3.1415 (eg pi$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Number
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-radioChannelAdd
-//KeywordEnd//
-DescriptionStart:
-Add the units to the custom radio channel.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/radioChannelAdd
-//WikiPageEnd//
-SyntaxStart:
-Number radioChannelAdd Array
-//SyntaxEnd//
-RawSyntaxStart:
-index radioChannelAdd units
-//RawSyntaxEnd//
-ExampleStart:
-$Code$2 radioChannelAdd [player, unit1];$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Nothing
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-radioChannelCreate
-//KeywordEnd//
-DescriptionStart:
-Create a custom radio channel with the given color, label, call sign and registered characters. The index returned can be used to manipulate the created channel later. There are 10 slots for custom radio channels which would correspond to channels 6-15 (see getPlayerChannel ). The command will find an unused index in this range and create it when found.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/radioChannelCreate
-//WikiPageEnd//
-SyntaxStart:
-radioChannelCreate Array
-//SyntaxEnd//
-RawSyntaxStart:
-radioChannelCreate [color, label, callSign, units]
-%NextRawSyntax%
-radioChannelCreate [color, label, callSign, characters, sentenceType]
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_index = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], "Q-dance Radio", "%UNIT_NAME", [player]];$/Code$
-%NextExample%
-$Code$_index = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], Q-dance Radio, %UNIT_NAME, [ player ], false ];
-// disable automatic quotes for chat in channel (ArmA 3)$/Code$
-//ExampleEnd//
-LocalityStart:
-global / global
-//LocalityEnd//
-NoteStart:
-This scripting command must be executed on the server to work properly in multiplayer
-%NextNote%
-(January 21, 2016)
-Make sure you add all units you intend to speak or receive messages on created custom channel to the channel.
-//NoteEnd//
-ReturnValueStart:
-Number - created channel id (used in customChat command)
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-radioChannelRemove
-//KeywordEnd//
-DescriptionStart:
-Remove the characters from the custom radio channel.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/radioChannelRemove
-//WikiPageEnd//
-SyntaxStart:
-Number radioChannelRemove Array
-//SyntaxEnd//
-RawSyntaxStart:
-index radioChannelRemove characters
-//RawSyntaxEnd//
-ExampleStart:
-$Code$3 radioChannelRemove [myCharacter1, myCharacter2];$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Nothing
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-radioChannelSetCallSign
-//KeywordEnd//
-DescriptionStart:
-Set the custom radio channel's call sign.
-Available special parameters:
-$KEY (reference to a localized text)
-%CHANNEL_LABEL
-%UNIT_SIDE
-%UNIT_NAME
-%UNIT_RANK
-%UNIT_ID
-%UNIT_REF
-%UNIT_GRP_NAME
-%UNIT_GRP_LEADER
-%UNIT_VEH_NAME
-%UNIT_VEH_POSITION
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/radioChannelSetCallSign
-//WikiPageEnd//
-SyntaxStart:
-Number radioChannelSetCallSign String
-//SyntaxEnd//
-RawSyntaxStart:
-index radioChannelSetCallSign callSign
-//RawSyntaxEnd//
-ExampleStart:
-$Code$4 radioChannelSetCallSign "%UNIT_NAME";$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Nothing
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-radioChannelSetLabel
-//KeywordEnd//
-DescriptionStart:
-Set the custom radio channel's label.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/radioChannelSetLabel
-//WikiPageEnd//
-SyntaxStart:
-Number radioChannelSetLabel String
-//SyntaxEnd//
-RawSyntaxStart:
-index radioChannelSetLabel label
-//RawSyntaxEnd//
-ExampleStart:
-$Code$5 radioChannelSetLabel "Q-dance Radio";$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Nothing
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-radioVolume
-//KeywordEnd//
-DescriptionStart:
-Checks the current radio volume (set by fadeRadio ).
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/radioVolume
-//WikiPageEnd//
-SyntaxStart:
-radioVolume
-//SyntaxEnd//
-RawSyntaxStart:
-radioVolume
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_volume = radioVolume;$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Number
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-rain
-//KeywordEnd//
-DescriptionStart:
-Returns the current value of rain density in range 1...0
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/rain
-//WikiPageEnd//
-SyntaxStart:
-rain
-//SyntaxEnd//
-RawSyntaxStart:
-rain
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_rainLevel = rain ;$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Number
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-rainbow
-//KeywordEnd//
-DescriptionStart:
-Returns the current rainbow intensity.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/rainbow
-//WikiPageEnd//
-SyntaxStart:
-rainbow
-//SyntaxEnd//
-RawSyntaxStart:
-rainbow
-//RawSyntaxEnd//
-ExampleStart:
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Number
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-random
-//KeywordEnd//
-DescriptionStart:
-Random real (floating point) value from 0 (inclusive) to x (not inclusive).
-Since Arma 3 v1.55.133393 alternative syntax is added, allowing to define Gaussian Distribution params. Uses the same method as setTriggerTimeout command. Quite useful for spawning loot for example, making more valuable items more rare.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/random
-//WikiPageEnd//
-SyntaxStart:
-random Number
-%NextSyntax%
-random Array
-//SyntaxEnd//
-RawSyntaxStart:
-random x
-%NextRawSyntax%
-random [min, mid, max]
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_rNumber = random 1;$/Code$
-%NextExample%
-$Code$_rNumber = random -10;$/Code$
-%NextExample%
-$Code$// To select random value from an array:
-_array = ["apples", "pears", "bananas", "M16"];
-_random = _array select floor random count _array;
-// or since Arma 3 v1.55.133393
-_random = selectRandom _array;$/Code$
-%NextExample%
-$Code$// Compare (each command was executed 100000 times to gather statistics):
-floor random 10;
-// 0 - 10099 (10%)
-// 1 - 10040 (10%)
-// 2 - 10154 (10%)
-// 3 - 9910 (10%)
-// 4 - 10023 (10%)
-// 5 - 9937 (10%)
-// 6 - 10118 (10%)
-// 7 - 9716 (10%)
-// 8 - 9986 (10%)
-// 9 - 10017 (10%)
-floor random [0,5,10];
-// 0 - 109 (0%)
-// 1 - 1604 (2%)
-// 2 - 6839 (7%)
-// 3 - 16671 (17%)
-// 4 - 24706 (25%)
-// 5 - 24702 (25%)
-// 6 - 16626 (17%)
-// 7 - 6925 (7%)
-// 8 - 1702 (2%)
-// 9 - 116 (0%)
-floor random [0,10,0];
-// 0 - 19 (0%)
-// 1 - 209 (0%)
-// 2 - 817 (1%)
-// 3 - 2384 (2%)
-// 4 - 4841 (5%)
-// 5 - 8976 (9%)
-// 6 - 14067 (14%)
-// 7 - 18955 (19%)
-// 8 - 23605 (24%)
-// 9 - 26127 (26%)
-floor random [0,10,5];
-// 0 - 11 (0%)
-// 1 - 98 (0%)
-// 2 - 430 (0%)
-// 3 - 1149 (1%)
-// 4 - 2384 (2%)
-// 5 - 4546 (5%)
-// 6 - 8612 (9%)
-// 7 - 16283 (16%)
-// 8 - 28393 (28%)
-// 9 - 38094 (38%)$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-(July 12, 2015)
-Random selections including negative numbers can be obtained via:
-$Code$_Xrnd = round(random 200) -100;$/Code$
-This will yield numbers between -100 and 100.
-Be careful using random numbers in multiplayer, each client will come up with a different result. See multiplayer tutorials for more general information about locality.
-The number returned is unlikely to be a whole number. To return a whole number use either round, ceil or floor together with random :
-x=round(random 5) will return 0,1,2,3,4 or 5. (non-uniform distribution, 0 and 5 are half as likely to be selected than any of the other numbers)
-x=floor(random 5) will return 0,1,2,3 or 4. (uniform distribution, all numbers have the same probability of being selected)
-x=ceil(random 5) will return 0,1,2,3,4 or 5. (0 is very unlikely, but possible, as ceil 0 is 0)
-//NoteEnd//
-ReturnValueStart:
-Number
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-rank
-//KeywordEnd//
-DescriptionStart:
-Returns the rank of the given unit. Rank can be one of the following:
-"PRIVATE"
-"CORPORAL"
-"SERGEANT"
-"LIEUTENANT"
-"CAPTAIN"
-"MAJOR"
-"COLONEL"
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/rank
-//WikiPageEnd//
-SyntaxStart:
-rank Object
-//SyntaxEnd//
-RawSyntaxStart:
-rank unitName
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_rank = rank player;$/Code$
-//ExampleEnd//
-LocalityStart:
-global / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-String
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-rankId
-//KeywordEnd//
-DescriptionStart:
-Return the rank of the given unit for comparison.
-Value may be :
-0 - Private
-1 - Corporal
-2 - Sergeant
-3 - Lieutenant
-4 - Captain
-5 - Major
-6 - Colonel
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/rankId
-//WikiPageEnd//
-SyntaxStart:
-rankId Object
-//SyntaxEnd//
-RawSyntaxStart:
-rankId unit
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_myIdRank = rankId player;$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Number
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-rating
-//KeywordEnd//
-DescriptionStart:
-Check unit rating. Rating is increased for killing enemies, decreased for killing friendlies (see Rating Values ). Can be changed via addRating by the mission designer.
-The rating of the player is displayed as the "score" at the end of the mission. Via Description.ext one can define how many points it takes to get a perfect score, as well as the number of stars.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/rating
-//WikiPageEnd//
-SyntaxStart:
-rating Object
-//SyntaxEnd//
-RawSyntaxStart:
-rating unitName
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_score = rating player$/Code$
-//ExampleEnd//
-LocalityStart:
-global / undefined
-//LocalityEnd//
-NoteStart:
-In ArmA 1.18 rating does only return rating levels for units that are local.
-//NoteEnd//
-ReturnValueStart:
-Number
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-rectangular
-//KeywordEnd//
-DescriptionStart:
-Checks if a location is rectangular (returns true) or elliptical (returns false).
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/rectangular
-//WikiPageEnd//
-SyntaxStart:
-rectangular Location
-//SyntaxEnd//
-RawSyntaxStart:
-rectangular location
-//RawSyntaxEnd//
-ExampleStart:
-$Code$_isRect = rectangular myLocation;$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Boolean
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
-registeredTasks
-//KeywordEnd//
-DescriptionStart:
-List all registered task types.
-//DescriptionEnd//
-WikiPageStart:
-https://community.bistudio.com/wiki/registeredTasks
-//WikiPageEnd//
-SyntaxStart:
-registeredTasks TeamMember
-//SyntaxEnd//
-RawSyntaxStart:
-registeredTasks member
-//RawSyntaxEnd//
-ExampleStart:
-$Code$tasklist = registeredTasks teamMember player ;$/Code$
-%NextExample%
-$Code$_rabbit = createAgent ["Rabbit_F", position player,[], 0, "None"];
-hint str registeredTasks teamMember _rabbit;
-// Hint shows ["Animal Main Task"] in Arma 3.$/Code$
-//ExampleEnd//
-LocalityStart:
-undefined / undefined
-//LocalityEnd//
-NoteStart:
-//NoteEnd//
-ReturnValueStart:
-Array of Strings
-//ReturnValueEnd//
-
-%NextListItem%
-
-KeywordStart:
 registerTask
 //KeywordEnd//
 DescriptionStart:
@@ -44355,7 +44985,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/remoteControl
 //WikiPageEnd//
 SyntaxStart:
-Object remoteControl
+Object remoteControl Object
 //SyntaxEnd//
 RawSyntaxStart:
 who remoteControl whom
@@ -44464,8 +45094,11 @@ remoteExecCall ["func1"]; call func2; // func2 can be executed sooner than func1
 call func1; call func2; // func2 will always execute after func1.
 %NextNote%
 (December 29, 2015)
-remoteExec and remoteExecCall are currently filtered by BattlEye's remoteexec.txt, the string passed to BattlEye is formatted the same way as the following example's output:
+remoteExec and remoteExecCall are currently filtered by BattlEye's remoteexec.txt, the string analyzed by BE is formatted the same way as the following example's output:
 $Code$ format ["%1 %2", functionName, str params]$/Code$
+If CfgRemoteExec class Functions is in mode 1 (whitelist), the following BE filter exclusion can be used to safely allow all whitelisted *_fnc_* functions taking an array as parameter to go through:
+$Code$!="\w+?_fnc_\w+? \[.*\]"$/Code$
+Any attempt to exploit this exclusion using other RE methods like createUnit will run into "Error Missing ;" without any malicious code being executed.
 %NextNote%
 (January 15, 2016)
 Executing commands/functions via remoteExec is more faster than using BIS_fnc_MP. Tested with BIS_fnc_codePerformance in ArmA 3 1.52.
@@ -44479,6 +45112,19 @@ In this case player object will be the object obtained on the computer where rem
 The CORRECT way:
 $Code$[_desired_object, { player reveal _this}] remoteExec ["call", 0];$/Code$
 The _desired_object will be identical on every client, this is what we want, but player will refer to individual player on each client, so _desired_object will be revealed to all connected players.
+%NextNote%
+(May 25, 2016)
+When adapting mission from dedicated server for SP, if target used in remoteExec is -2 (execute on every client but not server), in SP this will not execute since client is server in SP. To work around, the target could be set using isMultiplayer condition like this:
+$Code$"123" remoteExec ["hint", [0, -2] select isMultiplayer ];$/Code$
+This will execute hint on every client in MP on dedicated server (target -2) and will also execute it in SP (target 0).
+%NextNote%
+(May 28, 2016)
+While KK's solution works fine in sp missions and on dedicated servers, it will not work properly for hosted missions.
+Solution:
+$Code$[0,0.5] remoteExec [' fadeRadio ',[0,-2] select isDedicated, true ];$/Code$
+Singleplayer: isDedicated returns false - code is executed everywhere (0)
+Hosted: isDedicated returns false - code is executed everywhere including host (0)
+Dedicated: isDedicated returns true - code is executed everywhere excluding server (-2)
 //NoteEnd//
 ReturnValueStart:
 Anything - Nil in case of error. String otherwise. If JIP is not requested this is an empty string, if JIP is requested, it is the JIP ID. See the topic Function for more information.
@@ -44550,8 +45196,11 @@ Removal of persistent call must be in the following format no argument remoteExe
 $Code$ remoteExecCall ["", "5:8"];$/Code$
 %NextNote%
 (December 29, 2015)
-remoteExec and remoteExecCall are currently filtered by BattlEye's remoteexec.txt, the string passed to BattlEye is formatted the same way as the following example's output:
+remoteExec and remoteExecCall are currently filtered by BattlEye's remoteexec.txt, the string analyzed by BE is formatted the same way as the following example's output:
 $Code$ format ["%1 %2", functionName, str params]$/Code$
+If CfgRemoteExec class Functions is in mode 1 (whitelist), the following BE filter exclusion can be used to safely allow all whitelisted *_fnc_* functions taking an array as parameter to go through:
+$Code$!="\w+?_fnc_\w+? \[.*\]"$/Code$
+Any attempt to exploit this exclusion using other RE methods like createUnit will run into "Error Missing ;" without any malicious code being executed.
 //NoteEnd//
 ReturnValueStart:
 Anything - Nil in case of error. String otherwise. If JIP is not requested this is an empty string, if JIP is requested, it is the JIP ID. See the topic Function for more information.
@@ -45096,6 +45745,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+removeAllOwnedMines
+//KeywordEnd//
+DescriptionStart:
+Removes all owned mines/explosive devices of the given unit
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/removeAllOwnedMines
+//WikiPageEnd//
+SyntaxStart:
+removeAllOwnedMines Object
+//SyntaxEnd//
+RawSyntaxStart:
+removeAllOwnedMines unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$removeAllOwnedMines player;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 removeAllPrimaryWeaponItems
 //KeywordEnd//
 DescriptionStart:
@@ -45565,6 +46243,8 @@ LocalityStart:
 global / global
 //LocalityEnd//
 NoteStart:
+(August 5, 2016)
+To clarify, this command effectively DELETES the headgear. It does not simply remove it from unit's head and move it into inventory.
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -46010,6 +46690,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+removeOwnedMine
+//KeywordEnd//
+DescriptionStart:
+Removes ownership over a remotely detonatable mine from the unit.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/removeOwnedMine
+//WikiPageEnd//
+SyntaxStart:
+Object removeOwnedMine Object
+//SyntaxEnd//
+RawSyntaxStart:
+unit removeOwnedMine mine
+//RawSyntaxEnd//
+ExampleStart:
+$Code$player removeOwnedMine SuperMine;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 removePrimaryWeaponItem
 //KeywordEnd//
 DescriptionStart:
@@ -46135,7 +46844,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/removeTeamMember
 //WikiPageEnd//
 SyntaxStart:
-TeamMember removeTeamMember
+TeamMember removeTeamMember TeamMember
 //SyntaxEnd//
 RawSyntaxStart:
 team removeTeamMember member
@@ -47352,6 +48061,589 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+rad
+//KeywordEnd//
+DescriptionStart:
+Convert x from Degrees to Radians. 360 degrees is equal to 2 multiplied with pi.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/rad
+//WikiPageEnd//
+SyntaxStart:
+rad Number
+//SyntaxEnd//
+RawSyntaxStart:
+rad x
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_radians = rad 180
+// Result is 3.1415 (eg pi$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+radioChannelAdd
+//KeywordEnd//
+DescriptionStart:
+Add the units to the custom radio channel.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/radioChannelAdd
+//WikiPageEnd//
+SyntaxStart:
+Number radioChannelAdd Array
+//SyntaxEnd//
+RawSyntaxStart:
+index radioChannelAdd units
+//RawSyntaxEnd//
+ExampleStart:
+$Code$2 radioChannelAdd [player, unit1];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+radioChannelCreate
+//KeywordEnd//
+DescriptionStart:
+Create a custom radio channel with the given color, label, call sign and registered characters. The index returned can be used to manipulate the created channel later. There are 10 slots for custom radio channels which would correspond to channels 6-15 (see getPlayerChannel ). The command will find an unused index in this range and create it when found. Server only.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/radioChannelCreate
+//WikiPageEnd//
+SyntaxStart:
+radioChannelCreate Array
+//SyntaxEnd//
+RawSyntaxStart:
+radioChannelCreate [color, label, callSign, units, sentenceType]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_index = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], "Q-dance Radio", "%UNIT_NAME", [player1, player2]];$/Code$
+%NextExample%
+$Code$_index = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], Q-dance Radio, %UNIT_NAME, [player1, player2], false ];
+// disable automatic quotes for chat in channel (ArmA 3)$/Code$
+%NextExample%
+$Code$// Create custom channel and add all players to it, present and JIP:
+if ( isServer ) then
+{
+private _channelName = "Q-dance Radio";
+private _channelID = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], _channelName, "%UNIT_NAME", []];
+if (_channelID == 0) exitWith { diag_log format ["Custom channel '%1' creation failed!", _channelName]};
+[_channelID, {_this radioChannelAdd [ player ]}] remoteExec ["call", [0, -2] select isDedicated, _channelName];
+};$/Code$
+//ExampleEnd//
+LocalityStart:
+global / global
+//LocalityEnd//
+NoteStart:
+This scripting command must be executed on the server to work properly in multiplayer
+%NextNote%
+(January 21, 2016)
+Make sure you add all units you intend to speak or receive messages on created custom channel to the channel.
+//NoteEnd//
+ReturnValueStart:
+Number - created channel ID (used in customChat command), 0 if failed
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+radioChannelRemove
+//KeywordEnd//
+DescriptionStart:
+Remove the characters from the custom radio channel.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/radioChannelRemove
+//WikiPageEnd//
+SyntaxStart:
+Number radioChannelRemove Array
+//SyntaxEnd//
+RawSyntaxStart:
+index radioChannelRemove characters
+//RawSyntaxEnd//
+ExampleStart:
+$Code$3 radioChannelRemove [myCharacter1, myCharacter2];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+radioChannelSetCallSign
+//KeywordEnd//
+DescriptionStart:
+Set the custom radio channel's call sign.
+Available special parameters:
+$KEY (reference to a localized text)
+%CHANNEL_LABEL
+%UNIT_SIDE
+%UNIT_NAME
+%UNIT_RANK
+%UNIT_ID
+%UNIT_REF
+%UNIT_GRP_NAME
+%UNIT_GRP_LEADER
+%UNIT_VEH_NAME
+%UNIT_VEH_POSITION
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/radioChannelSetCallSign
+//WikiPageEnd//
+SyntaxStart:
+Number radioChannelSetCallSign String
+//SyntaxEnd//
+RawSyntaxStart:
+index radioChannelSetCallSign callSign
+//RawSyntaxEnd//
+ExampleStart:
+$Code$4 radioChannelSetCallSign "%UNIT_NAME";$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+radioChannelSetLabel
+//KeywordEnd//
+DescriptionStart:
+Set the custom radio channel's label.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/radioChannelSetLabel
+//WikiPageEnd//
+SyntaxStart:
+Number radioChannelSetLabel String
+//SyntaxEnd//
+RawSyntaxStart:
+index radioChannelSetLabel label
+//RawSyntaxEnd//
+ExampleStart:
+$Code$5 radioChannelSetLabel "Q-dance Radio";$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+radioVolume
+//KeywordEnd//
+DescriptionStart:
+Checks the current radio volume (set by fadeRadio ).
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/radioVolume
+//WikiPageEnd//
+SyntaxStart:
+radioVolume
+//SyntaxEnd//
+RawSyntaxStart:
+radioVolume
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_volume = radioVolume;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+rain
+//KeywordEnd//
+DescriptionStart:
+Returns the current value of rain density in range 1...0
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/rain
+//WikiPageEnd//
+SyntaxStart:
+rain
+//SyntaxEnd//
+RawSyntaxStart:
+rain
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_rainLevel = rain ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+rainbow
+//KeywordEnd//
+DescriptionStart:
+Returns the current rainbow intensity.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/rainbow
+//WikiPageEnd//
+SyntaxStart:
+rainbow
+//SyntaxEnd//
+RawSyntaxStart:
+rainbow
+//RawSyntaxEnd//
+ExampleStart:
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+random
+//KeywordEnd//
+DescriptionStart:
+Random real (floating point) value from 0 (inclusive) to x (not inclusive).
+Since Arma 3 v1.55.133393 alternative syntax is added, allowing to define Gaussian Distribution params. Uses the same method as setTriggerTimeout command. Quite useful for spawning loot for example, making more valuable items more rare.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/random
+//WikiPageEnd//
+SyntaxStart:
+random Number
+%NextSyntax%
+random Array
+//SyntaxEnd//
+RawSyntaxStart:
+random x
+%NextRawSyntax%
+random [min, mid, max]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_rNumber = random 1;$/Code$
+%NextExample%
+$Code$_rNumber = random -10;$/Code$
+%NextExample%
+$Code$// To select random value from an array:
+_array = ["apples", "pears", "bananas", "M16"];
+_random = _array select floor random count _array;
+// or since Arma 3 v1.55.133393
+_random = selectRandom _array;$/Code$
+%NextExample%
+$Code$// Compare (each command was executed 100000 times to gather statistics):
+floor random 10;
+// 0 - 10099 (10%)
+// 1 - 10040 (10%)
+// 2 - 10154 (10%)
+// 3 - 9910 (10%)
+// 4 - 10023 (10%)
+// 5 - 9937 (10%)
+// 6 - 10118 (10%)
+// 7 - 9716 (10%)
+// 8 - 9986 (10%)
+// 9 - 10017 (10%)
+floor random [0,5,10];
+// 0 - 109 (0%)
+// 1 - 1604 (2%)
+// 2 - 6839 (7%)
+// 3 - 16671 (17%)
+// 4 - 24706 (25%)
+// 5 - 24702 (25%)
+// 6 - 16626 (17%)
+// 7 - 6925 (7%)
+// 8 - 1702 (2%)
+// 9 - 116 (0%)
+floor random [0,10,0];
+// 0 - 19 (0%)
+// 1 - 209 (0%)
+// 2 - 817 (1%)
+// 3 - 2384 (2%)
+// 4 - 4841 (5%)
+// 5 - 8976 (9%)
+// 6 - 14067 (14%)
+// 7 - 18955 (19%)
+// 8 - 23605 (24%)
+// 9 - 26127 (26%)
+floor random [0,10,5];
+// 0 - 11 (0%)
+// 1 - 98 (0%)
+// 2 - 430 (0%)
+// 3 - 1149 (1%)
+// 4 - 2384 (2%)
+// 5 - 4546 (5%)
+// 6 - 8612 (9%)
+// 7 - 16283 (16%)
+// 8 - 28393 (28%)
+// 9 - 38094 (38%)$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+(July 12, 2015)
+Random selections including negative numbers can be obtained via:
+$Code$_Xrnd = round(random 200) -100;$/Code$
+This will yield numbers between -100 and 100.
+Be careful using random numbers in multiplayer, each client will come up with a different result. See multiplayer tutorials for more general information about locality.
+The number returned is unlikely to be a whole number. To return a whole number use either round, ceil or floor together with random :
+x=round(random 5) will return 0,1,2,3,4 or 5. (non-uniform distribution, 0 and 5 are half as likely to be selected than any of the other numbers)
+x=floor(random 5) will return 0,1,2,3 or 4. (uniform distribution, all numbers have the same probability of being selected)
+x=ceil(random 5) will return 0,1,2,3,4 or 5. (0 is very unlikely, but possible, as ceil 0 is 0)
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+rank
+//KeywordEnd//
+DescriptionStart:
+Returns the rank of the given unit. Rank can be one of the following:
+"PRIVATE"
+"CORPORAL"
+"SERGEANT"
+"LIEUTENANT"
+"CAPTAIN"
+"MAJOR"
+"COLONEL"
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/rank
+//WikiPageEnd//
+SyntaxStart:
+rank Object
+//SyntaxEnd//
+RawSyntaxStart:
+rank unitName
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_rank = rank player;$/Code$
+//ExampleEnd//
+LocalityStart:
+global / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+String
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+rankId
+//KeywordEnd//
+DescriptionStart:
+Return the rank of the given unit for comparison.
+Value may be :
+0 - Private
+1 - Corporal
+2 - Sergeant
+3 - Lieutenant
+4 - Captain
+5 - Major
+6 - Colonel
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/rankId
+//WikiPageEnd//
+SyntaxStart:
+rankId Object
+//SyntaxEnd//
+RawSyntaxStart:
+rankId unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_myIdRank = rankId player;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+rating
+//KeywordEnd//
+DescriptionStart:
+Check unit rating. Rating is increased for killing enemies, decreased for killing friendlies (see Rating Values ). Can be changed via addRating by the mission designer.
+The rating of the player is displayed as the "score" at the end of the mission. Via Description.ext one can define how many points it takes to get a perfect score, as well as the number of stars.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/rating
+//WikiPageEnd//
+SyntaxStart:
+rating Object
+//SyntaxEnd//
+RawSyntaxStart:
+rating unitName
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_score = rating player$/Code$
+//ExampleEnd//
+LocalityStart:
+global / undefined
+//LocalityEnd//
+NoteStart:
+In ArmA 1.18 rating does only return rating levels for units that are local.
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+rectangular
+//KeywordEnd//
+DescriptionStart:
+Checks if a location is rectangular (returns true) or elliptical (returns false).
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/rectangular
+//WikiPageEnd//
+SyntaxStart:
+rectangular Location
+//SyntaxEnd//
+RawSyntaxStart:
+rectangular location
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_isRect = rectangular myLocation;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Boolean
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+registeredTasks
+//KeywordEnd//
+DescriptionStart:
+List all registered task types.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/registeredTasks
+//WikiPageEnd//
+SyntaxStart:
+registeredTasks TeamMember
+//SyntaxEnd//
+RawSyntaxStart:
+registeredTasks member
+//RawSyntaxEnd//
+ExampleStart:
+$Code$tasklist = registeredTasks teamMember player ;$/Code$
+%NextExample%
+$Code$_rabbit = createAgent ["Rabbit_F", position player,[], 0, "None"];
+hint str registeredTasks teamMember _rabbit;
+// Hint shows ["Animal Main Task"] in Arma 3.$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array of Strings
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+safeZoneH
+//KeywordEnd//
+DescriptionStart:
+Returns the height of the screen in screen measurement units. Taken from top left corner of the default viewport (0,0) of the screen and going in the same direction as the Y axis, the value will be positive but resulting Y will end up beyond the bottom border. Therefore in order to calculate Y of the bottom screen border, the length of safeZoneY must be subtracted from safeZoneH, but because it is negative, it must be added instead. _screenBottomBorderY = safeZoneH + safeZoneY. The measurement units depend on the current screen resolution getResolution. See also SafeZone
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/safeZoneH
+//WikiPageEnd//
+SyntaxStart:
+safeZoneH
+//SyntaxEnd//
+RawSyntaxStart:
+SafeZoneH
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_screenHeight = safeZoneH ;$/Code$
+%NextExample%
+$Code$_screenBottomBorderY = safeZoneH + safeZoneY ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 safeZoneW
 //KeywordEnd//
 DescriptionStart:
@@ -47412,6 +48704,35 @@ Number
 %NextListItem%
 
 KeywordStart:
+safeZoneX
+//KeywordEnd//
+DescriptionStart:
+Returns the X of the left border of the screen, which is also a distance in screen measurement units from top left corner of the default viewport (0,0) of the screen to the left border of the screen. Since it is going in opposite way of the X axis, the value is negative. The measurement units depend on the current screen resolution getResolution. See also SafeZone
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/safeZoneX
+//WikiPageEnd//
+SyntaxStart:
+safeZoneX
+//SyntaxEnd//
+RawSyntaxStart:
+SafeZoneX
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_screenLeftBorderX = safeZoneX ; // returns a float value 0$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 safeZoneXAbs
 //KeywordEnd//
 DescriptionStart:
@@ -47436,6 +48757,64 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+safeZoneY
+//KeywordEnd//
+DescriptionStart:
+Returns the Y of the top border of the screen, which is also a distance in screen measurement units from top left corner of the default viewport (0,0) of the screen to the top border of the screen. Since it is going in opposite way of the Y axis, the value is negative. The measurement units depend on the current screen resolution getResolution. See also SafeZone
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/safeZoneY
+//WikiPageEnd//
+SyntaxStart:
+safeZoneY
+//SyntaxEnd//
+RawSyntaxStart:
+SafeZoneY
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_screenTopBorderY = safeZoneY ; // returns a float value 0$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+save3DENInventory
+//KeywordEnd//
+DescriptionStart:
+Saves current state of entitie's inventory to SQM.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/save3DENInventory
+//WikiPageEnd//
+SyntaxStart:
+save3DENInventory Entities
+//SyntaxEnd//
+RawSyntaxStart:
+save3DENInventory [entities]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$save3DENInventory [_soldier1,_solider2]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
 //ReturnValueEnd//
 
 %NextListItem%
@@ -47703,7 +49082,7 @@ Object say Array
 %NextSyntax%
 Array say String
 %NextSyntax%
-Array say
+Array say Array
 //SyntaxEnd//
 RawSyntaxStart:
 from say sound
@@ -47749,7 +49128,7 @@ Object say2D Array
 %NextSyntax%
 Array say2D String
 %NextSyntax%
-Array say2D
+Array say2D Array
 //SyntaxEnd//
 RawSyntaxStart:
 from say2D sound
@@ -47792,7 +49171,7 @@ Object say3D Array
 %NextSyntax%
 Array say3D String
 %NextSyntax%
-Array say3D
+Array say3D Array
 //SyntaxEnd//
 RawSyntaxStart:
 from say3D sound
@@ -47914,6 +49293,44 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Number
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+screenshot
+//KeywordEnd//
+DescriptionStart:
+Captures a screenshot and stores it to given filename. PNG is the only available format and the file must have.png extension.
+The file is saved into Screenshots folder in the Profile directory. The folder is by default limited to 250 MB to prevent abuse.
+To increase the limit, add the following line at the end of the profile file:
+$Code$maxScreenShotFolderSizeMB = 2000;$/Code$
+2000 can be replaced by any value in MB.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/screenshot
+//WikiPageEnd//
+SyntaxStart:
+screenshot String
+//SyntaxEnd//
+RawSyntaxStart:
+screenshot filename
+//RawSyntaxEnd//
+ExampleStart:
+$Code$screenshot "testFile.png";$/Code$
+%NextExample%
+$Code$// The following code will result in the screenshot being placed in \Documents\Arma 3\Screenshots\any\where\you\want.png
+screenshot "any\where\you\want.png";$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+(July 18, 2016)
+This command only captures the rendered picture (including ppEffects). GUI nor the mouse are visible on the screenshot. (ArmA 3 1.62.137494)
+//NoteEnd//
+ReturnValueStart:
+Nothing
 //ReturnValueEnd//
 
 %NextListItem%
@@ -48241,7 +49658,7 @@ Config select Number
 %NextSyntax%
 String select Array
 %NextSyntax%
-Array select
+Array select Array
 %NextSyntax%
 Array select Code
 //SyntaxEnd//
@@ -48290,6 +49707,14 @@ hint str round _roundThis; //1$/Code$
 In ArmA3 ver 1.18, Boolean type supported. Which true defaulted as 1 and false as 0.
 $Code$[0,1] select (56 40) // 1
 [0,1,2] select ((! isNil "v") false ) // 0$/Code$
+%NextNote%
+(14 juil, 2016)
+You can substract array from array using select:
+$Code$_array = [[1],[2],[3]]; _sub = [2];
+_array - _sub // [[1],[2],[3];
+_array select {!(_x isEqualTo _sub)} // [[1],[3]];
+[[1],[2],[2],[2],[2],[3]] select {!(_x isEqualTo _sub)} // [[1],[3]];
+$/Code$
 %NextNote%
 (June 22, 2015)
 Usually when select tries to pick up element out of range, Arma throws "division by zero" error. However there are exceptions. Basically as long as index of element you are selecting is less then or equal to array size, you will get no error.
@@ -48454,6 +49879,43 @@ Any
 %NextListItem%
 
 KeywordStart:
+selectionNames
+//KeywordEnd//
+DescriptionStart:
+Returns the list of model selections
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/selectionNames
+//WikiPageEnd//
+SyntaxStart:
+selectionNames object;
+//SyntaxEnd//
+RawSyntaxStart:
+selectionNames object;
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_house= "Land_i_House_Small_02_V3_F" createVehicle _pos;
+selectionNames _house;
+//[
+//"door_1","door_2","damt_1","door_handle_1","door_handle_2","glass_1_hide",
+//"glass_2_hide","glass_3_hide","glass_1_unhide","glass_2_unhide","glass_3_unhide",
+//"glass_4_hide","glass_4_unhide"
+//]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+(June 5, 2016)
+selectionNames returns an array of named selections from only the resolution LODs.
+//NoteEnd//
+ReturnValueStart:
+Array - List of selection names
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 selectionPosition
 //KeywordEnd//
 DescriptionStart:
@@ -48520,7 +49982,7 @@ ExampleStart:
 $Code$group player selectLeader player ;$/Code$
 %NextExample%
 $Code$// Make unit a leader from server:
-[ group _unit, _unit] remoteExec ["selectLeader", groupOwner _unit];$/Code$
+[ group _unit, _unit] remoteExec ["selectLeader", groupOwner group _unit];$/Code$
 //ExampleEnd//
 LocalityStart:
 local / global
@@ -48537,7 +49999,7 @@ KeywordStart:
 selectNoPlayer
 //KeywordEnd//
 DescriptionStart:
-Switch player to no unit.
+Switches player to no unit, makes player return objNull. SP only, the command is completely ignored in MP.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/selectNoPlayer
@@ -48566,7 +50028,7 @@ LocalityStart:
 undefined / undefined
 //LocalityEnd//
 NoteStart:
--- Worldeater 09:48, 15 October 2010 (CEST)
+Player returns objNull after this command has been used. It also has at least the following side effects: closeDialog won't work anymore and onKeyDown event handlers cease to detect the ESC key. In order to get things back to normal a new player object has to be set with selectPlayer. Using objNull won't cut it in this case.
 %NextNote%
 (May 2, 2015)
 SP only.
@@ -48736,7 +50198,7 @@ KeywordStart:
 selectWeaponTurret
 //KeywordEnd//
 DescriptionStart:
-Selects the given weapon on specified turret. Use turret path [-1] for driver's turret.
+Selects the given weapon on specified turret. Use turret path [-1] for driver's turret. Since ver. 1.63.136864 this command supports both weapon name and muzzle name.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/selectWeaponTurret
@@ -48941,7 +50403,7 @@ https://community.bistudio.com/wiki/serverCommand
 SyntaxStart:
 serverCommand String
 %NextSyntax%
-String serverCommand
+String serverCommand String
 //SyntaxEnd//
 RawSyntaxStart:
 serverCommand command
@@ -49128,7 +50590,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/set
 //WikiPageEnd//
 SyntaxStart:
-Array set
+Array set Array
 //SyntaxEnd//
 RawSyntaxStart:
 array set [index, value]
@@ -49370,6 +50832,34 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Bool - true if the value was set
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+set3DENModelsVisible
+//KeywordEnd//
+DescriptionStart:
+Enables or disables lines visibility in 3DEN
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/set3DENModelsVisible
+//WikiPageEnd//
+SyntaxStart:
+set3DENModelsVisible Array
+//SyntaxEnd//
+RawSyntaxStart:
+set3DENModelsVisible [map, scene]
+//RawSyntaxEnd//
+ExampleStart:
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
 //ReturnValueEnd//
 
 %NextListItem%
@@ -49678,7 +51168,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setAttributes
 //WikiPageEnd//
 SyntaxStart:
-String setAttributes Array
+String/StructuredText setAttributes Array
 //SyntaxEnd//
 RawSyntaxStart:
 text setAttributes [name1, value1, name2, value2,...]
@@ -49738,7 +51228,7 @@ Set group/unit behaviour mode. Behaviour is one of:
 "AWARE"
 "COMBAT"
 "STEALTH".
-See this page for details of the effect of this command on AI units.
+See this page for details of the effect of this command on AI units. For Arma 3 see Arma_3_AI_Behavior
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setBehaviour
@@ -49750,7 +51240,7 @@ RawSyntaxStart:
 groupName setBehaviour behaviour
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_group1 setBehaviour SAFE$/Code$
+$Code$_group1 setBehaviour "SAFE";$/Code$
 //ExampleEnd//
 LocalityStart:
 local / global
@@ -50799,7 +52289,8 @@ KeywordStart:
 setDropInterval
 //KeywordEnd//
 DescriptionStart:
-Set interval of emitting particles from particle source. In Arma 3 hardcoded limit of how many particles can exist at the same time is 18000.
+Set interval of emitting particles from particle source. In Arma 3 hardcoded limit of how many particles can exist at the same time is 18000. Correspondence between CfgCloudlets class param name and command param:
+$Code$particleSource setDropInterval interval;$/Code$
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setDropInterval
@@ -50811,7 +52302,7 @@ RawSyntaxStart:
 particleSource setDropInterval interval
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_source setDropInterval 0.05$/Code$
+$Code$_source setDropInterval 0.05;$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -50940,7 +52431,10 @@ RawSyntaxStart:
 person setFace face
 //RawSyntaxEnd//
 ExampleStart:
-$Code$soldier1 setFace WhiteHead_02$/Code$
+$Code$soldier1 setFace "WhiteHead_02"$/Code$
+%NextExample%
+$Code$// Set persistent face for a unit in MP
+if ( isServer ) then {[_unit, "AsianHead_A3_02"] remoteExec ["setFace", 0, _unit]};$/Code$
 //ExampleEnd//
 LocalityStart:
 global / local
@@ -51067,7 +52561,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setFlagOwner
 //WikiPageEnd//
 SyntaxStart:
-Object setFlagOwner
+Object setFlagOwner Object
 //SyntaxEnd//
 RawSyntaxStart:
 flag setFlagOwner owner
@@ -51182,7 +52676,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setFog
 //WikiPageEnd//
 SyntaxStart:
-Number setFog
+Number setFog Number
 %NextSyntax%
 Number setFog Array
 //SyntaxEnd//
@@ -51624,7 +53118,17 @@ KeywordStart:
 setGroupId
 //KeywordEnd//
 DescriptionStart:
-Sets a group's identity, how it will be displayed in chat, for example. The identity setup consists of format keywords (marked with %) and param keywords taken from CfgWorlds config. Basically it is like format command but with some special group keywords. For Arma 3 possible values are:
+Sets a group's identity, how it will be displayed in chat, for example. While groups on the different sides can have identical ids, the groups on the same side cannot. When given id exists already, the group which currently has it will simply swap it with the current id of the group for which this id is intended. For example:
+$Code$group1 = createGroup west ;
+group2 = createGroup west ;
+group1 setGroupId ["Active Group"];
+group2 setGroupId ["Inactive Group"];
+systemChat groupId group1; //"Active Group";
+systemChat groupId group2; //"Inactive Group";
+group2 setGroupId ["Active Group"];
+systemChat groupId group1; //"Inactive Group";
+systemChat groupId group2; //"Active Group";$/Code$
+The identity setup could also consist of format keywords (marked with %) and param keywords taken from CfgWorlds config. Basically it is like format command but with some special group keywords. For Arma 3 possible values are:
 %GroupSquad
 "Squad1" - 1
 "Squad2" - 2
@@ -51702,6 +53206,11 @@ RawSyntaxStart:
 group setGroupId [nameFormat, nameParam1,..., nameParamN]
 //RawSyntaxEnd//
 ExampleStart:
+$Code$// Arma 3 :
+group player setGroupId ["Some name for the group"];
+hint groupId group player ; //"Some name for the group"
+player sideChat "lalala"; //Some name for the group (KK): "lalala"$/Code$
+%NextExample%
 $Code$// Arma 3 :
 group player setGroupId ["%GroupNames :=: %GroupColors","Alpha","GroupColor2"];
 hint groupId group player ; //"Alpha :=: Red"
@@ -51844,7 +53353,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setGusts
 //WikiPageEnd//
 SyntaxStart:
-Number setGusts
+Number setGusts Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setGusts value
@@ -52093,7 +53602,7 @@ RawSyntaxStart:
 person setIdentity identity
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_soldier1 setIdentity MyLittleSoldier ;$/Code$
+$Code$_soldier1 setIdentity "MyLittleSoldier";$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -52341,7 +53850,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setLeader
 //WikiPageEnd//
 SyntaxStart:
-TeamMember setLeader
+TeamMember setLeader TeamMember
 //SyntaxEnd//
 RawSyntaxStart:
 team setLeader leader
@@ -52674,7 +54183,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setLightnings
 //WikiPageEnd//
 SyntaxStart:
-Number setLightnings
+Number setLightnings Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setLightnings value
@@ -52875,7 +54384,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerBrush
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerBrush
+String setMarkerBrush String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerBrush brush
@@ -52916,7 +54425,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerBrushLocal
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerBrushLocal
+String setMarkerBrushLocal String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerBrushLocal brush
@@ -52939,41 +54448,13 @@ KeywordStart:
 setMarkerColor
 //KeywordEnd//
 DescriptionStart:
-Set marker color. Color is one of:
-"Default"
-"ColorBlack"
-"ColorGrey"
-"ColorRed"
-"ColorRedAlpha" (Arma 2 only)
-"ColorGreen"
-"ColorGreenAlpha" (Arma 2 only)
-"ColorBlue"
-"ColorYellow"
-"ColorOrange"
-"ColorWhite"
-"ColorPink"
-"ColorBrown"
-"ColorKhaki"
-"ColorWEST"
-"ColorEAST"
-"ColorGUER"
-"ColorCIV"
-"ColorUNKNOWN"
-"Color1_FD_F" (Light red)
-"Color2_FD_F" (Light khaki)
-"Color3_FD_F" (Light orange)
-"Color4_FD_F" (Light blue)
-Arma 3
-"ColorBLUFOR"
-"ColorCivilian"
-"ColorIndependent"
-"ColorOPFOR"
+Sets marker color. Marker color names and their corresponding RGBA values for Arma 3 could be found in here: CfgMarkerColors_Arma_3
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerColor
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerColor
+String setMarkerColor String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerColor color
@@ -52996,41 +54477,13 @@ KeywordStart:
 setMarkerColorLocal
 //KeywordEnd//
 DescriptionStart:
-Set marker color. Color is one of:
-"Default"
-"ColorBlack"
-"ColorGrey"
-"ColorRed"
-"ColorRedAlpha" (Arma 2 only)
-"ColorGreen"
-"ColorGreenAlpha" (Arma 2 only)
-"ColorBlue"
-"ColorYellow"
-"ColorOrange"
-"ColorWhite"
-"ColorPink"
-"ColorBrown"
-"ColorKhaki"
-"ColorWEST"
-"ColorEAST"
-"ColorGUER"
-"ColorCIV"
-"ColorUNKNOWN"
-"Color1_FD_F" (Light red)
-"Color2_FD_F" (Light khaki)
-"Color3_FD_F" (Light orange)
-"Color4_FD_F" (Light blue)
-Arma 3
-"ColorBLUFOR"
-"ColorCivilian"
-"ColorIndependent"
-"ColorOPFOR"
+Sets marker color for the given marker locally. Marker color names and their corresponding RGBA values for Arma 3 could be found in here: CfgMarkerColors_Arma_3
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerColorLocal
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerColorLocal
+String setMarkerColorLocal String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerColorLocal color
@@ -53039,7 +54492,7 @@ ExampleStart:
 $Code$"MarkerOne" setMarkerColorLocal "ColorBlack";$/Code$
 //ExampleEnd//
 LocalityStart:
-undefined / local
+global / local
 //LocalityEnd//
 NoteStart:
 //NoteEnd//
@@ -53177,13 +54630,13 @@ setMarkerShape
 //KeywordEnd//
 DescriptionStart:
 Selects the shape (type) of the marker.
-Shape can be "ICON", "RECTANGLE" or "ELLIPSE".
+Shape can be "ICON", "RECTANGLE", "ELLIPSE" or "POLYLINE".
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerShape
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerShape
+String setMarkerShape String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerShape shape
@@ -53213,7 +54666,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerShapeLocal
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerShapeLocal
+String setMarkerShapeLocal String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerShapeLocal shape
@@ -53302,7 +54755,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerText
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerText
+String setMarkerText String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerText text
@@ -53333,7 +54786,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerTextLocal
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerTextLocal
+String setMarkerTextLocal String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerTextLocal text
@@ -53362,7 +54815,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerType
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerType
+String setMarkerType String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerType type
@@ -53391,7 +54844,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setMarkerTypeLocal
 //WikiPageEnd//
 SyntaxStart:
-String setMarkerTypeLocal
+String setMarkerTypeLocal String
 //SyntaxEnd//
 RawSyntaxStart:
 markerName setMarkerTypeLocal type
@@ -54050,7 +55503,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setOvercast
 //WikiPageEnd//
 SyntaxStart:
-Number setOvercast
+Number setOvercast Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setOvercast overcast
@@ -54172,7 +55625,12 @@ KeywordStart:
 setParticleCircle
 //KeywordEnd//
 DescriptionStart:
-Update particle source to create particles on circle with given radius. Velocity is transformed and added to total velocity.
+Updates particle source, creates particles in circle with given radius. Velocity is transformed and added to total velocity. Correspondence between CfgCloudlets class param names and command array of params:
+$Code$particleSource setParticleCircle
+[
+circleRadius,
+circleVelocity
+];$/Code$
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setParticleCircle
@@ -54235,7 +55693,13 @@ setParticleFire
 //KeywordEnd//
 DescriptionStart:
 Set fire parameters to particle effect.
-Note: You need to create emitter at first. Basic parameters of particle effect must be defined too. You can use script commands setParticleClass or setParticleParams to do so. See example.
+Note: You need to create emitter at first. Basic parameters of particle effect must be defined too. You can use script commands setParticleClass or setParticleParams to do so (see example). Correspondence between CfgCloudlets class param names and command array of params:
+$Code$particleSource setParticleFire
+[
+coreIntensity,
+coreDistance,
+damageTime
+];$/Code$
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setParticleFire
@@ -54267,7 +55731,39 @@ setParticleParams
 //KeywordEnd//
 DescriptionStart:
 Set parameters to particle source. Array is in format ParticleArray.
-Since Arma 3 version 1.11.114706 you can use this command to overwrite many values set by setParticleClass, particularity those defined in ParticleArray.
+Since Arma 3 version 1.11.114706 you can use this command to overwrite many values set by setParticleClass, particularity those defined in ParticleArray. Correspondence between CfgCloudlets class param names and command array of params:
+$Code$particleSource setParticleParams
+[
+[
+particleShape,
+particleFSNtieth,
+particleFSIndex,
+particleFSFrameCount,
+particleFSLoop
+],
+animationName,
+particleType,
+timerPeriod,
+lifeTime,
+position,
+moveVelocity,
+rotationVelocity,
+weight,
+volume,
+rubbing,
+size,
+color,
+animationSpeed,
+randomDirectionPeriod,
+randomDirectionIntensity,
+onTimerScript,
+beforeDestroyScript,
+this,
+angle,
+onSurface,
+bounceOnSurface,
+emissiveColor
+];$/Code$
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setParticleParams
@@ -54296,7 +55792,20 @@ KeywordStart:
 setParticleRandom
 //KeywordEnd//
 DescriptionStart:
-Set randomization of particle source parameters.
+Sets randomization of particle source parameters. Correspondence between CfgCloudlets class param names and command array of params:
+$Code$particleSource setParticleRandom
+[
+lifeTimeVar,
+positionVar,
+moveVelocityVar,
+rotationVelocityVar,
+sizeVar,
+colorVar,
+randomDirectionPeriodVar,
+randomDirectionIntensityVar,
+angleVar,
+bounceOnSurfaceVar
+];$/Code$
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setParticleRandom
@@ -54774,7 +56283,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setRain
 //WikiPageEnd//
 SyntaxStart:
-Number setRain
+Number setRain Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setRain rain
@@ -54812,7 +56321,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setRainbow
 //WikiPageEnd//
 SyntaxStart:
-Number setRainbow
+Number setRainbow Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setRainbow value
@@ -55021,10 +56530,39 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+setSimpleTaskAlwaysVisible
+//KeywordEnd//
+DescriptionStart:
+Makes the given task allways visible or not.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/setSimpleTaskAlwaysVisible
+//WikiPageEnd//
+SyntaxStart:
+Task setSimpleTaskAlwaysVisible Boolean
+//SyntaxEnd//
+RawSyntaxStart:
+taskID setSimpleTaskAlwaysVisible state
+//RawSyntaxEnd//
+ExampleStart:
+$Code$getWarka setSimpleTaskAlwaysVisible true ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 setSimpleTaskCustomData
 //KeywordEnd//
 DescriptionStart:
-Set custom data for the task. Tooltip will be drawn in task list on the right side. Descriptin will be drawn in task description panel on the bottom.
+Set custom data for the task. Tooltip will be drawn in task list on the right side. Description will be drawn in task description panel on the bottom.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setSimpleTaskCustomData
@@ -55151,6 +56689,7 @@ RawSyntaxStart:
 task setSimpleTaskType taskType
 //RawSyntaxEnd//
 ExampleStart:
+$Code$(currentTask player) setSimpleTaskType "attack";$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -55271,16 +56810,16 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setSlingLoad
 //WikiPageEnd//
 SyntaxStart:
-Object setSlingLoad
+Object setSlingLoad Object
 //SyntaxEnd//
 RawSyntaxStart:
 vehicle setSlingLoad cargo
 //RawSyntaxEnd//
 ExampleStart:
-$Code$heli1 setSlingLoad veh1;$/Code$
+$Code$_success = heli1 setSlingLoad veh1;$/Code$
 %NextExample%
 $Code$// To unload cargo:
-heli setSlingLoad objNull ;$/Code$
+_success = heli setSlingLoad objNull ;$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -55301,9 +56840,9 @@ setSoundEffect
 //KeywordEnd//
 DescriptionStart:
 Defines the different sound effects.
-Sound / voice plays a 2D / 3D sound from CfgSounds.
-SoundEnv plays an enviromental sound from CfgEnvSounds.
-SoundDet (only for triggers) creates a dynamic sound object attached to a trigger defined in CfgSFX.
+Sound / voice plays a 2D / 3D sound from CfgSounds
+SoundEnv plays an enviromental sound from CfgEnvSounds
+SoundDet (only for triggers) creates a dynamic sound object attached to a trigger defined in CfgSFX
 Use "$NONE$" to stop the sound (1st item). Also use $NONE$ to skip the sound (1st item), when there is none to be used (Example 3).
 //DescriptionEnd//
 WikiPageStart:
@@ -55312,7 +56851,7 @@ https://community.bistudio.com/wiki/setSoundEffect
 SyntaxStart:
 Object setSoundEffect Array
 %NextSyntax%
-Array setSoundEffect
+Array setSoundEffect Array
 //SyntaxEnd//
 RawSyntaxStart:
 trigger setSoundEffect [sound, voice, soundEnv, soundDet]
@@ -55601,6 +57140,9 @@ setStatValue
 //KeywordEnd//
 DescriptionStart:
 Sets a value to a given stat.
+A list of possible StatNames can be found here: StatNames
+Its important to note that most Stats are restricted to scripts in certain paths.
+For example "ExpWarlockDown" is restricted to scripts in any subdirectory of "a3\Missions_F_Exp\Campaign\Missions\"
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setStatValue
@@ -55609,9 +57151,10 @@ SyntaxStart:
 setStatValue Array
 //SyntaxEnd//
 RawSyntaxStart:
-setStatValue [StatName, Value]
+setStatValue [name, value]
 //RawSyntaxEnd//
 ExampleStart:
+$Code$setStatValue ["ExpWarlockDown", 1]; //Unlocks the "Warlock Down" Steam achivement$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -55922,7 +57465,7 @@ https://community.bistudio.com/wiki/setTitleEffect
 SyntaxStart:
 Object setTitleEffect Array
 %NextSyntax%
-Array setTitleEffect
+Array setTitleEffect Array
 //SyntaxEnd//
 RawSyntaxStart:
 trigger setTitleEffect [type, effect, text]
@@ -56182,8 +57725,7 @@ KeywordStart:
 setUnconscious
 //KeywordEnd//
 DescriptionStart:
-Set / reset the unconscious life state of the given unit (in MP works only for a local unit).
-In Arma 3 this command is disabled since "UNCONSCIOUS" lifeState doesn't exist in Arma 3
+Since Arma 3 v1.63.136889, this command sets unit into incapacitated state and lifeState command returns "INCAPACITATED". Animation played while incapacitated depends on the injuries received.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setUnconscious
@@ -56235,6 +57777,37 @@ undefined / undefined
 NoteStart:
 (October 8, 2014)
 AFAIK not used in Arma 3 anymore (or equals to setSkill)
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+setUnitLoadout
+//KeywordEnd//
+DescriptionStart:
+Creates a loadout from given inventory structure and applies it to a unit.
+This command is not final and might be changed in a near future.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/setUnitLoadout
+//WikiPageEnd//
+SyntaxStart:
+Object setUnitLoadout Array
+//SyntaxEnd//
+RawSyntaxStart:
+unit setUnitLoadout [loadout, rearm]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_loadout = getUnitLoadout player_1 ;
+player_2 setUnitLoadout _loadout;//Copies loadout from player_1 and applies it to player_2$/Code$
+//ExampleEnd//
+LocalityStart:
+global / global
+//LocalityEnd//
+NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -56408,6 +57981,45 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+setUnitTrait
+//KeywordEnd//
+DescriptionStart:
+Enables or disables a trait or alters a trait of the given unit. Custom trait can only be a bool.
+Default traits are:
+audibleCoef (scalar)
+camouflageCoef (scalar)
+engineer (bool)
+explosiveSpecialist (bool)
+loadCoef (scalar)
+medic (bool)
+UAVHacker (bool)
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/setUnitTrait
+//WikiPageEnd//
+SyntaxStart:
+unit setUnitTrait Array
+//SyntaxEnd//
+RawSyntaxStart:
+unit setUnitTrait [skill_name, value, isCustom]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$player setUnitTrait ["Medic", true ];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+(April 27, 2016)
+The higher the value for the loadCoef the less stamina a unit has. Negative values will dramatically increase the stamina actually to a point where it extends the stamina bar.
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 setUnloadInCombat
 //KeywordEnd//
 DescriptionStart:
@@ -56440,7 +58052,8 @@ KeywordStart:
 setUserActionText
 //KeywordEnd//
 DescriptionStart:
-Changes user added action menu item text.
+Changes user added action (see addAction ) menu item text.
+Since Arma 3 v1.61.136587 it is possible to set 2 more optional texts, one for background and one for foreground when action is displayed on the screen ( showWindow = true )
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/setUserActionText
@@ -56449,11 +58062,19 @@ SyntaxStart:
 Object setUserActionText Array
 //SyntaxEnd//
 RawSyntaxStart:
-unit setUserActionText [index, text]
+object setUserActionText [actionIndex, textMenu, textWindowBackground, textWindowForeground]
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_id = player addAction ["Hello", ""];
 player setUserActionText [_id, "Good Bye"];$/Code$
+%NextExample%
+$Code$_id = billboard addAction ["Some Action", {}];
+billboard setUserActionText [
+_id,
+"Some Action",
+t color='#ff0000' Background----------------- /t br/ Multiline br/ Multiline br/ Multiline br/...,
+t color='#00ff00' -----------------Foreground /t
+];$/Code$
 //ExampleEnd//
 LocalityStart:
 global / local
@@ -56744,7 +58365,7 @@ KeywordStart:
 setVectorUp
 //KeywordEnd//
 DescriptionStart:
-Set object's up vector. Direction vector will remain unchanged. Default object's vectorUp is [0,0,1].
+Set object's up vector. Direction of the object remain unchanged. Default object's vectorUp is [0,0,1].
 In Multiplayer, setVectorUp must be executed on the machine where the object it applied to is local.
 //DescriptionEnd//
 WikiPageStart:
@@ -56767,10 +58388,10 @@ LocalityStart:
 local / global
 //LocalityEnd//
 NoteStart:
+setVectorUp can only influence an object's bank. It can not influence pitch. Example:
 player setVectorUp [0,1,0]
 If the player is facing 0 degrees (north), then this will do NOTHING.
 If the player is facing 90 degrees (east), then this will make him bank 90 degrees to his left.
--- General Barron 21:07, 3 March 2009 (CET)
 %NextNote%
 (March 22, 2007)
 An in-depth discussion on the concept of vectors is available here.
@@ -56897,6 +58518,48 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+setVehicleCargo
+//KeywordEnd//
+DescriptionStart:
+Load cargo vehicle inside vehicle if possible, returns bool based on whether the vehicle was able to be loaded. Can also be used to unload a specific loaded vehicle or all loaded vehicles.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/setVehicleCargo
+//WikiPageEnd//
+SyntaxStart:
+Object setVehicleCargo Object
+//SyntaxEnd//
+RawSyntaxStart:
+vehicle setVehicleCargo cargo
+//RawSyntaxEnd//
+ExampleStart:
+$Code$// Blackfish with no vehicle cargo loaded
+_success = blackfish setVehicleCargo offroad; //true$/Code$
+%NextExample%
+$Code$// Blackfish with full cargo already loaded
+_success = blackfish setVehicleCargo offroad; //false$/Code$
+%NextExample%
+$Code$// Unload specific loaded vehicle
+_success = objNull setVehicleCargo offroad;$/Code$
+%NextExample%
+$Code$// Unload all vehicles
+_success = blackfish setVehicleCargo objNull;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+(July 4, 2016)
+From biforums :
+"objnull setVehicleCargo cargo vehicle - will unload specific loaded vehicle" and "transporting vehicle setVehicleCargo objnul - unload all vehicles"
+//NoteEnd//
+ReturnValueStart:
+Boolean - whether the vehicle was able to be loaded
 //ReturnValueEnd//
 
 %NextListItem%
@@ -57305,7 +58968,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setWaves
 //WikiPageEnd//
 SyntaxStart:
-Number setWaves
+Number setWaves Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setWaves value
@@ -57466,6 +59129,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+setWaypointForceBehaviour
+//KeywordEnd//
+DescriptionStart:
+Forces the behavior of waypoint, disables AUTOCOMBAT.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/setWaypointForceBehaviour
+//WikiPageEnd//
+SyntaxStart:
+Waypoint setWaypointForceBehaviour Boolean
+//SyntaxEnd//
+RawSyntaxStart:
+waypoint setWaypointForceBehaviour state
+//RawSyntaxEnd//
+ExampleStart:
+$Code$[grp, 2] setWaypointForceBehaviour true;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 setWaypointFormation
 //KeywordEnd//
 DescriptionStart:
@@ -57610,6 +59302,7 @@ RawSyntaxStart:
 waypoint setWaypointName name
 //RawSyntaxEnd//
 ExampleStart:
+$Code$[_grp,2] setWaypointName "myName";$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -57632,7 +59325,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setWaypointPosition
 //WikiPageEnd//
 SyntaxStart:
-Array setWaypointPosition
+Array setWaypointPosition Array
 //SyntaxEnd//
 RawSyntaxStart:
 waypoint setWaypointPosition [center, radius]
@@ -57729,7 +59422,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setWaypointStatements
 //WikiPageEnd//
 SyntaxStart:
-Array setWaypointStatements
+Array setWaypointStatements Array
 //SyntaxEnd//
 RawSyntaxStart:
 waypoint setWaypointStatements [condition, statement]
@@ -57763,7 +59456,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setWaypointTimeout
 //WikiPageEnd//
 SyntaxStart:
-Array setWaypointTimeout
+Array setWaypointTimeout Array
 //SyntaxEnd//
 RawSyntaxStart:
 waypoint setWaypointTimeout [min, mid, max]
@@ -57970,7 +59663,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setWindDir
 //WikiPageEnd//
 SyntaxStart:
-Number setWindDir
+Number setWindDir Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setWindDir value
@@ -58001,7 +59694,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setWindForce
 //WikiPageEnd//
 SyntaxStart:
-Number setWindForce
+Number setWindForce Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setWindForce wind
@@ -58030,7 +59723,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setWindStr
 //WikiPageEnd//
 SyntaxStart:
-Number setWindStr
+Number setWindStr Number
 //SyntaxEnd//
 RawSyntaxStart:
 time setWindStr value
@@ -58058,7 +59751,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/setWPPos
 //WikiPageEnd//
 SyntaxStart:
-Array setWPPos
+Array setWPPos Array
 //SyntaxEnd//
 RawSyntaxStart:
 waypoint setWPPos pos
@@ -58288,6 +59981,10 @@ HCCursorOnIconenemy
 PlayerOwnRadio
 CursorOnNeedFirstAID
 CursorOnNeedHeal
+%NextNote%
+(July 23, 2016)
+You can combine the argument strings (see the above note) together to create OR conditions.
+Hence $Code$"HasRadioIsLeader"$/Code$ is true when the unit is a leader or has a radio.
 //NoteEnd//
 ReturnValueStart:
 Nothing
@@ -58407,13 +60104,13 @@ showHUD Array
 RawSyntaxStart:
 showHUD enable
 %NextRawSyntax%
-showHUD [hud, info, radar, compass, direction, menu, group, cursors]
+showHUD [hud, info, radar, compass, direction, menu, group, cursors, squadRadar]
 //RawSyntaxEnd//
 ExampleStart:
 $Code$showHUD false ;$/Code$
 %NextExample%
 $Code$// Hide vehicle radar and compass:
-showHUD [ true, true, false, false, true, true, true, true ];$/Code$
+showHUD [ true, true, false, false, true, true, true, true, true ];$/Code$
 %NextExample%
 $Code$// Check if HUD visibility is hardcoded in mission config and showHUD command is overriden:
 _disabledShowHUD = isArray ( missionConfigFile "showHUD");$/Code$
@@ -58686,7 +60383,7 @@ undefined / undefined
 NoteStart:
 //NoteEnd//
 ReturnValueStart:
-Array in format [hud, info, radar, compass, direction, menu, group, cursors]
+Array in format [hud, info, radar, compass, direction, menu, group, cursors, squadRadar]
 //ReturnValueEnd//
 
 %NextListItem%
@@ -58774,6 +60471,36 @@ NoteStart:
 //NoteEnd//
 ReturnValueStart:
 Boolean
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+shownScoretable
+//KeywordEnd//
+DescriptionStart:
+Returns the state of the score table set with showScoretable command.
+Since Arma 3 v1.63.137869, the previous functionality of this command (score table visibility check) is moved to visibleScoretable command. Please update your scripts and sorry for any inconvinience.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/shownScoretable
+//WikiPageEnd//
+SyntaxStart:
+shownScoretable
+//SyntaxEnd//
+RawSyntaxStart:
+shownScoretable
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_state = shownScoretable ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Number - 0: Force hidden, 1: Force shown, -1: Default
 //ReturnValueEnd//
 
 %NextListItem%
@@ -58925,10 +60652,39 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+showScoretable
+//KeywordEnd//
+DescriptionStart:
+Forces the score table to be shown, hidden or reset to default functionality. Forcing score table will make it show even in SP. When score table is forced opened it cannot be closed manually, when it is force closed, it cannot be opened manually.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/showScoretable
+//WikiPageEnd//
+SyntaxStart:
+showScoretable Number
+//SyntaxEnd//
+RawSyntaxStart:
+showScoretable force
+//RawSyntaxEnd//
+ExampleStart:
+$Code$showScoretable 1;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 showSubtitles
 //KeywordEnd//
 DescriptionStart:
-Enable / disable showing of subtitles. Return the previous state.
+Enables / disables showing of subtitles in a chat. Only scripted/engine chatter is affected, player manual chat is unaffected. Returns the previous state.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/showSubtitles
@@ -59075,6 +60831,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+showWaypoints
+//KeywordEnd//
+DescriptionStart:
+Shows/Hides task HUD markers and waypoints that will fade out in time. Dependable on difficulty settings.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/showWaypoints
+//WikiPageEnd//
+SyntaxStart:
+showWaypoints Boolean
+//SyntaxEnd//
+RawSyntaxStart:
+showWaypoints enabled
+//RawSyntaxEnd//
+ExampleStart:
+$Code$showWaypoints true ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 side
 //KeywordEnd//
 DescriptionStart:
@@ -59171,8 +60956,7 @@ KeywordStart:
 sideChat
 //KeywordEnd//
 DescriptionStart:
-Types text to the side radio channel. Must have assigned "itemRadio" to see or transmit the messages.
-Note: This function only types text to the list, it does not broadcast the message. If you want the message to show on all computers, you have to execute it on all of them.
+Types text to the side radio channel. Must have assigned "ItemRadio" to see or transmit the messages. The text will be visible only on the PC where command was executed. If you need the message to show on all computers, you have to execute it globally (see remoteExec )
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/sideChat
@@ -59185,12 +60969,12 @@ Array sideChat String
 RawSyntaxStart:
 unitName sideChat chatText
 %NextRawSyntax%
-[side, string] sideChat chatText
+[side, identity] sideChat chatText
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_soldierOne sideChat "Show this text";$/Code$
 %NextExample%
-$Code$PAPABEAR = [West,"HQ"]; PAPABEAR sideChat "Hi there";$/Code$
+$Code$[ west, "HQ"] sideChat "Hi there";$/Code$
 %NextExample%
 $Code$driver vehicle player sideChat "sideChat";
 driver vehicle player globalChat "globalChat";
@@ -59338,19 +61122,28 @@ KeywordStart:
 sideRadio
 //KeywordEnd//
 DescriptionStart:
-Send the message to the side radio channel. Message is defined in Description.ext file.
+Sends the audio message to the side radio channel. Must have assigned "ItemRadio" to send or receive the transmission. The message is defined in CfgRadio in the description.ext file or config radio protocol. The transmission will play only on the PC where command was executed. If you need the transmission to play on all computers, you have to execute it globally (see remoteExec ).
+Note: When transmitting unit gets killed, transmission will be interrupted, however when receiving unit gets killed, the transmission continues to play.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/sideRadio
 //WikiPageEnd//
 SyntaxStart:
 Object sideRadio String
+%NextSyntax%
+Array sideRadio String
 //SyntaxEnd//
 RawSyntaxStart:
-unitName sideRadio chat
+unit sideRadio radioName
+%NextRawSyntax%
+[side, identity] sideRadio radioName
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_soldierOne sideRadio messageOne$/Code$
+$Code$_soldierOne sideRadio "messageOne";$/Code$
+%NextExample%
+$Code$player sideRadio configName selectRandom ("true" configClasses ( configFile "CfgRadio"));$/Code$
+%NextExample%
+$Code$[ west, "Base"] sideRadio configName selectRandom ("true" configClasses ( configFile "CfgRadio"));$/Code$
 //ExampleEnd//
 LocalityStart:
 global / local
@@ -60190,9 +61983,7 @@ hint str _scores; //[[200,"steve",11],[200,"dave",21],[123,"bob",15],[123,"bill"
 %NextExample%
 $Code$// Sort buildings by distance and return position of the most distant building:
 _buildings = player nearObjects ["Land_Cargo_Patrol_V1_F", 500];
-{
-_buildings set [_forEachIndex, [_x distance player, _x]];
-} forEach _buildings;
+_buildings = _buildings apply { [_x distance player, _x] };
 _buildings sort false ;
 hint format [
 "Most distant building is at %1, distance %2 m",
@@ -60407,7 +62198,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/splitString
 //WikiPageEnd//
 SyntaxStart:
-String splitString
+String splitString String
 //SyntaxEnd//
 RawSyntaxStart:
 str splitString delimiters
@@ -60785,6 +62576,35 @@ This command appears to be local only.
 //NoteEnd//
 ReturnValueStart:
 Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+stopEngineRTD
+//KeywordEnd//
+DescriptionStart:
+Instant engines stop.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/stopEngineRTD
+//WikiPageEnd//
+SyntaxStart:
+stopEngineRTD heli
+//SyntaxEnd//
+RawSyntaxStart:
+stopEngineRTD heli
+//RawSyntaxEnd//
+ExampleStart:
+$Code$stopEngineRTD myHeli$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array
 //ReturnValueEnd//
 
 %NextListItem%
@@ -61368,6 +63188,43 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+switchMove
+//KeywordEnd//
+DescriptionStart:
+When used on a person, the given move is started immediately (there is no transition). Use switchmove "" to switch back to the default movement if there is no transition back, otherwise the person may be stuck.
+List of moves in ArmA 2
+List of moves in Armed Assault
+List of moves in Operation Flashpoint: Resistance
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/switchMove
+//WikiPageEnd//
+SyntaxStart:
+Object switchMove String
+//SyntaxEnd//
+RawSyntaxStart:
+person switchmove movename
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_loon1 switchMove "FXStandDip"$/Code$
+//ExampleEnd//
+LocalityStart:
+global / local
+//LocalityEnd//
+NoteStart:
+(March 25, 2007)
+In some cases the movement won't stay. I.e. AI hostages that put their hands behind their heads (_hostage switchMove "AmovPercMstpSsurWnonDnon") won't hold their hands up, unless you first use disableAI "autoTarget" on them. They mostly put their hands down because they 'noticed' unknown objects.
+%NextNote%
+(August 03, 2008)
+This command will not cause an AnimChanged or AnimDone event. However, playMove will.
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 synchronizedObjects
 //KeywordEnd//
 DescriptionStart:
@@ -61383,20 +63240,20 @@ RawSyntaxStart:
 synchronizedObjects unit
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_objects = synchronizedObjects _logic$/Code$
+$Code$_objects = synchronizedObjects _logic;$/Code$
 //ExampleEnd//
 LocalityStart:
 local / undefined
 //LocalityEnd//
 NoteStart:
+This command only returns the LEADER of a vehicle that is synchronized. You have to use the "vehicle"
 command to select the actual vehicle.
 This command only returns the synchronized objects when used on intelligent objects such as units or
 logic objects. All other objects returns an empty array.
 In MP this command returns only values when the object is local. otherwise it returns an empty array.
 %NextNote%
 (February 26, 2015)
-When returning the synchronized objects, they are returned in order of their type:
-"Man","Logic","EmptyDetector"
+When returning the synchronized objects, they are returned in the order that they were placed on the map
 //NoteEnd//
 ReturnValueStart:
 Array
@@ -61561,7 +63418,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/synchronizeWaypoint
 //WikiPageEnd//
 SyntaxStart:
-Array synchronizeWaypoint
+Array synchronizeWaypoint Array
 //SyntaxEnd//
 RawSyntaxStart:
 waypoint synchronizeWaypoint [waypoint1, waypoint2,...]
@@ -61586,7 +63443,7 @@ KeywordStart:
 systemChat
 //KeywordEnd//
 DescriptionStart:
-Types text to the system radio channel. This function only types text to the list, it does not broadcast the message. If you want the message to show on all computers, you have to execute it on all of them.
+Types text to the system radio channel. The text will be visible only on the PC where command was executed. If you need the message to show on all computers, you have to execute it globally (see remoteExec )
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/systemChat
@@ -61698,7 +63555,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/targetKnowledge
 //WikiPageEnd//
 SyntaxStart:
-Object targetKnowledge
+Object targetKnowledge Object
 //SyntaxEnd//
 RawSyntaxStart:
 unit targetKnowledge target
@@ -61729,7 +63586,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/targetsAggregate
 //WikiPageEnd//
 SyntaxStart:
-Array targetsAggregate
+Array targetsAggregate Array
 //SyntaxEnd//
 RawSyntaxStart:
 [speaker, side, unit, place, time] targetsAggregate candidates
@@ -61797,6 +63654,7 @@ RawSyntaxStart:
 taskAlwaysVisible task
 //RawSyntaxEnd//
 ExampleStart:
+$Code$_isAlwaysVisible = taskAlwaysVisible (currentTask player);$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -61994,6 +63852,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+taskMarkerOffset
+//KeywordEnd//
+DescriptionStart:
+Returns model space position for the task marker
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/taskMarkerOffset
+//WikiPageEnd//
+SyntaxStart:
+taskMarkerOffset Object
+//SyntaxEnd//
+RawSyntaxStart:
+taskMarkerOffset unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_offset = taskMarkerOffset player ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - x, y, z
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 taskNull
 //KeywordEnd//
 DescriptionStart:
@@ -62136,6 +64023,7 @@ RawSyntaxStart:
 taskType task
 //RawSyntaxEnd//
 ExampleStart:
+$Code$_type = taskType (currentTask player);$/Code$
 //ExampleEnd//
 LocalityStart:
 undefined / undefined
@@ -64397,6 +66285,192 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+tvSetPictureColorDisabled
+//KeywordEnd//
+DescriptionStart:
+Sets the color of left picture of a tree item defined by path when item is disabled
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/tvSetPictureColorDisabled
+//WikiPageEnd//
+SyntaxStart:
+Control tvSetPictureColorDisabled Array
+//SyntaxEnd//
+RawSyntaxStart:
+control tvSetPictureColorDisabled [path, color]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_control tvSetPictureColorDisabled [[0], [1,0,1,1]]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+tvSetPictureColorSelected
+//KeywordEnd//
+DescriptionStart:
+Sets the color of the left picture of a tree item defined by path when item is selected
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/tvSetPictureColorSelected
+//WikiPageEnd//
+SyntaxStart:
+Control tvSetPictureColorSelected Array
+//SyntaxEnd//
+RawSyntaxStart:
+control tvSetPictureColorSelected [path, color]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_control tvSetPictureColorSelected [[0], [1,0,1,1]]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+tvSetPictureRight
+//KeywordEnd//
+DescriptionStart:
+Sets right picture on the tree view item defined by path
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/tvSetPictureRight
+//WikiPageEnd//
+SyntaxStart:
+tvSetPictureRight Array
+%NextSyntax%
+Control tvSetPictureRight Array
+//SyntaxEnd//
+RawSyntaxStart:
+tvSetPictureRight [idc, path, name]
+%NextRawSyntax%
+control tvSetPictureRight [path, name]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$tvSetPictureRight [101, [0], "picture"];$/Code$
+%NextExample%
+$Code$_ctrl tvSetPictureRight [[0], "picture"];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+tvSetPictureRightColor
+//KeywordEnd//
+DescriptionStart:
+Sets color of the right picture on the tree view item defined by path
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/tvSetPictureRightColor
+//WikiPageEnd//
+SyntaxStart:
+tvSetPictureRightColor Array
+%NextSyntax%
+Control tvSetPictureRightColor Array
+//SyntaxEnd//
+RawSyntaxStart:
+tvSetPictureRightColor [idc, path, color]
+%NextRawSyntax%
+control tvSetPictureRightColor [path, color]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$tvSetPictureRightColor [101, [0], [1,0,1,1]];$/Code$
+%NextExample%
+$Code$_ctrl tvSetPictureRightColor [[0], [1,0,1,1]];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+tvSetPictureRightColorDisabled
+//KeywordEnd//
+DescriptionStart:
+Sets the color of the right picture of a tree item defined by path when item is disabled
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/tvSetPictureRightColorDisabled
+//WikiPageEnd//
+SyntaxStart:
+Control tvSetPictureRightColorDisabled Array
+//SyntaxEnd//
+RawSyntaxStart:
+control tvSetPictureRightColorDisabled [path, color]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_control tvSetPictureRightColorDisabled [[0], [1,0,1,1]]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+tvSetPictureRightColorSelected
+//KeywordEnd//
+DescriptionStart:
+Sets the color of the right picture of a tree item defined by path when item is selected
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/tvSetPictureRightColorSelected
+//WikiPageEnd//
+SyntaxStart:
+Control tvSetPictureRightColorSelected Array
+//SyntaxEnd//
+RawSyntaxStart:
+control tvSetPictureRightColorSelected [path, color]
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_control tvSetPictureRightColorSelected [[0], [1,0,1,1]]$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 tvSetText
 //KeywordEnd//
 DescriptionStart:
@@ -64435,7 +66509,7 @@ KeywordStart:
 tvSetTooltip
 //KeywordEnd//
 DescriptionStart:
-Sets the tooltip associated with the specified tree view path.
+Sets the tooltip text associated with the specified tree view path.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/tvSetTooltip
@@ -64456,7 +66530,7 @@ $Code$tvSetTooltip [101, [0,2], "This is a tooltip"];$/Code$
 $Code$_tree tvSetTooltip [[0,2], "This is a tooltip"];$/Code$
 //ExampleEnd//
 LocalityStart:
-local / local
+undefined / undefined
 //LocalityEnd//
 NoteStart:
 //NoteEnd//
@@ -64702,6 +66776,41 @@ $/Code$
 //NoteEnd//
 ReturnValueStart:
 String
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+tvTooltip
+//KeywordEnd//
+DescriptionStart:
+Gets the tooltip text associated with the specified tree view path.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/tvTooltip
+//WikiPageEnd//
+SyntaxStart:
+tvTooltip Array
+%NextSyntax%
+Control tvTooltip Array
+//SyntaxEnd//
+RawSyntaxStart:
+tvTooltip [idc, path]
+%NextRawSyntax%
+ctrl tvTooltip path
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_text = tvTooltip [101, [0,2]];$/Code$
+%NextExample%
+$Code$_text = _treeCtrl tvTooltip [0,2];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+String - Tooltip text
 //ReturnValueEnd//
 
 %NextListItem%
@@ -65335,6 +67444,64 @@ Array - addon names
 %NextListItem%
 
 KeywordStart:
+unitAimPosition
+//KeywordEnd//
+DescriptionStart:
+Returns the position on the unit other units can aim at. Same as aimPos only returns position in PositionAGL format and has render scope alternative unitAimPositionVisual.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/unitAimPosition
+//WikiPageEnd//
+SyntaxStart:
+unitAimPosition Object
+//SyntaxEnd//
+RawSyntaxStart:
+unitAimPosition unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$unitAimPosition player ;$/Code$
+//ExampleEnd//
+LocalityStart:
+global / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - position in format PositionAGL
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+unitAimPositionVisual
+//KeywordEnd//
+DescriptionStart:
+Returns the position on the unit other units can aim at in render scope. See also aimPos, unitAimPosition.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/unitAimPositionVisual
+//WikiPageEnd//
+SyntaxStart:
+unitAimPositionVisual Object
+//SyntaxEnd//
+RawSyntaxStart:
+unitAimPositionVisual unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$unitAimPositionVisual player ;$/Code$
+//ExampleEnd//
+LocalityStart:
+global / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array - position in format PositionAGL
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 unitBackpack
 //KeywordEnd//
 DescriptionStart:
@@ -65365,6 +67532,35 @@ In ArmA3 ver 1.16, we can use either backpackContainer or unitBackpack at presen
 //NoteEnd//
 ReturnValueStart:
 Object
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
+unitIsUAV
+//KeywordEnd//
+DescriptionStart:
+Returns true if the unit type is UAV - coresponding to transport param "isUAV"
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/unitIsUAV
+//WikiPageEnd//
+SyntaxStart:
+unitIsUAV Object
+//SyntaxEnd//
+RawSyntaxStart:
+unitIsUAV unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_isUAV = unitIsUAV veh;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Bool - true when UAV
 //ReturnValueEnd//
 
 %NextListItem%
@@ -65732,6 +67928,35 @@ Nothing
 %NextListItem%
 
 KeywordStart:
+useAISteeringComponent
+//KeywordEnd//
+DescriptionStart:
+Enable the new AI driving, used to test the old and new AI driving.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/useAISteeringComponent
+//WikiPageEnd//
+SyntaxStart:
+useAISteeringComponent Boolean
+//SyntaxEnd//
+RawSyntaxStart:
+useAISteeringComponent state
+//RawSyntaxEnd//
+ExampleStart:
+$Code$useAISteeringComponent true$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / global
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Nothing
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 useAudioTimeForMoves
 //KeywordEnd//
 DescriptionStart:
@@ -65770,7 +67995,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/vectorAdd
 //WikiPageEnd//
 SyntaxStart:
-Array vectorAdd
+Array vectorAdd Array
 //SyntaxEnd//
 RawSyntaxStart:
 vector1 vectorAdd vector2
@@ -65808,7 +68033,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/vectorCos
 //WikiPageEnd//
 SyntaxStart:
-Array vectorCos
+Array vectorCos Array
 //SyntaxEnd//
 RawSyntaxStart:
 vector1 vectorCos vector2
@@ -65845,7 +68070,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/vectorCrossProduct
 //WikiPageEnd//
 SyntaxStart:
-Array vectorCrossProduct
+Array vectorCrossProduct Array
 //SyntaxEnd//
 RawSyntaxStart:
 vector1 vectorCrossProduct vector2
@@ -65885,7 +68110,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/vectorDiff
 //WikiPageEnd//
 SyntaxStart:
-Array vectorDiff
+Array vectorDiff Array
 //SyntaxEnd//
 RawSyntaxStart:
 vector1 vectorDiff vector2
@@ -65987,7 +68212,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/vectorDistance
 //WikiPageEnd//
 SyntaxStart:
-Array vectorDistance
+Array vectorDistance Array
 //SyntaxEnd//
 RawSyntaxStart:
 vector1 vectorDistance vector2
@@ -66024,7 +68249,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/vectorDistanceSqr
 //WikiPageEnd//
 SyntaxStart:
-Array vectorDistanceSqr
+Array vectorDistanceSqr Array
 //SyntaxEnd//
 RawSyntaxStart:
 vector1 vectorDistanceSqr vector2
@@ -66059,7 +68284,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/vectorDotProduct
 //WikiPageEnd//
 SyntaxStart:
-Array vectorDotProduct
+Array vectorDotProduct Array
 //SyntaxEnd//
 RawSyntaxStart:
 vector1 vectorDotProduct vector2
@@ -66095,7 +68320,7 @@ WikiPageStart:
 https://community.bistudio.com/wiki/vectorFromTo
 //WikiPageEnd//
 SyntaxStart:
-Array vectorFromTo
+Array vectorFromTo Array
 //SyntaxEnd//
 RawSyntaxStart:
 vector1 vectorFromTo vector2
@@ -66292,7 +68517,7 @@ RawSyntaxStart:
 vectorUp objectName
 //RawSyntaxEnd//
 ExampleStart:
-$Code$objVector = vectorUp myObject;;$/Code$
+$Code$objVector = vectorUp myObject;$/Code$
 //ExampleEnd//
 LocalityStart:
 global / undefined
@@ -66370,13 +68595,42 @@ Object
 %NextListItem%
 
 KeywordStart:
+vehicleCargoEnabled
+//KeywordEnd//
+DescriptionStart:
+Check if the vehicle has enabled transporting other vehicles or not.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/vehicleCargoEnabled
+//WikiPageEnd//
+SyntaxStart:
+vehicleCargoEnabled Object
+//SyntaxEnd//
+RawSyntaxStart:
+vehicleCargoEnabled vehicle
+//RawSyntaxEnd//
+ExampleStart:
+$Code$// Blackfish (Vehicle Transport) with given variable name blackfish
+_canTransportVehicles = vehicleCargoEnabled blackfish; //returns true$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Boolean - returns true if the vehicle has enabled transporting other vehicles, and false if the vehicle has not enabled transporting other vehicles
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 vehicleChat
 //KeywordEnd//
 DescriptionStart:
-Type text to vehicle radio channel.
-This function only types text to the list, it does not broadcast the message. If you want the message to show on all computers, you have to execute it on them.
-Object parameter must be a vehicle, not a player.
-If you are in a crew seat (i.e. driver, gunner or commander), then it will include that role in the chat name output (Eg: Driver (you_name): "Message").
+Types text to the vehicle radio channel. The text will be visible only on the PC where command was executed. If you need the message to show on all computers, you have to execute it globally (see remoteExec )
+Note: Object parameter must be a vehicle, not a player.
+Note: If you are in a crew seat (i.e. driver, gunner or commander), then it will include that role in the chat name output (Eg: Driver (you_name): "Message").
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/vehicleChat
@@ -66385,7 +68639,7 @@ SyntaxStart:
 Object vehicleChat String
 //SyntaxEnd//
 RawSyntaxStart:
-vehicleName vehicleChat text
+vehicleName vehicleChat chatText
 //RawSyntaxEnd//
 ExampleStart:
 $Code$vehicle player vehicleChat "Show this text";$/Code$
@@ -66413,7 +68667,8 @@ KeywordStart:
 vehicleRadio
 //KeywordEnd//
 DescriptionStart:
-Send message to vehicle radio channel. Message is defined in description.ext.
+Sends the audio message to the vehicle radio channel. The message is defined in CfgRadio in the description.ext file or config radio protocol. The transmission will play only on the PC where command was executed. If you need the transmission to play on all computers, you have to execute it globally (see remoteExec ).
+Note: When transmitting unit gets killed, transmission will be interrupted, however when receiving unit gets killed, the transmission continues to play.
 //DescriptionEnd//
 WikiPageStart:
 https://community.bistudio.com/wiki/vehicleRadio
@@ -66422,10 +68677,12 @@ SyntaxStart:
 Object vehicleRadio String
 //SyntaxEnd//
 RawSyntaxStart:
-vehicleName vehicleRadio name
+unit vehicleRadio radioName
 //RawSyntaxEnd//
 ExampleStart:
-$Code$_vehicleOne vehicleRadio messageOne$/Code$
+$Code$_soldierOne vehicleRadio "messageOne";$/Code$
+%NextExample%
+$Code$player vehicleRadio configName selectRandom ("true" configClasses ( configFile "CfgRadio"));$/Code$
 //ExampleEnd//
 LocalityStart:
 global / local
@@ -67343,6 +69600,35 @@ String
 %NextListItem%
 
 KeywordStart:
+waypointForceBehaviour
+//KeywordEnd//
+DescriptionStart:
+Returns true if the waypoint behavior is forced.
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/waypointForceBehaviour
+//WikiPageEnd//
+SyntaxStart:
+waypointForceBehaviour waypoint;
+//SyntaxEnd//
+RawSyntaxStart:
+waypointForceBehaviour waypoint;
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_isForced = waypointForceBehaviour [groupOne, 1];$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Boolean - is forced
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 waypointFormation
 //KeywordEnd//
 DescriptionStart:
@@ -67986,6 +70272,35 @@ Array - format Vector3D
 %NextListItem%
 
 KeywordStart:
+weaponInertia
+//KeywordEnd//
+DescriptionStart:
+Returns current rate of how much the weapon view is distorted because of quick aiming
+//DescriptionEnd//
+WikiPageStart:
+https://community.bistudio.com/wiki/weaponInertia
+//WikiPageEnd//
+SyntaxStart:
+weaponInertia Object
+//SyntaxEnd//
+RawSyntaxStart:
+weaponInertia unit
+//RawSyntaxEnd//
+ExampleStart:
+$Code$_inertia = weaponInertia player ;$/Code$
+//ExampleEnd//
+LocalityStart:
+undefined / undefined
+//LocalityEnd//
+NoteStart:
+//NoteEnd//
+ReturnValueStart:
+Array
+//ReturnValueEnd//
+
+%NextListItem%
+
+KeywordStart:
 weaponLowered
 //KeywordEnd//
 DescriptionStart:
@@ -68620,6 +70935,7 @@ with
 //KeywordEnd//
 DescriptionStart:
 Executes given code inside given namespace.
+when used in scripts with allowed suspension canSuspend, unexpected namespace switch could happen (see note below)
 NOTE for the reasons unknown, namespace switching might unexpectedly occur inside some scopes ( for, if, try, call ) started in scheduled scripts ( canSuspend true) after small suspension if with was not the main scope. For example:
 $Code$[] spawn
 {
@@ -68756,7 +71072,7 @@ SyntaxStart:
 Object worldToModel Array
 //SyntaxEnd//
 RawSyntaxStart:
-object worldToModel position
+model worldToModel position
 //RawSyntaxEnd//
 ExampleStart:
 $Code$_relPos = myObject worldToModel [0,0,0];$/Code$
@@ -68771,7 +71087,7 @@ undefined / undefined
 NoteStart:
 //NoteEnd//
 ReturnValueStart:
-Array - PositionRelative
+Array - position relative to model, format PositionRelative
 //ReturnValueEnd//
 
 %NextListItem%

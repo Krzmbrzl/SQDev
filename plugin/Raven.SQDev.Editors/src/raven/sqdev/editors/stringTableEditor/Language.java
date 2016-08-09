@@ -16,17 +16,17 @@ public enum Language {
 			return "The default value";
 		}
 	},
-	ENGLISH,
 	CZECH,
+	ENGLISH,
 	FRENCH,
-	SPANISH,
+	GERMAN,
 	ITALIAN,
+	JAPANESE,
+	KOREAN,
 	POLISH,
 	PORTUGUESE,
 	RUSSIAN,
-	GERMAN,
-	KOREAN,
-	JAPANESE;
+	SPANISH;
 	
 	@Override
 	public String toString() {
