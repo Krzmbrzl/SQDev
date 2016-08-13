@@ -9,7 +9,7 @@ import raven.sqdev.util.SQDevInfobox;
  * The KeywordProvider for the SQF keywords
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQFKeywordProvider extends BasicKeywordProvider {
 	
@@ -33,6 +33,14 @@ public class SQFKeywordProvider extends BasicKeywordProvider {
 		}
 		
 		KeywordList list = new KeywordList(savedKeywords);
+		
+		if (list.getFailures().size() > 0) {
+			SQDevInfobox info = new SQDevInfobox(
+					"Failed to load " + list.getFailures().size() + " commands",
+					list.getFailures());
+			
+			info.open(false);
+		}
 		
 		setKeywordList(list);
 	}

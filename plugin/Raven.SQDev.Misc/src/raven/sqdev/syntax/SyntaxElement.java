@@ -125,9 +125,19 @@ public class SyntaxElement {
 		return this.toString().equals(comp.toString());
 	}
 	
+	/**
+	 * Parses the given input in a <code>SyntaxElement</code>
+	 * 
+	 * @param input
+	 *            The input to parse the element from
+	 * @return The parsed <code>SyntaxElement</code>
+	 * @throws BadSyntaxException
+	 *             If the input is onvalid
+	 */
 	public static SyntaxElement parseSyntaxElement(String input) throws BadSyntaxException {
 		if (input == null || (input = input.trim()).isEmpty()) {
-			throw new BadSyntaxException("The given input cannot be parsed into a syntaxElement!");
+			throw new BadSyntaxException(
+					"The given input cannot be parsed into a syntaxElement (Empty or null)!");
 		}
 		
 		char startingChar = input.charAt(0);

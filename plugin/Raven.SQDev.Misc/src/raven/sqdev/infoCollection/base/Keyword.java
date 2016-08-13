@@ -2,6 +2,7 @@ package raven.sqdev.infoCollection.base;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.interfaces.ISaveable;
 
 /**
@@ -200,7 +201,7 @@ public class Keyword implements Comparable<Keyword>, ISaveable {
 	}
 	
 	@Override
-	public boolean recreateFrom(String savedFormat) {
+	public boolean recreateFrom(String savedFormat) throws BadSyntaxException {
 		if (!isSaveFormat(savedFormat)) {
 			return false;
 		}

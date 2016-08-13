@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.misc.SQDev;
 import raven.sqdev.syntax.Syntax;
 
@@ -651,7 +652,7 @@ public class SQFCommand extends SQFElement {
 	}
 	
 	@Override
-	public boolean recreateFrom(String savedFormat) {
+	public boolean recreateFrom(String savedFormat) throws BadSyntaxException {
 		if (!super.recreateFrom(savedFormat) || !isSaveFormat(savedFormat)) {
 			return false;
 		}

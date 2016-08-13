@@ -66,14 +66,14 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 		// SQF keyword collection
 		updateButton = new Button(createContainer(), SWT.PUSH);
 		updateButton.setToolTipText(
-				"Updates the SQF keywords according to the BIKI. This may take a while");
+				"Updates the SQF commands according to the BIKI. This may take a while");
 		updateButton.setEnabled(collectionJob == null || collectionJob.getResult() != null);
 		
 		// set text according to status
 		if (!updateButton.isEnabled()) {
-			updateButton.setText("Updating keywords...");
+			updateButton.setText("Updating commands...");
 		} else {
-			updateButton.setText("Update keywords");
+			updateButton.setText("Update commands");
 		}
 		
 		updateButton.addMouseListener(new MouseAdapter() {

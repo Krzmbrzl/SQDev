@@ -11,7 +11,7 @@
             category="raven.sqdev.wizards.sqdevcategory"
             class="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
             icon="platform:plugin/raven.sqdev.util/resources/icons/SQFIcon.png"
-            id="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
+            id="raven.sqdev.wizards.sqfNewFileWizard"
             name="SQF file"
             project="false">
       </wizard>
@@ -33,7 +33,7 @@
             category="raven.sqdev.wizards.exportcategory"
             class="raven.sqdev.wizards.export.SQDevExportWizard"
             icon="platform:plugin/raven.sqdev.util/resources/icons/sqdevExportIcon.png"
-            id="raven.sqdev.wizards.export"
+            id="raven.sqdev.wizards.exportSQDevProject"
             name="Export SQDev Project">
       </wizard>
       <category
@@ -51,7 +51,7 @@
             category="raven.sqdev.wizards.importcategory"
             class="raven.sqdev.wizards.importWizard.SQDevImportWizard"
             icon="platform:plugin/raven.sqdev.util/resources/icons/sqdevImportIcon.png"
-            id="raven.sqdev.wizards.import"
+            id="raven.sqdev.wizards.importAsSQDevProject"
             name="Import as SQDevProject">
       </wizard>
    </extension>

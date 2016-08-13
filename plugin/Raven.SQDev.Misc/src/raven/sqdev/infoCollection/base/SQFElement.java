@@ -5,6 +5,7 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.exceptions.SQDevException;
 
 /**
@@ -98,7 +99,7 @@ public class SQFElement extends Keyword {
 	}
 	
 	@Override
-	public boolean recreateFrom(String savedFormat) {
+	public boolean recreateFrom(String savedFormat) throws BadSyntaxException {
 		if (!super.recreateFrom(savedFormat) || !isSaveFormat(savedFormat)) {
 			return false;
 		}

@@ -1,5 +1,6 @@
 package raven.sqdev.util;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.swt.SWT;
@@ -24,6 +25,38 @@ public class SQDevInfobox {
 	protected int style = SWT.NONE;
 	
 	protected String message;
+	
+	/**
+	 * The <code>Runnbale</code> that will open the message box and fills it
+	 * with the respective content
+	 */
+	protected final Runnable openDialog = new Runnable() {
+		
+		@Override
+		public void run() {
+			Shell eclipseShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			
+			if (eclipseShell == null) {
+				// can't report error because user is not in eclipse
+				// anymore
+				return;
+			}
+			
+			Shell active = Display.getCurrent().getActiveShell();
+			if (((style & SWT.ERROR) == SWT.ERROR || (style & SWT.ICON_ERROR) == SWT.ICON_ERROR)
+					&& !active.equals(eclipseShell)) {
+				// close every other opened window
+				active.close();
+			}
+			
+			MessageBox box = new MessageBox(eclipseShell, style);
+			
+			box.setText("SQDev Info");
+			box.setMessage(message);
+			
+			box.open();
+		}
+	};
 	
 	/**
 	 * Creates an instance of this Infobox
@@ -87,8 +120,33 @@ public class SQDevInfobox {
 	}
 	
 	/**
+	 * Creates an instance of this InfoBox. This constructor will automatically
+	 * use the style <code>SWT.ICON_ERROR</code>
+	 * 
+	 * @param message
+	 *            The message that should be displayed
+	 * @param exceptions
+	 *            A list of exceptions that should be shown to the user
+	 *            underneath the message
+	 */
+	public SQDevInfobox(String message, List<Throwable> exceptions) {
+		StringBuilder builder = new StringBuilder(message = message.trim() + "\n\n");
+		
+		builder.append("Occured Exceptions:\n");
+		
+		for (Throwable current : exceptions) {
+			builder.append("\t" + current.getMessage());
+		}
+		
+		this.message = builder.toString();
+		this.style = SWT.ICON_ERROR;
+	}
+	
+	/**
 	 * Adds the given style to the popup
-	 * @param style The style to add has to be one defined in {@linkplain SWT}
+	 * 
+	 * @param style
+	 *            The style to add has to be one defined in {@linkplain SWT}
 	 */
 	public void addStyle(int style) {
 		this.style = this.style | style;
@@ -105,33 +163,7 @@ public class SQDevInfobox {
 		
 		AtomicInteger result = new AtomicInteger();
 		
-		display.syncExec(new Runnable() {
-			
-			@Override
-			public void run() {
-				Shell activeShell = Display.getCurrent().getActiveShell();
-				
-				if (activeShell == null) {
-					// can't report error because user is not in eclipse anymore
-					return;
-				}
-				
-				MessageBox box = new MessageBox(activeShell, style);
-				
-				box.setText("SQDev Info");
-				box.setMessage(message);
-				
-				result.set(box.open());
-				
-				Shell active = Display.getCurrent().getActiveShell();
-				
-				if (style == SWT.ERROR && !active
-						.equals(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())) {
-					// close every other opened window
-					active.close();
-				}
-			}
-		});
+		display.syncExec(openDialog);
 		
 		
 		return result.get();
@@ -150,34 +182,7 @@ public class SQDevInfobox {
 		} else {
 			Display display = PlatformUI.getWorkbench().getDisplay();
 			
-			display.syncExec(new Runnable() {
-				
-				@Override
-				public void run() {
-					Shell activeShell = Display.getCurrent().getActiveShell();
-					
-					if (activeShell == null) {
-						// can't report error because user is not in eclipse
-						// anymore
-						return;
-					}
-					
-					MessageBox box = new MessageBox(activeShell, style);
-					
-					box.setText("SQDev Info");
-					box.setMessage(message);
-					
-					box.open();
-					
-					Shell active = Display.getCurrent().getActiveShell();
-					
-					if (style == SWT.ERROR && !active.equals(
-							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell())) {
-						// close every other opened window
-						active.close();
-					}
-				}
-			});
+			display.asyncExec(openDialog);
 		}
 	}
 	

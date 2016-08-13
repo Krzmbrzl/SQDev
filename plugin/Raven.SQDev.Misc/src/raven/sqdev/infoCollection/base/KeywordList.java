@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.interfaces.ISaveable;
 
 /**
@@ -39,6 +40,10 @@ public class KeywordList implements ISaveable {
 	 * letter b
 	 */
 	private List<List<Keyword>> keywords;
+	/**
+	 * A list of keywords this list has failed to recreate
+	 */
+	private List<Throwable> failures;
 	
 	
 	/**
@@ -51,6 +56,8 @@ public class KeywordList implements ISaveable {
 		for (int i = ('a' - 1); i <= 'z'; i++) {
 			keywords.add(new ArrayList<Keyword>());
 		}
+		
+		failures = new ArrayList<Throwable>();
 	}
 	
 	/**
@@ -271,10 +278,14 @@ public class KeywordList implements ISaveable {
 				}
 			}
 			
-			if (!currentKeyword.recreateFrom(currentKeywordContent)) {
-				return false;
-			} else {
-				addKeyword(currentKeyword);
+			try {
+				if (!currentKeyword.recreateFrom(currentKeywordContent)) {
+					return false;
+				} else {
+					addKeyword(currentKeyword);
+				}
+			} catch (BadSyntaxException e) {
+				failures.add(e);
 			}
 		}
 		
@@ -312,6 +323,13 @@ public class KeywordList implements ISaveable {
 		} else {
 			return keywords.get(0);
 		}
+	}
+	
+	/**
+	 * Gets the list of exceptions thrown during recreation
+	 */
+	public List<Throwable> getFailures() {
+		return failures;
 	}
 	
 }

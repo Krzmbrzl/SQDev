@@ -214,21 +214,28 @@ public class SQFCommandCollector {
 				}
 			} else {
 				SQFCommand control = processControlStructure(new SQFCommand(name), commandPageURL);
-				
-				switch (control.getKeyword()) {
-					case "then":
-					case "else":
-					case "do":
-						// make binary
-						control.addSyntax(Syntax.parseSyntax(
-								"leftConstruct " + control.getKeyword() + " rigthConstruct",
-								control.getKeyword()));
-						break;
-					
-					default:
-						// make unary
-						control.addSyntax(Syntax.parseSyntax(
-								control.getKeyword() + " rigthConstruct", control.getKeyword()));
+				try {
+					switch (control.getKeyword()) {
+						case "then":
+						case "else":
+						case "do":
+							// make binary
+							control.addSyntax(Syntax.parseSyntax(
+									"leftConstruct " + control.getKeyword() + " rigthConstruct",
+									control.getKeyword()));
+							break;
+						
+						default:
+							// make unary
+							control.addSyntax(
+									Syntax.parseSyntax(control.getKeyword() + " rigthConstruct",
+											control.getKeyword()));
+					}
+				} catch (BadSyntaxException e) {
+					throw new SQDevCollectionException(
+							"Failed at parsing syntax of control structure: \""
+									+ control.getKeyword() + "\"",
+							control, list);
 				}
 				
 				if (control != null) {
@@ -901,7 +908,13 @@ public class SQFCommandCollector {
 			
 			syntax = processSyntax(syntax, currentSyntax[SYNTAXPART_PARAMETERS], command);
 			
-			command.addSyntax(Syntax.parseSyntax(syntax, command.getKeyword()));
+			try {
+				command.addSyntax(Syntax.parseSyntax(syntax, command.getKeyword()));
+			} catch (BadSyntaxException e) {
+				throw new SQDevCollectionException(
+						"Fauiled at parsing syntax for command \"" + command.getKeyword() + "\"",
+						command, list);
+			}
 		}
 		
 		if (syntaxes.length > 0) {

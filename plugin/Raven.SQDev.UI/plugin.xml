@@ -25,5 +25,62 @@
             name="Show parse tree">
       </command>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="raven.sqdev.ui.perspectives.SQDevPrespective"
+            fixed="false"
+            id="raven.sqdev.ui.perspectives.sqdevprespective"
+            name="SQDev">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <commonWizard
+            menuGroupId="raven.sqdev.import"
+            type="import"
+            wizardId="raven.sqdev.wizards.importAsSQDevProject">
+         <enablement></enablement>
+      </commonWizard>
+      <commonWizard
+            menuGroupId="raven.sqdev.export"
+            type="export"
+            wizardId="raven.sqdev.wizards.exportSQDevProject">
+         <enablement></enablement>
+      </commonWizard>
+      <commonWizard
+            menuGroupId="raven.sqdev.newFile"
+            type="new"
+            wizardId="raven.sqdev.wizards.sqfNewFileWizard">
+         <enablement></enablement>
+      </commonWizard>
+      <commonWizard
+            menuGroupId="raven.sqdev.newFile"
+            type="new"
+            wizardId="raven.sqdev.wizards.stringtable">
+         <enablement></enablement>
+      </commonWizard>
+      <commonWizard
+            menuGroupId="raven.sqdev.newProject"
+            type="new"
+            wizardId="raven.sqdev.wizards.sqdevproject">
+         <enablement></enablement>
+      </commonWizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="raven.sqdev.ui.sqdevCategory"
+            name="SQDev">
+      </category>
+      <view
+            allowMultiple="false"
+            category="raven.sqdev.ui.sqdevCategory"
+            class="raven.sqdev.ui.views.RPTViewer"
+            id="raven.sqdev.ui.rptViewer"
+            name="RPT Viewer"
+            restorable="true">
+      </view>
+   </extension>
 
 </plugin>
