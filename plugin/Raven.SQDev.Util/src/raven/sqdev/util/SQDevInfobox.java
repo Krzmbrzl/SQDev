@@ -27,6 +27,21 @@ public class SQDevInfobox {
 	protected String message;
 	
 	/**
+	 * The result of the opening of this box (=ID of the pressed button)
+	 */
+	protected AtomicInteger result;
+	/**
+	 * Indicates whether this InfoBox has been called via syncExec -> whether it
+	 * has to return a value
+	 */
+	protected boolean isSyncExec;
+	/**
+	 * Indicates whether currently active shells should be closed when using the
+	 * SWT.ERROR or SWT.ICON_ERROR style
+	 */
+	protected boolean closeActiveShells;
+	
+	/**
 	 * The <code>Runnbale</code> that will open the message box and fills it
 	 * with the respective content
 	 */
@@ -43,8 +58,9 @@ public class SQDevInfobox {
 			}
 			
 			Shell active = Display.getCurrent().getActiveShell();
-			if (((style & SWT.ERROR) == SWT.ERROR || (style & SWT.ICON_ERROR) == SWT.ICON_ERROR)
-					&& !active.equals(eclipseShell)) {
+			if (active != null && (closeActiveShells && !active.equals(eclipseShell)
+					&& ((style & SWT.ERROR) == SWT.ERROR
+							|| (style & SWT.ICON_ERROR) == SWT.ICON_ERROR))) {
 				// close every other opened window
 				active.close();
 			}
@@ -54,7 +70,11 @@ public class SQDevInfobox {
 			box.setText("SQDev Info");
 			box.setMessage(message);
 			
-			box.open();
+			if (isSyncExec) {
+				result.set(box.open());
+			} else {
+				box.open();
+			}
 		}
 	};
 	
@@ -78,8 +98,26 @@ public class SQDevInfobox {
 	 *            {@linkplain MessageBox}'s styles
 	 */
 	public SQDevInfobox(String message, int style) {
+		this(message, style, true);
+	}
+	
+	/**
+	 * Creates an instance of this Infobox
+	 * 
+	 * @param message
+	 *            The message to display
+	 * @param style
+	 *            The style of the Infobox. Can be any of
+	 *            {@linkplain MessageBox}'s styles
+	 * @param closeActiveShells
+	 *            Indicates whether active shells (apart from the main eclipse
+	 *            shell) should be closed when this message appears with the
+	 *            style SWT.ERROR or SWT.ICON_ERROR
+	 */
+	public SQDevInfobox(String message, int style, boolean closeActiveShells) {
 		this.message = message;
 		this.style = style;
+		this.closeActiveShells = closeActiveShells;
 	}
 	
 	/**
@@ -161,8 +199,9 @@ public class SQDevInfobox {
 	public int open() {
 		Display display = PlatformUI.getWorkbench().getDisplay();
 		
-		AtomicInteger result = new AtomicInteger();
+		result = new AtomicInteger();
 		
+		isSyncExec = true;
 		display.syncExec(openDialog);
 		
 		
@@ -182,6 +221,7 @@ public class SQDevInfobox {
 		} else {
 			Display display = PlatformUI.getWorkbench().getDisplay();
 			
+			isSyncExec = false;
 			display.asyncExec(openDialog);
 		}
 	}

@@ -38,7 +38,13 @@ public class SQDevPreferenceConstants {
 	 * The name of the preference indicating whether the preference page should
 	 * ask to save unsaved preferences when clicking OK
 	 */
-	public static final String SQDEV_PREF_ALWAYS_SAVE_ON_EXIT = "raven.sqdev.AlwaysSaveOnExit";
+	public static final String SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT = "raven.sqdev.AlwaysSaveOnExit";
+	
+	/**
+	 * The name of the preference indicating whether the user should be asked
+	 * again if he selected an action that will delete a file
+	 */
+	public static final String SQDEV_PROMPT_ASK_FOR_DELETION = "raven.sqdev.askForDeletion";
 	
 	/**
 	 * The name of the preference indicating whether matching brackets should
@@ -108,4 +114,23 @@ public class SQDevPreferenceConstants {
 	 */
 	public static final String SQDEV_COLLECTION_ENDCOMMAND = "raven.sqdev.collection.endCommand";
 	
+	/**
+	 * The preference holding the path to the folder where ArmA stores it's RPTs
+	 */
+	public static final String SQDEV_VIEWS_RPTVIEWER_RPT_PATH = "raven.sqdev.rptViewer.rptPath";
+	/**
+	 * The preference indicating whether the RPTViewer should format it's
+	 * content
+	 */
+	public static final String SQDEV_VIEWS_RPTVIEWER_FORMAT = "raven.sqdev.views.rptViewer.autoFormatRPTContent";
+	/**
+	 * The preference storing the prefixes of the lines that should be processed
+	 * during formatting the RPTs
+	 */
+	public static final String SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES = "raven.sqdev.views.rptViewer.formatPrefixes";
+	/**
+	 * The preferences storing the maximum amount of blank lines that may occur
+	 * in a formatted RPT in a row
+	 */
+	public static final String SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION = "raven.sqdev.views.rptViewer.maxBlankRepetition";
 }

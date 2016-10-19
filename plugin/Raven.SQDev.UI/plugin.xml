@@ -28,9 +28,9 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="raven.sqdev.ui.perspectives.SQDevPrespective"
+            class="raven.sqdev.ui.perspectives.SQDevPerspective"
             fixed="false"
-            id="raven.sqdev.ui.perspectives.sqdevprespective"
+            id="raven.sqdev.ui.perspectives.sqdevperspective"
             name="SQDev">
       </perspective>
    </extension>
@@ -64,6 +64,18 @@
             menuGroupId="raven.sqdev.newProject"
             type="new"
             wizardId="raven.sqdev.wizards.sqdevproject">
+         <enablement></enablement>
+      </commonWizard>
+      <commonWizard
+            menuGroupId="org.eclipse.ui.Basic"
+            type="new"
+            wizardId="org.eclipse.ui.wizards.new.file">
+         <enablement></enablement>
+      </commonWizard>
+      <commonWizard
+            menuGroupId="org.eclipse.ui.Basic"
+            type="new"
+            wizardId="org.eclipse.ui.wizards.new.folder">
          <enablement></enablement>
       </commonWizard>
    </extension>

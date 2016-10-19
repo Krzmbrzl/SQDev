@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.IStartup;
 import org.osgi.framework.Version;
 
+import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.interfaces.IVersionListener;
@@ -14,6 +15,7 @@ import raven.sqdev.pluginManagement.ResourceManager;
 import raven.sqdev.pluginManagement.VersionManager;
 import raven.sqdev.util.FileUtil;
 import raven.sqdev.util.SQDevInfobox;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
  * The SQDev class that gets loaded when the workbench is initialized
@@ -24,6 +26,7 @@ import raven.sqdev.util.SQDevInfobox;
 public class SQDevStarter implements IStartup, IVersionListener {
 	
 	private boolean didCompampability;
+	private boolean isDev;
 	
 	@Override
 	public void earlyStartup() {
@@ -41,10 +44,26 @@ public class SQDevStarter implements IStartup, IVersionListener {
 			
 			info.open(false);
 		}
+		
+		if (isDev) {
+			isDev = false;
+			
+			SQDevInfobox info = new SQDevInfobox(
+					"You are running a development version of this plugin!\n"
+							+ "Be aware that there might be some broken functions and/or other bugs "
+							+ "in this software.\n\nThanks for supporting this plugin!",
+					SWT.ICON_INFORMATION);
+			
+			info.open(false);
+		}
 	}
 	
 	@Override
 	public void versionChanged(VersionChangeEvent event) {
+		if (event.getNewVersion().getQualifier().startsWith("dev")) {
+			isDev = true;
+		}
+		
 		// perform compability operation and/or notifications
 		switch (event.getPlugin()) {
 			case EDITORS:
@@ -70,17 +89,29 @@ public class SQDevStarter implements IStartup, IVersionListener {
 		if (event.isUpdate()) {
 			// inform the user about possible additions in the preferences
 			SQDevInfobox info = new SQDevInfobox(
-					"The preferences where updated.\n\nMake sure you check them "
+					"The preferences have been updated.\n\nMake sure you check them "
 							+ "out in order to make the plugin work properly",
 					SWT.ICON_INFORMATION);
 			
-			info.open();
+			info.open(false);
+		}
+		
+		if (event.getOldVersion().compareTo(new Version("0.4.1")) <= 0
+				|| event.getNewVersion().getQualifier().equals("dev2")) {
+			// changed parse delay from seconds to milliseconds -> use default
+			// value as current value is most likely invalid
+			SQDevPreferenceUtil.getPreferenceStore()
+					.setToDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY);
+			
+			SQDevPreferenceUtil.getPreferenceStore()
+					.setToDefault(SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY);
+			
+			didCompampability = true;
 		}
 	}
 	
 	private void miscVersionChanged(VersionChangeEvent event) {
-		if (event.getNewVersion().compareTo(new Version(0, 2, 0)) > 0
-				&& event.getNewVersion().compareTo(new Version(0, 6, 0)) < 0) {
+		if (event.getOldVersion().compareTo(new Version(0, 3, 0)) < 0) {
 			// update the keyword list on the hard drive as there is the new
 			// syntax attribute
 			ResourceManager manager = ResourceManager.getManager();

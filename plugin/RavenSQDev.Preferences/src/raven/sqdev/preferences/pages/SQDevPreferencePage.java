@@ -74,9 +74,9 @@ public abstract class SQDevPreferencePage extends PreferencePage
 		for (ISQDevPreferenceEditor currentEditor : getEditors()) {
 			Composite container = currentEditor.getContainer();
 			
-			container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-			
 			if (!containerList.contains(container)) {
+				container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+				
 				containerList.add(container);
 			}
 		}
@@ -156,7 +156,7 @@ public abstract class SQDevPreferencePage extends PreferencePage
 			layout.numColumns = maxComponents;
 			
 			sharedContainer.setLayout(layout);
-			sharedContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			sharedContainer.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 		}
 	}
 	

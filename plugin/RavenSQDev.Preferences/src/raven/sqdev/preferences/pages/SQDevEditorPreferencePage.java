@@ -52,9 +52,10 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		
 		IntegerSQDevPreferenceEditor parseDelayEditor = new IntegerSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, "&Parse delay:",
-				"Specifies the delay in seconds between a user input in the editor and the actual parsing of the editor's content",
+				"Specifies the delay in milliseconds between a user input in the editor and the actual parsing of the editor's content",
 				behaviour);
-		parseDelayEditor.setMinValue(1);
+		parseDelayEditor.setMinValue(100);
+		parseDelayEditor.setMaxValue(4000);
 		
 		addPreferenceEditor(parseDelayEditor);
 		

@@ -57,7 +57,7 @@ public class BasicParseTimeListener implements VerifyKeyListener {
 			runningTask.cancel(true);
 		}
 		
-		int basicDelay = SQDevPreferenceUtil.getParseDelay() * 1000;
+		int basicDelay = SQDevPreferenceUtil.getParseDelay();
 		
 		switch (event.character) {
 			case ';':

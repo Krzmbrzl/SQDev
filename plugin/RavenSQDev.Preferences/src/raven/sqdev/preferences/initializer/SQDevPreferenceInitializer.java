@@ -1,7 +1,6 @@
 package raven.sqdev.preferences.initializer;
 
 import java.io.File;
-
 import javax.swing.filechooser.FileSystemView;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
@@ -11,6 +10,7 @@ import raven.sqdev.constants.ISQDevColorConstants;
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.preferences.activator.Activator;
 import raven.sqdev.util.ColorUtils;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 /**
  * Class used to initialize default preference values.
@@ -46,7 +46,10 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT, false);
 		
 		// let the preference page always ask for saving
-		store.setDefault(SQDevPreferenceConstants.SQDEV_PREF_ALWAYS_SAVE_ON_EXIT, false);
+		store.setDefault(SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT, false);
+		
+		// ask for deleting files
+		store.setDefault(SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION, true);
 		
 		// enable matching brackets highlighting
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY, true);
@@ -74,7 +77,7 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.GLOBAL_VARIABLE));
 		
 		// set parsing interval
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, 2);
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, 1500);
 		
 		// set autoClean
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN, false);
@@ -82,6 +85,20 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		// set start and end command for keyword update
 		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND, "abs");
 		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND, "worldToScreen");
+		
+		// set path to the RPT logs
+		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_RPT_PATH, locateRPT());
+		
+		// set default formatting preference to true
+		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT, true);
+		
+		// set default prefixes for RPT formatting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES,
+				"Updating base class" + SQDevPreferenceUtil.STRING_SEPERATOR
+						+ "Attempt to override final function");
+		
+		// set default max blank lines
+		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION, 2);
 	}
 	
 	/**
@@ -92,9 +109,23 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 	 */
 	private String locateArmaMainDirectory() {
 		// navigate to the desired folder through the Steam folder
-		String path = System.getenv("%programfiles% (x86)");
+		String path;
 		
-		path += "\\Steam\\steamapps\\common\\Arma 3";
+		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+			// Windows
+			if (System.getenv("ProgramFiles(x86)") != null) {
+				// 64 bit
+				path = "C:/Program Files (x86)".replace("/", File.separator);
+			} else {
+				// 32 bit
+				path = "C:/Program Files".replace("/", File.separator);
+			}
+		} else {
+			// linux
+			path = System.getProperty("user.home") + "/.local/share/";
+		}
+		
+		path += "\\Steam\\SteamApps\\common\\Arma 3".replace("\\", File.separator);
 		
 		if (new File(path).exists()) {
 			return path;
@@ -110,9 +141,36 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 	 *         couldn't be found
 	 */
 	private String locateArmaDocumentsDirectory() {
-		String path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+		String path;
 		
-		path += "\\Arma 3";
+		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+			// Windows
+			path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+		} else {
+			// Linux
+			path = System.getProperty("user-home")
+					+ ".local/share/bohemiainteractive/arma3/GameDocuments";
+		}
+		
+		String tempPath = path + File.separator + "Arma 3";
+		
+		if (new File(tempPath).exists()) {
+			return path;
+		} else {
+			return "";
+		}
+	}
+	
+	
+	private String locateRPT() {
+		String path = System.getProperty("user.home");
+		
+		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+			path += "/AppData/Local/Arma 3".replace("/", File.separator);
+		} else {
+			path += "/.local/share/bohemiainteractive/arma3/AppDataLocal/Arma 3/".replace("/",
+					File.separator);
+		}
 		
 		if (new File(path).exists()) {
 			return path;
@@ -120,5 +178,4 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 			return "";
 		}
 	}
-	
 }

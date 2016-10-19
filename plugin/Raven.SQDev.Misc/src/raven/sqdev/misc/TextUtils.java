@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -368,5 +369,39 @@ public class TextUtils {
 		}
 		
 		return getTextAreas(input).length == 1;
+	}
+	
+	/**
+	 * Checks whether the given String starts with any of the entries of the
+	 * given collection
+	 * 
+	 * @param str
+	 *            The STring to check
+	 * @param prefixes
+	 *            The Collection of prefixes to check
+	 * @return Whether the String starts with any prefix of the given collection
+	 */
+	public static boolean startsWithAny(String str, Collection<String> prefixes) {
+		return startsWithWhich(str, prefixes) != null;
+	}
+	
+	/**
+	 * Gets the first prefix the given String is starting with
+	 * 
+	 * @param str
+	 *            The String to check
+	 * @param prefixes
+	 *            The prefixes to check
+	 * @return The first matching prefix or <code>null</code> if none could be
+	 *         found
+	 */
+	public static String startsWithWhich(String str, Collection<String> prefixes) {
+		for (String currentPrefix : prefixes) {
+			if (str.startsWith(currentPrefix)) {
+				return currentPrefix;
+			}
+		}
+		
+		return null;
 	}
 }

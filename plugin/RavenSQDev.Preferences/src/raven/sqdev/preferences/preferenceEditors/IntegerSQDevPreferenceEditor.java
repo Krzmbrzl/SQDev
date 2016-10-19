@@ -124,7 +124,7 @@ public class IntegerSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	
 	@Override
 	public boolean needsSave() {
-		return willNeedSave(numberSelector.getText());
+		return willNeedSave(String.valueOf(numberSelector.getSelection()));
 	}
 	
 	@Override
@@ -200,6 +200,7 @@ public class IntegerSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 		
 		if (minIsSet) {
 			numberSelector.setMinimum(min);
+			numberSelector.setIncrement(min);
 		}
 		if (maxIsSet) {
 			numberSelector.setMaximum(max);
@@ -223,7 +224,7 @@ public class IntegerSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	
 	@Override
 	public boolean willNeedSave(String content) {
-		return getPreferenceStore().getInt(getPreferenceKey()) != Integer.parseInt(content);
+		return !String.valueOf(getPreferenceStore().getInt(getPreferenceKey())).equals(content);
 	}
 	
 	@Override
@@ -239,7 +240,8 @@ public class IntegerSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	}
 	
 	/**
-	 * Sets the minimum value this editor may contain
+	 * Sets the minimum value this editor may contain. The minimum value will
+	 * also be the increment of the used spinner
 	 * 
 	 * @param value
 	 *            The minimum value (inclusive)
@@ -253,6 +255,7 @@ public class IntegerSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 			}
 			
 			numberSelector.setMinimum(value);
+			numberSelector.setIncrement(value);
 		}
 		
 		minIsSet = true;
@@ -265,13 +268,13 @@ public class IntegerSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor 
 	 *            The maximum value (inclusive)
 	 */
 	public void setMaxValue(int value) {
-		if (numberSelector.isDisposed()) {
-			return;
-		}
-		
 		if (numberSelector == null) {
 			max = value;
 		} else {
+			if (numberSelector.isDisposed()) {
+				return;
+			}
+			
 			numberSelector.setMaximum(value);
 		}
 		

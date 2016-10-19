@@ -328,38 +328,4 @@ public class FileSystemWatcher {
 			watchKeys.remove(listener.getConfiguredPath());
 		}
 	}
-	
-	public static void main(String[] args) throws InterruptedException {
-		IFileSystemChangeListener listener1 = new AbstractFileSystemChangeListener(
-				"C:/Users/Robert Adam/Desktop/TestEnv") {
-			
-			@Override
-			public void changed(FileSystemChangeEvent event) {
-				System.out.println("Listener1");
-			}
-		};
-		
-		getDefault().addFileSystemListener(listener1);
-		
-		IFileSystemChangeListener listener2 = new AbstractFileSystemChangeListener(
-				"C:/Users/Robert Adam/Desktop/TestEnv") {
-			
-			@Override
-			public void changed(FileSystemChangeEvent event) {
-				System.out.println("Listener2");
-			}
-		};
-		
-		getDefault().addFileSystemListener(listener2);
-		
-		Thread.sleep(10000);
-		
-		getDefault().removeFileSystemChangeListener(listener1);
-		System.out.println("Removed first");
-		
-		Thread.sleep(10000);
-		
-		getDefault().removeFileSystemChangeListener(listener2);
-		System.out.println("Removed second");
-	}
 }

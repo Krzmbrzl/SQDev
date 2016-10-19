@@ -2,7 +2,7 @@
 <feature
       id="raven.sqdev"
       label="SQDev"
-      version="0.6.1"
+      version="0.7.0.dev3"
       provider-name="Raven">
 
    <description url="http://krzmbrzl.github.io/SQDev/">
@@ -71,12 +71,16 @@ POSSIBILITY OF SUCH DAMAGE.
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.ui.editors" version="3.8.200" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface.text" version="3.9.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.swt"/>
       <import plugin="org.eclipse.osgi"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.jface"/>
       <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.ui.navigator"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.search"/>
    </requires>
 
    <plugin
@@ -90,35 +94,42 @@ POSSIBILITY OF SUCH DAMAGE.
          id="raven.sqdev.util"
          download-size="0"
          install-size="0"
-         version="0.6.1"
+         version="0.6.1.dev3"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.wizards"
          download-size="0"
          install-size="0"
-         version="0.3.0"
+         version="0.3.0.dev2"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.preferences"
          download-size="0"
          install-size="0"
-         version="0.4.1"
+         version="0.4.1.dev2"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.misc"
          download-size="0"
          install-size="0"
-         version="0.3.1"
+         version="0.3.1.dev"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.editors"
          download-size="0"
          install-size="0"
-         version="0.5.0"
+         version="0.5.0.dev"
+         unpack="false"/>
+
+   <plugin
+         id="raven.sqdev.ui"
+         download-size="0"
+         install-size="0"
+         version="0.1.0.dev"
          unpack="false"/>
 
 </feature>

@@ -22,7 +22,7 @@ import raven.sqdev.sqdevFile.SQDevFile;
  * A class containing general util methods
  * 
  * @author Raven
- * 		
+ * 
  */
 public class Util {
 	
@@ -40,7 +40,7 @@ public class Util {
 		
 		IFile file = project
 				.getFile(ESQDevFileType.LINK.toString() + EFileType.SQDEV.getExtension());
-				
+		
 		IPath path = file.getRawLocation().makeAbsolute();
 		
 		SQDevFile linkFile = null;
@@ -56,11 +56,11 @@ public class Util {
 			// create the folder name including the map name
 			String projectFolderName = project.getName() + "."
 					+ linkFile.parseAttribute(ESQDevFileAttribute.TERRAIN).getValue();
-					
+			
 			// get the mission directory
 			String expPath = linkFile.parseAttribute(ESQDevFileAttribute.EXPORTDIRECTORY)
 					.getValue();
-					
+			
 			// create the path according to the gathered path and name
 			exportPath = new Path(expPath + "/" + projectFolderName);
 		} catch (SQDevFileIsInvalidException e) {
@@ -70,15 +70,23 @@ public class Util {
 		return exportPath;
 	}
 	
+	/**
+	 * Gets all available user profiles
+	 */
 	public static ArrayList<String> getProfiles() {
 		ArrayList<String> profiles = new ArrayList<String>();
 		
 		// add the default profile that is always present
 		profiles.add(System.getProperty("user.name"));
 		
+		File profileDir = new File(SQDevPreferenceUtil.getProfilesDocumentDirectory());
+		
+		if (!profileDir.exists() || !profileDir.isDirectory()) {
+			return profiles;
+		}
+		
 		// find the other profile names
-		for (File currentFile : new File(SQDevPreferenceUtil.getProfilesDocumentDirectory())
-				.listFiles()) {
+		for (File currentFile : profileDir.listFiles()) {
 			profiles.add(currentFile.getName());
 		}
 		
@@ -100,18 +108,16 @@ public class Util {
 			
 			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
 			
-			info.open();
+			info.open(false);
 			
 			throw new SQDevCoreException(message);
 		}
-		
-		File profilesDir = new File(SQDevPreferenceUtil.getProfilesDocumentDirectory());
 		
 		Path requestedPath = null;
 		
 		if (isSystemUserProfile(profile)) {
 			// make sure the path leads to the correct folder
-			requestedPath = new Path(profilesDir.getAbsolutePath());
+			requestedPath = new Path(SQDevPreferenceUtil.getDefaultDocumentsDirectory());
 			
 			if (requestedPath.lastSegment().contains("-")) {
 				String lastSegment = requestedPath.lastSegment();
@@ -124,6 +130,18 @@ public class Util {
 				requestedPath = (Path) requestedPath.append(lastSegment).append("missions");
 			}
 		} else {
+			File profilesDir = new File(SQDevPreferenceUtil.getProfilesDocumentDirectory());
+			
+			if (!profilesDir.exists()) {
+				String message = "Unable to locate profile \"" + profile + "\"";
+				
+				SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
+				
+				info.open(false);
+				
+				throw new SQDevCoreException(message);
+			}
+			
 			for (File current : profilesDir.listFiles()) {
 				if (current.isDirectory() && current.getName().equals(profile)) {
 					requestedPath = new Path(current.getAbsolutePath());
@@ -136,10 +154,10 @@ public class Util {
 		if (requestedPath == null || !requestedPath.toFile().exists()) {
 			String message = "The missions directory for the profile \"" + profile
 					+ "\" could not be found!";
-					
+			
 			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
 			
-			info.open();
+			info.open(false);
 			
 			throw new SQDevCoreException(message);
 		}

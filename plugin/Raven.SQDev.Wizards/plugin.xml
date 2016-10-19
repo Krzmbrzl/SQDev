@@ -13,6 +13,7 @@
             icon="platform:plugin/raven.sqdev.util/resources/icons/SQFIcon.png"
             id="raven.sqdev.wizards.sqfNewFileWizard"
             name="SQF file"
+            preferredPerspectives="raven.sqdev.ui.perspectives.sqdevperspective"
             project="false">
       </wizard>
    </extension>
@@ -21,9 +22,11 @@
       <wizard
             category="raven.sqdev.wizards.sqdevcategory"
             class="raven.sqdev.wizards.sqdevProject.SQDevProjectWizard"
+            finalPerspective="raven.sqdev.ui.perspectives.sqdevperspective"
             icon="platform:plugin/raven.sqdev.util/resources/icons/prj_obj.gif"
             id="raven.sqdev.wizards.sqdevproject"
             name="SQDev Project"
+            preferredPerspectives="raven.sqdev.ui.perspectives.sqdevperspective"
             project="true">
       </wizard>
    </extension>
@@ -60,9 +63,11 @@
       <wizard
             category="raven.sqdev.wizards.sqdevcategory"
             class="raven.sqdev.wizards.stringtable.StringTableWizard"
+            finalPerspective="raven.sqdev.ui.perspectives.sqdevperspective"
             icon="platform:plugin/raven.sqdev.util/resources/icons/StringTableIcon.png"
             id="raven.sqdev.wizards.stringtable"
             name="StringTable"
+            preferredPerspectives="raven.sqdev.ui.perspectives.sqdevperspective"
             project="false">
       </wizard>
    </extension>

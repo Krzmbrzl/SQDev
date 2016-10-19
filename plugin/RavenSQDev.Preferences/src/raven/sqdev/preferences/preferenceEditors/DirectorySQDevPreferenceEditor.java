@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.VerifyEvent;
@@ -29,11 +31,11 @@ import raven.sqdev.util.FileSystemUtil;
  * directory in order for this editor to get a valid state.
  * 
  * @author Raven
- *		
+ * 
  */
 public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEditor
 		implements VerifyListener {
-		
+	
 	/**
 	 * The TextField used to show the current selected path to the user
 	 */
@@ -242,7 +244,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 		
 		// check for the files that have to be present
 		for (String currentFile : filesToMatch) {
-			if (!new File(input + "\\" + currentFile).exists()) {
+			if (!new File(input + File.separator + currentFile).exists()) {
 				status = EStatus.ERROR;
 				status.setHint(
 						"Can't find the file \"" + currentFile + "\" in the specified directory!");
@@ -281,10 +283,18 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 			setInitialText("");
 		}
 		
-		pathText = new Text(container, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		pathText = new Text(container, SWT.SINGLE | SWT.BORDER);
 		pathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		pathText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		pathText.setToolTipText(getTooltip());
+		pathText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				// validate input every time it changes
+				evaluateInput();
+			}
+		});
 		pathText.addVerifyListener(this);
 		load(initialText);
 		
@@ -296,7 +306,7 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 			public void mouseUp(MouseEvent e) {
 				DirectoryDialog chooser = new DirectoryDialog(
 						PlatformUI.getWorkbench().getDisplay().getActiveShell());
-						
+				
 				// start chooser on the typed in path if it exists
 				if (new File(pathText.getText()).exists()) {
 					chooser.setFilterPath(pathText.getText());
@@ -310,8 +320,6 @@ public class DirectorySQDevPreferenceEditor extends AbstractSQDevPreferenceEdito
 				}
 			}
 		});
-		
-		createEmptyComponents();
 	}
 	
 	public String getButtonText() {

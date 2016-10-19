@@ -65,6 +65,7 @@ import raven.sqdev.interfaces.IUpdateListener;
 import raven.sqdev.misc.TreeUtils;
 import raven.sqdev.pluginManagement.ResourceManager;
 import raven.sqdev.util.SQDevInfobox;
+import raven.sqdev.util.SQDevPreferenceUtil;
 
 public class StringTableEditor extends MultiPageEditorPart {
 	
@@ -831,15 +832,19 @@ public class StringTableEditor extends MultiPageEditorPart {
 					
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						SQDevInfobox info = new SQDevInfobox(
-								"This will delete the language " + language
-										+ " from this stringTable (and all defined Strings for it)!\n\n"
-										+ "Do you want to proceed",
-								SWT.ICON_QUESTION | SWT.NO | SWT.YES);
-						
-						if (info.open() != SWT.YES) {
-							// abort
-							return;
+						if (SQDevPreferenceUtil.promptUserValidationForDeletion()) {
+							// Only prompt if the user set up the plugin like
+							// this
+							SQDevInfobox info = new SQDevInfobox(
+									"This will delete the language " + language
+											+ " from this stringTable (and all defined Strings for it)!\n\n"
+											+ "Do you want to proceed",
+									SWT.ICON_QUESTION | SWT.NO | SWT.YES);
+							
+							if (info.open() != SWT.YES) {
+								// abort
+								return;
+							}
 						}
 						
 						// dispose respective column
