@@ -417,6 +417,7 @@ public class BasicCodeEditor extends TextEditor {
 		// add folding manager
 		managerList.add(new BasicFoldingManager(
 				((ProjectionViewer) getSourceViewer()).getProjectionAnnotationModel()));
+		// add marker manager
 		managerList.add(new BasicMarkerManager(this));
 	}
 	

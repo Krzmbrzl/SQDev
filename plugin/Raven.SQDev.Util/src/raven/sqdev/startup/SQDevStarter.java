@@ -1,9 +1,19 @@
 package raven.sqdev.startup;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IStartup;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PerspectiveAdapter;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.WorkbenchPage;
+import org.eclipse.ui.internal.registry.IActionSetDescriptor;
 import org.osgi.framework.Version;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
@@ -23,6 +33,7 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  * @author Raven
  * 
  */
+@SuppressWarnings("restriction")
 public class SQDevStarter implements IStartup, IVersionListener {
 	
 	private boolean didCompampability;
@@ -30,6 +41,8 @@ public class SQDevStarter implements IStartup, IVersionListener {
 	
 	@Override
 	public void earlyStartup() {
+		configurePerspectiveChangeListener();
+		
 		// check the versions
 		VersionManager.getManager().addVersionListener(this);
 		VersionManager.getManager().checkVersions();
@@ -125,6 +138,66 @@ public class SQDevStarter implements IStartup, IVersionListener {
 			
 			didCompampability = true;
 		}
+	}
+	
+	/**
+	 * Sets up a perspective change listener that will handle the hiding of
+	 * certain toolbar items in the SQDev-perspective
+	 */
+	private void configurePerspectiveChangeListener() {
+		Display.getDefault().asyncExec(new Runnable() {
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see java.lang.Runnable#run()
+			 */
+			public void run() {
+				final IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow();
+				if (workbenchWindow != null) {
+					workbenchWindow.addPerspectiveListener(new PerspectiveAdapter() {
+						@Override
+						public void perspectiveActivated(IWorkbenchPage page,
+								IPerspectiveDescriptor perspectiveDescriptor) {
+							super.perspectiveActivated(page, perspectiveDescriptor);
+							
+							//TODO: relocate in init of perspective
+							
+							if (perspectiveDescriptor.getId()
+									.equals("raven.sqdev.ui.perspectives.sqdevperspective")) {
+								if (workbenchWindow.getActivePage() instanceof WorkbenchPage) {
+									WorkbenchPage workbenchPage = (WorkbenchPage) workbenchWindow
+											.getActivePage();
+									
+									List<String> preserve = new ArrayList<String>();
+									preserve.add("org.eclipse.search.searchActionSet");
+									preserve.add("org.eclipse.ui.actionSet.openFiles");
+									
+									ArrayList<IActionSetDescriptor> toRemove = new ArrayList<IActionSetDescriptor>();
+									for (IActionSetDescriptor currentDescriptor : workbenchPage
+											.getActionSets()) {
+										if (!currentDescriptor.getId().startsWith("raven")
+												&& !preserve.contains(currentDescriptor.getId())) {
+											// Add the action set descriptor to
+											// the list of the action sets to
+											// remove
+											toRemove.add(currentDescriptor);
+										}
+									}
+									
+									for (IActionSetDescriptor current : toRemove) {
+										System.out.println("Hiding \"" + current.getId() + "\"");
+										workbenchPage.hideActionSet(current.getId());
+									}
+									
+									workbenchPage.updateActionBars();
+								}
+							}
+						}
+					});
+				}
+			}
+		});
 	}
 	
 }

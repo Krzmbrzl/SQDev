@@ -156,6 +156,7 @@ public class SQF_Editor extends BasicCodeEditor
 		// manage auto export
 		IEditorInput input = this.getEditorInput();
 		
+		// if this file is part of a project
 		if (input instanceof IFileEditorInput) {
 			// get the containing project
 			IProject containingProject = ((IFileEditorInput) input).getFile().getProject();
