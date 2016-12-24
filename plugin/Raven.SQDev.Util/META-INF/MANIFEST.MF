@@ -21,4 +21,5 @@ Export-Package: raven.sqdev.actions,
  raven.sqdev.miscellaneous,
  raven.sqdev.pluginManagement,
  raven.sqdev.sqdevFile,
- raven.sqdev.util
+ raven.sqdev.util,
+ raven.sqdev.utilInterfaces

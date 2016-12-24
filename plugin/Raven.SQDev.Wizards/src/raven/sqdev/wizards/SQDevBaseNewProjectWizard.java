@@ -12,6 +12,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import raven.sqdev.util.EProjectType;
 import raven.sqdev.util.SQDevInfobox;
+import raven.sqdev.utilInterfaces.ISQDevInformationProvider;
 
 /**
  * The base class of all new project wizards used throughout the SQDev plugin
@@ -20,7 +21,7 @@ import raven.sqdev.util.SQDevInfobox;
  *
  */
 public abstract class SQDevBaseNewProjectWizard extends Wizard
-		implements INewWizard, IExecutableExtension {
+		implements INewWizard, IExecutableExtension, ISQDevInformationProvider {
 	
 	/**
 	 * The configuration element of this wizard
@@ -53,7 +54,9 @@ public abstract class SQDevBaseNewProjectWizard extends Wizard
 	@Override
 	public boolean performFinish() {
 		try {
-			getProjectType().create(ResourcesPlugin.getWorkspace().getRoot());
+			EProjectType project = getProjectType();
+			project.setInformation(getInformation());
+			project.create(ResourcesPlugin.getWorkspace().getRoot());
 			
 			BasicNewProjectResourceWizard.updatePerspective(configElement);
 			

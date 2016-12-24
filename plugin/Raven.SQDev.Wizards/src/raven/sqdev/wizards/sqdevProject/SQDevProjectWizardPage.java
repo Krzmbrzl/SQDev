@@ -23,6 +23,7 @@ import raven.sqdev.util.SQDevInfobox;
 import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.util.SQDevPreferenceUtil;
 import raven.sqdev.util.Util;
+import raven.sqdev.utilInterfaces.ISQDevInformationProvider;
 
 /**
  * The witard page for creating a SQDev project
@@ -30,7 +31,7 @@ import raven.sqdev.util.Util;
  * @author Raven
  * 
  */
-public class SQDevProjectWizardPage extends WizardPage {
+public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformationProvider {
 	
 	/**
 	 * Field for the name of the project
@@ -162,7 +163,6 @@ public class SQDevProjectWizardPage extends WizardPage {
 		profileCombo.setToolTipText(profileTooltip);
 		profileCombo.setLayoutData(gd);
 		
-		// TODO: select default profile
 		for (String currentProfile : Util.getProfiles()) {
 			profileCombo.add(currentProfile);
 		}

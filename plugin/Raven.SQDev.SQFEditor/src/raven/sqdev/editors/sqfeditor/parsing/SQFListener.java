@@ -1,5 +1,7 @@
 // Generated from SQF.g4 by ANTLR 4.5.3
-package raven.sqdev.editors.sqfeditor.parsing;
+
+	package raven.sqdev.editors.sqfeditor.parsing;
+
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -18,15 +20,25 @@ public interface SQFListener extends ParseTreeListener {
 	 */
 	void exitCode(SQFParser.CodeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SQFParser#preprocessor}.
+	 * Enter a parse tree produced by {@link SQFParser#macro}.
 	 * @param ctx the parse tree
 	 */
-	void enterPreprocessor(SQFParser.PreprocessorContext ctx);
+	void enterMacro(SQFParser.MacroContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SQFParser#preprocessor}.
+	 * Exit a parse tree produced by {@link SQFParser#macro}.
 	 * @param ctx the parse tree
 	 */
-	void exitPreprocessor(SQFParser.PreprocessorContext ctx);
+	void exitMacro(SQFParser.MacroContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SQFParser#macroArgument}.
+	 * @param ctx the parse tree
+	 */
+	void enterMacroArgument(SQFParser.MacroArgumentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SQFParser#macroArgument}.
+	 * @param ctx the parse tree
+	 */
+	void exitMacroArgument(SQFParser.MacroArgumentContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SQFParser#statement}.
 	 * @param ctx the parse tree
@@ -58,135 +70,123 @@ public interface SQFListener extends ParseTreeListener {
 	 */
 	void exitBinaryExpression(SQFParser.BinaryExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code Array}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Enter a parse tree produced by the {@code unaryOperator}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterArray(SQFParser.ArrayContext ctx);
+	void enterUnaryOperator(SQFParser.UnaryOperatorContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code Array}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Exit a parse tree produced by the {@code unaryOperator}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitArray(SQFParser.ArrayContext ctx);
+	void exitUnaryOperator(SQFParser.UnaryOperatorContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code BooleanExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Enter a parse tree produced by the {@code nularOperator}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterBooleanExpression(SQFParser.BooleanExpressionContext ctx);
+	void enterNularOperator(SQFParser.NularOperatorContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code BooleanExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Exit a parse tree produced by the {@code nularOperator}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitBooleanExpression(SQFParser.BooleanExpressionContext ctx);
+	void exitNularOperator(SQFParser.NularOperatorContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code MacroExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Enter a parse tree produced by the {@code macroExpression}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterMacroExpression(SQFParser.MacroExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code MacroExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Exit a parse tree produced by the {@code macroExpression}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitMacroExpression(SQFParser.MacroExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ElseExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Enter a parse tree produced by the {@code Number}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterElseExpression(SQFParser.ElseExpressionContext ctx);
+	void enterNumber(SQFParser.NumberContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code ElseExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Exit a parse tree produced by the {@code Number}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitElseExpression(SQFParser.ElseExpressionContext ctx);
+	void exitNumber(SQFParser.NumberContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ModifyExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Enter a parse tree produced by the {@code String}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterModifyExpression(SQFParser.ModifyExpressionContext ctx);
+	void enterString(SQFParser.StringContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code ModifyExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Exit a parse tree produced by the {@code String}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitModifyExpression(SQFParser.ModifyExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code Nular}
-	 * labeled alternative in {@link SQFParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterNular(SQFParser.NularContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code Nular}
-	 * labeled alternative in {@link SQFParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitNular(SQFParser.NularContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code Parenthese}
-	 * labeled alternative in {@link SQFParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterParenthese(SQFParser.ParentheseContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code Parenthese}
-	 * labeled alternative in {@link SQFParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitParenthese(SQFParser.ParentheseContext ctx);
+	void exitString(SQFParser.StringContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code InlineCode}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterInlineCode(SQFParser.InlineCodeContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code InlineCode}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitInlineCode(SQFParser.InlineCodeContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ArithmeticExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Enter a parse tree produced by the {@code Array}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterArithmeticExpression(SQFParser.ArithmeticExpressionContext ctx);
+	void enterArray(SQFParser.ArrayContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code ArithmeticExpression}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Exit a parse tree produced by the {@code Array}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitArithmeticExpression(SQFParser.ArithmeticExpressionContext ctx);
+	void exitArray(SQFParser.ArrayContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code Unary}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Enter a parse tree produced by the {@code Parenthesis}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterUnary(SQFParser.UnaryContext ctx);
+	void enterParenthesis(SQFParser.ParenthesisContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code Unary}
-	 * labeled alternative in {@link SQFParser#expression}.
+	 * Exit a parse tree produced by the {@code Parenthesis}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitUnary(SQFParser.UnaryContext ctx);
+	void exitParenthesis(SQFParser.ParenthesisContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SQFParser#unaryExpression}.
+	 * Enter a parse tree produced by the {@code Error}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterUnaryExpression(SQFParser.UnaryExpressionContext ctx);
+	void enterError(SQFParser.ErrorContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SQFParser#unaryExpression}.
+	 * Exit a parse tree produced by the {@code Error}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitUnaryExpression(SQFParser.UnaryExpressionContext ctx);
+	void exitError(SQFParser.ErrorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SQFParser#commonError}.
+	 * @param ctx the parse tree
+	 */
+	void enterCommonError(SQFParser.CommonErrorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SQFParser#commonError}.
+	 * @param ctx the parse tree
+	 */
+	void exitCommonError(SQFParser.CommonErrorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SQFParser#nularExpression}.
 	 * @param ctx the parse tree
@@ -198,13 +198,33 @@ public interface SQFListener extends ParseTreeListener {
 	 */
 	void exitNularExpression(SQFParser.NularExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SQFParser#macro}.
+	 * Enter a parse tree produced by {@link SQFParser#unaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterMacro(SQFParser.MacroContext ctx);
+	void enterUnaryExpression(SQFParser.UnaryExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SQFParser#macro}.
+	 * Exit a parse tree produced by {@link SQFParser#unaryExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitMacro(SQFParser.MacroContext ctx);
+	void exitUnaryExpression(SQFParser.UnaryExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SQFParser#operator}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperator(SQFParser.OperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SQFParser#operator}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperator(SQFParser.OperatorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SQFParser#punctuation}.
+	 * @param ctx the parse tree
+	 */
+	void enterPunctuation(SQFParser.PunctuationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SQFParser#punctuation}.
+	 * @param ctx the parse tree
+	 */
+	void exitPunctuation(SQFParser.PunctuationContext ctx);
 }

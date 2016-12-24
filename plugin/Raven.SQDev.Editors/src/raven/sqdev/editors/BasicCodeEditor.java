@@ -73,7 +73,7 @@ public class BasicCodeEditor extends TextEditor {
 	 */
 	protected ParseTree parseTree;
 	/**
-	 * The name sof the rules used for parsing this editor's input
+	 * The name of the rules used for parsing this editor's input
 	 */
 	protected List<String> parseRuleNames;
 	
@@ -86,7 +86,7 @@ public class BasicCodeEditor extends TextEditor {
 	 */
 	protected List<IManager> managerList;
 	/**
-	 * A list of character pairs that shoud be used in this editor
+	 * A list of character pairs that should be used in this editor
 	 */
 	protected List<CharacterPair> characterPairs;
 	

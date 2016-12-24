@@ -43,7 +43,7 @@ public class SQDevGeneralPreferencePage extends SQDevPreferencePage {
 			exeName = "arma3.i386";
 			docTooltip = "The path to the directory that contains the \"Arma 3\" (and \"Arma 3 - "
 					+ "Other profiles\") directory (Normally this is \"$HOME/.local/share/"
-					+ "bohemiainteractive/arma3/GameData/\"";
+					+ "bohemiainteractive/arma3/GameDocuments/\"";
 		}
 		
 		DirectorySQDevPreferenceEditor dirEditor = new DirectorySQDevPreferenceEditor(

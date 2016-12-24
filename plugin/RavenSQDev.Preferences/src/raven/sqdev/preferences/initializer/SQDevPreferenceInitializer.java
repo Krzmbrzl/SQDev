@@ -125,7 +125,7 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 			path = System.getProperty("user.home") + "/.local/share/";
 		}
 		
-		path += "\\Steam\\SteamApps\\common\\Arma 3".replace("\\", File.separator);
+		path += "\\Steam\\steamapps\\common\\Arma 3".replace("\\", File.separator);
 		
 		if (new File(path).exists()) {
 			return path;
@@ -148,7 +148,7 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 			path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
 		} else {
 			// Linux
-			path = System.getProperty("user-home")
+			path = System.getProperty("user.home") + File.separator
 					+ ".local/share/bohemiainteractive/arma3/GameDocuments";
 		}
 		

@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
 
 import raven.sqdev.util.EProjectType;
+import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.wizards.SQDevBaseNewProjectWizard;
 
 /**
@@ -41,6 +42,11 @@ public class SQDevProjectWizard extends SQDevBaseNewProjectWizard {
 		type.setInformation(page.getInformation());
 		
 		return type;
+	}
+
+	@Override
+	public SQDevInformation getInformation() {
+		return page.getInformation();
 	}
 	
 }
