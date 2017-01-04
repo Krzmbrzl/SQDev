@@ -13,6 +13,11 @@
                   label="Show parseTree"
                   style="push">
             </command>
+            <command
+                  commandId="raven.sqdev.command.createBugReport"
+                  label="Create bug report"
+                  style="push">
+            </command>
          </toolbar>
       </menuContribution>
    </extension>
@@ -23,6 +28,12 @@
             description="Displays the parse tree graphically"
             id="raven.sqdev.command.showParseTree"
             name="Show parse tree">
+      </command>
+      <command
+            defaultHandler="raven.sqdev.ui.commands.CreateBugReport"
+            description="Creates a bug report with the necessary system information"
+            id="raven.sqdev.command.createBugReport"
+            name="Create bug report">
       </command>
    </extension>
    <extension

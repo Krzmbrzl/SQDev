@@ -70,6 +70,18 @@ public interface SQFListener extends ParseTreeListener {
 	 */
 	void exitBinaryExpression(SQFParser.BinaryExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code macroExpression}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMacroExpression(SQFParser.MacroExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code macroExpression}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMacroExpression(SQFParser.MacroExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code unaryOperator}
 	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
@@ -93,18 +105,6 @@ public interface SQFListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNularOperator(SQFParser.NularOperatorContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code macroExpression}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMacroExpression(SQFParser.MacroExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code macroExpression}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMacroExpression(SQFParser.MacroExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Number}
 	 * labeled alternative in {@link SQFParser#primaryExpression}.

@@ -61,6 +61,13 @@ public class SQFBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SQ
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitMacroExpression(SQFParser.MacroExpressionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitUnaryOperator(SQFParser.UnaryOperatorContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -69,13 +76,6 @@ public class SQFBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements SQ
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitNularOperator(SQFParser.NularOperatorContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitMacroExpression(SQFParser.MacroExpressionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

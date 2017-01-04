@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.osgi.framework.Version;
 
-import raven.sqdev.constants.ESQDevPlugin;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.exceptions.SQDevSyntaxException;

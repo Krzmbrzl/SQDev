@@ -16,23 +16,23 @@ import raven.sqdev.misc.TextUtils;
  * 
  */
 public class SyntaxElement {
-	
+
 	/**
 	 * The value of this <code>SyntaxElement</code> if it's a leaf-element
 	 */
 	private String leafElement;
-	
+
 	/**
 	 * The value of this <code>SyntaxElement</code> if it's a node-element
 	 */
 	private Syntax subSyntax;
-	
+
 	/**
 	 * The encapsulating characters if this is a node element
 	 */
 	private CharacterPair encapsulator;
-	
-	
+
+
 	/**
 	 * Creates a <code>SyntaxElement</code> as a leaf element representing the
 	 * given String
@@ -43,10 +43,10 @@ public class SyntaxElement {
 	 */
 	public SyntaxElement(String leafElement) {
 		Assert.isTrue(leafElement != null && !leafElement.isEmpty());
-		
+
 		this.leafElement = leafElement;
 	}
-	
+
 	/**
 	 * Creates a <code>SyntaxElement</code> as a node element representing the
 	 * given <code>Syntax</code> as a subSyntax
@@ -59,11 +59,11 @@ public class SyntaxElement {
 	 */
 	public SyntaxElement(Syntax subSyntax, CharacterPair encapsulator) {
 		Assert.isTrue(subSyntax != null && !subSyntax.isEmpty());
-		
+
 		this.subSyntax = subSyntax;
 		this.encapsulator = encapsulator;
 	}
-	
+
 	/**
 	 * Checks whether this <code>SyntaxElement</code> is a leaf element
 	 * 
@@ -73,28 +73,27 @@ public class SyntaxElement {
 	public boolean isLeafElement() {
 		return leafElement != null;
 	}
-	
+
 	@Override
 	public String toString() {
 		if (isLeafElement()) {
 			return leafElement;
 		} else {
 			if (encapsulator != null) {
-				return getEncapsulator().getOpener() + subSyntax.toString()
-						+ getEncapsulator().getCloser();
+				return getEncapsulator().getOpener() + subSyntax.toString() + getEncapsulator().getCloser();
 			} else {
 				return subSyntax.toString();
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the encapsulating <code>CharacterPair</code>
 	 */
 	public CharacterPair getEncapsulator() {
 		return encapsulator;
 	}
-	
+
 	/**
 	 * Gets the amount of leafs represented by this <code>SyntaxElement</code>
 	 */
@@ -105,26 +104,26 @@ public class SyntaxElement {
 			return subSyntax.getComponentCount();
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!this.getClass().equals(obj.getClass())) {
 			return false;
 		}
-		
+
 		SyntaxElement comp = (SyntaxElement) obj;
-		
+
 		if (this.isLeafElement() != comp.isLeafElement()) {
 			return false;
 		}
-		
+
 		if (this.getLeafCount() != comp.getLeafCount()) {
 			return false;
 		}
-		
+
 		return this.toString().equals(comp.toString());
 	}
-	
+
 	/**
 	 * Parses the given input in a <code>SyntaxElement</code>
 	 * 
@@ -139,28 +138,32 @@ public class SyntaxElement {
 			throw new BadSyntaxException(
 					"The given input cannot be parsed into a syntaxElement (Empty or null)!");
 		}
-		
+
 		char startingChar = input.charAt(0);
 		CharacterPair encapsulator = null;
-		
+
 		if (!Character.isLetterOrDigit(startingChar)) {
 			// find the respective encapsulator
 			encapsulator = CharacterPair.getDefinedPairFor(startingChar);
+
+			if (encapsulator != null && encapsulator.equals(CharacterPair.TAG)) {
+				// In SQF there is no tag encapsulator
+				encapsulator = null;
+			}
 		}
-		
+
 		String[] elements = TextUtils.getTextAreas(input);
-		
+
 		if (elements == null || elements.length == 0) {
-			throw new BadSyntaxException(
-					"TextUtils.getAreas() was not able to find areas in input");
+			throw new BadSyntaxException("TextUtils.getAreas() was not able to find areas in input");
 		}
-		
+
 		if (elements.length > 1) {
 			// create a subSyntax with each of those elements as a
 			// syntaxElements
-			
+
 			Syntax subSyntax = new Syntax();
-			
+
 			for (String currentArea : elements) {
 				if (TextUtils.isSingleTextArea(currentArea)) {
 					// add as leaf node
@@ -170,7 +173,7 @@ public class SyntaxElement {
 					subSyntax.addElement(parseSyntaxElement(currentArea));
 				}
 			}
-			
+
 			return new SyntaxElement(subSyntax, encapsulator);
 		} else {
 			if (encapsulator == null) {
@@ -178,14 +181,14 @@ public class SyntaxElement {
 				return new SyntaxElement(elements[0]);
 			} else {
 				Syntax subSyntax = new Syntax();
-				
+
 				String value = elements[0];
 				// remove encapsulating characters
 				value = value.substring(value.indexOf(encapsulator.getOpener()) + 1,
 						value.lastIndexOf(encapsulator.getCloser()));
-				
+
 				subSyntax.addElement(new SyntaxElement(value));
-				
+
 				return new SyntaxElement(subSyntax, encapsulator);
 			}
 		}

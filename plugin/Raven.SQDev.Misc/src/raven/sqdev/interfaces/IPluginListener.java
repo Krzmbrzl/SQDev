@@ -1,6 +1,6 @@
 package raven.sqdev.interfaces;
 
-import raven.sqdev.constants.ESQDevPlugin;
+import raven.sqdev.pluginManagement.ESQDevPlugin;
 
 /**
  * An interface describing a plugin listener that will handle events occuring to

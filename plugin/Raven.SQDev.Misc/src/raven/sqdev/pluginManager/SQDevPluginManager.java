@@ -9,10 +9,10 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
-import raven.sqdev.constants.ESQDevPlugin;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.interfaces.IPluginListener;
+import raven.sqdev.pluginManagement.ESQDevPlugin;
 
 /**
  * An manager for all running SQDev plugins
@@ -118,11 +118,11 @@ public class SQDevPluginManager {
 					
 					if (pluginList.size() > prevCount) {
 						// if the count of registered plugins changed try to
-						// fins it again
+						// find it again
 						return get(pluginName);
 					} else {
 						throw new SQDevException("The started plugin \"" + pluginName
-								+ "\" has not registered to the SQDevPluginManage!");
+								+ "\" has not registered to the SQDevPluginManager!");
 					}
 				} catch (BundleException | SQDevException e) {
 					e.printStackTrace();

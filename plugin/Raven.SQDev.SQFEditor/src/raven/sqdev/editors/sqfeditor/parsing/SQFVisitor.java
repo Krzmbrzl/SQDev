@@ -49,6 +49,13 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBinaryExpression(SQFParser.BinaryExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code macroExpression}
+	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMacroExpression(SQFParser.MacroExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code unaryOperator}
 	 * labeled alternative in {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
@@ -62,13 +69,6 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNularOperator(SQFParser.NularOperatorContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code macroExpression}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMacroExpression(SQFParser.MacroExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Number}
 	 * labeled alternative in {@link SQFParser#primaryExpression}.

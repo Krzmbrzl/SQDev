@@ -3,7 +3,7 @@ package raven.sqdev.misc;
 import org.eclipse.core.runtime.Assert;
 import org.osgi.framework.Version;
 
-import raven.sqdev.constants.ESQDevPlugin;
+import raven.sqdev.pluginManagement.ESQDevPlugin;
 
 /**
  * A <code>VersionChangeEvent</code> that contains information about the change
