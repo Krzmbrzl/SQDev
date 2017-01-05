@@ -83,6 +83,19 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				"Defines the color in which global variables are highlighted", colors);
 		addPreferenceEditor(globalVariableHighlightingEditor);
 		
+		ColorSQDevPreferenceEditor magicVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
+				"&Magic variable highlighting:",
+				"Defines the color in which magic variables (e.g. \"_this\") are highlighted",
+				colors);
+		addPreferenceEditor(magicVariableHighlightingEditor);
+		
+		ColorSQDevPreferenceEditor macroHighlightingEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
+				"&Macro highlighting:", "Defines the color in which macros are highlighted",
+				colors);
+		addPreferenceEditor(macroHighlightingEditor);
+		
 		ColorSQDevPreferenceEditor currentLineHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
 				"&Current line highlighting:",

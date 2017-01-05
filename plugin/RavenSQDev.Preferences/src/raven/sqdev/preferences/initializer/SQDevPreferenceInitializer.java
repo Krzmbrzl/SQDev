@@ -17,12 +17,6 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  */
 public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#
-	 * initializeDefaultPreferences()
-	 */
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
@@ -75,6 +69,14 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		// set global variable highlighting
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.GLOBAL_VARIABLE));
+		
+		// set magic variable highlighting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.MAGIC_VARIABLE));
+		
+		// set macro highlighting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.MACRO));
 		
 		// set parsing interval
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, 1500);

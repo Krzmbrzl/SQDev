@@ -1,5 +1,7 @@
 package raven.sqdev.editors;
 
+import java.util.List;
+
 /**
  * An interface describing a class that provides macro-support
  * 
@@ -9,18 +11,18 @@ package raven.sqdev.editors;
 public interface IMacroSupport {
 	
 	/**
-	 * Adds a macro to this <code>IMacroSupport</code>
+	 * Adds the given macros to this <code>IMacroSupport</code>
 	 * 
-	 * @param macro
-	 *            The <code>Macro</code> to add
+	 * @param macros
+	 *            The collection of <code>Macros</code> to add
+	 * @param update
+	 *            Whether to allow update of the editor
+	 * @return Whether the macros have been updated
 	 */
-	public void addMacro(Macro macro);
+	public boolean setMacros(List<Macro> macros, boolean update);
 	
 	/**
-	 * Removes the given macro
-	 * 
-	 * @param macro
-	 *            The <code>Macro</code> to remove
+	 * Gets the collection of macros defined in this editor
 	 */
-	public void removeMacro(Macro macro);
+	public List<Macro> getMacros();
 }

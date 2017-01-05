@@ -3,6 +3,8 @@ package raven.sqdev.editors.parser.preprocessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.antlr.v4.runtime.ANTLRErrorListener;
@@ -20,7 +22,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.part.FileEditorInput;
 
 import raven.sqdev.editors.BasicCodeEditor;
-import raven.sqdev.editors.IMacroSupport;
 import raven.sqdev.editors.Macro;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParser.DefineContext;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParser.ErrorContext;
@@ -50,6 +51,10 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 	 * The length of the included file
 	 */
 	private int includedFileLength;
+	/**
+	 * A list of macros that are defined durign preprocessing
+	 */
+	private List<Macro> macros;
 	
 	
 	/**
@@ -68,6 +73,7 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 		// indicate that the values have not yet been set
 		includedFileStart = -1;
 		includedFileLength = -1;
+		macros = new ArrayList<Macro>();
 	}
 	
 	/**
@@ -80,7 +86,7 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 	 *            instruction)
 	 */
 	private PreprocessorParseListener(BasicCodeEditor editor, Stack<IPath> files, int start,
-			int length) {
+			int length, List<Macro> macros) {
 		Assert.isNotNull(editor);
 		
 		this.editor = editor;
@@ -89,18 +95,15 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 		
 		includedFileStart = start;
 		includedFileLength = length;
+		this.macros = macros;
 	}
 	
 	@Override
 	public void exitDefine(DefineContext ctx) {
-		if (!(editor instanceof IMacroSupport)) {
-			return;
-		}
-		
 		String name = ctx.name.getText();
 		
 		// add defined macro
-		((IMacroSupport) editor).addMacro(new Macro(name));
+		macros.add(new Macro(name));
 	}
 	
 	@Override
@@ -193,7 +196,7 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 						
 						ParseTreeWalker walker = new ParseTreeWalker();
 						walker.walk(new PreprocessorParseListener(editor, includedFiles,
-								includedFileStart, includedFileLength) {
+								includedFileStart, includedFileLength, macros) {
 							@Override
 							protected void reportError(int start, int length, String msg) {
 								
@@ -275,6 +278,13 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 	 */
 	protected void reportError(int offset, int length, String msg) {
 		editor.createMarker(IMarker.PROBLEM, offset, length, msg, IMarker.SEVERITY_ERROR);
+	}
+	
+	/**
+	 * Gets the list of macros that have been defined during preprocessing
+	 */
+	public List<Macro> getDefinedMacros() {
+		return macros;
 	}
 	
 }
