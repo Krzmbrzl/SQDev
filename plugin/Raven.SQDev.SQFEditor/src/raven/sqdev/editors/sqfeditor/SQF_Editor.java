@@ -3,7 +3,6 @@ package raven.sqdev.editors.sqfeditor;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -158,6 +157,13 @@ public class SQF_Editor extends BasicCodeEditor
 		magicVars.add(new Variable("_fnc_scriptNameParent",
 				"A String containing the function's parent's name. Only awaylable when the function has "
 						+ "been compiled via CfgFunctions."));
+		magicVars.add(new Variable("_x",
+				"References the current object oin the iteration. Available inside count or forEach loops"));
+		magicVars.add(new Variable("_forEachIndex",
+				"References the index of the current object in the iteration. Only available in a "
+						+ "forEach loop."));
+		magicVars.add(new Variable("_thisEventHandler",
+				"References the current event handler. Only available inside an EventHandler"));
 		
 		setMagicVariables(magicVars, false);
 		

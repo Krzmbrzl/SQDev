@@ -14,8 +14,8 @@
                   style="push">
             </command>
             <command
-                  commandId="raven.sqdev.command.createBugReport"
-                  label="Create bug report"
+                  commandId="raven.sqdev.command.createPluginInfo"
+                  label="Create plugin info"
                   style="push">
             </command>
          </toolbar>
@@ -30,10 +30,10 @@
             name="Show parse tree">
       </command>
       <command
-            defaultHandler="raven.sqdev.ui.commands.CreateBugReport"
-            description="Creates a bug report with the necessary system information"
-            id="raven.sqdev.command.createBugReport"
-            name="Create bug report">
+            defaultHandler="raven.sqdev.ui.commands.CreatePluginInfo"
+            description="Creates an info file with the most important information about the running plugin and it&apos;s envirpnment."
+            id="raven.sqdev.command.createPluginInfo"
+            name="Create plugin info">
       </command>
    </extension>
    <extension

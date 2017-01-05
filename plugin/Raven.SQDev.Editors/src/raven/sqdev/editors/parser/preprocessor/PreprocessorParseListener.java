@@ -74,6 +74,10 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 		includedFileStart = -1;
 		includedFileLength = -1;
 		macros = new ArrayList<Macro>();
+		
+		// add default macros
+		macros.add(new Macro("__LINE__"));
+		macros.add(new Macro("__FILE__"));
 	}
 	
 	/**
