@@ -13,7 +13,6 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
@@ -21,6 +20,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.part.FileEditorInput;
 
+import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.Macro;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParser.DefineContext;
@@ -29,6 +29,12 @@ import raven.sqdev.editors.parser.preprocessor.PreprocessorParser.IncludeContext
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 public class PreprocessorParseListener extends PreprocessorBaseListener {
+	
+	/**
+	 * All available preprocessor instructions
+	 */
+	public static final String[] PREPROCESSOR_INSTRUCTIONS = new String[] {
+			"define", "undef", "include", "ifdef", "ifndef", "else", "endif" };
 	
 	/**
 	 * The error message displayed when a cycle in hierarchy is detected
@@ -89,8 +95,8 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 	 *            The files that have already been visited (via the '#include'
 	 *            instruction)
 	 */
-	private PreprocessorParseListener(BasicCodeEditor editor, Stack<IPath> files, int start,
-			int length, List<Macro> macros) {
+	private PreprocessorParseListener(BasicCodeEditor editor,
+			Stack<IPath> files, int start, int length, List<Macro> macros) {
 		Assert.isNotNull(editor);
 		
 		this.editor = editor;
@@ -116,31 +122,36 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 			// only use the values of the topmost file (The one the user is
 			// looking at)
 			includedFileStart = ctx.file.getStartIndex();
-			includedFileLength = ctx.file.getStopIndex() - ctx.file.getStartIndex() + 1;
+			includedFileLength = ctx.file.getStopIndex()
+					- ctx.file.getStartIndex() + 1;
 		}
 		
 		if (!(editor.getEditorInput() instanceof FileEditorInput)) {
-			editor.createMarker(IMarker.PROBLEM, includedFileStart, includedFileLength,
-					"Can't evaluate include-instrution", IMarker.SEVERITY_WARNING);
+			editor.createMarker(IMarker.PROBLEM, includedFileStart,
+					includedFileLength, "Can't evaluate include-instruction",
+					IMarker.SEVERITY_WARNING);
 			// TODO: log
 		} else {
 			// Get latest origin file
 			IPath originFile;
 			
 			if (includedFiles.size() == 0) {
-				originFile = ((FileEditorInput) editor.getEditorInput()).getPath();
+				originFile = ((FileEditorInput) editor.getEditorInput())
+						.getPath();
 				
 				// add the original file to the list of "included" files
 				includedFiles.push(originFile);
 				
 				// use the new start + length values for new include instruction
 				includedFileStart = ctx.file.getStartIndex();
-				includedFileLength = ctx.file.getStopIndex() - ctx.file.getStartIndex() + 1;
+				includedFileLength = ctx.file.getStopIndex()
+						- ctx.file.getStartIndex() + 1;
 			} else {
 				originFile = includedFiles.peek();
 			}
 			
-			String strFilePath = ctx.file.getText().substring(1, ctx.file.getText().length() - 1);
+			String strFilePath = ctx.file.getText().substring(1,
+					ctx.file.getText().length() - 1);
 			IPath root;
 			
 			if (strFilePath.startsWith("\\")) {
@@ -162,11 +173,13 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 			if (file.exists()) {
 				if (!file.isFile()) {
 					// must be a file
-					reportError(includedFileStart, includedFileLength, "Reference is not a file");
+					reportError(includedFileStart, includedFileLength,
+							"Reference is not a file");
 				} else {
 					if (includedFiles.contains(filePath)) {
 						// report cycle in hierarchy
-						reportError(includedFileStart, includedFileLength, CYCLE_IN_HIERARCHY_MSG);
+						reportError(includedFileStart, includedFileLength,
+								CYCLE_IN_HIERARCHY_MSG);
 						
 						includedFiles.clear();
 						
@@ -179,14 +192,19 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 						ANTLRErrorListener errorListener = new BaseErrorListener() {
 							@Override
 							public void syntaxError(Recognizer<?, ?> recognizer,
-									Object offendingSymbol, int line, int charPositionInline,
-									String msg, RecognitionException e) {
-								reportError(includedFileStart, includedFileLength,
-										"Errors while parsing \"" + file.getPath() + "\": " + msg);
+									Object offendingSymbol, int line,
+									int charPositionInline, String msg,
+									RecognitionException e) {
+								reportError(includedFileStart,
+										includedFileLength,
+										"Errors while parsing \""
+												+ file.getPath() + "\": "
+												+ msg);
 							}
 						};
 						
-						ANTLRInputStream in = new ANTLRInputStream(new FileInputStream(file));
+						ANTLRInputStream in = new ANTLRInputStream(
+								new FileInputStream(file));
 						
 						PreprocessorLexer lexer = new PreprocessorLexer(in);
 						lexer.removeErrorListeners();
@@ -194,15 +212,18 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 						
 						CommonTokenStream tokens = new CommonTokenStream(lexer);
 						
-						PreprocessorParser parser = new PreprocessorParser(tokens);
+						PreprocessorParser parser = new PreprocessorParser(
+								tokens);
 						parser.removeErrorListeners();
 						parser.addErrorListener(errorListener);
 						
 						ParseTreeWalker walker = new ParseTreeWalker();
-						walker.walk(new PreprocessorParseListener(editor, includedFiles,
-								includedFileStart, includedFileLength, macros) {
+						walker.walk(new PreprocessorParseListener(editor,
+								includedFiles, includedFileStart,
+								includedFileLength, macros) {
 							@Override
-							protected void reportError(int start, int length, String msg) {
+							protected void reportError(int start, int length,
+									String msg) {
 								
 								if (msg.equals(CYCLE_IN_HIERARCHY_MSG)
 										&& includedFiles.size() <= 2) {
@@ -210,8 +231,10 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 									// hierarchy
 									super.reportError(start, length, msg);
 								} else {
-									super.reportError(start, length, "Errors while parsing \""
-											+ file.getPath() + "\": " + msg);
+									super.reportError(start, length,
+											"Errors while parsing \""
+													+ file.getPath() + "\": "
+													+ msg);
 								}
 							}
 						}, parser.start());
@@ -239,35 +262,43 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 	@Override
 	public void exitError(ErrorContext ctx) {
 		// error alt has matched -> report error
-		if (ctx.UNKNOWN().getText().contains(" ") || ctx.UNKNOWN().getText().contains("\t")) {
-			// illegal WS in instruction
-			int start = ctx.UNKNOWN().getSymbol().getStartIndex();
-			int length = 0;
-			boolean matchedWS = false;
-			
-			for (char currentChar : ctx.UNKNOWN().getText().toCharArray()) {
-				if (Character.isWhitespace(currentChar)) {
-					matchedWS = true;
+		String instruction = ctx.instruction.getText();
+		
+		if (ctx.instruction.getType() == 15) {
+			// error node
+			return;
+		}
+		
+		for (String currentInstruction : PREPROCESSOR_INSTRUCTIONS) {
+			if (instruction.equals(currentInstruction)) {
+				// There must WS in between or it wouldn't have matched "Error"
+				int start = ctx.getStart().getStopIndex();
+				int length = ctx.instruction.getStartIndex() - start;
+				
+				reportError(start, length,
+						ProblemMessages.noWhitespaceAllowed());
+				
+				return;
+			} else {
+				if (instruction.toLowerCase()
+						.equals(currentInstruction.toLowerCase())) {
+					// written in wrong case
+					reportError(ctx.instruction.getStartIndex(),
+							ctx.instruction.getStopIndex()
+									- ctx.instruction.getStartIndex() + 1,
+							ProblemMessages
+									.isCaseSensitive(currentInstruction));
 					
-					length++;
-				} else {
-					if (!matchedWS) {
-						start++;
-					} else {
-						break;
-					}
+					return;
 				}
 			}
-			
-			reportError(start, length, "Preprocessor instructions may not contain whitespace");
-		} else {
-			// unknown prepprocessor command
-			Token unknownToken = ctx.UNKNOWN().getSymbol();
-			
-			reportError(unknownToken.getStartIndex(),
-					unknownToken.getStopIndex() - unknownToken.getStartIndex() + 1,
-					"Unknown preprocessor instruction \"" + unknownToken.getText() + "\"");
 		}
+		
+		// must be an unknown operator
+		reportError(
+				ctx.instruction.getStartIndex(), ctx.instruction.getStopIndex()
+						- ctx.instruction.getStartIndex() + 1,
+				ProblemMessages.unknownOperator(instruction));
 	}
 	
 	/**
@@ -281,7 +312,8 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 	 *            The error message
 	 */
 	protected void reportError(int offset, int length, String msg) {
-		editor.createMarker(IMarker.PROBLEM, offset, length, msg, IMarker.SEVERITY_ERROR);
+		editor.createMarker(IMarker.PROBLEM, offset, length, msg,
+				IMarker.SEVERITY_ERROR);
 	}
 	
 	/**

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Misc
 Bundle-SymbolicName: raven.sqdev.misc;singleton:=true
-Bundle-Version: 0.3.1.dev2
+Bundle-Version: 0.3.1.dev4
 Bundle-Activator: raven.sqdev.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
@@ -22,3 +22,4 @@ Export-Package: raven.sqdev.constants,
  raven.sqdev.styles,
  raven.sqdev.syntax
 Import-Package: raven.sqdev.misc
+Bundle-Vendor: Raven

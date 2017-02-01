@@ -9,7 +9,7 @@ import raven.sqdev.misc.EDataType;
  *
  */
 public class ProblemMessages {
-
+	
 	/**
 	 * Creates the error message stating that the left hand argument of the
 	 * given operator is missing
@@ -21,7 +21,7 @@ public class ProblemMessages {
 	public static final String missingArgLeft(String operatorName) {
 		return "Missing argument on left-hand side at \"" + operatorName + "\"";
 	}
-
+	
 	/**
 	 * Creates the error message stating that the given operator is a nular
 	 * operator and can therefore not be used with arguments
@@ -33,7 +33,7 @@ public class ProblemMessages {
 	public static final String operatorIsNular(String operatorName) {
 		return "\"'" + operatorName + "\" is a nular expression (No args!)";
 	}
-
+	
 	/**
 	 * Creates the error message stating that the operator was wrongly used as a
 	 * nular operator
@@ -43,9 +43,10 @@ public class ProblemMessages {
 	 * @return The created error message
 	 */
 	public static final String operatorIsNotNular(String operatorName) {
-		return "The operator \"" + operatorName + "\" can not be used as a nular operator!";
+		return "The operator \"" + operatorName
+				+ "\" can not be used as a nular operator!";
 	}
-
+	
 	/**
 	 * Creates the error message stating that the given operator is unknown
 	 * 
@@ -56,7 +57,7 @@ public class ProblemMessages {
 	public static final String unknownOperator(String operatorName) {
 		return "Unknown operator \"" + operatorName + "\"";
 	}
-
+	
 	/**
 	 * Creates the error message stating that the referenced local variable is
 	 * not defined.
@@ -68,7 +69,7 @@ public class ProblemMessages {
 	public static final String undefinedLocalVariable(String varName) {
 		return "Undefined local variable \"" + varName + "\"";
 	}
-
+	
 	/**
 	 * Gets the error message that the variable declarations couldn't be
 	 * processed because an array was expected but not given
@@ -76,14 +77,14 @@ public class ProblemMessages {
 	public static final String failedVarProcessingExpectedArray() {
 		return "Can't process variable declaration because an array was expected!";
 	}
-
+	
 	/**
 	 * An error message stating that a variable name must no contain a blank!
 	 */
 	public static final String variableMayNotContainBlank() {
 		return "A variable name may not contain a blank!";
 	}
-
+	
 	/**
 	 * An error message stating that there is a type mismatch
 	 * 
@@ -93,10 +94,11 @@ public class ProblemMessages {
 	 *            The type that has been obtained
 	 * @return The generated error message
 	 */
-	public static final String expectedTypeButGotDifferent(String type, String different) {
+	public static final String expectedTypeButGotDifferent(String type,
+			String different) {
 		return "Expected type \"" + type + "\" but got \"" + different + "\"!";
 	}
-
+	
 	/**
 	 * An error message stating that there is a type mismatch
 	 * 
@@ -118,12 +120,13 @@ public class ProblemMessages {
 	 *            The set of given types
 	 * @return the generated error message
 	 */
-	public static final String ExpectedTypeButGot(EDataType[] expected, EDataType[] got) {
+	public static final String ExpectedTypeButGot(EDataType[] expected,
+			EDataType[] got) {
 		StringBuilder builder = new StringBuilder("Expected ");
-
+		
 		for (int i = 0; i < expected.length; i++) {
 			EDataType currentType = expected[i];
-
+			
 			if (i == 0) {
 				builder.append("\"" + currentType + "\"");
 			} else {
@@ -134,12 +137,12 @@ public class ProblemMessages {
 				}
 			}
 		}
-
+		
 		builder.append(" but got ");
-
+		
 		for (int i = 0; i < got.length; i++) {
 			EDataType currentType = got[i];
-
+			
 			if (i == 0) {
 				builder.append("\"" + currentType + "\"");
 			} else {
@@ -150,12 +153,12 @@ public class ProblemMessages {
 				}
 			}
 		}
-
+		
 		builder.append("!");
-
+		
 		return builder.toString();
 	}
-
+	
 	/**
 	 * An error message stating that there is a type mismatch
 	 * 
@@ -167,7 +170,7 @@ public class ProblemMessages {
 	public static final String expectedType(EDataType type) {
 		return expectedType(type.toString());
 	}
-
+	
 	/**
 	 * An error message stating that there is a type mismatch
 	 * 
@@ -177,10 +180,10 @@ public class ProblemMessages {
 	 */
 	public static final String expectedTypes(EDataType[] types) {
 		StringBuilder builder = new StringBuilder("Expected ");
-
+		
 		for (int i = 0; i < types.length; i++) {
 			EDataType currentType = types[i];
-
+			
 			if (i == 0) {
 				builder.append("\"" + currentType + "\"");
 			} else {
@@ -191,16 +194,41 @@ public class ProblemMessages {
 				}
 			}
 		}
-
+		
 		builder.append("!");
-
+		
 		return builder.toString();
 	}
-
+	
 	/**
 	 * The error message that there can only be a local variable declared here
 	 */
 	public static final String canOnlyDeclareLocalVariable() {
 		return "Only a local variable can be declared at this point!";
+	}
+	
+	/**
+	 * The error message that the given String may not be empty
+	 */
+	public static final String stringMayNotBeEmpty() {
+		return "This String must not be empty!";
+	}
+	
+	/**
+	 * The error message that there is no whitespace allowed at that point
+	 */
+	public static final String noWhitespaceAllowed() {
+		return "Whitespace is not allowed in this context!";
+	}
+	
+	/**
+	 * The error message stating that the given operator is case sensitive
+	 * 
+	 * @param correct
+	 *            The correct way to spell that operator
+	 */
+	public static final String isCaseSensitive(String correct) {
+		return "This operator is case-sensitive! It has to be \"" + correct
+				+ "\"!";
 	}
 }

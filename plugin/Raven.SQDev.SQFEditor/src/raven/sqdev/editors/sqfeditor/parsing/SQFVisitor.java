@@ -13,6 +13,12 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	/**
+	 * Visit a parse tree produced by {@link SQFParser#start}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStart(SQFParser.StartContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link SQFParser#code}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -49,64 +55,56 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBinaryExpression(SQFParser.BinaryExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code macroExpression}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * Visit a parse tree produced by {@link SQFParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMacroExpression(SQFParser.MacroExpressionContext ctx);
+	T visitPrimaryExpression(SQFParser.PrimaryExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code unaryOperator}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUnaryOperator(SQFParser.UnaryOperatorContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code nularOperator}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * Visit a parse tree produced by the {@code NularOperator}
+	 * labeled alternative in {@link SQFParser#nularExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNularOperator(SQFParser.NularOperatorContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Number}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * labeled alternative in {@link SQFParser#nularExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNumber(SQFParser.NumberContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code String}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * labeled alternative in {@link SQFParser#nularExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitString(SQFParser.StringContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code InlineCode}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * labeled alternative in {@link SQFParser#nularExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitInlineCode(SQFParser.InlineCodeContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Array}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * labeled alternative in {@link SQFParser#nularExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitArray(SQFParser.ArrayContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Parenthesis}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * labeled alternative in {@link SQFParser#nularExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParenthesis(SQFParser.ParenthesisContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Error}
-	 * labeled alternative in {@link SQFParser#primaryExpression}.
+	 * labeled alternative in {@link SQFParser#nularExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
@@ -117,12 +115,6 @@ public interface SQFVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCommonError(SQFParser.CommonErrorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SQFParser#nularExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNularExpression(SQFParser.NularExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SQFParser#unaryExpression}.
 	 * @param ctx the parse tree

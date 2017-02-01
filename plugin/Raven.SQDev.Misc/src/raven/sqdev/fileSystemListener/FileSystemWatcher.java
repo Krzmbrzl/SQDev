@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.interfaces.IFileSystemChangeListener;
 
 /**
@@ -120,7 +121,8 @@ public class FileSystemWatcher {
 		try {
 			// register path to register
 			WatchKey key = path.register(getWatchService(),
-					new WatchEvent.Kind<?>[] { StandardWatchEventKinds.ENTRY_CREATE,
+					new WatchEvent.Kind<?>[] {
+							StandardWatchEventKinds.ENTRY_CREATE,
 							StandardWatchEventKinds.ENTRY_DELETE,
 							StandardWatchEventKinds.ENTRY_MODIFY });
 			
@@ -158,7 +160,9 @@ public class FileSystemWatcher {
 							// Discard if it has been interrupted 3 times in a
 							// row
 							Thread.currentThread().interrupt();
-							return;
+							
+							throw new SQDevCoreException(
+									"File system watcher has been interrupted!");
 						}
 						
 						WatchKey key = watchService.poll(1, TimeUnit.SECONDS);
@@ -195,7 +199,7 @@ public class FileSystemWatcher {
 						}
 						
 						if (watchKeys.size() == 0) {
-							// There are no watched paths anymroe -> exit loop
+							// There are no watched paths anymore -> exit loop
 							continueChecking.set(false);
 						}
 					} catch (InterruptedException e) {
@@ -235,11 +239,13 @@ public class FileSystemWatcher {
 	 * @param type
 	 *            The type of the change
 	 */
-	protected void watchedPathChanged(Path root, Path target, EFileChangeType type) {
+	protected void watchedPathChanged(Path root, Path target,
+			EFileChangeType type) {
 		for (IFileSystemChangeListener currentListener : getRegisteredListeners()) {
 			if (root.equals(currentListener.getConfiguredPath())) {
 				// Notify listener about change
-				currentListener.changed(new FileSystemChangeEvent(type, root, target));
+				currentListener
+						.changed(new FileSystemChangeEvent(type, root, target));
 			}
 		}
 	}
@@ -301,7 +307,8 @@ public class FileSystemWatcher {
 	 * @param listener
 	 *            The listener to remove
 	 */
-	public void removeFileSystemChangeListener(IFileSystemChangeListener listener) {
+	public void removeFileSystemChangeListener(
+			IFileSystemChangeListener listener) {
 		// prevent concurrent access
 		removeQueueLock.lock();
 		
@@ -315,7 +322,8 @@ public class FileSystemWatcher {
 		
 		listenerLock.lock();
 		for (IFileSystemChangeListener currentListener : getRegisteredListeners()) {
-			if (currentListener.getConfiguredPath().equals(listener.getConfiguredPath())) {
+			if (currentListener.getConfiguredPath()
+					.equals(listener.getConfiguredPath())) {
 				pathStillWatched = true;
 				break;
 			}

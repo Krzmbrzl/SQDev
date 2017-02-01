@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: UI
 Bundle-SymbolicName: raven.sqdev.ui;singleton:=true
-Bundle-Version: 0.1.0.dev
+Bundle-Version: 0.1.0.dev2
 Bundle-Activator: raven.sqdev.ui.Activator
 Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.ui,
@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  raven.sqdev.editors,
  org.eclipse.ui.ide,
  org.eclipse.ui.editors;bundle-version="3.8.200",
- org.eclipse.ui.navigator
+ org.eclipse.ui.navigator,
+ raven.sqdev.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,

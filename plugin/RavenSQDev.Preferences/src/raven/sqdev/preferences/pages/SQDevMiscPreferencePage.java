@@ -164,7 +164,7 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 							firstCommand, lastCommand);
 					
 					if (skipFirst) {
-						collector.skipFNext();
+						collector.skipNext();
 					}
 					
 					KeywordList list = collector.collect(monitor);

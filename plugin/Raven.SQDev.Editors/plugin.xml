@@ -25,6 +25,13 @@
             id="raven.sqdev.editors.stringtableeditor"
             name="StringTableEditor">
       </editor>
+      <editor
+            class="raven.sqdev.editors.other.ConfigEditor"
+            default="true"
+            extensions="cpp, hpp, sqm, ext"
+            id="raven.sqdev.editors.configEditor"
+            name="ConfigEditor">
+      </editor>
    </extension>
 
 </plugin>

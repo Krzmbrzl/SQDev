@@ -23,4 +23,9 @@ public class TextConstants {
 	 * apart from letters and digits
 	 */
 	public static final char[] SPECIAL_WORD_CHARACTERS = { '_', '@' };
+	
+	/**
+	 * An array containing all special characters that are allowed in file names
+	 */
+	public static final char[] ALLOWED_SPECIAL_CHARACTER_FILENAME = { '.', '_' };
 }

@@ -27,57 +27,57 @@ public class SQFCommand extends SQFElement {
 	 * The sequence indicating the start of the syntax attribute in the saveable
 	 * String format of this class
 	 */
-	public static final String SYNTAX_START_SAVESEQUENCE = "SyntaxStart:";
+	public static final String SYNTAX_START_SAVESEQUENCE = "<Syntax>";
 	/**
 	 * The sequence indicating the end of the syntax attribute in the saveable
 	 * String format of this class
 	 */
-	public static final String SYNTAX_END_SAVESEQUENCE = "//SyntaxEnd//";
+	public static final String SYNTAX_END_SAVESEQUENCE = "</Syntax>";
 	/**
 	 * The sequence seperating multiple syntaxes in the saveable String format
 	 * of this class
 	 */
-	public static final String SYNTAX_SEPERATOR_SAVESEQUENCE = "%NextSyntax%";
+	public static final String SYNTAX_SEPERATOR_SAVESEQUENCE = "</NextSyntax>";
 	/**
 	 * The sequence indicating the start of the rawSyntax attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String RAWSYNTAX_START_SAVESEQUENCE = "RawSyntaxStart:";
+	public static final String RAWSYNTAX_START_SAVESEQUENCE = "<RawSyntax>";
 	/**
 	 * The sequence indicating the end of the rawSyntax attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String RAWSYNTAX_END_SAVESEQUENCE = "//RawSyntaxEnd//";
+	public static final String RAWSYNTAX_END_SAVESEQUENCE = "</RawSyntax>";
 	/**
 	 * The sequence seperating multiple rawSyntaxes in the saveable String
 	 * format of this class
 	 */
-	public static final String RAWSYNTAX_SEPERATOR_SAVESEQUENCE = "%NextRawSyntax%";
+	public static final String RAWSYNTAX_SEPERATOR_SAVESEQUENCE = "</NextRawSyntax>";
 	/**
 	 * The sequence indicating the start of the example attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String EXAMPLE_START_SAVESEQUENCE = "ExampleStart:";
+	public static final String EXAMPLE_START_SAVESEQUENCE = "<Example>";
 	/**
 	 * The sequence indicating the end of the example attribute in the saveable
 	 * String format of this class
 	 */
-	public static final String EXAMPLE_END_SAVESEQUENCE = "//ExampleEnd//";
+	public static final String EXAMPLE_END_SAVESEQUENCE = "</Example>";
 	/**
 	 * The sequence seperating multiple examples in the saveable String format
 	 * of this class
 	 */
-	public static final String EXAMPLE_SEPERATOR_SAVESEQUENCE = "%NextExample%";
+	public static final String EXAMPLE_SEPERATOR_SAVESEQUENCE = "</NextExample>";
 	/**
 	 * The sequence indicating the start of the locality attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String LOCALITY_START_SAVESEQUENCE = "LocalityStart:";
+	public static final String LOCALITY_START_SAVESEQUENCE = "<Locality>";
 	/**
 	 * The sequence indicating the end of the locality attribute in the saveable
 	 * String format of this class
 	 */
-	public static final String LOCALITY_END_SAVESEQUENCE = "//LocalityEnd//";
+	public static final String LOCALITY_END_SAVESEQUENCE = "</Locality>";
 	/**
 	 * The seperator used to seperate the effect's locality from the argument's
 	 * locality
@@ -87,27 +87,27 @@ public class SQFCommand extends SQFElement {
 	 * The sequence indicating the start of the note attribute in the saveable
 	 * String format of this class
 	 */
-	public static final String NOTE_START_SAVESEQUENCE = "NoteStart:";
+	public static final String NOTE_START_SAVESEQUENCE = "<Note>";
 	/**
 	 * The sequence indicating the end of the locality attribute in the saveable
 	 * String format of this class
 	 */
-	public static final String NOTE_END_SAVESEQUENCE = "//NoteEnd//";
+	public static final String NOTE_END_SAVESEQUENCE = "</Note>";
 	/**
 	 * The sequence seperating multiple notes in the saveable String format of
 	 * this class
 	 */
-	public static final String NOTE_SEPERATOR_SAVESEQUENCE = "%NextNote%";
+	public static final String NOTE_SEPERATOR_SAVESEQUENCE = "</NextNote>";
 	/**
 	 * The sequence indicating the start of the returnValue attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String RETURNVALUE_START_SAVESEQUENCE = "ReturnValueStart:";
+	public static final String RETURNVALUE_START_SAVESEQUENCE = "<ReturnValue>";
 	/**
 	 * The sequence indicating the end of the returnValue attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String RETURNVALUE_END_SAVESEQUENCE = "//ReturnValueEnd//";
+	public static final String RETURNVALUE_END_SAVESEQUENCE = "</ReturnValue>";
 
 	/**
 	 * The syntaxes of this command
@@ -589,61 +589,65 @@ public class SQFCommand extends SQFElement {
 		String format = super.getSaveableFormat() + "\n";
 
 		// add syntaxes
-		format += SYNTAX_START_SAVESEQUENCE + "\n";
+		format += SYNTAX_START_SAVESEQUENCE + "\n\t";
 		for (Syntax currentSyntax : getSyntaxes()) {
 			format += currentSyntax.toString() + "\n";
-			format += SYNTAX_SEPERATOR_SAVESEQUENCE + "\n";
+			format += SYNTAX_SEPERATOR_SAVESEQUENCE + "\n\t";
 		}
 		if (getSyntaxes().size() > 0) {
 			// remove last seperator
-			format = format.substring(0, format.length() - (SYNTAX_SEPERATOR_SAVESEQUENCE.length() + 1));
+			format = format.substring(0, format.length() - (SYNTAX_SEPERATOR_SAVESEQUENCE.length() + 2));
 		}
 		format += SYNTAX_END_SAVESEQUENCE + "\n";
 
 		// add rawSyntaxes
-		format += RAWSYNTAX_START_SAVESEQUENCE + "\n";
+		format += RAWSYNTAX_START_SAVESEQUENCE + "\n\t";
 		for (String currentSyntax : getRawSytaxes()) {
 			format += currentSyntax + "\n";
-			format += RAWSYNTAX_SEPERATOR_SAVESEQUENCE + "\n";
+			format += RAWSYNTAX_SEPERATOR_SAVESEQUENCE + "\n\t";
 		}
 		if (getRawSytaxes().size() > 0) {
 			// remove last seperator
-			format = format.substring(0, format.length() - (RAWSYNTAX_SEPERATOR_SAVESEQUENCE.length() + 1));
+			format = format.substring(0, format.length() - (RAWSYNTAX_SEPERATOR_SAVESEQUENCE.length() + 2));
 		}
 		format += RAWSYNTAX_END_SAVESEQUENCE + "\n";
 
 		// add examples
-		format += EXAMPLE_START_SAVESEQUENCE + "\n";
+		format += EXAMPLE_START_SAVESEQUENCE + "\n\t";
 		for (String currentExample : getExamples()) {
 			format += currentExample + "\n";
-			format += EXAMPLE_SEPERATOR_SAVESEQUENCE + "\n";
+			format += EXAMPLE_SEPERATOR_SAVESEQUENCE + "\n\t";
 		}
 		if (getExamples().size() > 0) {
 			// remove last seperator
-			format = format.substring(0, format.length() - (EXAMPLE_SEPERATOR_SAVESEQUENCE.length() + 1));
+			format = format.substring(0, format.length() - (EXAMPLE_SEPERATOR_SAVESEQUENCE.length() + 2));
 		}
 		format += EXAMPLE_END_SAVESEQUENCE + "\n";
 
 		// add locality
-		format += LOCALITY_START_SAVESEQUENCE + "\n";
+		format += LOCALITY_START_SAVESEQUENCE + "\n\t";
 		format += getLocality()[0].toString() + " " + LOCALITY_SEPERATOR_SAVESEQUENCE + " "
 				+ getLocality()[1].toString() + "\n";
 		format += LOCALITY_END_SAVESEQUENCE + "\n";
 
 		// add notes
-		format += NOTE_START_SAVESEQUENCE + "\n";
+		format += NOTE_START_SAVESEQUENCE + "\n\t";
 		for (String currentNote : getNotes()) {
 			format += currentNote + "\n";
-			format += NOTE_SEPERATOR_SAVESEQUENCE + "\n";
+			format += NOTE_SEPERATOR_SAVESEQUENCE + "\n\t";
 		}
 		if (getNotes().size() > 0) {
-			// remove last seperator
-			format = format.substring(0, format.length() - (NOTE_SEPERATOR_SAVESEQUENCE.length() + 1));
+			// remove last seperator and unnecessary whitespace
+			format = format.substring(0, format.length() - (NOTE_SEPERATOR_SAVESEQUENCE.length() + 2)) + "\t";
 		}
+		
+		// remove last tab
+		format= format.substring(0, format.length() - 1);
+		
 		format += NOTE_END_SAVESEQUENCE + "\n";
 
 		// add returnType
-		format += RETURNVALUE_START_SAVESEQUENCE + "\n";
+		format += RETURNVALUE_START_SAVESEQUENCE + "\n\t";
 		format += getReturnType() + "\n";
 		format += RETURNVALUE_END_SAVESEQUENCE;
 

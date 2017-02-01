@@ -26,10 +26,6 @@ import raven.sqdev.editors.BasicSourceViewerConfiguration;
 import raven.sqdev.editors.IMacroSupport;
 import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.editors.Macro;
-import raven.sqdev.editors.parser.preprocessor.PreprocessorLexer;
-import raven.sqdev.editors.parser.preprocessor.PreprocessorParseListener;
-import raven.sqdev.editors.parser.preprocessor.PreprocessorParser;
-import raven.sqdev.editors.sqfeditor.parsing.PreprocessorErrorListener;
 import raven.sqdev.editors.sqfeditor.parsing.SQFLexer;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParseListener;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser;
@@ -40,7 +36,6 @@ import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.interfaces.IKeywordListChangeListener;
-import raven.sqdev.misc.ListUtils;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
@@ -245,33 +240,11 @@ public class SQF_Editor extends BasicCodeEditor
 	
 	@Override
 	protected ParseTree doParse(String input) {
-		// preprocess
-		ANTLRInputStream prepIn = new ANTLRInputStream(input.toString());
-		
-		PreprocessorLexer prepLexer = new PreprocessorLexer(prepIn);
-		
-		CommonTokenStream prepTokens = new CommonTokenStream(prepLexer);
-		
-		PreprocessorParser prepParser = new PreprocessorParser(prepTokens);
-		
-		prepParser.removeErrorListeners();
-		prepParser.addErrorListener(new PreprocessorErrorListener(this, 0));
-		
-		ParseTreeWalker prepWalker = new ParseTreeWalker();
-		
-		PreprocessorParseListener preprocessorListener = new PreprocessorParseListener(this);
-		
-		prepWalker.walk(preprocessorListener, prepParser.start());
-		
-		setMacros(preprocessorListener.getDefinedMacros(), true);
-		
-		
-		// SQF parsing
 		BasicErrorListener listener = new BasicErrorListener(this);
 		
 		ANTLRInputStream in = new ANTLRInputStream(input);
 		
-		SQFLexer lexer = new SQFLexer(in, ListUtils.toLowerCase(getBinaryKeywords()), macroNames);
+		SQFLexer lexer = new SQFLexer(in, getBinaryKeywords(), macroNames);
 		lexer.removeErrorListeners();
 		lexer.addErrorListener(listener);
 		
@@ -286,16 +259,18 @@ public class SQF_Editor extends BasicCodeEditor
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
 		
-		return parser.code();
+		return parser.start();
 	}
 	
 	@Override
-	public void processParseTree(ParseTree parseTree) {
+	public boolean processParseTree(ParseTree parseTree) {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		
 		walker.walk(new SQFParseListener(this, currentStream), parseTree);
 		
 		applyParseChanges();
+		
+		return true;
 	}
 	
 	/**
@@ -326,21 +301,21 @@ public class SQF_Editor extends BasicCodeEditor
 	 * Gets all SQF commands that can be used as a binary operator
 	 */
 	public List<SQFCommand> getBinaryOperators() {
-		return binaryCommands;
+		return new ArrayList<SQFCommand>(binaryCommands);
 	}
 	
 	/**
 	 * Gets all SQF commands that can be used as a unary operator
 	 */
 	public List<SQFCommand> getUnaryOperators() {
-		return unaryCommands;
+		return new ArrayList<SQFCommand>(unaryCommands);
 	}
 	
 	/**
 	 * Gets all SQF commands that can be used as a nular operator
 	 */
 	public List<SQFCommand> getNularOperators() {
-		return nularCommands;
+		return new ArrayList<SQFCommand>(nularCommands);
 	}
 	
 	/**

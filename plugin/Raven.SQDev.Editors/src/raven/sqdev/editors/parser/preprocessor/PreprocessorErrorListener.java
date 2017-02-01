@@ -1,4 +1,4 @@
-package raven.sqdev.editors.sqfeditor.parsing;
+package raven.sqdev.editors.parser.preprocessor;
 
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;

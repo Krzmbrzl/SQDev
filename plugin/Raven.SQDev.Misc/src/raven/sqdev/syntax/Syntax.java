@@ -1,6 +1,8 @@
 package raven.sqdev.syntax;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -186,10 +188,12 @@ public class Syntax {
 	 *             If the input is invalid
 	 */
 	public static Syntax parseSyntax(String input, String commandName) throws BadSyntaxException {
-		if (input == null || input.isEmpty() || commandName == null || commandName.isEmpty()) {
+		if (input == null || input.trim().isEmpty() || commandName == null || commandName.isEmpty()) {
 			// can't process
 			throw new IllegalArgumentException("The given input or commandName is invalid!");
 		}
+		
+		input = input.trim();
 		
 		// check that the commandName is properly contained in the input
 		boolean isContained = false;
@@ -231,9 +235,20 @@ public class Syntax {
 		
 		Syntax syntax = new Syntax(commandName);
 		
-		String inputBeforeCommand = input.substring(0, input.indexOf(commandName)).trim();
-		String inputAfterCommand = input
-				.substring(input.indexOf(commandName) + commandName.length()).trim();
+		// find the position of the command in the syntax
+		Matcher commandMatcher;
+		if (!Character.isLetter(commandName.charAt(0))) {
+			// match without word boundaries
+			commandMatcher = Pattern.compile(Pattern.quote(commandName)).matcher(input);
+		} else {
+			// match with word boundaries
+			commandMatcher = Pattern.compile("\\b" + Pattern.quote(commandName) + "\\b")
+					.matcher(input);
+		}
+		commandMatcher.find();
+		
+		String inputBeforeCommand = input.substring(0, commandMatcher.start()).trim();
+		String inputAfterCommand = input.substring(commandMatcher.end()).trim();
 		
 		try {
 			if (!inputBeforeCommand.isEmpty()) {

@@ -14,7 +14,7 @@ public enum EDataType implements IReplaceTester {
 		public String[] getStringRepresentations() {
 			return new String[] { "Any_Value", "Any Value", "Any", "AnyValue" };
 		}
-
+		
 		@Override
 		public boolean canBeUsedAs(EDataType type) {
 			return true;
@@ -25,7 +25,7 @@ public enum EDataType implements IReplaceTester {
 		public String[] getStringRepresentations() {
 			return new String[] { "Anything" };
 		}
-
+		
 		@Override
 		public boolean canBeUsedAs(EDataType type) {
 			return true;
@@ -36,10 +36,19 @@ public enum EDataType implements IReplaceTester {
 		public String[] getStringRepresentations() {
 			return new String[] { "Array" };
 		}
-
+		
 		@Override
 		public boolean canBeUsedAs(EDataType type) {
-			return type.equals(POSITION);
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(POSITION) || type.equals(POSITION2D)
+					|| type.equals(EDataType.POSITION3D) || type.equals(POSITION_CONFIG)
+					|| type.equals(POSITION_AGL) || type.equals(POSITION_AGLS)
+					|| type.equals(POSITION_ASL) || type.equals(POSITION_ASLW)
+					|| type.equals(POSITION_ATL) || type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD) || type.equals(WAYPOINT);
 		}
 	},
 	BOOLEAN {
@@ -78,10 +87,22 @@ public enum EDataType implements IReplaceTester {
 			return new String[] { "Diary_Record", "Diary Record", "Diary", "DiaryRecord" };
 		}
 	},
+	EDEN_ENTITY {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "EdenEntity", "Eden", "3denEntity", "3den" };
+		}
+	},
 	EDITOR_OBJECT {
 		@Override
 		public String[] getStringRepresentations() {
 			return new String[] { "Ediotor_Object", "Editor Object", "Editor", "EditorObject" };
+		}
+	},
+	EXCEPTION {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "Exception", "ExceptionType" };
 		}
 	},
 	FOR_TYPE {
@@ -114,6 +135,13 @@ public enum EDataType implements IReplaceTester {
 			return new String[] { "Namespace" };
 		}
 	},
+	NETOBJECT {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "NetObject", "Net" };
+		}
+		
+	},
 	NOTHING {
 		@Override
 		public String[] getStringRepresentations() {
@@ -131,6 +159,15 @@ public enum EDataType implements IReplaceTester {
 		public String[] getStringRepresentations() {
 			return new String[] { "Object" };
 		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(NETOBJECT);
+		}
 	},
 	ORIENT {
 		@Override
@@ -143,16 +180,216 @@ public enum EDataType implements IReplaceTester {
 		public String[] getStringRepresentations() {
 			return new String[] { "Position" };
 		}
-
+		
 		@Override
 		public boolean canBeUsedAs(EDataType type) {
-			return type.equals(ARRAY);
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(POSITION2D)
+					|| type.equals(EDataType.POSITION3D) || type.equals(POSITION_CONFIG)
+					|| type.equals(POSITION_AGL) || type.equals(POSITION_AGLS)
+					|| type.equals(POSITION_ASL) || type.equals(POSITION_ASLW)
+					|| type.equals(POSITION_ATL) || type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION2D {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "Position2D", "2D" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION3D {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "Position3D", "3D" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION_CONFIG {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "PositionConfig" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_AGL) || type.equals(POSITION_AGLS)
+					|| type.equals(POSITION_ASL) || type.equals(POSITION_ASLW)
+					|| type.equals(POSITION_ATL) || type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION_AGL {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "PositionAGL", "AGL" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION_AGLS {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "PositionAGLS", "AGLS" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION_ASL {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "PositionASL", "ASL" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION_ASLW {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "PositionASLW", "ASLW" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION_ATL {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "PositionATL", "ATL" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION_WORLD {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "PositionWorld", "World" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+		}
+	},
+	POSITION_RELATIVE {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "PositionRelative", "Relative" };
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			if (super.canBeUsedAs(type)) {
+				return true;
+			}
+			
+			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	SCRIPT_HANDLE {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Script_Handle", "Script Handle", "Script", "ScriptHandle" };
+			return new String[] { "Script_Handle", "Script Handle", "Script", "ScriptHandle",
+					"Script_" };
 		}
 	},
 	SIDE {
@@ -170,7 +407,8 @@ public enum EDataType implements IReplaceTester {
 	STRUCTURED_TEXT {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Structured_Text", "Structured Text", "Structured", "Text", "StructuredText" };
+			return new String[] { "Structured_Text", "Structured Text", "Structured", "Text",
+					"StructuredText" };
 		}
 	},
 	SWITCH_TYPE {
@@ -203,6 +441,13 @@ public enum EDataType implements IReplaceTester {
 			return new String[] { "Trans" };
 		}
 	},
+	UNKNOWN {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "Unknown" };
+		}
+		
+	},
 	VECTOR {
 		@Override
 		public String[] getStringRepresentations() {
@@ -212,21 +457,34 @@ public enum EDataType implements IReplaceTester {
 	VOID {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Void" };
+			return new String[] { "Void", "nil" };
 		}
+	},
+	WAYPOINT {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "Waypoint" };
+		}
+		
 	},
 	WHILE_TYPE {
 		@Override
 		public String[] getStringRepresentations() {
 			return new String[] { "While_Type", "While Type", "While", "WhileType" };
 		}
+	},
+	WITH_TYPE {
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] { "With_Type", "With Type", "With", "WithType" };
+		}
 	};
-
+	
 	/**
 	 * Gets all possible String represnetations of this data type
 	 */
 	public abstract String[] getStringRepresentations();
-
+	
 	/**
 	 * Checks whether this data type can be used instead of the given data type
 	 * 
@@ -236,7 +494,7 @@ public enum EDataType implements IReplaceTester {
 	public boolean canBeUsedAs(EDataType type) {
 		return type.equals(this) || type.equals(ANYTHING) || type.equals(ANY_VALUE);
 	}
-
+	
 	/**
 	 * Resolves the given String into a <code>EDataType</code> by matching it
 	 * against all possible String representations of all available data types.
@@ -250,7 +508,7 @@ public enum EDataType implements IReplaceTester {
 	 */
 	public static EDataType resolve(String str) {
 		str = str.toLowerCase().trim();
-
+		
 		for (EDataType currentType : values()) {
 			for (String currentRepresentation : currentType.getStringRepresentations()) {
 				if (currentRepresentation.toLowerCase().equals(str)) {
@@ -258,19 +516,23 @@ public enum EDataType implements IReplaceTester {
 				}
 			}
 		}
-
+		
 		return null;
 	}
-
+	
 	@Override
 	public boolean canBeReplacedBy(Object obj) {
 		if (obj == null || !(obj instanceof EDataType)) {
 			return false;
 		}
-
+		
+		if (obj.equals(this)) {
+			return true;
+		}
+		
 		return canBeUsedAs((EDataType) obj);
 	}
-
+	
 	@Override
 	public String toString() {
 		return getStringRepresentations()[0];

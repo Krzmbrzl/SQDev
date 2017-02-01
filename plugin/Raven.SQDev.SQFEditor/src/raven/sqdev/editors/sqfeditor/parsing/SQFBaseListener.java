@@ -18,6 +18,18 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterStart(SQFParser.StartContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStart(SQFParser.StartContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCode(SQFParser.CodeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -90,25 +102,13 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMacroExpression(SQFParser.MacroExpressionContext ctx) { }
+	@Override public void enterPrimaryExpression(SQFParser.PrimaryExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMacroExpression(SQFParser.MacroExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterUnaryOperator(SQFParser.UnaryOperatorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitUnaryOperator(SQFParser.UnaryOperatorContext ctx) { }
+	@Override public void exitPrimaryExpression(SQFParser.PrimaryExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -205,18 +205,6 @@ public class SQFBaseListener implements SQFListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCommonError(SQFParser.CommonErrorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNularExpression(SQFParser.NularExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNularExpression(SQFParser.NularExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

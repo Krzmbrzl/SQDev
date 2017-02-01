@@ -2,9 +2,13 @@ package raven.sqdev.editors;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -27,6 +31,10 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
+import raven.sqdev.editors.parser.preprocessor.PreprocessorErrorListener;
+import raven.sqdev.editors.parser.preprocessor.PreprocessorLexer;
+import raven.sqdev.editors.parser.preprocessor.PreprocessorParseListener;
+import raven.sqdev.editors.parser.preprocessor.PreprocessorParser;
 import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.interfaces.IManager;
 import raven.sqdev.misc.CharacterPair;
@@ -121,9 +129,10 @@ public class BasicCodeEditor extends TextEditor {
 	}
 	
 	@Override
-	public ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(),
-				isOverviewRulerVisible(), styles);
+	public ISourceViewer createSourceViewer(Composite parent,
+			IVerticalRuler ruler, int styles) {
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler,
+				getOverviewRuler(), isOverviewRulerVisible(), styles);
 		
 		getSourceViewerDecorationSupport(viewer);
 		
@@ -145,13 +154,14 @@ public class BasicCodeEditor extends TextEditor {
 	}
 	
 	@Override
-	protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
+	protected void configureSourceViewerDecorationSupport(
+			SourceViewerDecorationSupport support) {
 		super.configureSourceViewerDecorationSupport(support);
 		
 		char[] matchChars = { '(', ')', '[', ']', '{', '}' }; // which brackets
 																// to match
-		ICharacterPairMatcher matcher = new DefaultCharacterPairMatcher(matchChars,
-				IDocumentExtension3.DEFAULT_PARTITIONING, true);
+		ICharacterPairMatcher matcher = new DefaultCharacterPairMatcher(
+				matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
 		
 		// character pair matching
 		support.setCharacterPairMatcher(matcher);
@@ -175,7 +185,8 @@ public class BasicCodeEditor extends TextEditor {
 		return editorKeyEventQueue;
 	}
 	
-	public void setEditorKeyEventQueue(EditorKeyEventQueue editorKeyEventQueue) {
+	public void setEditorKeyEventQueue(
+			EditorKeyEventQueue editorKeyEventQueue) {
 		this.editorKeyEventQueue = editorKeyEventQueue;
 	}
 	
@@ -233,8 +244,8 @@ public class BasicCodeEditor extends TextEditor {
 		// infrastructure for code folding
 		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
 		
-		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(),
-				getSharedColors());
+		ProjectionSupport projectionSupport = new ProjectionSupport(viewer,
+				getAnnotationAccess(), getSharedColors());
 		
 		projectionSupport.install();
 		
@@ -285,7 +296,8 @@ public class BasicCodeEditor extends TextEditor {
 					if ((getSourceViewer() instanceof ISourceViewerExtension2)
 							&& reconfigureSourceViewer) {
 						// reconfigure the SourceViewer
-						((ISourceViewerExtension2) getSourceViewer()).unconfigure();
+						((ISourceViewerExtension2) getSourceViewer())
+								.unconfigure();
 						getSourceViewer().configure(getBasicConfiguration());
 					}
 				}
@@ -300,7 +312,8 @@ public class BasicCodeEditor extends TextEditor {
 	 */
 	public BasicSourceViewerConfiguration getBasicConfiguration() {
 		if (configuration == null) {
-			configuration = new BasicSourceViewerConfiguration(getColorManager(), this);
+			configuration = new BasicSourceViewerConfiguration(
+					getColorManager(), this);
 		}
 		
 		return configuration;
@@ -340,7 +353,10 @@ public class BasicCodeEditor extends TextEditor {
 	
 	/**
 	 * Parses the input of this editor, updates the parseTree and sends it to
-	 * the {@link #processParseTree(ParseTree)} method automatically
+	 * the {@link #processParseTree(ParseTree)} method automatically. Before
+	 * doing so it will call the preprocessor parser via
+	 * {@link #doPreprocessorParsing(String)}. If you need to specify a custom
+	 * preprocessor parser or disable it you have to overwrite that method.
 	 * 
 	 * @return <code>True</code> if the parsing could be done successfully and
 	 *         <code>False</code> otherwise
@@ -362,16 +378,59 @@ public class BasicCodeEditor extends TextEditor {
 			return false;
 		}
 		
+		// preprocess
+		doPreprocessorParsing(input);
+		
+		long time = Calendar.getInstance().getTimeInMillis();
+		
+		// parse
 		ParseTree output = doParse(input);
 		
+		System.out.println("Parse time: "
+				+ (Calendar.getInstance().getTimeInMillis() - time));
+		
 		if (output == null) {
+			applyParseChanges();
+			
 			return false;
 		} else {
 			parseTree = output;
 			
-			processParseTree(parseTree);
+			if (!processParseTree(parseTree)) {
+				applyParseChanges();
+			}
 			
 			return true;
+		}
+	}
+	
+	/**
+	 * A default implementation of a preprocessor parser that parses the input
+	 * first and sets the found macros if this editor is an instance of
+	 * <code>IMacroSupport</code>.
+	 */
+	protected void doPreprocessorParsing(String input) {
+		if (this instanceof IMacroSupport) {
+			ANTLRInputStream prepIn = new ANTLRInputStream(input);
+			
+			PreprocessorLexer prepLexer = new PreprocessorLexer(prepIn);
+			
+			CommonTokenStream prepTokens = new CommonTokenStream(prepLexer);
+			
+			PreprocessorParser prepParser = new PreprocessorParser(prepTokens);
+			
+			prepParser.removeErrorListeners();
+			prepParser.addErrorListener(new PreprocessorErrorListener(this, 0));
+			
+			ParseTreeWalker prepWalker = new ParseTreeWalker();
+			
+			PreprocessorParseListener preprocessorListener = new PreprocessorParseListener(
+					this);
+			
+			prepWalker.walk(preprocessorListener, prepParser.start());
+			
+			((IMacroSupport) this)
+					.setMacros(preprocessorListener.getDefinedMacros(), true);
 		}
 	}
 	
@@ -383,8 +442,12 @@ public class BasicCodeEditor extends TextEditor {
 	 * 
 	 * @param tree
 	 *            The generated tree
+	 * @return Whether this function has called {@link #applyParseChanges()}. If
+	 *         not the default implementation of {@link #parseInput()} will call
+	 *         this function afterwards.
 	 */
-	protected void processParseTree(ParseTree parseTree) {
+	protected boolean processParseTree(ParseTree parseTree) {
+		return false;
 	}
 	
 	/**
@@ -392,7 +455,11 @@ public class BasicCodeEditor extends TextEditor {
 	 * for this editor. <br>
 	 * It is recommended to do the parsing in an extra thread<br>
 	 * Note: You might want to call {@link #applyParseChanges()} after parsing
-	 * (or rather after {@link #processParseTree(ParseTree)}
+	 * (or rather after {@link #processParseTree(ParseTree)}.<br>
+	 * Not that before this method is called
+	 * {@link #doPreprocessorParsing(String)} gets called. If you don't want to
+	 * use the default preprocessor parsing strategy you have to overwrite that
+	 * method.
 	 * 
 	 * @param input
 	 *            The input to parse
@@ -415,8 +482,9 @@ public class BasicCodeEditor extends TextEditor {
 	 */
 	protected void createManagers(List<IManager> managerList) {
 		// add folding manager
-		managerList.add(new BasicFoldingManager(
-				((ProjectionViewer) getSourceViewer()).getProjectionAnnotationModel()));
+		managerList.add(
+				new BasicFoldingManager(((ProjectionViewer) getSourceViewer())
+						.getProjectionAnnotationModel()));
 		// add marker manager
 		managerList.add(new BasicMarkerManager(this));
 	}
@@ -438,14 +506,16 @@ public class BasicCodeEditor extends TextEditor {
 	 *            The severity of the marker (has to be one specified by
 	 *            <code>IMarker</code>)
 	 */
-	public void createMarker(String type, int offset, int length, String message, int severity) {
+	public void createMarker(String type, int offset, int length,
+			String message, int severity) {
 		if (getEditorInput() == null) {
 			return;
 		}
 		
 		int line;
 		try {
-			line = getBasicProvider().getDocument(getEditorInput()).getLineOfOffset(offset);
+			line = getBasicProvider().getDocument(getEditorInput())
+					.getLineOfOffset(offset);
 		} catch (BadLocationException e) {
 			try {
 				throw new SQDevEditorException("Can't create marker", e);
@@ -456,8 +526,8 @@ public class BasicCodeEditor extends TextEditor {
 			}
 		}
 		
-		((BasicMarkerManager) getManager(BasicMarkerManager.TYPE)).addMarker(type, line, offset,
-				length, severity, message);
+		((BasicMarkerManager) getManager(BasicMarkerManager.TYPE))
+				.addMarker(type, line, offset, length, severity, message);
 	}
 	
 	@Override
@@ -515,7 +585,8 @@ public class BasicCodeEditor extends TextEditor {
 		}
 		
 		foldingManager.addFoldingArea(
-				new AbstractMap.SimpleEntry<ProjectionAnnotation, Position>(annotation, position));
+				new AbstractMap.SimpleEntry<ProjectionAnnotation, Position>(
+						annotation, position));
 	}
 	
 	/**
@@ -523,6 +594,7 @@ public class BasicCodeEditor extends TextEditor {
 	 * code)
 	 */
 	public boolean isValid() {
-		return ((BasicMarkerManager) getManager(BasicMarkerManager.TYPE)).isValidState();
+		return ((BasicMarkerManager) getManager(BasicMarkerManager.TYPE))
+				.isValidState();
 	}
 }

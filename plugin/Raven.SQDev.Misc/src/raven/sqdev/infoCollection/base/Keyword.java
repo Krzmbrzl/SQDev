@@ -18,22 +18,22 @@ public class Keyword implements Comparable<Keyword>, ISaveable {
 	 * The sequence indicating the start of the keyword attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String KEYWORD_START_SAVESEQUENCE = "KeywordStart:";
+	public static final String KEYWORD_START_SAVESEQUENCE = "<Keyword>";
 	/**
 	 * The sequence indicating the end of the keyword attribute in the saveable
 	 * String format of this class
 	 */
-	public static final String KEYWORD_END_SAVESEQUENCE = "//KeywordEnd//";
+	public static final String KEYWORD_END_SAVESEQUENCE = "</Keyword>";
 	/**
 	 * The sequence indicating the start of the description attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String DESCRIPTION_START_SAVESEQUENCE = "DescriptionStart:";
+	public static final String DESCRIPTION_START_SAVESEQUENCE = "<Description>";
 	/**
 	 * The sequence indicating the end of the description attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String DESCRIPTION_END_SAVESEQUENCE = "//DescriptionEnd//";
+	public static final String DESCRIPTION_END_SAVESEQUENCE = "</Description>";
 	
 	/**
 	 * The keyword itself
@@ -192,9 +192,9 @@ public class Keyword implements Comparable<Keyword>, ISaveable {
 	@Override
 	public String getSaveableFormat() {
 		// store attributes
-		String saveFormat = KEYWORD_START_SAVESEQUENCE + "\n" + getKeyword() + "\n"
+		String saveFormat = KEYWORD_START_SAVESEQUENCE + "\n\t" + getKeyword() + "\n"
 				+ KEYWORD_END_SAVESEQUENCE + "\n";
-		saveFormat += DESCRIPTION_START_SAVESEQUENCE + "\n" + getDescription() + "\n"
+		saveFormat += DESCRIPTION_START_SAVESEQUENCE + "\n\t" + getDescription() + "\n"
 				+ DESCRIPTION_END_SAVESEQUENCE;
 				
 		return saveFormat;

@@ -924,6 +924,7 @@ public class RPTViewer extends ViewPart
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		/*

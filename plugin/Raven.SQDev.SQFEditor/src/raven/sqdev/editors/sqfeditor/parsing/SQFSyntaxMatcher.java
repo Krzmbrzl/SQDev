@@ -80,10 +80,15 @@ public class SQFSyntaxMatcher {
 	 *            argument and it's length in the editor
 	 * @return Whether the types could be applied successfully
 	 */
-	public boolean applyArgument(EDataType[] argumentTypes, boolean leftSide, int[] offsets) {
+	public boolean applyArgument(EDataType[] argumentTypes, boolean leftSide, int[] offsets) {		
 		List<EDataType> possibleTypes = new ArrayList<EDataType>();
 
 		for (Syntax currentSyntax : syntaxes) {
+			if(leftSide && !currentSyntax.isBinary()) {
+				// non-binary syntaxes can not have left arguments
+				continue;
+			}
+			
 			List<EDataType> currentlyPossibleTypes = getTypesForSide(currentSyntax, leftSide);
 
 			for (EDataType currentType : argumentTypes) {
