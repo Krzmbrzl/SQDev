@@ -154,61 +154,71 @@ public class FileSystemWatcher {
 			public void run() {
 				int interruptions = 0;
 				
-				while (continueChecking.get()) {
-					try {
-						if (interruptions > 3) {
-							// Discard if it has been interrupted 3 times in a
-							// row
-							Thread.currentThread().interrupt();
-							
-							throw new SQDevCoreException(
-									"File system watcher has been interrupted!");
-						}
-						
-						WatchKey key = watchService.poll(1, TimeUnit.SECONDS);
-						
-						if (key != null) {
-							// Dequeueing events
-							for (WatchEvent<?> watchEvent : key.pollEvents()) {
-								Kind<?> eventKind = watchEvent.kind();
-								
-								if (eventKind == StandardWatchEventKinds.OVERFLOW) {
-									continue; // do nothing
+				try {
+					while (continueChecking.get()) {
+						try {
+							if (interruptions > 3) {
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+									
+									throw new SQDevCoreException(
+											"Interrupted FileSystemWatcher!",
+											e);
 								}
-								
-								EFileChangeType type;
-								
-								if (eventKind == StandardWatchEventKinds.ENTRY_CREATE) {
-									type = EFileChangeType.CREATED;
-								} else {
-									if (eventKind == StandardWatchEventKinds.ENTRY_DELETE) {
-										type = EFileChangeType.DELETED;
-									} else {
-										type = EFileChangeType.CHANGED;
-									}
-								}
-								
-								Path root = (Path) key.watchable();
-								Path target = (Path) watchEvent.context();
-								
-								watchedPathChanged(root, target, type);
 							}
 							
-							// reset key
-							key.reset();
+							WatchKey key = watchService.poll(1,
+									TimeUnit.SECONDS);
+							
+							interruptions = 0;
+							
+							if (key != null) {
+								// Dequeueing events
+								for (WatchEvent<?> watchEvent : key
+										.pollEvents()) {
+									Kind<?> eventKind = watchEvent.kind();
+									
+									if (eventKind == StandardWatchEventKinds.OVERFLOW) {
+										continue; // do nothing
+									}
+									
+									EFileChangeType type;
+									
+									if (eventKind == StandardWatchEventKinds.ENTRY_CREATE) {
+										type = EFileChangeType.CREATED;
+									} else {
+										if (eventKind == StandardWatchEventKinds.ENTRY_DELETE) {
+											type = EFileChangeType.DELETED;
+										} else {
+											type = EFileChangeType.CHANGED;
+										}
+									}
+									
+									Path root = (Path) key.watchable();
+									Path target = (Path) watchEvent.context();
+									
+									watchedPathChanged(root, target, type);
+								}
+								
+								// reset key
+								key.reset();
+							}
+							
+							if (watchKeys.size() == 0) {
+								// There are no watched paths anymore -> exit
+								// loop
+								continueChecking.set(false);
+							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							
+							interruptions++;
 						}
-						
-						if (watchKeys.size() == 0) {
-							// There are no watched paths anymore -> exit loop
-							continueChecking.set(false);
-						}
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						
-						interruptions++;
-					} finally {
-						isWatching.set(false);
 					}
+				} finally {
+					isWatching.set(false);
 				}
 			}
 		});

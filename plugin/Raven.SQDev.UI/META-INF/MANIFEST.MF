@@ -8,10 +8,10 @@ Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  raven.sqdev.editors,
- org.eclipse.ui.ide,
- org.eclipse.ui.editors;bundle-version="3.8.200",
+ raven.sqdev.util,
  org.eclipse.ui.navigator,
- raven.sqdev.util
+ org.eclipse.ui.ide,
+ org.eclipse.ui.editors;bundle-version="3.8.200"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
@@ -26,5 +26,4 @@ Import-Package: org.eclipse.jdt.core.search,
  raven.sqdev.fileSystemListener,
  raven.sqdev.interfaces,
  raven.sqdev.misc,
- raven.sqdev.pluginManagement,
  raven.sqdev.util

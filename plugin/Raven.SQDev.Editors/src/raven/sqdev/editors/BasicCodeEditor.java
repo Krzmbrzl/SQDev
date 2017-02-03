@@ -2,7 +2,6 @@ package raven.sqdev.editors;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -10,6 +9,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -378,30 +380,36 @@ public class BasicCodeEditor extends TextEditor {
 			return false;
 		}
 		
-		// preprocess
-		doPreprocessorParsing(input);
-		
-		long time = Calendar.getInstance().getTimeInMillis();
-		
-		// parse
-		ParseTree output = doParse(input);
-		
-		System.out.println("Parse time: "
-				+ (Calendar.getInstance().getTimeInMillis() - time));
-		
-		if (output == null) {
-			applyParseChanges();
+		Job parseJob = new Job("Parsing \"" + getEditorInput().getName() + "\"...") {
 			
-			return false;
-		} else {
-			parseTree = output;
-			
-			if (!processParseTree(parseTree)) {
-				applyParseChanges();
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				// preprocess
+				doPreprocessorParsing(input);
+				
+				// parse
+				ParseTree output = doParse(input);
+				
+				if (output == null) {
+					applyParseChanges();
+					
+					return Status.CANCEL_STATUS;
+				} else {
+					parseTree = output;
+					
+					if (!processParseTree(parseTree)) {
+						applyParseChanges();
+					}
+					
+					return Status.OK_STATUS;
+				}
 			}
-			
-			return true;
-		}
+		};
+		
+		// start parsing
+		parseJob.schedule();
+		
+		return true;
 	}
 	
 	/**
@@ -453,10 +461,9 @@ public class BasicCodeEditor extends TextEditor {
 	/**
 	 * Parses the input of this editor in order to set the {@link #parseTree}
 	 * for this editor. <br>
-	 * It is recommended to do the parsing in an extra thread<br>
 	 * Note: You might want to call {@link #applyParseChanges()} after parsing
 	 * (or rather after {@link #processParseTree(ParseTree)}.<br>
-	 * Not that before this method is called
+	 * Note that before this method is called
 	 * {@link #doPreprocessorParsing(String)} gets called. If you don't want to
 	 * use the default preprocessor parsing strategy you have to overwrite that
 	 * method.
