@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: UI
 Bundle-SymbolicName: raven.sqdev.ui;singleton:=true
-Bundle-Version: 0.1.0.dev2
+Bundle-Version: 0.1.0.dev3
 Bundle-Activator: raven.sqdev.ui.Activator
 Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.ui,

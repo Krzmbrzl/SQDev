@@ -541,7 +541,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	public void setLabelText(String text) {
 		this.labelText = text;
 		
-		if (label != null) {
+		if (label != null && !label.isDisposed()) {
 			// update label if it has already been created
 			label.setText(text);
 			

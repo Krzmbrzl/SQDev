@@ -1,6 +1,5 @@
 package raven.sqdev.wizards;
 
-import org.eclipse.ui.wizards.newresource.BasicNewFolderResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 public class SQDevBaseNewFileWizard extends BasicNewProjectResourceWizard {
