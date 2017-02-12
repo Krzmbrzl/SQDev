@@ -36,10 +36,11 @@ public class CreatePluginInfo extends AbstractHandler {
 		shell.setText("Create plugin information");
 		
 		Label description = new Label(shell, SWT.NONE);
-		description.setText("This will create a zip file with some standard information about "
-				+ "your system, the SQDev plugin and the running eclipse version "
-				+ "as well as it's log file.\nIt will be named \"" + Util.PLUGIN_INFO_FILE_NAME
-				+ "\".\n");
+		description.setText(
+				"This will create a zip file with some standard information about "
+						+ "your system, the SQDev plugin and the running eclipse version "
+						+ "as well as it's log file.\nIt will be named \""
+						+ Util.PLUGIN_INFO_FILE_NAME + "\".\n");
 		
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Create and open");
@@ -48,18 +49,22 @@ public class CreatePluginInfo extends AbstractHandler {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					Desktop.getDesktop().open(Util.getPluginInfoZipAsFile().getParentFile());
+					Desktop.getDesktop().open(
+							Util.getPluginInfoZipAsFile().getParentFile());
 				} catch (IOException e1) {
 					e1.printStackTrace();
 					
 					SQDevInfobox info = new SQDevInfobox(
 							"Failed at creating or opeing error info file", e1);
 					info.open(false);
+				} finally {
+					shell.dispose();
 				}
 			}
 		});
 		
-		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		button.setLayoutData(
+				new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		
 		
 		shell.pack();

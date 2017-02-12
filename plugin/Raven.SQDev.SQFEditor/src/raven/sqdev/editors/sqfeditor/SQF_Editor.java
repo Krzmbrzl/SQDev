@@ -104,15 +104,20 @@ public class SQF_Editor extends BasicCodeEditor
 		
 		// create respective keywordScanners
 		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
+				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
+				false);
 		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY, false);
+				SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				false);
 		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY, false);
+				SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				false);
 		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY, false);
+				SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
+				false);
 		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY, true);
+				SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
+				true);
 		
 		// get keywordScanner
 		KeywordScanner keywordScanner = configuration.getKeywordScanner(
@@ -128,12 +133,14 @@ public class SQF_Editor extends BasicCodeEditor
 		keywordScanner.addKeywordListChangeListener(this);
 		
 		// get PartitionScanner
-		BasicPartitionScanner partitionScanner = getBasicProvider().getPartitionScanner();
+		BasicPartitionScanner partitionScanner = getBasicProvider()
+				.getPartitionScanner();
 		
 		// exchange the string rule of the partitionScanner
-		partitionScanner.removeRule(BasicPartitionScanner.DOUBLE_QUOTE_STRING_RULE);
 		partitionScanner
-				.addRule(new SQFStringPartitionRule(new Token(BasicPartitionScanner.BASIC_STRING)));
+				.removeRule(BasicPartitionScanner.DOUBLE_QUOTE_STRING_RULE);
+		partitionScanner.addRule(new SQFStringPartitionRule(
+				new Token(BasicPartitionScanner.BASIC_STRING)));
 		
 		binaryCommands = new ArrayList<SQFCommand>();
 		unaryCommands = new ArrayList<SQFCommand>();
@@ -178,16 +185,20 @@ public class SQF_Editor extends BasicCodeEditor
 		// if this file is part of a project
 		if (input instanceof IFileEditorInput) {
 			// get the containing project
-			IProject containingProject = ((IFileEditorInput) input).getFile().getProject();
+			IProject containingProject = ((IFileEditorInput) input).getFile()
+					.getProject();
 			
-			if (containingProject != null && ProjectUtil.isSQDevProject(containingProject)) {
+			if (containingProject != null
+					&& ProjectUtil.isSQDevProject(containingProject)) {
 				try {
 					// get the linking file
-					SQDevFile linkFile = new SQDevFile(containingProject
-							.getFile(ESQDevFileType.LINK + EFileType.SQDEV.getExtension()));
+					SQDevFile linkFile = new SQDevFile(
+							containingProject.getFile(ESQDevFileType.LINK
+									+ EFileType.SQDEV.getExtension()));
 					
 					// check if autoExport is enabled for this project
-					boolean autoExport = linkFile.parseAttribute(ESQDevFileAttribute.AUTOEXPORT)
+					boolean autoExport = linkFile
+							.parseAttribute(ESQDevFileAttribute.AUTOEXPORT)
 							.getValue().equals("true");
 					
 					if (autoExport) {
@@ -196,15 +207,18 @@ public class SQF_Editor extends BasicCodeEditor
 							
 							@Override
 							protected IStatus run(IProgressMonitor monitor) {
-								monitor.beginTask(
-										"Export project \"" + containingProject.getName() + "\"",
+								monitor.beginTask("Export project \""
+										+ containingProject.getName() + "\"",
 										1);
 								try {
 									ProjectUtil.export(containingProject,
-											Util.getExportPathFor(containingProject),
-											linkFile.parseAnnotation(ESQDevFileAnnotation.IGNORE)
+											Util.getExportPathFor(
+													containingProject),
+											linkFile.parseAnnotation(
+													ESQDevFileAnnotation.IGNORE)
 													.getValues(),
-											linkFile.parseAnnotation(ESQDevFileAnnotation.PRESERVE)
+											linkFile.parseAnnotation(
+													ESQDevFileAnnotation.PRESERVE)
 													.getValues());
 									
 									monitor.worked(1);
@@ -221,17 +235,20 @@ public class SQF_Editor extends BasicCodeEditor
 						exportJob.schedule();
 					}
 					
-				} catch (FileNotFoundException | IllegalAccessStateException e) {
+				} catch (FileNotFoundException
+						| IllegalAccessStateException e) {
 					e.printStackTrace();
 					
-					SQDevInfobox info = new SQDevInfobox("Couldn't perform linking process!", e);
+					SQDevInfobox info = new SQDevInfobox(
+							"Couldn't perform linking process!", e);
 					info.open();
 				} catch (SQDevFileIsInvalidException e) {
 					e.printStackTrace();
 					
 					// inform the user
 					
-					SQDevInfobox info = new SQDevInfobox("The linking file is invalid!", e);
+					SQDevInfobox info = new SQDevInfobox(
+							"The linking file is invalid!", e);
 					info.open();
 				}
 			}
@@ -244,7 +261,8 @@ public class SQF_Editor extends BasicCodeEditor
 		
 		ANTLRInputStream in = new ANTLRInputStream(input);
 		
-		SQFLexer lexer = new SQFLexer(in, getBinaryKeywords(), macroNames);
+		SQFLexer lexer = new SQFLexer(in, getBinaryKeywords(),
+				getUnaryKeywords(), macroNames);
 		lexer.removeErrorListeners();
 		lexer.addErrorListener(listener);
 		
@@ -365,7 +383,8 @@ public class SQF_Editor extends BasicCodeEditor
 				break;
 			
 			case IKeywordListChangeListener.CTX_LIST_REMOVED:
-				throw new SQDevCoreException("Unimplemented behaviour necessary");
+				throw new SQDevCoreException(
+						"Unimplemented behaviour necessary");
 		}
 	}
 	
@@ -388,7 +407,8 @@ public class SQF_Editor extends BasicCodeEditor
 			getBasicConfiguration()
 					.getKeywordScanner(
 							SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(variables));
+					.getKeywordProvider()
+					.setKeywordList(new KeywordList(variables));
 			
 			if (update) {
 				update(false);
@@ -437,7 +457,8 @@ public class SQF_Editor extends BasicCodeEditor
 			getBasicConfiguration()
 					.getKeywordScanner(
 							SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(variables));
+					.getKeywordProvider()
+					.setKeywordList(new KeywordList(variables));
 			
 			if (update) {
 				update(false);
@@ -467,7 +488,8 @@ public class SQF_Editor extends BasicCodeEditor
 	 * 
 	 * @return <code>True</code> when variables were updated
 	 */
-	public boolean setGlobalVariables(List<Variable> variables, boolean update) {
+	public boolean setGlobalVariables(List<Variable> variables,
+			boolean update) {
 		if (!globalVariables.equals(variables)) {
 			globalVariables = new ArrayList<Variable>(variables);
 			
@@ -475,7 +497,8 @@ public class SQF_Editor extends BasicCodeEditor
 			getBasicConfiguration()
 					.getKeywordScanner(
 							SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(variables));
+					.getKeywordProvider()
+					.setKeywordList(new KeywordList(variables));
 			
 			if (update) {
 				update(false);
@@ -503,7 +526,8 @@ public class SQF_Editor extends BasicCodeEditor
 	 * @param globalVariables
 	 *            The new set of global variables
 	 */
-	public void setVariables(List<Variable> localVariables, List<Variable> globalVariables) {
+	public void setVariables(List<Variable> localVariables,
+			List<Variable> globalVariables) {
 		boolean localUpdate = setLocalVariables(localVariables, false);
 		boolean globalUpdate = setGlobalVariables(globalVariables, false);
 		
@@ -526,7 +550,8 @@ public class SQF_Editor extends BasicCodeEditor
 			getBasicConfiguration()
 					.getKeywordScanner(
 							SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(macros));
+					.getKeywordProvider()
+					.setKeywordList(new KeywordList(macros));
 			
 			if (update) {
 				update(false);

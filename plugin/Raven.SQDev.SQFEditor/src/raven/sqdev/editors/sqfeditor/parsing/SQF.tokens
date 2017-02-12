@@ -25,6 +25,7 @@ R_B_O=24
 R_B_C=25
 OTHER=26
 MACRO_NAME=27
+UNARY_OPERATOR=28
 '!'=3
 '||'=4
 '&&'=5

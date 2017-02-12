@@ -87,18 +87,23 @@ public class SQFLexer extends Lexer {
 
 		
 		protected List<String> binaryOperators;
+		protected List<String> unaryOperators;
 		protected List<String> macroNames;
 		
 		
-		public SQFLexer(CharStream input, List<String> binaryOperators, List<String> macroNames) {
+		public SQFLexer(CharStream input, List<String> binaryOperators, List<String> unaryOperators, List<String> macroNames) {
 			this(input);
 			
 			// make operators lowercase
 			for(int i=0; i<binaryOperators.size(); i++) {
 				binaryOperators.set(i, binaryOperators.get(i).toLowerCase());
 			}
+			for(int i=0; i<unaryOperators.size(); i++) {
+				unaryOperators.set(i, unaryOperators.get(i).toLowerCase());
+			}
 			
 			this.binaryOperators = binaryOperators;
+			this.unaryOperators = unaryOperators;
 			this.macroNames = macroNames;
 		}
 
@@ -136,12 +141,17 @@ public class SQFLexer extends Lexer {
 		case 0:
 
 				if (macroNames.contains(getText())) {
-					// it's not an ID but a macro name'
+					// it's not an ID but a macro name
 					setType(SQFParser.MACRO_NAME);
 				} else {
 					if (binaryOperators.contains(getText().toLowerCase())) {
-						// it's not an ID but a binary operator'
+						// it's not an ID but a binary operator
 						setType(SQFParser.BINARY_OPERATOR);
+					} else {
+						if(unaryOperators.contains(getText().toLowerCase())) {
+							// it's not an ID but a unary operator
+							setType(SQFParser.UNARY_OPERATOR);
+						}
 					}
 				}
 
