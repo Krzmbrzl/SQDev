@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.interfaces.ISaveable;
 
 /**
@@ -21,24 +22,28 @@ public class KeywordList implements ISaveable {
 	 * The sequence indicating the start of the keywordList in the saveable
 	 * String format of this class
 	 */
-	public static final String LIST_START_SAVESEQUENCE = "KeywordList:";
+	public static final String LIST_START_SAVESEQUENCE = "<KeywordList>";
 	/**
 	 * The sequence indicating the end of the keywordList in the saveable String
 	 * format of this class
 	 */
-	public static final String LIST_END_SAVESEQUENCE = "//KeywordListEnd//";
+	public static final String LIST_END_SAVESEQUENCE = "</KeywordList>";
 	/**
 	 * The sequence seperating the single keywords in the saveable String format
 	 * of this class
 	 */
-	public static final String LIST_SEPERATOR_SAVESEQUENCE = "%NextListItem%";
+	public static final String LIST_SEPERATOR_SAVESEQUENCE = "</NextListItem>";
 	
 	/**
 	 * The list of keywords where every starting letter has it's own list.
-	 * Therefor <code>get('b'-('a'+1))</code> will get the list for the starting
-	 * letter b
+	 * Therefore <code>get('b'-('a'+1))</code> will get the list for the
+	 * starting letter b
 	 */
 	private List<List<Keyword>> keywords;
+	/**
+	 * A list of keywords this list has failed to recreate
+	 */
+	private List<Throwable> failures;
 	
 	
 	/**
@@ -51,6 +56,8 @@ public class KeywordList implements ISaveable {
 		for (int i = ('a' - 1); i <= 'z'; i++) {
 			keywords.add(new ArrayList<Keyword>());
 		}
+		
+		failures = new ArrayList<Throwable>();
 	}
 	
 	/**
@@ -107,7 +114,8 @@ public class KeywordList implements ISaveable {
 		int listIndex;
 		
 		if (Character.isLetter(keyword.getKeyword().charAt(0))) {
-			listIndex = Character.toLowerCase(keyword.getKeyword().charAt(0)) - ('a' - 1);
+			listIndex = Character.toLowerCase(keyword.getKeyword().charAt(0))
+					- ('a' - 1);
 		} else {
 			listIndex = 0;
 		}
@@ -154,8 +162,8 @@ public class KeywordList implements ISaveable {
 			return;
 		}
 		
-		keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0)) - ('a' - 1))
-				.remove(keyword);
+		keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0))
+				- ('a' - 1)).remove(keyword);
 	}
 	
 	/**
@@ -165,7 +173,9 @@ public class KeywordList implements ISaveable {
 	 *            The keyword to search for
 	 */
 	public boolean contains(Keyword keyword) {
-		return keywords.get(Character.toLowerCase(keyword.getKeyword().charAt(0)) - ('a' - 1))
+		return keywords
+				.get(Character.toLowerCase(keyword.getKeyword().charAt(0))
+						- ('a' - 1))
 				.contains(keyword);
 	}
 	
@@ -198,19 +208,47 @@ public class KeywordList implements ISaveable {
 	 * 
 	 * @param keyword
 	 *            The String representation of the desired keyword
+	 * @param caseSensitive
+	 *            Whether the keyword should be searched case-sensitive
 	 * @return The desired <code>Keyword</code> or <code>null</code> if none
 	 *         could be found
 	 */
-	public Keyword getKeyword(String keyword) {
-		List<Keyword> list = keywords.get(Character.toLowerCase(keyword.charAt(0)) - ('a' - 1));
+	public Keyword getKeyword(String keyword, boolean caseSensitive) {
+		List<Keyword> list = keywords
+				.get(Character.toLowerCase(keyword.charAt(0)) - ('a' - 1));
 		
-		for (Keyword currentKeyword : list) {
-			if (currentKeyword.getKeyword().equals(keyword)) {
-				return currentKeyword;
+		if (caseSensitive) {
+			// search case sensitive
+			for (Keyword currentKeyword : list) {
+				if (currentKeyword.getKeyword().equals(keyword)) {
+					return currentKeyword;
+				}
+			}
+		} else {
+			// search case-insensitive
+			keyword = keyword.toLowerCase();
+			
+			for (Keyword currentKeyword : list) {
+				if (currentKeyword.getKeyword().toLowerCase().equals(keyword)) {
+					return currentKeyword;
+				}
 			}
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Gets the keyword with the respective String representation. The search
+	 * will be done case sensitive.
+	 * 
+	 * @param keyword
+	 *            The String representation of the desired keyword
+	 * @return The desired <code>Keyword</code> or <code>null</code> if none
+	 *         could be found
+	 */
+	public Keyword getKeyword(String keyword) {
+		return getKeyword(keyword, true);
 	}
 	
 	/**
@@ -229,15 +267,16 @@ public class KeywordList implements ISaveable {
 		String saveableFormat = LIST_START_SAVESEQUENCE + "\n\n";
 		
 		for (Keyword currentKeyword : getKeywords()) {
-			saveableFormat += "\n" + currentKeyword.getSaveableFormat();
+			saveableFormat += "\n\t"
+					+ currentKeyword.getSaveableFormat().replace("\n", "\n\t");
 			
 			saveableFormat += "\n\n" + LIST_SEPERATOR_SAVESEQUENCE + "\n";
 		}
 		
 		if (getKeywords().size() > 0) {
 			// remove last seperator
-			saveableFormat = saveableFormat.substring(0,
-					saveableFormat.length() - (LIST_SEPERATOR_SAVESEQUENCE.length() + 1));
+			saveableFormat = saveableFormat.substring(0, saveableFormat.length()
+					- (LIST_SEPERATOR_SAVESEQUENCE.length() + 1));
 		}
 		
 		saveableFormat += "\n\n" + LIST_END_SAVESEQUENCE;
@@ -250,19 +289,23 @@ public class KeywordList implements ISaveable {
 		savedFormat = savedFormat.replace("\r\n", "\n");
 		
 		String listContent = savedFormat.substring(
-				savedFormat.indexOf(LIST_START_SAVESEQUENCE) + LIST_START_SAVESEQUENCE.length(),
+				savedFormat.indexOf(LIST_START_SAVESEQUENCE)
+						+ LIST_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(LIST_END_SAVESEQUENCE)).trim();
 		
-		for (String currentKeywordContent : listContent.split(LIST_SEPERATOR_SAVESEQUENCE)) {
+		for (String currentKeywordContent : listContent
+				.split(LIST_SEPERATOR_SAVESEQUENCE)) {
 			currentKeywordContent = currentKeywordContent.trim();
 			
 			Keyword currentKeyword;
 			
-			if (currentKeywordContent.contains(SQFCommand.SYNTAX_START_SAVESEQUENCE)) {
+			if (currentKeywordContent
+					.contains(SQFCommand.SYNTAX_START_SAVESEQUENCE)) {
 				// if the info corresponds to a SQF command
 				currentKeyword = new SQFCommand();
 			} else {
-				if (currentKeywordContent.contains(SQFElement.WIKI_START_SAVESEQUENCE)) {
+				if (currentKeywordContent
+						.contains(SQFElement.WIKI_START_SAVESEQUENCE)) {
 					// if the info corresponds to a SQFElement
 					currentKeyword = new SQFElement();
 				} else {
@@ -271,10 +314,14 @@ public class KeywordList implements ISaveable {
 				}
 			}
 			
-			if (!currentKeyword.recreateFrom(currentKeywordContent)) {
-				return false;
-			} else {
-				addKeyword(currentKeyword);
+			try {
+				if (!currentKeyword.recreateFrom(currentKeywordContent)) {
+					return false;
+				} else {
+					addKeyword(currentKeyword);
+				}
+			} catch (BadSyntaxException e) {
+				failures.add(e);
 			}
 		}
 		
@@ -283,7 +330,8 @@ public class KeywordList implements ISaveable {
 	
 	@Override
 	public boolean isSaveFormat(String format) {
-		if (!format.contains(LIST_START_SAVESEQUENCE) || !format.contains(LIST_END_SAVESEQUENCE)) {
+		if (!format.contains(LIST_START_SAVESEQUENCE)
+				|| !format.contains(LIST_END_SAVESEQUENCE)) {
 			return false;
 		}
 		
@@ -312,6 +360,13 @@ public class KeywordList implements ISaveable {
 		} else {
 			return keywords.get(0);
 		}
+	}
+	
+	/**
+	 * Gets the list of exceptions thrown during recreation
+	 */
+	public List<Throwable> getFailures() {
+		return failures;
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
@@ -19,10 +20,6 @@ import raven.sqdev.exceptions.SQDevException;
  * 
  */
 public class TextUtils {
-	/**
-	 * An array containing all special characters that are allowed in file names
-	 */
-	public static final char[] ALLOWED_SPECIAL_CHARACTER_FILENAME = { '.', '_' };
 	
 	/**
 	 * Counts the occurence of a String in another String
@@ -59,7 +56,8 @@ public class TextUtils {
 	 *            A list of additional characters that are allowed for this
 	 *            name. May be <code>null</code>
 	 */
-	public static boolean isValidName(String name, ArrayList<Character> allowedChars) {
+	public static boolean isValidName(String name,
+			ArrayList<Character> allowedChars) {
 		return whyIsInvalidName(name, allowedChars) == null;
 	}
 	
@@ -73,7 +71,8 @@ public class TextUtils {
 	 *            name. May be <code>null</code>
 	 * @return The error message explaining why the given name isn't valid.
 	 */
-	public static String whyIsInvalidName(String name, ArrayList<Character> allowedChars) {
+	public static String whyIsInvalidName(String name,
+			ArrayList<Character> allowedChars) {
 		if (name.isEmpty()) {
 			return "A name must not be empty!";
 		}
@@ -98,7 +97,8 @@ public class TextUtils {
 						return "Blanks are not allowed in this name!";
 					}
 					
-					return "Invalid character '" + currentChar + "' in \"" + name + "\"!";
+					return "Invalid character '" + currentChar + "' in \""
+							+ name + "\"!";
 				}
 			}
 		}
@@ -117,7 +117,7 @@ public class TextUtils {
 	public static boolean isValidFileName(String name) {
 		ArrayList<Character> allowedChars = new ArrayList<Character>();
 		
-		for (char currentChar : ALLOWED_SPECIAL_CHARACTER_FILENAME) {
+		for (char currentChar : TextConstants.ALLOWED_SPECIAL_CHARACTER_FILENAME) {
 			allowedChars.add(currentChar);
 		}
 		
@@ -134,7 +134,7 @@ public class TextUtils {
 	public static String whyIsInvalidFileName(String name) {
 		ArrayList<Character> allowedChars = new ArrayList<Character>();
 		
-		for (char currentChar : ALLOWED_SPECIAL_CHARACTER_FILENAME) {
+		for (char currentChar : TextConstants.ALLOWED_SPECIAL_CHARACTER_FILENAME) {
 			allowedChars.add(currentChar);
 		}
 		
@@ -192,7 +192,8 @@ public class TextUtils {
 	 * @throws BadSyntaxException
 	 *             If a bracket area is missing it's closing bracket
 	 */
-	public static String[] getTextAreas(String input, boolean repair) throws BadSyntaxException {
+	public static String[] getTextAreas(String input, boolean repair)
+			throws BadSyntaxException {
 		Assert.isNotNull(input);
 		
 		if (input.isEmpty()) {
@@ -241,18 +242,21 @@ public class TextUtils {
 						if (isBracket(currentChar)) {
 							if (bracketPair == null) {
 								// get the bracket pair
-								bracketPair = CharacterPair.getDefinedPairFor(currentChar);
+								bracketPair = CharacterPair
+										.getDefinedPairFor(currentChar);
 								
 								if (bracketPair.getOpener() == currentChar) {
 									// manually flush
 									if (characterStream.size() > 0) {
-										areaList.add(characterStream.toString());
+										areaList.add(
+												characterStream.toString());
 										characterStream.reset();
 									}
 								} else {
 									// There is a closing bracket whose starting
 									throw new BadSyntaxException(
-											"Missing opening bracket " + bracketPair.getOpener());
+											"Missing opening bracket "
+													+ bracketPair.getOpener());
 								}
 							} else {
 								// check if the closer has been reached
@@ -267,7 +271,8 @@ public class TextUtils {
 										remainingOpenerToBeClosed--;
 									}
 								} else {
-									if (bracketPair.getOpener() == currentChar) {
+									if (bracketPair
+											.getOpener() == currentChar) {
 										// beginning wrap
 										remainingOpenerToBeClosed++;
 									}
@@ -299,7 +304,8 @@ public class TextUtils {
 				remainingOpenerToBeClosed++;
 				
 				// we are still in a warped area -> missing closing character
-				if (remainingOpenerToBeClosed > 0 && repair && characterStream.size() > 0) {
+				if (remainingOpenerToBeClosed > 0 && repair
+						&& characterStream.size() > 0) {
 					// "repair" the input by inserting respective amount of
 					// closing brackets
 					String closer = "";
@@ -313,8 +319,8 @@ public class TextUtils {
 					// append it to buffer
 					characterStream.write(closer.getBytes());
 				} else {
-					throw new BadSyntaxException(
-							"Incomplete CharacterPair " + bracketPair + " in input!");
+					throw new BadSyntaxException("Incomplete CharacterPair "
+							+ bracketPair + " in input!");
 				}
 			}
 			
@@ -345,7 +351,8 @@ public class TextUtils {
 	 * @throws BadSyntaxException
 	 *             If a bracket area is missing it's closing bracket
 	 */
-	public static String[] getTextAreas(String input) throws BadSyntaxException {
+	public static String[] getTextAreas(String input)
+			throws BadSyntaxException {
 		return getTextAreas(input, false);
 	}
 	
@@ -360,7 +367,8 @@ public class TextUtils {
 	 * 
 	 * @see #getTextAreas(String)
 	 */
-	public static boolean isSingleTextArea(String input) throws BadSyntaxException {
+	public static boolean isSingleTextArea(String input)
+			throws BadSyntaxException {
 		input = input.trim();
 		
 		if (input.isEmpty()) {
@@ -368,5 +376,41 @@ public class TextUtils {
 		}
 		
 		return getTextAreas(input).length == 1;
+	}
+	
+	/**
+	 * Checks whether the given String starts with any of the entries of the
+	 * given collection
+	 * 
+	 * @param str
+	 *            The STring to check
+	 * @param prefixes
+	 *            The Collection of prefixes to check
+	 * @return Whether the String starts with any prefix of the given collection
+	 */
+	public static boolean startsWithAny(String str,
+			Collection<String> prefixes) {
+		return startsWithWhich(str, prefixes) != null;
+	}
+	
+	/**
+	 * Gets the first prefix the given String is starting with
+	 * 
+	 * @param str
+	 *            The String to check
+	 * @param prefixes
+	 *            The prefixes to check
+	 * @return The first matching prefix or <code>null</code> if none could be
+	 *         found
+	 */
+	public static String startsWithWhich(String str,
+			Collection<String> prefixes) {
+		for (String currentPrefix : prefixes) {
+			if (str.startsWith(currentPrefix)) {
+				return currentPrefix;
+			}
+		}
+		
+		return null;
 	}
 }

@@ -1,11 +1,12 @@
 package raven.sqdev.syntax;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 
 import raven.sqdev.exceptions.BadSyntaxException;
-import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.misc.TextUtils;
 
 /**
@@ -182,52 +183,72 @@ public class Syntax {
 	 * @param commandName
 	 *            The name of the command this <code>Syntax</code> belongs to.
 	 *            <b>Has to be contained in input</b>
-	 * @return
+	 * @return The parsed <code>Syntax</code>
+	 * @throws BadSyntaxException
+	 *             If the input is invalid
 	 */
-	public static Syntax parseSyntax(String input, String commandName) {
-		if (input == null || input.isEmpty() || commandName == null || commandName.isEmpty()) {
+	public static Syntax parseSyntax(String input, String commandName) throws BadSyntaxException {
+		if (input == null || input.trim().isEmpty() || commandName == null || commandName.isEmpty()) {
 			// can't process
 			throw new IllegalArgumentException("The given input or commandName is invalid!");
 		}
 		
+		input = input.trim();
+		
 		// check that the commandName is properly contained in the input
 		boolean isContained = false;
 		
+		String[] elements;
+		String[] lowerElements;
 		try {
-			String[] elements = TextUtils.getTextAreas(input);
-			String[] lowerElements = TextUtils.getTextAreas(input.toLowerCase());
-			String lowerCommandName = commandName.toLowerCase();
-			
-			for (int i = 0; i < lowerElements.length; i++) {
-				String currentElement = lowerElements[i];
-				
-				if (currentElement.equals(lowerCommandName)) {
-					// use the specified commandName
-					elements[i] = commandName;
-					isContained = true;
-					break;
-				}
-			}
-			
-			if (!isContained) {
-				throw new BadSyntaxException("The command is not contained in the given input!");
-			}
-			
-			// recreate String out of the array
-			StringBuilder builder = new StringBuilder();
-			for (String currentElement : elements) {
-				builder.append(" " + currentElement);
-			}
-			input = builder.toString().trim();
+			elements = TextUtils.getTextAreas(input);
+			lowerElements = TextUtils.getTextAreas(input.toLowerCase());
 		} catch (BadSyntaxException e) {
-			throw new SQDevCoreException("Failed at creating syntax", e);
+			throw new BadSyntaxException(
+					"The syntax input for the command \"" + commandName + "\" is invalid!", e);
 		}
+		
+		String lowerCommandName = commandName.toLowerCase();
+		
+		for (int i = 0; i < lowerElements.length; i++) {
+			String currentElement = lowerElements[i];
+			
+			if (currentElement.equals(lowerCommandName)) {
+				// use the specified commandName
+				elements[i] = commandName;
+				isContained = true;
+				break;
+			}
+		}
+		
+		if (!isContained) {
+			throw new BadSyntaxException(
+					"The command \"" + commandName + "\" is not contained in the given input!");
+		}
+		
+		// recreate String out of the array
+		StringBuilder builder = new StringBuilder();
+		for (String currentElement : elements) {
+			builder.append(" " + currentElement);
+		}
+		input = builder.toString().trim();
 		
 		Syntax syntax = new Syntax(commandName);
 		
-		String inputBeforeCommand = input.substring(0, input.indexOf(commandName)).trim();
-		String inputAfterCommand = input
-				.substring(input.indexOf(commandName) + commandName.length()).trim();
+		// find the position of the command in the syntax
+		Matcher commandMatcher;
+		if (!Character.isLetter(commandName.charAt(0))) {
+			// match without word boundaries
+			commandMatcher = Pattern.compile(Pattern.quote(commandName)).matcher(input);
+		} else {
+			// match with word boundaries
+			commandMatcher = Pattern.compile("\\b" + Pattern.quote(commandName) + "\\b")
+					.matcher(input);
+		}
+		commandMatcher.find();
+		
+		String inputBeforeCommand = input.substring(0, commandMatcher.start()).trim();
+		String inputAfterCommand = input.substring(commandMatcher.end()).trim();
 		
 		try {
 			if (!inputBeforeCommand.isEmpty()) {
@@ -242,11 +263,11 @@ public class Syntax {
 				// add trailing syntaxElement
 				syntax.addElement(SyntaxElement.parseSyntaxElement(inputAfterCommand));
 			}
-			
-			return syntax;
 		} catch (BadSyntaxException e) {
-			e.printStackTrace();
-			return null;
+			throw new BadSyntaxException("Can't parse sub-elements fo command \"" + commandName
+					+ "\" into SyntaxElements!");
 		}
+		
+		return syntax;
 	}
 }

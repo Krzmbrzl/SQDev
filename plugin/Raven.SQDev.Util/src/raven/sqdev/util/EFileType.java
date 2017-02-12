@@ -461,24 +461,30 @@ public enum EFileType {
 			public void run() {
 				
 				if (path == null || path.isEmpty()) {
-					// try to resolve path according to the selected resource in
-					// the
-					// package explorer
+					// resolve path according to current selection in navigator
 					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 					ISelectionService service = window.getSelectionService();
 					IStructuredSelection structured = (IStructuredSelection) service
-							.getSelection("org.eclipse.jdt.ui.PackageExplorer");
+							.getSelection("org.eclipse.ui.views.ResourceNavigator");
 					
 					if (structured == null) {
-						// The ective explorer might be the project explorer
+						// The active navigator might be the project explorer
 						structured = (IStructuredSelection) service
 								.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
 						
 						if (structured == null) {
-							SQDevInfobox info = new SQDevInfobox("Selection is null!", SWT.ERROR);
-							info.open();
-							
-							return;
+							// Active navigator might be package explorer
+							structured = (IStructuredSelection) service
+									.getSelection("org.eclipse.jdt.ui.PackageExplorer");
+							if (structured == null) {
+								SQDevInfobox info = new SQDevInfobox(
+										"Selection is null!\n (Only Navigator, "
+												+ "Project- and PackageEplorer are supported)",
+										SWT.ERROR);
+								info.open();
+								
+								return;
+							}
 						}
 					}
 					

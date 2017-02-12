@@ -35,16 +35,16 @@ public class BasicMarkerManager implements IManager {
 	 * Indicates whether this manager is in a valid state
 	 */
 	protected boolean isValid;
-	
-	
+
+
 	public BasicMarkerManager(BasicCodeEditor editor) {
 		Assert.isNotNull(editor, "Editor may not be null!");
-		
+
 		this.editor = editor;
-		
+
 		markers = new ArrayList<MarkerInformation>();
 	}
-	
+
 	/**
 	 * Adds a marker with the given information to this manager
 	 * 
@@ -62,23 +62,24 @@ public class BasicMarkerManager implements IManager {
 	 *            The marker's message
 	 * @return <code>True</Code> on success and <code>False</code> otherwise
 	 */
-	public boolean addMarker(String type, int line, int offset, int length, int severity,
-			String message) {
+	public boolean addMarker(String type, int line, int offset, int length, int severity, String message) {
 		if (!(editor.getEditorInput() instanceof IFileEditorInput)) {
 			return false;
 		}
-		
-		markers.add(new MarkerInformation(type, line, offset, length, severity, message));
-		
+
+		synchronized (markers) {
+			markers.add(new MarkerInformation(type, line, offset, length, severity, message));
+		}
+
 		return true;
 	}
-	
+
 	@Override
 	public void apply() {
 		if (!(editor.getEditorInput() instanceof IFileEditorInput)) {
 			return;
 		}
-		
+
 		try {
 			((IFileEditorInput) editor.getEditorInput()).getFile().deleteMarkers(null, false,
 					IResource.DEPTH_INFINITE);
@@ -87,37 +88,39 @@ public class BasicMarkerManager implements IManager {
 				throw new SQDevEditorException("Failed at deleting marker!", e);
 			} catch (SQDevEditorException e1) {
 				e1.printStackTrace();
-				
+
 				return;
 			}
 		}
-		
+
 		IResource resource = ((IFileEditorInput) editor.getEditorInput()).getFile();
-		
+
 		isValid = true;
-		
-		for (MarkerInformation currentMarker : markers) {
-			if (isValid && currentMarker.getSeverity() == IMarker.SEVERITY_ERROR) {
-				isValid = false;
+
+		synchronized (markers) {
+			for (MarkerInformation currentMarker : markers) {
+				if (isValid && currentMarker.getSeverity() == IMarker.SEVERITY_ERROR) {
+					isValid = false;
+				}
+
+				// create the actual markers
+				currentMarker.applyOn(resource);
 			}
-			
-			// create the actual markers
-			currentMarker.applyOn(resource);
+
+			markers.clear();
 		}
-		
-		markers.clear();
 	}
-	
+
 	@Override
 	public String getType() {
 		return TYPE;
 	}
-	
+
 	/**
 	 * Checks whether this manager represents a valid state (= no errors)
 	 */
 	public boolean isValidState() {
 		return isValid;
 	}
-	
+
 }

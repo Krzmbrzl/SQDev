@@ -5,6 +5,7 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.exceptions.SQDevException;
 
 /**
@@ -19,12 +20,12 @@ public class SQFElement extends Keyword {
 	 * The sequence indicating the start of the wikiPage attribute in the
 	 * saveable String format of this class
 	 */
-	public static final String WIKI_START_SAVESEQUENCE = "WikiPageStart:";
+	public static final String WIKI_START_SAVESEQUENCE = "<WikiPage>";
 	/**
 	 * The sequence indicating the end of the wikiPage attribute in the saveable
 	 * String format of this class
 	 */
-	public static final String WIKI_END_SAVESEQUENCE = "//WikiPageEnd//";
+	public static final String WIKI_END_SAVESEQUENCE = "</WikiPage>";
 	
 	/**
 	 * The url to the wiki page of this command
@@ -91,14 +92,14 @@ public class SQFElement extends Keyword {
 		String format = super.getSaveableFormat();
 		
 		// append own attributes
-		format += "\n" + WIKI_START_SAVESEQUENCE + "\n" + getWikiPage().toString() + "\n"
+		format += "\n" + WIKI_START_SAVESEQUENCE + "\n\t" + getWikiPage().toString() + "\n"
 				+ WIKI_END_SAVESEQUENCE;
 				
 		return format;
 	}
 	
 	@Override
-	public boolean recreateFrom(String savedFormat) {
+	public boolean recreateFrom(String savedFormat) throws BadSyntaxException {
 		if (!super.recreateFrom(savedFormat) || !isSaveFormat(savedFormat)) {
 			return false;
 		}

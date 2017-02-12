@@ -13,7 +13,8 @@ import org.eclipse.swt.widgets.Shell;
 import raven.sqdev.miscellaneous.AdditionalKeywordProposalInformation;
 import raven.sqdev.util.EditorUtil;
 
-public class BasicTextHover implements ITextHover, ITextHoverExtension, ITextHoverExtension2 {
+public class BasicTextHover
+		implements ITextHover, ITextHoverExtension, ITextHoverExtension2 {
 	
 	/**
 	 * The editor this assist works on
@@ -69,9 +70,16 @@ public class BasicTextHover implements ITextHover, ITextHoverExtension, ITextHov
 			if (scanner != null) {
 				// create the info for this keyword
 				info = new AdditionalKeywordProposalInformation(
-						scanner.getKeywordProvider().getKeywordList().getKeyword(word));
+						scanner.getKeywordProvider().getKeywordList()
+								.getKeyword(word, scanner.isCaseSensitive()));
+				
+				if(info.isEmpty()) {
+					// There isn't actually information to display
+					info = null;
+				}
 			}
 		}
+		
 		return info;
 	}
 	

@@ -1,10 +1,12 @@
 package raven.sqdev.interfaces;
 
+import raven.sqdev.exceptions.BadSyntaxException;
+
 /**
  * An interface for classes that are saveable in a (human) readable textFile
  * 
  * @author Raven
- * 		
+ * 
  */
 public interface ISaveable {
 	
@@ -26,8 +28,10 @@ public interface ISaveable {
 	 *            <code>isSaveFormat(String format)</code>
 	 * @return <code>True</code> if the recreation was successful.
 	 *         <code>False</code> otherwise
+	 * @throws BadSyntaxException
+	 *             If the input is invalid
 	 */
-	public boolean recreateFrom(String savedFormat);
+	public boolean recreateFrom(String savedFormat) throws BadSyntaxException;
 	
 	/**
 	 * Checks if the given String is in the proper format to use

@@ -247,6 +247,7 @@ public class ComboSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor {
 		} else {
 			// don't allow custom input
 			alternativesComboBox = new Combo(container, SWT.DROP_DOWN | SWT.READ_ONLY);
+			alternativesComboBox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		}
 		
 		alternativesComboBox.setToolTipText(getTooltip());

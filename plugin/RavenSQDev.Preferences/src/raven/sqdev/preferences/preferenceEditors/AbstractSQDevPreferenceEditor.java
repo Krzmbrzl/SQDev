@@ -8,6 +8,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -25,7 +26,7 @@ import raven.sqdev.preferences.util.SQDevPreferenceComposite;
  * level behaviour each editor has in common
  * 
  * @author Raven
- *		
+ * 
  */
 public abstract class AbstractSQDevPreferenceEditor
 		implements ISQDevPreferenceEditor, IPropertyChangeListener {
@@ -177,7 +178,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	 */
 	public AbstractSQDevPreferenceEditor(String preferenceKey, String labelText,
 			Composite container, ISQDevPreferencePage page) {
-			
+		
 		this(preferenceKey, labelText, container, false, "");
 		
 		setPreferencePage(page);
@@ -215,7 +216,7 @@ public abstract class AbstractSQDevPreferenceEditor
 					"Couldn't save " + getLabelText().substring(1, getLabelText().length() - 1)
 							+ " because it is in an invalid state!",
 					SWT.NULL);
-					
+			
 			return false;
 		}
 		
@@ -319,7 +320,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	
 	private ISQDevPreferencePage resolvePreferencePage(Composite container,
 			ArrayList<Control> inspected) {
-			
+		
 		for (Control currentControl : container.getChildren()) {
 			if (inspected.contains(currentControl)) {
 				// Don't check them twice
@@ -338,7 +339,7 @@ public abstract class AbstractSQDevPreferenceEditor
 						// search recursively through all children
 						ISQDevPreferencePage page = resolvePreferencePage(
 								(Composite) currentControl, inspected);
-								
+						
 						if (page != null) {
 							return page;
 						}
@@ -400,7 +401,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	public void setPreferenceKey(String key) {
 		Assert.isTrue(getPreferenceStore().contains(key),
 				"The preference " + key + " does not exist");
-				
+		
 		preferenceKey = key;
 	}
 	
@@ -443,7 +444,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	 *            The amount of components to match<br>
 	 *            may not be smaller than <code>getComponentCount()</code> of
 	 *            this editor
-	 * 			
+	 * 
 	 * @see #getComponentCount()
 	 */
 	@Override
@@ -463,10 +464,13 @@ public abstract class AbstractSQDevPreferenceEditor
 	protected void createEmptyComponents() {
 		for (int i = 0; i < emptyComponentsToCreate; i++) {
 			// create a sufficient amount of empty components
-			Composite comp = new Composite(getContainer(), SWT.NULL);
+			Composite comp = new Composite(getContainer(), SWT.NONE);
 			comp.setEnabled(false);
+			GridData data = new GridData(SWT.FILL, SWT.TOP, true, false);
+			data.heightHint = 0;
+			data.widthHint = 0;
 			
-			comp.setSize(0, 0);
+			comp.setLayoutData(data);
 		}
 	}
 	
@@ -516,11 +520,14 @@ public abstract class AbstractSQDevPreferenceEditor
 	
 	/**
 	 * Creates the required components for this editor in the set container.<br>
-	 * <b>Should call {@linkplain #createEmptyComponents()} in the end!</b>
+	 * Calls {@linkplain #createEmptyComponents()} after having created the
+	 * other components
 	 */
 	@Override
 	public void createComponents() {
 		createComponents(getContainer());
+		
+		createEmptyComponents();
 	}
 	
 	/**
@@ -534,7 +541,7 @@ public abstract class AbstractSQDevPreferenceEditor
 	public void setLabelText(String text) {
 		this.labelText = text;
 		
-		if (label != null) {
+		if (label != null && !label.isDisposed()) {
 			// update label if it has already been created
 			label.setText(text);
 			

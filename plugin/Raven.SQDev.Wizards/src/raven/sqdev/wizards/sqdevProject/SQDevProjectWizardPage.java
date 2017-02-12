@@ -19,17 +19,19 @@ import org.eclipse.swt.widgets.Text;
 
 import raven.sqdev.misc.TextUtils;
 import raven.sqdev.util.EProjectType;
+import raven.sqdev.util.SQDevInfobox;
 import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.util.SQDevPreferenceUtil;
 import raven.sqdev.util.Util;
+import raven.sqdev.utilInterfaces.ISQDevInformationProvider;
 
 /**
  * The witard page for creating a SQDev project
  * 
  * @author Raven
- * 		
+ * 
  */
-public class SQDevProjectWizardPage extends WizardPage {
+public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformationProvider {
 	
 	/**
 	 * Field for the name of the project
@@ -161,12 +163,22 @@ public class SQDevProjectWizardPage extends WizardPage {
 		profileCombo.setToolTipText(profileTooltip);
 		profileCombo.setLayoutData(gd);
 		
-		// TODO: select default profile
 		for (String currentProfile : Util.getProfiles()) {
 			profileCombo.add(currentProfile);
 		}
 		
-		profileCombo.select(profileCombo.indexOf(SQDevPreferenceUtil.getDefaultProfile()));
+		int index = profileCombo.indexOf(SQDevPreferenceUtil.getDefaultProfile());
+		if (index >= 0) {
+			profileCombo.select(index);
+		} else {
+			profileCombo.select(0);
+			
+			SQDevInfobox info = new SQDevInfobox("The default profile \""
+					+ SQDevPreferenceUtil.getDefaultProfile() + "\" can no longer be found!",
+					SWT.ICON_WARNING);
+			
+			info.open(false);
+		}
 		
 		profileCombo.addModifyListener(new ModifyListener() {
 			
@@ -179,7 +191,7 @@ public class SQDevProjectWizardPage extends WizardPage {
 		// autoExport selection
 		String autoExportTooltip = "Defines whether the project should get exported automatically"
 				+ " whenever a file in it changed";
-				
+		
 		Label autoExportLabel = new Label(container, SWT.NULL);
 		autoExportLabel.setText("Auto export:");
 		autoExportLabel.setToolTipText(autoExportTooltip);
@@ -227,6 +239,16 @@ public class SQDevProjectWizardPage extends WizardPage {
 		
 		if (project.exists()) {
 			updateStatus("A project with the given name does already exist!");
+			return;
+		}
+		
+		if (terrainCombo.getText().isEmpty()) {
+			updateStatus("No terrain selected!");
+			return;
+		}
+		
+		if (profileCombo.getText().isEmpty()) {
+			updateStatus("No profile selected!");
 			return;
 		}
 		

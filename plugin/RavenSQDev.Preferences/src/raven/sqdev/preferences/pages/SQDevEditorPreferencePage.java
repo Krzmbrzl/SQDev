@@ -52,9 +52,10 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		
 		IntegerSQDevPreferenceEditor parseDelayEditor = new IntegerSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, "&Parse delay:",
-				"Specifies the delay in seconds between a user input in the editor and the actual parsing of the editor's content",
+				"Specifies the delay in milliseconds between a user input in the editor and the actual parsing of the editor's content",
 				behaviour);
-		parseDelayEditor.setMinValue(1);
+		parseDelayEditor.setMinValue(100);
+		parseDelayEditor.setMaxValue(4000);
 		
 		addPreferenceEditor(parseDelayEditor);
 		
@@ -81,6 +82,19 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				"&Global variable highlighting:",
 				"Defines the color in which global variables are highlighted", colors);
 		addPreferenceEditor(globalVariableHighlightingEditor);
+		
+		ColorSQDevPreferenceEditor magicVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
+				"&Magic variable highlighting:",
+				"Defines the color in which magic variables (e.g. \"_this\") are highlighted",
+				colors);
+		addPreferenceEditor(magicVariableHighlightingEditor);
+		
+		ColorSQDevPreferenceEditor macroHighlightingEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
+				"&Macro highlighting:", "Defines the color in which macros are highlighted",
+				colors);
+		addPreferenceEditor(macroHighlightingEditor);
 		
 		ColorSQDevPreferenceEditor currentLineHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,

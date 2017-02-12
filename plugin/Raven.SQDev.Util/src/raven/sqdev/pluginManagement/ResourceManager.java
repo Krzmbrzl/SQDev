@@ -347,7 +347,7 @@ public class ResourceManager {
 				createResource("SQFKeywords.txt");
 				
 				String content = FileUtil
-						.readAll(getInternalResourceStream("/resources/sqf/SQFKeywords.txt"));
+						.readAll(getInternalResourceStream(INTERNAL_KEYWORDS));
 				
 				// put content in respective resource files
 				FileWriter writer = new FileWriter(getResource("SQFKeywords.txt").toFile());

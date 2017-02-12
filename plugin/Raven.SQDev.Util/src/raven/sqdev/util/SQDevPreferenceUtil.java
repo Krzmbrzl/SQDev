@@ -1,6 +1,6 @@
 package raven.sqdev.util;
 
-import java.io.File;
+import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
@@ -9,12 +9,13 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
-import raven.sqdev.exceptions.SQDevInvalidPreferenceException;
+import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.pluginManager.SQDevPluginManager;
 
 /**
@@ -24,6 +25,12 @@ import raven.sqdev.pluginManager.SQDevPluginManager;
  * 
  */
 public class SQDevPreferenceUtil {
+	
+	/**
+	 * The seperator that is placed in between the different Strings in the
+	 * Preferences
+	 */
+	public static final String STRING_SEPERATOR = "_#%NextString%#_";
 	
 	/**
 	 * Gets the Bundle of the <code>raven.sqdev.preferences</code> plugin
@@ -67,7 +74,20 @@ public class SQDevPreferenceUtil {
 	 */
 	public static boolean alwaysSaveOnExit() {
 		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_PREF_ALWAYS_SAVE_ON_EXIT);
+				.getBoolean(SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION</code>
+	 * preference that indicates whether the user should be prompted to validate
+	 * a deletion he initialized
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static boolean promptUserValidationForDeletion() {
+		return getPreferenceStore()
+				.getBoolean(SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION);
 	}
 	
 	/**
@@ -79,66 +99,125 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getArmaDocumentsDirectory() {
-		return getPreferenceStore()
+		String path = getPreferenceStore()
 				.getString(SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY);
+		
+		if (path.isEmpty()) {
+			SQDevInfobox info = new SQDevInfobox("Invalid document's directory in preference!",
+					SWT.ICON_ERROR, false);
+			info.open(false);
+		}
+		
+		return path;
 	}
 	
 	/**
 	 * Get the path to the default directory in the documents coresponding to
 	 * the default user profile
-	 * 
-	 * @return
 	 */
 	public static String getDefaultDocumentsDirectory() {
 		IPath path = new Path(getArmaDocumentsDirectory());
 		
-		if (path.lastSegment().equals("Arma 3")) {
-			return (path.toFile().exists()) ? path.toOSString() : getArmaDocumentsDirectory();
+		path.append("Arma 3");
+		
+		if (path.toFile().exists()) {
+			return path.toOSString();
 		} else {
-			path = path.removeLastSegments(1);
-			path = path.append("Arma 3");
-			
-			return (path.toFile().exists()) ? path.toOSString() : getArmaDocumentsDirectory();
+			throw new SQDevCoreException("Can't find the default user directory");
 		}
 	}
 	
 	/**
-	 * Gets the path to the profile's directory in myDocuments
+	 * Gets the path to the profile's directory in myDocuments<br>
+	 * If {@link #getArmaDocumentsDirectory()} returns an invalid (e.g. empty)
+	 * String this method will return an empty String.
 	 * 
-	 * @return
+	 * @return The path to the directory that contains all profile folders or an
+	 *         empty String if the found path does not exist or the respective
+	 *         preference is invalid (see above)
 	 */
 	public static String getProfilesDocumentDirectory() {
 		IPath path = new Path(getArmaDocumentsDirectory());
 		
-		if (path.lastSegment().equals("Arma 3 - Other Profiles")) {
-			return (path.toFile().exists()) ? path.toOSString() : getArmaDocumentsDirectory();
+		if (path.segmentCount() == 0) {
+			return "";
+		}
+		
+		path = path.append("Arma 3 - Other Profiles");
+		
+		if (!path.toFile().exists()) {
+			return "";
 		} else {
-			path = path.removeLastSegments(1);
-			path = path.append("Arma 3 - Other Profiles");
-			
-			return (path.toFile().exists()) ? path.toOSString() : getArmaDocumentsDirectory();
+			return path.toOSString();
 		}
 	}
 	
 	/**
-	 * Gets the first missions directory that corresponds with the specified
-	 * ArmADocumentsDirectory.
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_RPT_PATH</code> preference that
+	 * holds the path to the folder ArmA stores it's RPTs
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
-	public static File getMissionsDirectory() {
-		File docDir = new File(getArmaDocumentsDirectory());
+	public static String getRPTDirectory() {
+		String path = getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_RPT_PATH);
 		
-		if (docDir == null || !docDir.exists()) {
-			throw new SQDevInvalidPreferenceException(
-					"The ArmA folder in the documents directory is invalid");
+		if (path.isEmpty()) {
+			SQDevInfobox info = new SQDevInfobox("Invalid RPT directory in preference!",
+					SWT.ICON_ERROR, false);
+			info.open(false);
 		}
 		
-		File missionsDir = FileSystemUtil.getFolder(docDir, "missions");
+		return path;
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT</code>
+	 * preference that indicates whether the RPT content should be formatted
+	 * before being displayed
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static boolean doFormatRPTContent() {
+		return getPreferenceStore()
+				.getBoolean(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES</code>
+	 * preference that stores all the prefixes od the lines that should be
+	 * removed during formatting
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static ArrayList<String> getRPTFormatPrefixes() {
+		ArrayList<String> list = new ArrayList<String>();
 		
-		if (missionsDir == null) {
-			throw new SQDevInvalidPreferenceException("Couldn't find the \"missions\" directory");
+		for (String current : getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES)
+				.split(STRING_SEPERATOR)) {
+			if (!current.isEmpty()) {
+				list.add(current);
+			}
 		}
 		
-		return missionsDir;
+		return list;
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION</code>
+	 * preference that stores the maximum amount of blank lines in a row in a
+	 * formatted RPT
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static int getMaximumBlankLinesInRPT() {
+		return getPreferenceStore()
+				.getInt(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION);
 	}
 	
 	/**

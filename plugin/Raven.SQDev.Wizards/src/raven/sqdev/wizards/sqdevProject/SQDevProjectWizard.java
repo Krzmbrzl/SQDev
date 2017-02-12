@@ -1,16 +1,24 @@
 package raven.sqdev.wizards.sqdevProject;
 
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
 import raven.sqdev.util.EProjectType;
+import raven.sqdev.util.SQDevInformation;
+import raven.sqdev.wizards.SQDevBaseNewProjectWizard;
 
-public class SQDevProjectWizard extends Wizard implements INewWizard {
+/**
+ * The wizard used to create a new SQDevProject
+ * 
+ * @author Raven
+ *
+ */
+public class SQDevProjectWizard extends SQDevBaseNewProjectWizard {
+	/**
+	 * This wizard's ID
+	 */
+	public static String WIZARD_ID = "raven.sqdev.wizards.sqdevproject";
+	
 	private SQDevProjectWizardPage page;
 	
 	public SQDevProjectWizard() {
@@ -29,17 +37,16 @@ public class SQDevProjectWizard extends Wizard implements INewWizard {
 	}
 	
 	@Override
-	public boolean performFinish() {		
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();
-		
+	public EProjectType getProjectType() {
 		EProjectType type = page.getProjectType();
 		type.setInformation(page.getInformation());
 		
-		type.create(root);
-		
-		return true;
-		
+		return type;
+	}
+
+	@Override
+	public SQDevInformation getInformation() {
+		return page.getInformation();
 	}
 	
 }

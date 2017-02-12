@@ -27,10 +27,6 @@ public class BasicFoldingManager implements IManager {
 	 * The annotation model of the editor this manager should contribute to
 	 */
 	protected ProjectionAnnotationModel model;
-	/**
-	 * Indicates that the annotation Queue has changed
-	 */
-	protected boolean annotationQueueChanged;
 	
 	
 	/**
@@ -56,34 +52,29 @@ public class BasicFoldingManager implements IManager {
 	 *            <code>ProjectionAnnotation</code> and the respective position
 	 */
 	public void addFoldingArea(Entry<ProjectionAnnotation, Position> entry) {
-		annotationQueue.put(entry.getKey(), entry.getValue());
-		
-		// indicate change
-		annotationQueueChanged = true;
+		synchronized (annotationQueue) {
+			annotationQueue.put(entry.getKey(), entry.getValue());
+		}
 	}
 	
 	@Override
 	public void apply() {
-		annotationQueueChanged = false;
-		
 		// clear
 		model.removeAllAnnotations();
 		
-		Iterator<Entry<ProjectionAnnotation, Position>> mapIterator = annotationQueue.entrySet()
-				.iterator();
-		
-		while (mapIterator.hasNext()) {
-			if (annotationQueueChanged) {
-				// the queue has been modified by another thread -> reapply to
-				// avoid concurrent exception
-				apply();
-				break;
+		synchronized (annotationQueue) {
+			Iterator<Entry<ProjectionAnnotation, Position>> mapIterator = annotationQueue.entrySet()
+					.iterator();
+			
+			while (mapIterator.hasNext()) {
+				// add the foladable areas TODO: implement some overlap logic
+				Entry<ProjectionAnnotation, Position> entry = mapIterator.next();
+				
+				model.addAnnotation(entry.getKey(), entry.getValue());
 			}
 			
-			// add the foladable areas TODO: implement some overlap logic
-			Entry<ProjectionAnnotation, Position> entry = mapIterator.next();
-			
-			model.addAnnotation(entry.getKey(), entry.getValue());
+			// clear queue as all annotations have been added
+			annotationQueue.clear();
 		}
 	}
 	

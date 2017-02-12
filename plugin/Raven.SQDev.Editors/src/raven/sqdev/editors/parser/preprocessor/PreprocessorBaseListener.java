@@ -1,5 +1,7 @@
 // Generated from Preprocessor.g4 by ANTLR 4.5.3
-package raven.sqdev.editors.parser.preprocessor;
+
+	package raven.sqdev.editors.parser.preprocessor;
+
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -28,49 +30,13 @@ public class PreprocessorBaseListener implements PreprocessorListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPreprocessing(PreprocessorParser.PreprocessingContext ctx) { }
+	@Override public void enterPreprocessorStatement(PreprocessorParser.PreprocessorStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPreprocessing(PreprocessorParser.PreprocessingContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIfBlock(PreprocessorParser.IfBlockContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIfBlock(PreprocessorParser.IfBlockContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterDefine(PreprocessorParser.DefineContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDefine(PreprocessorParser.DefineContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterUndefine(PreprocessorParser.UndefineContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitUndefine(PreprocessorParser.UndefineContext ctx) { }
+	@Override public void exitPreprocessorStatement(PreprocessorParser.PreprocessorStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -88,6 +54,54 @@ public class PreprocessorBaseListener implements PreprocessorListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDefine(PreprocessorParser.DefineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDefine(PreprocessorParser.DefineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMacroArgs(PreprocessorParser.MacroArgsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMacroArgs(PreprocessorParser.MacroArgsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterUndefine(PreprocessorParser.UndefineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUndefine(PreprocessorParser.UndefineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPrepIf(PreprocessorParser.PrepIfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrepIf(PreprocessorParser.PrepIfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterError(PreprocessorParser.ErrorContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -95,6 +109,18 @@ public class PreprocessorBaseListener implements PreprocessorListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitError(PreprocessorParser.ErrorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOther(PreprocessorParser.OtherContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOther(PreprocessorParser.OtherContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

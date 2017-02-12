@@ -1,5 +1,7 @@
 // Generated from SQF.g4 by ANTLR 4.5.3
-package raven.sqdev.editors.sqfeditor.parsing;
+
+	package raven.sqdev.editors.sqfeditor.parsing;
+
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -11,6 +13,18 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class SQFBaseListener implements SQFListener {
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStart(SQFParser.StartContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStart(SQFParser.StartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -28,13 +42,25 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPreprocessor(SQFParser.PreprocessorContext ctx) { }
+	@Override public void enterMacro(SQFParser.MacroContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPreprocessor(SQFParser.PreprocessorContext ctx) { }
+	@Override public void exitMacro(SQFParser.MacroContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMacroArgument(SQFParser.MacroArgumentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMacroArgument(SQFParser.MacroArgumentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -76,85 +102,49 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArray(SQFParser.ArrayContext ctx) { }
+	@Override public void enterPrimaryExpression(SQFParser.PrimaryExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitArray(SQFParser.ArrayContext ctx) { }
+	@Override public void exitPrimaryExpression(SQFParser.PrimaryExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBooleanExpression(SQFParser.BooleanExpressionContext ctx) { }
+	@Override public void enterNularOperator(SQFParser.NularOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBooleanExpression(SQFParser.BooleanExpressionContext ctx) { }
+	@Override public void exitNularOperator(SQFParser.NularOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMacroExpression(SQFParser.MacroExpressionContext ctx) { }
+	@Override public void enterNumber(SQFParser.NumberContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMacroExpression(SQFParser.MacroExpressionContext ctx) { }
+	@Override public void exitNumber(SQFParser.NumberContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterElseExpression(SQFParser.ElseExpressionContext ctx) { }
+	@Override public void enterString(SQFParser.StringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitElseExpression(SQFParser.ElseExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterModifyExpression(SQFParser.ModifyExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitModifyExpression(SQFParser.ModifyExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNular(SQFParser.NularContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNular(SQFParser.NularContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterParenthese(SQFParser.ParentheseContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParenthese(SQFParser.ParentheseContext ctx) { }
+	@Override public void exitString(SQFParser.StringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -172,25 +162,49 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArithmeticExpression(SQFParser.ArithmeticExpressionContext ctx) { }
+	@Override public void enterArray(SQFParser.ArrayContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitArithmeticExpression(SQFParser.ArithmeticExpressionContext ctx) { }
+	@Override public void exitArray(SQFParser.ArrayContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterUnary(SQFParser.UnaryContext ctx) { }
+	@Override public void enterParenthesis(SQFParser.ParenthesisContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitUnary(SQFParser.UnaryContext ctx) { }
+	@Override public void exitParenthesis(SQFParser.ParenthesisContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterError(SQFParser.ErrorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitError(SQFParser.ErrorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCommonError(SQFParser.CommonErrorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCommonError(SQFParser.CommonErrorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -208,25 +222,25 @@ public class SQFBaseListener implements SQFListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNularExpression(SQFParser.NularExpressionContext ctx) { }
+	@Override public void enterOperator(SQFParser.OperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNularExpression(SQFParser.NularExpressionContext ctx) { }
+	@Override public void exitOperator(SQFParser.OperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMacro(SQFParser.MacroContext ctx) { }
+	@Override public void enterPunctuation(SQFParser.PunctuationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMacro(SQFParser.MacroContext ctx) { }
+	@Override public void exitPunctuation(SQFParser.PunctuationContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

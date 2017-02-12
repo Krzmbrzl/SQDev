@@ -22,6 +22,7 @@ import raven.sqdev.infoCollection.SQFCommandCollector;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.pluginManagement.ResourceManager;
 import raven.sqdev.pluginManagement.SQDevEclipseEventManager;
+import raven.sqdev.preferences.preferenceEditors.BooleanSQDevPreferenceEditor;
 import raven.sqdev.preferences.preferenceEditors.ValueSQDevPreferenceEditor;
 import raven.sqdev.util.SQDevInfobox;
 import raven.sqdev.util.SQDevPreferenceUtil;
@@ -48,32 +49,17 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 	public void init(IWorkbench workbench) {
 		setDescription("Miscellaneous preferences about the plugin");
 		
-		
-		Group keywordGroup = createGroup("Keyword collection/updating");
-		
-		addPreferenceEditor(new ValueSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND, "&First command:",
-				"The name of the first command in the list in the BIKI that should be"
-						+ " processed. If there is no urgent need do not change this value!",
-				keywordGroup));
-		
-		addPreferenceEditor(new ValueSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND, "&Last command:",
-				"The name of the last command in the list in the BIKI that should be"
-						+ " processed. If there is no urgent need do not change this value!",
-				keywordGroup));
-		
 		// SQF keyword collection
 		updateButton = new Button(createContainer(), SWT.PUSH);
 		updateButton.setToolTipText(
-				"Updates the SQF keywords according to the BIKI. This may take a while");
+				"Updates the SQF commands according to the BIKI. This may take a while");
 		updateButton.setEnabled(collectionJob == null || collectionJob.getResult() != null);
 		
 		// set text according to status
 		if (!updateButton.isEnabled()) {
-			updateButton.setText("Updating keywords...");
+			updateButton.setText("Updating commands...");
 		} else {
-			updateButton.setText("Update keywords");
+			updateButton.setText("Update commands");
 		}
 		
 		updateButton.addMouseListener(new MouseAdapter() {
@@ -107,6 +93,39 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 				}
 			});
 		}
+		
+		// preferences about the command collection
+		Group keywordGroup = createGroup("Command collection/updating");
+		
+		createDescription(keywordGroup, "Preferences about the command update process");
+		
+		addPreferenceEditor(new ValueSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND, "&First command:",
+				"The name of the first command in the list in the BIKI that should be"
+						+ " processed. If there is no urgent need do not change this value!",
+				keywordGroup));
+		
+		addPreferenceEditor(new ValueSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND, "&Last command:",
+				"The name of the last command in the list in the BIKI that should be"
+						+ " processed. If there is no urgent need do not change this value!",
+				keywordGroup));
+		
+		
+		// all preferences about user prompts
+		Group promptGroup = createGroup("User prompt");
+		
+		createDescription(promptGroup, "Preferences about when to prompt the user to do something");
+		
+		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT, "&Always save on exit:",
+				"Whether unsaved preferences should get saved automatically when clicking \"OK\" without a popup asking for it",
+				promptGroup));
+		
+		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION, "&Validate deletions:",
+				"Whether the plugin should prompt the user to validate a deletion he caused",
+				promptGroup));
 	}
 	
 	/**
@@ -145,7 +164,7 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 							firstCommand, lastCommand);
 					
 					if (skipFirst) {
-						collector.skipFNext();
+						collector.skipNext();
 					}
 					
 					KeywordList list = collector.collect(monitor);

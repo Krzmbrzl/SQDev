@@ -63,7 +63,7 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 	}
 	
 	@Override
-	protected void processParseTree(ParseTree tree) {
+	protected boolean processParseTree(ParseTree tree) {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		
 		StringTableWalkListener listener = new StringTableWalkListener(stream);
@@ -73,6 +73,8 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 		packageList = listener.getPackageList();
 		
 		applyParseChanges();
+		
+		return false;
 	}
 	
 	@Override

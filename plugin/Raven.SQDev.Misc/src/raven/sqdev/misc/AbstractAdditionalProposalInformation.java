@@ -17,11 +17,11 @@ import raven.sqdev.interfaces.IProposalInformationCategory;
  * that provides a framework for subClasses
  * 
  * @author Raven
- * 		
+ * 
  */
 public abstract class AbstractAdditionalProposalInformation
 		implements IAdditionalProposalInformation {
-		
+	
 	/**
 	 * A list of categories this info consists of
 	 */
@@ -89,7 +89,10 @@ public abstract class AbstractAdditionalProposalInformation
 		
 		for (int i = 0; i < controls.length; i++) {
 			// create the parent Control for the categories
-			ScrolledComposite scroller = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+			ScrolledComposite scroller = new ScrolledComposite(parent,
+					SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+			
+			scroller.setAlwaysShowScrollBars(true);
 			
 			Composite comp = new Composite(scroller, SWT.NULL);
 			
@@ -98,7 +101,8 @@ public abstract class AbstractAdditionalProposalInformation
 			comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			
 			if (parent.getLayout() instanceof GridLayout) {
-				scroller.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				scroller.setLayoutData(
+						new GridData(SWT.FILL, SWT.FILL, true, true));
 			}
 			
 			// inherit color scheme
@@ -125,16 +129,23 @@ public abstract class AbstractAdditionalProposalInformation
 	 * Forces the computation of the categories representing this info
 	 */
 	public final void doComputeCategories() {
-		categoryList = computeCategories(new ArrayList<IProposalInformationCategory>());
+		categoryList = computeCategories(
+				new ArrayList<IProposalInformationCategory>());
 		
 		isComputed = true;
+	}
+	
+	public boolean isEmpty() {
+		checkComputation();
+		
+		return categoryList.size() == 0;
 	}
 	
 	/**
 	 * Checks whether the categories have yet been computed. If not it will
 	 * compute them.
 	 */
-	private final void checkComputation() {
+	protected final void checkComputation() {
 		if (!isComputed) {
 			doComputeCategories();
 		}
@@ -145,10 +156,11 @@ public abstract class AbstractAdditionalProposalInformation
 	 * 
 	 * @param categories
 	 *            The list to be filled with the created categories
-	 * 			
+	 * 
 	 * @return The list of created categories
 	 */
 	protected abstract ArrayList<IProposalInformationCategory> computeCategories(
 			ArrayList<IProposalInformationCategory> categories);
-			
+	
+	
 }

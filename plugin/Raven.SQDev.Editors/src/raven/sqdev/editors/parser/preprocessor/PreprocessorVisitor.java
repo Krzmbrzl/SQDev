@@ -1,5 +1,7 @@
 // Generated from Preprocessor.g4 by ANTLR 4.5.3
-package raven.sqdev.editors.parser.preprocessor;
+
+	package raven.sqdev.editors.parser.preprocessor;
+
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -17,43 +19,51 @@ public interface PreprocessorVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStart(PreprocessorParser.StartContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#preprocessing}.
+	 * Visit a parse tree produced by {@link PreprocessorParser#preprocessorStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPreprocessing(PreprocessorParser.PreprocessingContext ctx);
+	T visitPreprocessorStatement(PreprocessorParser.PreprocessorStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PreprocessorParser#ifBlock}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIfBlock(PreprocessorParser.IfBlockContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Define}
-	 * labeled alternative in {@link PreprocessorParser#command}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDefine(PreprocessorParser.DefineContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Undefine}
-	 * labeled alternative in {@link PreprocessorParser#command}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUndefine(PreprocessorParser.UndefineContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Include}
-	 * labeled alternative in {@link PreprocessorParser#command}.
+	 * Visit a parse tree produced by {@link PreprocessorParser#include}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitInclude(PreprocessorParser.IncludeContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Error}
-	 * labeled alternative in {@link PreprocessorParser#command}.
+	 * Visit a parse tree produced by {@link PreprocessorParser#define}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDefine(PreprocessorParser.DefineContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#macroArgs}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMacroArgs(PreprocessorParser.MacroArgsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#undefine}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUndefine(PreprocessorParser.UndefineContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#prepIf}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrepIf(PreprocessorParser.PrepIfContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#error}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitError(PreprocessorParser.ErrorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PreprocessorParser#other}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOther(PreprocessorParser.OtherContext ctx);
 }

@@ -33,7 +33,8 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  * @author Raven
  * 
  */
-public class KeywordScanner extends RuleBasedScanner implements IKeywordListChangeListener {
+public class KeywordScanner extends RuleBasedScanner
+		implements IKeywordListChangeListener {
 	/**
 	 * The preferenceKey for the color of the token
 	 */
@@ -96,7 +97,8 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	 */
 	public KeywordScanner(IKeywordProvider provider, String colorPreferenceKey,
 			BasicCodeEditor editor, boolean caseSensitive) {
-		String strColor = SQDevPreferenceUtil.getPreferenceStore().getString(colorPreferenceKey);
+		String strColor = SQDevPreferenceUtil.getPreferenceStore()
+				.getString(colorPreferenceKey);
 		
 		if (strColor == null || strColor.isEmpty()) {
 			throw new IllegalArgumentException(
@@ -112,7 +114,8 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 		keywordListListeners = new ArrayList<IKeywordListChangeListener>();
 		updateListeners = new ArrayList<IUpdateListener>();
 		
-		Color color = new Color(Display.getCurrent(), ColorUtils.decodeRGB(strColor));
+		Color color = new Color(Display.getCurrent(),
+				ColorUtils.decodeRGB(strColor));
 		
 		token = new Token(new TextAttribute(color, null, SWT.BOLD));
 		
@@ -171,13 +174,15 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	 *            Indicates if the editor shoukd be updated
 	 */
 	protected void updateRules(boolean updateEditor) {
-		ArrayList<Keyword> keywordList = provider.getKeywordList().getKeywords();
+		ArrayList<Keyword> keywordList = provider.getKeywordList()
+				.getKeywords();
 		
-		Keyword[] keywords = keywordList.toArray(new Keyword[keywordList.size()]);
+		Keyword[] keywords = keywordList
+				.toArray(new Keyword[keywordList.size()]);
 		
 		// create the respective WordRule
-		WordRule keywordRule = new WordRule(new WordDetector(), getDefaultToken(),
-				!isCaseSensitive());
+		WordRule keywordRule = new WordRule(new WordDetector(),
+				getDefaultToken(), !isCaseSensitive());
 		
 		// add keywords
 		for (Keyword currentKeyword : keywords) {
@@ -230,7 +235,8 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 		
 		updateRules(true);
 		
-		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_REMOVED);
+		notifyKeywordListChangeListeners(
+				IKeywordListChangeListener.CTX_LIST_REMOVED);
 	}
 	
 	/**
@@ -246,7 +252,8 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 		setKeywordProvider(provider);
 		
 		// notify listeners about change
-		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_CHANGED);
+		notifyKeywordListChangeListeners(
+				IKeywordListChangeListener.CTX_LIST_CHANGED);
 	}
 	
 	/**
@@ -264,8 +271,9 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	 * Gets the color for the token of this keywordScanner
 	 */
 	protected Color getColor() {
-		return new Color(Display.getCurrent(), ColorUtils
-				.decodeRGB(SQDevPreferenceUtil.getPreferenceStore().getString(preferenceKey)));
+		return new Color(Display.getCurrent(),
+				ColorUtils.decodeRGB(SQDevPreferenceUtil.getPreferenceStore()
+						.getString(preferenceKey)));
 	}
 	
 	/**
@@ -329,7 +337,8 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	 *            The word to search for
 	 */
 	public boolean contains(String word) {
-		return getKeywordProvider().getKeywordList().getKeyword(word) != null;
+		return getKeywordProvider().getKeywordList().getKeyword(word,
+				isCaseSensitive()) != null;
 	}
 	
 	/**
@@ -360,7 +369,8 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	 * @param listener
 	 *            The listener to add
 	 */
-	public void addKeywordListChangeListener(IKeywordListChangeListener listener) {
+	public void addKeywordListChangeListener(
+			IKeywordListChangeListener listener) {
 		if (!keywordListListeners.contains(listener)) {
 			keywordListListeners.add(listener);
 		}
@@ -372,7 +382,8 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 	 * @param listener
 	 *            The listener to remove
 	 */
-	public void removeKeywordListChangeListener(IKeywordListChangeListener listener) {
+	public void removeKeywordListChangeListener(
+			IKeywordListChangeListener listener) {
 		keywordListListeners.remove(listener);
 	}
 	

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Util
 Bundle-SymbolicName: raven.sqdev.util;singleton:=true
-Bundle-Version: 0.6.1
+Bundle-Version: 0.6.2
 Bundle-Activator: raven.sqdev.activator.Activator
 Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.core.runtime,
@@ -17,8 +17,17 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: raven.sqdev.actions,
- raven.sqdev.miscellaneous,
- raven.sqdev.pluginManagement,
- raven.sqdev.sqdevFile,
- raven.sqdev.util
+Export-Package: raven.sqdev.actions;uses:="org.eclipse.jface.action",
+ raven.sqdev.miscellaneous;uses:="org.eclipse.jface.action,raven.sqdev.infoCollection.base,raven.sqdev.misc",
+ raven.sqdev.pluginManagement;uses:="org.eclipse.core.runtime.jobs,raven.sqdev.interfaces",
+ raven.sqdev.sqdevFile;uses:="org.eclipse.core.runtime,org.eclipse.core.resources,raven.sqdev.util",
+ raven.sqdev.util;
+  uses:="raven.sqdev.sqdevFile,
+   org.eclipse.swt.graphics,
+   org.eclipse.jface.text,
+   org.eclipse.core.runtime.preferences,
+   org.osgi.framework,
+   org.eclipse.core.runtime,
+   org.eclipse.jface.preference,
+   org.eclipse.core.resources",
+ raven.sqdev.utilInterfaces;uses:="raven.sqdev.util"

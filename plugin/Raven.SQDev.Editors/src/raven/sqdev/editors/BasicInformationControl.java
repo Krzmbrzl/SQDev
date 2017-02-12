@@ -199,7 +199,7 @@ public class BasicInformationControl extends AbstractInformationControl
 	}
 	
 	@Override
-	public void setVisible(boolean visible) {
+	public void setVisible(boolean visible) {		
 		// add a MouseListener
 		configureMouseListener();
 		

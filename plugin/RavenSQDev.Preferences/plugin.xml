@@ -26,6 +26,12 @@
             id="raven.sqdev.preferences.sqdevmiscpreferencepage"
             name="Misc">
       </page>
+      <page
+            category="raven.sqdev.preferences.sqdevgeneralpreferencepage"
+            class="raven.sqdev.preferences.pages.SQDevViewsPreferencePage"
+            id="raven.sqdev.preferences.sqdevviewspreferencepage"
+            name="Views">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
