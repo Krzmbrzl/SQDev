@@ -11,6 +11,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -99,6 +101,8 @@ public class BasicCodeEditor extends TextEditor {
 	 * A list of character pairs that should be used in this editor
 	 */
 	protected List<CharacterPair> characterPairs;
+	
+	private Job parseJob;
 	
 	public BasicCodeEditor() {
 		super();
@@ -380,7 +384,43 @@ public class BasicCodeEditor extends TextEditor {
 			return false;
 		}
 		
-		Job parseJob = new Job("Parsing \"" + getEditorInput().getName() + "\"...") {
+		if (parseJob != null && parseJob.getState() != Job.NONE) {
+			// Ther previous Job is still running -> reschedule
+			parseJob.addJobChangeListener(new IJobChangeListener() {
+				
+				@Override
+				public void sleeping(IJobChangeEvent event) {
+				}
+				
+				@Override
+				public void scheduled(IJobChangeEvent event) {
+				}
+				
+				@Override
+				public void running(IJobChangeEvent event) {
+				}
+				
+				@Override
+				public void done(IJobChangeEvent event) {
+					// As there has been a request to parse the input again do
+					// it now as the old parsing process is finished
+					parseInput();
+				}
+				
+				@Override
+				public void awake(IJobChangeEvent event) {
+				}
+				
+				@Override
+				public void aboutToRun(IJobChangeEvent event) {
+				}
+			});
+			
+			return false;
+		}
+		
+		parseJob = new Job(
+				"Parsing \"" + getEditorInput().getName() + "\"...") {
 			
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {

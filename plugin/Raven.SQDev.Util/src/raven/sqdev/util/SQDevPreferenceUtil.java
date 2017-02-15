@@ -47,10 +47,12 @@ public class SQDevPreferenceUtil {
 	 * @return
 	 */
 	public static IEclipsePreferences getPreferences() {
-		IEclipsePreferences preferences = InstanceScope.INSTANCE.getNode("raven.sqdev.preferences");
+		IEclipsePreferences preferences = InstanceScope.INSTANCE
+				.getNode("raven.sqdev.preferences");
 		
 		// check that preferences have been found
-		Assert.isNotNull(preferences, "The requested preference can not be resolved!");
+		Assert.isNotNull(preferences,
+				"The requested preference can not be resolved!");
 		
 		return preferences;
 	}
@@ -61,7 +63,8 @@ public class SQDevPreferenceUtil {
 	 * @return
 	 */
 	public static IPreferenceStore getPreferenceStore() {
-		return SQDevPluginManager.getManager().get("raven.sqdev.preferences").getPreferenceStore();
+		return SQDevPluginManager.getManager().get("raven.sqdev.preferences")
+				.getPreferenceStore();
 	}
 	
 	/**
@@ -73,8 +76,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean alwaysSaveOnExit() {
-		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT);
+		return getPreferenceStore().getBoolean(
+				SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT);
 	}
 	
 	/**
@@ -86,8 +89,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean promptUserValidationForDeletion() {
-		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION);
+		return getPreferenceStore().getBoolean(
+				SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION);
 	}
 	
 	/**
@@ -99,11 +102,12 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getArmaDocumentsDirectory() {
-		String path = getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY);
+		String path = getPreferenceStore().getString(
+				SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY);
 		
 		if (path.isEmpty()) {
-			SQDevInfobox info = new SQDevInfobox("Invalid document's directory in preference!",
+			SQDevInfobox info = new SQDevInfobox(
+					"Invalid document's directory in preference!",
 					SWT.ICON_ERROR, false);
 			info.open(false);
 		}
@@ -123,7 +127,8 @@ public class SQDevPreferenceUtil {
 		if (path.toFile().exists()) {
 			return path.toOSString();
 		} else {
-			throw new SQDevCoreException("Can't find the default user directory");
+			throw new SQDevCoreException(
+					"Can't find the default user directory");
 		}
 	}
 	
@@ -160,12 +165,13 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getRPTDirectory() {
-		String path = getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_RPT_PATH);
+		String path = getPreferenceStore().getString(
+				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_RPT_PATH);
 		
 		if (path.isEmpty()) {
-			SQDevInfobox info = new SQDevInfobox("Invalid RPT directory in preference!",
-					SWT.ICON_ERROR, false);
+			SQDevInfobox info = new SQDevInfobox(
+					"Invalid RPT directory in preference!", SWT.ICON_ERROR,
+					false);
 			info.open(false);
 		}
 		
@@ -181,8 +187,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean doFormatRPTContent() {
-		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT);
+		return getPreferenceStore().getBoolean(
+				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT);
 	}
 	
 	/**
@@ -197,7 +203,8 @@ public class SQDevPreferenceUtil {
 		ArrayList<String> list = new ArrayList<String>();
 		
 		for (String current : getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES)
+				.getString(
+						SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES)
 				.split(STRING_SEPERATOR)) {
 			if (!current.isEmpty()) {
 				list.add(current);
@@ -216,8 +223,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static int getMaximumBlankLinesInRPT() {
-		return getPreferenceStore()
-				.getInt(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION);
+		return getPreferenceStore().getInt(
+				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION);
 	}
 	
 	/**
@@ -229,8 +236,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getArmaProgramDirectory() {
-		return getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_INFO_ARMA_MAIN_DIRECTORY);
+		return getPreferenceStore().getString(
+				SQDevPreferenceConstants.SQDEV_INFO_ARMA_MAIN_DIRECTORY);
 	}
 	
 	/**
@@ -242,8 +249,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean areMatchingBracketsShown() {
-		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY);
+		return getPreferenceStore().getBoolean(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY);
 	}
 	
 	/**
@@ -254,8 +261,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean isCurrentLineHighlighted() {
-		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY);
+		return getPreferenceStore().getBoolean(
+				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY);
 	}
 	
 	/**
@@ -267,8 +274,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean isAutoCompleteEnabled() {
-		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY);
+		return getPreferenceStore().getBoolean(
+				SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY);
 	}
 	
 	/**
@@ -279,8 +286,9 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static Color getMatchingBracketHighlightingColor() {
-		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY)));
+		return new Color(Display.getCurrent(),
+				ColorUtils.decodeRGB(getPreferenceStore().getString(
+						SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY)));
 	}
 	
 	/**
@@ -291,8 +299,9 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static Color getCurrentLineHighlightingColor() {
-		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY)));
+		return new Color(Display.getCurrent(),
+				ColorUtils.decodeRGB(getPreferenceStore().getString(
+						SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY)));
 	}
 	
 	/**
@@ -303,8 +312,9 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static Color getSyntaxHighlightingColor() {
-		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)));
+		return new Color(Display.getCurrent(),
+				ColorUtils.decodeRGB(getPreferenceStore().getString(
+						SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)));
 	}
 	
 	/**
@@ -315,7 +325,21 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static int getParseDelay() {
-		return getPreferenceStore().getInt(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY);
+		return getPreferenceStore()
+				.getInt(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_MODE_CHANGE_NOTIFICATION</code>
+	 * preference that defines whether the user wants to be informed about parse
+	 * mode changes
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static boolean notifyAboutParseModeChange() {
+		return getPreferenceStore().getBoolean(
+				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_MODE_CHANGE_NOTIFICATION);
 	}
 	
 	/**
@@ -327,7 +351,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean autoClean() {
-		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN);
+		return getPreferenceStore()
+				.getBoolean(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN);
 	}
 	
 	/**
@@ -338,8 +363,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean getAutoExportDefaultEnabled() {
-		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT);
+		return getPreferenceStore().getBoolean(
+				SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT);
 	}
 	
 	/**
@@ -350,7 +375,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getDefaultProfile() {
-		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE);
+		return getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE);
 	}
 	
 	/**
@@ -361,7 +387,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getDefaultTerrain() {
-		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN);
+		return getPreferenceStore()
+				.getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN);
 	}
 	
 	/**
@@ -373,8 +400,8 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getFirstCommand() {
-		return getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND);
+		return getPreferenceStore().getString(
+				SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND);
 	}
 	
 	/**
@@ -386,6 +413,7 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getLastCommand() {
-		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND);
+		return getPreferenceStore().getString(
+				SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND);
 	}
 }

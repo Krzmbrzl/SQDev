@@ -154,6 +154,18 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 					ctx.file.getText().length() - 1);
 			IPath root;
 			
+			if (strFilePath.contains("/")) {
+				// backslashes have to be used
+				reportError(ctx.file.getStartIndex() + strFilePath.indexOf("/") + 1,
+						1, ProblemMessages.backslashHasToBeUsed());
+				
+				// Abort because of syntax error
+				return;
+			}
+			
+			// In unix systems the backslash has to be replaced
+			strFilePath = strFilePath.replace("\\", File.separator);
+			
 			if (strFilePath.startsWith("\\")) {
 				root = new Path(SQDevPreferenceUtil.getArmaProgramDirectory());
 			} else {
@@ -174,12 +186,12 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 				if (!file.isFile()) {
 					// must be a file
 					reportError(includedFileStart, includedFileLength,
-							"Reference is not a file");
+							ProblemMessages.referenceNotAFile());
 				} else {
 					if (includedFiles.contains(filePath)) {
 						// report cycle in hierarchy
 						reportError(includedFileStart, includedFileLength,
-								CYCLE_IN_HIERARCHY_MSG);
+								ProblemMessages.cycleInHierarchy());
 						
 						includedFiles.clear();
 						

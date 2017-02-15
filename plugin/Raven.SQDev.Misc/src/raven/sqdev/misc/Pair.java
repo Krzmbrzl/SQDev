@@ -33,4 +33,9 @@ public class Pair<T, S> {
 		return object2;
 	}
 	
+	@Override
+	public String toString() {
+		return getFirst() + " - " + getSecond();
+	}
+	
 }

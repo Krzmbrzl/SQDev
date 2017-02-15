@@ -22,11 +22,13 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
 		// find the ArmA directory in programs folder
-		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_ARMA_MAIN_DIRECTORY,
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_INFO_ARMA_MAIN_DIRECTORY,
 				locateArmaMainDirectory());
 		
 		// find ArmA directory in documents folder
-		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY,
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY,
 				locateArmaDocumentsDirectory());
 		
 		// set default profile
@@ -34,73 +36,110 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 				System.getProperty("user.name"));
 		
 		// set deafult map
-		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN, "Altis");
+		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN,
+				"Altis");
 		
 		// set default autoExport
-		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT, false);
+		store.setDefault(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT,
+				false);
 		
 		// let the preference page always ask for saving
-		store.setDefault(SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT, false);
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT,
+				false);
 		
 		// ask for deleting files
-		store.setDefault(SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION, true);
+		store.setDefault(SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION,
+				true);
 		
 		// enable matching brackets highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY, true);
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY,
-				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.BRACKETMATCH));
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY,
+				true);
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(
+						ISQDevColorConstants.BRACKETMATCH));
 		
 		// enable currentLine highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY, true);
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
-				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.CURRENTLINE));
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY,
+				true);
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(
+						ISQDevColorConstants.CURRENTLINE));
 		
 		// enable autoComplete
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY, true);
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY,
+				true);
 		
 		// set keyword highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.KEYWORD));
 		
 		// set local variable highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
-				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.LOCAL_VARIABLE));
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(
+						ISQDevColorConstants.LOCAL_VARIABLE));
 		
 		// set global variable highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
-				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.GLOBAL_VARIABLE));
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(
+						ISQDevColorConstants.GLOBAL_VARIABLE));
 		
 		// set magic variable highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
-				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.MAGIC_VARIABLE));
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(
+						ISQDevColorConstants.MAGIC_VARIABLE));
 		
 		// set macro highlighting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.MACRO));
 		
 		// set parsing interval
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, 1500);
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY,
+				1500);
+		
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_MODE_CHANGE_NOTIFICATION,
+				true);
 		
 		// set autoClean
-		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN, false);
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN,
+				false);
 		
 		// set start and end command for keyword update
-		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND, "abs");
-		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND, "worldToScreen");
+		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND,
+				"abs");
+		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND,
+				"worldToScreen");
 		
 		// set path to the RPT logs
-		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_RPT_PATH, locateRPT());
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_RPT_PATH,
+				locateRPT());
 		
 		// set default formatting preference to true
-		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT, true);
+		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT,
+				true);
 		
 		// set default prefixes for RPT formatting
-		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES,
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES,
 				"Updating base class" + SQDevPreferenceUtil.STRING_SEPERATOR
 						+ "Attempt to override final function");
 		
 		// set default max blank lines
-		store.setDefault(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION, 2);
+		store.setDefault(
+				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION,
+				2);
 	}
 	
 	/**
@@ -127,7 +166,8 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 			path = System.getProperty("user.home") + "/.local/share/";
 		}
 		
-		path += "\\Steam\\steamapps\\common\\Arma 3".replace("\\", File.separator);
+		path += "\\Steam\\steamapps\\common\\Arma 3".replace("\\",
+				File.separator);
 		
 		if (new File(path).exists()) {
 			return path;
@@ -147,7 +187,8 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		
 		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
 			// Windows
-			path = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+			path = FileSystemView.getFileSystemView().getDefaultDirectory()
+					.getPath();
 		} else {
 			// Linux
 			path = System.getProperty("user.home") + File.separator
@@ -170,8 +211,8 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
 			path += "/AppData/Local/Arma 3".replace("/", File.separator);
 		} else {
-			path += "/.local/share/bohemiainteractive/arma3/AppDataLocal/Arma 3/".replace("/",
-					File.separator);
+			path += "/.local/share/bohemiainteractive/arma3/AppDataLocal/Arma 3/"
+					.replace("/", File.separator);
 		}
 		
 		if (new File(path).exists()) {

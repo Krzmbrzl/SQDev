@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
 
@@ -412,5 +413,94 @@ public class TextUtils {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Finds unbalanced brackets in the given input
+	 * 
+	 * @param input
+	 *            The input to check
+	 * @return A list of <code>Pair</code>s containing the offset of the
+	 *         offending bracket and the error message for it, or
+	 *         <code>null</code> if the brackets are balanced.
+	 */
+	public static List<Pair<Integer, String>> findUnbalancedBrackets(
+			String input) {
+		return findUnbalancedCharacterPairs(input,
+				new CharacterPair[] { CharacterPair.CURLY_BRACKETS,
+						CharacterPair.ROUND_BRACKETS,
+						CharacterPair.SQUARE_BRACKETS });
+	}
+	
+	/**
+	 * Finds unbalanced characters belonging to the set of given CharacterPairs
+	 * 
+	 * @param input
+	 *            The input to check
+	 * @param set
+	 *            The set of CharacterPairs to check
+	 * @return A list of <code>Pair</code>s containing the offset of the
+	 *         offending character and the error message for it.
+	 */
+	public static List<Pair<Integer, String>> findUnbalancedCharacterPairs(
+			String input, CharacterPair[] set) {
+		
+		final Stack<Pair<CharacterPair, Integer>> pairStack = new Stack<Pair<CharacterPair, Integer>>();
+		final List<Pair<Integer, String>> errorPairList = new ArrayList<Pair<Integer, String>>();
+		
+		for (int i = 0; i < input.length(); i++) {
+			char currentChar = input.charAt(i);
+			
+			CharacterPair pair = CharacterPair.getDefinedPairFor(currentChar,
+					set);
+			
+			if (pair != null) {
+				if(pair.getOpener() == pair.getCloser()) {
+					// handle characterPairs whos opener are identical to their closer
+					if(!pairStack.isEmpty() && pairStack.peek().getFirst().equals(pair)) {
+						pairStack.pop();
+					} else {
+						pairStack.push(new Pair<CharacterPair, Integer>(pair, i));
+					}
+					
+					continue;
+				}
+				
+				if (pair.getOpener() == currentChar) {
+					pairStack.push(new Pair<CharacterPair, Integer>(pair, i));
+				} else {
+					if (!pairStack.isEmpty() && pairStack.peek().getFirst()
+							.getCloser() == currentChar) {
+						// balances the top entry of the stack
+						pairStack.pop();
+					} else {
+						// invalid closing character
+						CharacterPair quotes = (currentChar == '"')
+								? CharacterPair.SINGLE_QUOTATION_MARKS
+								: CharacterPair.DOUBLE_QUOTATION_MARKS;
+						
+						errorPairList.add(new Pair<Integer, String>(i,
+								"Invalid closing character "
+										+ quotes.getOpener() + currentChar
+										+ quotes.getCloser()));
+					}
+				}
+			}
+		}
+		
+		// process all unclosed characters
+		for (Pair<CharacterPair, Integer> currentPair : pairStack) {
+			CharacterPair quotes = (currentPair.getFirst()
+					.equals(CharacterPair.DOUBLE_QUOTATION_MARKS))
+							? CharacterPair.SINGLE_QUOTATION_MARKS
+							: CharacterPair.DOUBLE_QUOTATION_MARKS;
+			
+			errorPairList.add(new Pair<Integer, String>(currentPair.getSecond(),
+					"Unclosed opening character " + quotes.getOpener()
+							+ currentPair.getFirst().getOpener()
+							+ quotes.getCloser()));
+		}
+		
+		return errorPairList;
 	}
 }

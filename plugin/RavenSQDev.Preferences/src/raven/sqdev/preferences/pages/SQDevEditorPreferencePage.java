@@ -27,7 +27,8 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		// preferences for the behaviour
 		Group behaviour = createGroup("Behaviour");
 		
-		createDescription(behaviour, "Here you can change the behaviour of the editor");
+		createDescription(behaviour,
+				"Here you can change the behaviour of the editor");
 		
 		BooleanSQDevPreferenceEditor enableCurrentLineHighlightingEditor = new BooleanSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY,
@@ -51,7 +52,8 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				behaviour));
 		
 		IntegerSQDevPreferenceEditor parseDelayEditor = new IntegerSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, "&Parse delay:",
+				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY,
+				"&Parse delay:",
 				"Specifies the delay in milliseconds between a user input in the editor and the actual parsing of the editor's content",
 				behaviour);
 		parseDelayEditor.setMinValue(100);
@@ -59,28 +61,37 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		
 		addPreferenceEditor(parseDelayEditor);
 		
+		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_MODE_CHANGE_NOTIFICATION,
+				"&ParseMode change",
+				"Whether the editor shoudl inform you whenever it has to switch to an alternative parse mode that can consume a lot of time",
+				behaviour));
+		
 		
 		// preferences for the coloring
 		Group colors = createGroup("Colors");
 		
-		createDescription(colors, "Here you can change the colors of the editor");
+		createDescription(colors,
+				"Here you can change the colors of the editor");
 		
 		ColorSQDevPreferenceEditor keywordHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
-				"&Keyword highlighting:", "Defines the color in which keywords are highlighted",
-				colors);
+				"&Keyword highlighting:",
+				"Defines the color in which keywords are highlighted", colors);
 		addPreferenceEditor(keywordHighlightingColorEditor);
 		
 		ColorSQDevPreferenceEditor localVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
 				"&Local variable highlighting:",
-				"Defines the color in which local variables are highlighted", colors);
+				"Defines the color in which local variables are highlighted",
+				colors);
 		addPreferenceEditor(localVariableHighlightingEditor);
 		
 		ColorSQDevPreferenceEditor globalVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
 				"&Global variable highlighting:",
-				"Defines the color in which global variables are highlighted", colors);
+				"Defines the color in which global variables are highlighted",
+				colors);
 		addPreferenceEditor(globalVariableHighlightingEditor);
 		
 		ColorSQDevPreferenceEditor magicVariableHighlightingEditor = new ColorSQDevPreferenceEditor(
@@ -92,20 +103,22 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		
 		ColorSQDevPreferenceEditor macroHighlightingEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
-				"&Macro highlighting:", "Defines the color in which macros are highlighted",
-				colors);
+				"&Macro highlighting:",
+				"Defines the color in which macros are highlighted", colors);
 		addPreferenceEditor(macroHighlightingEditor);
 		
 		ColorSQDevPreferenceEditor currentLineHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY,
 				"&Current line highlighting:",
-				"Defines the color in which the current line is highlighted", colors);
+				"Defines the color in which the current line is highlighted",
+				colors);
 		addPreferenceEditor(currentLineHighlightingColorEditor);
 		
 		ColorSQDevPreferenceEditor matchingBracketHighlightingColorEditor = new ColorSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY,
 				"&Matching bracket pair highlighting:",
-				"Defines the color in which matching bracket pairs are highlighted", colors);
+				"Defines the color in which matching bracket pairs are highlighted",
+				colors);
 		addPreferenceEditor(matchingBracketHighlightingColorEditor);
 	}
 	
