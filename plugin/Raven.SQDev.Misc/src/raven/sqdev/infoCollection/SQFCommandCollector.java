@@ -69,7 +69,7 @@ public class SQFCommandCollector {
 	 */
 	public static final int SYNTAXPART_RETURN_VALUE = 2;
 	/**
-	 * The character that is used in order to marl optional parameters
+	 * The character that is used in order to mark optional parameters
 	 */
 	public static final char OPTIONAL_MARKER = '?';
 	
