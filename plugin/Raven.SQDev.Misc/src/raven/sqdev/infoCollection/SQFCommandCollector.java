@@ -8,7 +8,6 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,20 +69,9 @@ public class SQFCommandCollector {
 	 */
 	public static final int SYNTAXPART_RETURN_VALUE = 2;
 	/**
-	 * The character that is used in order to marl optional parameters
+	 * The character that is used in order to mark optional parameters
 	 */
 	public static final char OPTIONAL_MARKER = '?';
-	/**
-	 * An array containing the names o the commands this collector should not
-	 * collect
-	 */
-	public static final String[] MANUAL_KEYWORDS_ARRAY = { "if", "for", "from",
-			"to" };
-	/**
-	 * A list containing the values of <code>COMMANDS_TO_IGNORE_ARRAY</code>
-	 */
-	public static final List<String> MANUAL_KEYWORDS = Arrays
-			.asList(MANUAL_KEYWORDS_ARRAY);
 	
 	/**
 	 * A list of operators that are not retrieved by the normal command
@@ -344,7 +332,11 @@ public class SQFCommandCollector {
 			command.setReturnType(MANUAL_COMMANDS_RETURN_TYPE[i]);
 			
 			try {
-				command.setWikiPage(new URL(MANUAL_COMMANDS_WIKI[i]));
+				String url = MANUAL_COMMANDS_WIKI[i];
+				
+				if (!url.isEmpty()) {
+					command.setWikiPage(new URL(url));
+				}
 			} catch (MalformedURLException e) {
 				throw new SQDevCollectionException(e.getMessage(), command,
 						list);
@@ -358,7 +350,7 @@ public class SQFCommandCollector {
 		// go through each link and gather respective information
 		for (String currentLine : siteContent.split("\n")) {
 			if (monitor.isCanceled()) {
-				// if the job was canceled return the current state of the list
+				// if the job was cancelled return the current state of the list
 				return list;
 			}
 			

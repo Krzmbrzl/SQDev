@@ -231,4 +231,25 @@ public class ProblemMessages {
 		return "This operator is case-sensitive! It has to be \"" + correct
 				+ "\"!";
 	}
+	
+	/**
+	 * The error message stating that the reference is not a file
+	 */
+	public static final String referenceNotAFile() {
+		return "Reference is not a file!";
+	}
+	
+	/**
+	 * The error message stating that there is a cycle in hierarchy
+	 */
+	public static final String cycleInHierarchy() {
+		return "Cycle in hierarchy!";
+	}
+	
+	/**
+	 * The error message stating that only a bachslash can be used
+	 */
+	public static final String backslashHasToBeUsed() {
+		return "Only a backslash can be used in this context";
+	}
 }

@@ -13,11 +13,16 @@ import java.util.List;
  */
 public class CharacterPair {
 	
-	public static final CharacterPair SINGLE_QUOTATION_MARKS = new CharacterPair('\'', '\'');
-	public static final CharacterPair DOUBLE_QUOTATION_MARKS = new CharacterPair('"', '"');
-	public static final CharacterPair ROUND_BRACKETS = new CharacterPair('(', ')');
-	public static final CharacterPair SQUARE_BRACKETS = new CharacterPair('[', ']');
-	public static final CharacterPair CURLY_BRACKETS = new CharacterPair('{', '}');
+	public static final CharacterPair SINGLE_QUOTATION_MARKS = new CharacterPair(
+			'\'', '\'');
+	public static final CharacterPair DOUBLE_QUOTATION_MARKS = new CharacterPair(
+			'"', '"');
+	public static final CharacterPair ROUND_BRACKETS = new CharacterPair('(',
+			')');
+	public static final CharacterPair SQUARE_BRACKETS = new CharacterPair('[',
+			']');
+	public static final CharacterPair CURLY_BRACKETS = new CharacterPair('{',
+			'}');
 	public static final CharacterPair TAG = new CharacterPair('<', '>');
 	
 	/**
@@ -101,6 +106,33 @@ public class CharacterPair {
 		for (CharacterPair current : definedPairs) {
 			if (current.includes(c)) {
 				return current;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Finds the <code>CharacterPair</code> of the given set that includes the
+	 * given Character
+	 * 
+	 * @param c
+	 *            The character to search for
+	 * @param set
+	 *            The set of CharacterPairs that should be considered
+	 * @return The respective <code>CharacterPair</code> or <code>null</code> if
+	 *         none could be found
+	 */
+	public static CharacterPair getDefinedPairFor(char c, CharacterPair[] set) {
+		CharacterPair pair = getDefinedPairFor(c);
+		
+		if (pair == null) {
+			return pair;
+		} else {
+			for (CharacterPair currentPair : set) {
+				if (pair.equals(currentPair)) {
+					return pair;
+				}
 			}
 		}
 		

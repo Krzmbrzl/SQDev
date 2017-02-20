@@ -141,7 +141,7 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 	 *            The <code>URL</code> to the wikiPage
 	 */
 	private void computeWikiAction(URL wiki) {
-		if (wiki == null) {
+		if (wiki == null || wiki.toString().isEmpty()) {
 			return;
 		}
 		

@@ -52,7 +52,7 @@ public class SQFStringPartitionRule extends PatternRule {
 	 */
 	public SQFStringPartitionRule(IToken token) {
 		// create the rule with the SQF specific String pattern
-		super("\"", "\"", token, '"', false);
+		super("\"", "\"", token, '"', true);
 	}
 	
 	/**

@@ -30,23 +30,23 @@ public class BasicPartitionScanner extends RuleBasedPartitionScanner {
 	/**
 	 * The rule for a multiline comment
 	 */
-	public static final IPredicateRule MULTILINE_COMMENT_RULE = new MultiLineRule("/*", "*/",
-			new Token(BASIC_COMMENT));
+	public static final IPredicateRule MULTILINE_COMMENT_RULE = new MultiLineRule(
+			"/*", "*/", new Token(BASIC_COMMENT), (char) 0, true);
 	/**
 	 * The rule for a singleline comment
 	 */
-	public static final IPredicateRule SINGLELINE_COMMENT_RULE = new EndOfLineRule("//",
-			new Token(BASIC_COMMENT));
+	public static final IPredicateRule SINGLELINE_COMMENT_RULE = new EndOfLineRule(
+			"//", new Token(BASIC_COMMENT));
 	/**
 	 * The rule for a string encapsulated by double quotation marks
 	 */
-	public static final IPredicateRule DOUBLE_QUOTE_STRING_RULE = new MultiLineRule("\"", "\"",
-			new Token(BASIC_STRING), '\\');
+	public static final IPredicateRule DOUBLE_QUOTE_STRING_RULE = new MultiLineRule(
+			"\"", "\"", new Token(BASIC_STRING), '\\', true);
 	/**
 	 * The rule for a string encapsulated by single quotation marks
 	 */
-	public static final IPredicateRule SINGLE_QUOTE_STRING_RULE = new MultiLineRule("'", "'",
-			new Token(BASIC_STRING));
+	public static final IPredicateRule SINGLE_QUOTE_STRING_RULE = new MultiLineRule(
+			"'", "'", new Token(BASIC_STRING), '\\', true);
 	
 	/**
 	 * An array containing all currently used rules

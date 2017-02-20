@@ -12,7 +12,7 @@ import raven.sqdev.exceptions.SQDevException;
  * A <code>Keyword</code> representing an SQF Element.
  * 
  * @author Raven
- * 		
+ * 
  */
 public class SQFElement extends Keyword {
 	
@@ -91,10 +91,12 @@ public class SQFElement extends Keyword {
 	public String getSaveableFormat() {
 		String format = super.getSaveableFormat();
 		
-		// append own attributes
-		format += "\n" + WIKI_START_SAVESEQUENCE + "\n\t" + getWikiPage().toString() + "\n"
-				+ WIKI_END_SAVESEQUENCE;
-				
+		if (isWikiPageGiven()) {
+			// append own attributes
+			format += "\n" + WIKI_START_SAVESEQUENCE + "\n\t"
+					+ getWikiPage().toString() + "\n" + WIKI_END_SAVESEQUENCE;
+		}
+		
 		return format;
 	}
 	
@@ -104,23 +106,30 @@ public class SQFElement extends Keyword {
 			return false;
 		}
 		
-		// get wikiPage
-		String wiki = savedFormat.substring(
-				savedFormat.indexOf(WIKI_START_SAVESEQUENCE) + WIKI_START_SAVESEQUENCE.length(),
-				savedFormat.indexOf(WIKI_END_SAVESEQUENCE)).trim();
-				
-		try {
-			// store wikiPage
-			setWikiPage(new URL(wiki));
-		} catch (MalformedURLException e) {
+		if (savedFormat.contains(WIKI_START_SAVESEQUENCE)
+				&& savedFormat.contains(WIKI_END_SAVESEQUENCE)) {
+			// get wikiPage
+			String wiki = savedFormat.substring(
+					savedFormat.indexOf(WIKI_START_SAVESEQUENCE)
+							+ WIKI_START_SAVESEQUENCE.length(),
+					savedFormat.indexOf(WIKI_END_SAVESEQUENCE)).trim();
+			
 			try {
-				throw new SQDevException("The URL for the wiki page for the command " + getKeyword()
-						+ " is not in the proper format!", e);
-			} catch (SQDevException e1) {
-				e1.printStackTrace();
-				
-				// state that something went wrong
-				return false;
+				// store wikiPage
+				setWikiPage(new URL(wiki));
+			} catch (MalformedURLException e) {
+				try {
+					throw new SQDevException(
+							"The URL for the wiki page for the command "
+									+ getKeyword()
+									+ " is not in the proper format!",
+							e);
+				} catch (SQDevException e1) {
+					e1.printStackTrace();
+					
+					// state that something went wrong
+					return false;
+				}
 			}
 		}
 		
@@ -133,7 +142,8 @@ public class SQFElement extends Keyword {
 			return false;
 		}
 		
-		if (!format.contains(WIKI_START_SAVESEQUENCE) || !format.contains(WIKI_END_SAVESEQUENCE)) {
+		if (!format.contains(WIKI_START_SAVESEQUENCE)
+				|| !format.contains(WIKI_END_SAVESEQUENCE)) {
 			return false;
 		}
 		

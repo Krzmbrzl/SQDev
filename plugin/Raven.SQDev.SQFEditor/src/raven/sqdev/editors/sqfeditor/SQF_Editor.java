@@ -6,7 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DefaultErrorStrategy;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.resources.IProject;
@@ -15,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.rules.Token;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
@@ -36,6 +41,9 @@ import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.interfaces.IKeywordListChangeListener;
+import raven.sqdev.misc.CharacterPair;
+import raven.sqdev.misc.Pair;
+import raven.sqdev.misc.TextUtils;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
@@ -43,6 +51,7 @@ import raven.sqdev.sqdevFile.SQDevFile;
 import raven.sqdev.util.EFileType;
 import raven.sqdev.util.ProjectUtil;
 import raven.sqdev.util.SQDevInfobox;
+import raven.sqdev.util.SQDevPreferenceUtil;
 import raven.sqdev.util.Util;
 
 /**
@@ -96,6 +105,12 @@ public class SQF_Editor extends BasicCodeEditor
 	 * parse tree
 	 */
 	private CommonTokenStream currentStream;
+	
+	/**
+	 * Indicates whether the parser for this editor had to switch to the LL
+	 * algorithm before
+	 */
+	private boolean switchedToLL;
 	
 	public SQF_Editor() {
 		super();
@@ -269,15 +284,140 @@ public class SQF_Editor extends BasicCodeEditor
 		currentStream = new CommonTokenStream(lexer);
 		
 		SQFParser parser = new SQFParser(currentStream);
+		parser.removeErrorListeners();
+		parser.addErrorListener(listener);
 		
 		if (parseRuleNames == null) {
 			parseRuleNames = Arrays.asList(parser.getRuleNames());
 		}
 		
-		parser.removeErrorListeners();
-		parser.addErrorListener(listener);
+		ParseTree tree = null;
+		try {
+			// try to parse with SLL(*)
+			listener.suppressErrors(true);
+			parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+			parser.setErrorHandler(new BailErrorStrategy());
+			
+			tree = parser.start();
+			
+			switchedToLL = false;
+			listener.flushSuppressedErros();
+		} catch (RuntimeException e) {
+			if (e.getCause() instanceof RecognitionException) {
+				boolean doSwitchToLL = true;
+				
+				// Before switching check that it is not caused by unpaired
+				// characters
+				List<Pair<Integer, String>> unbalancedCharacters = TextUtils
+						.findUnbalancedCharacterPairs(input,
+								new CharacterPair[] {
+										CharacterPair.ROUND_BRACKETS,
+										CharacterPair.SQUARE_BRACKETS,
+										CharacterPair.CURLY_BRACKETS,
+										CharacterPair.DOUBLE_QUOTATION_MARKS,
+										CharacterPair.SINGLE_QUOTATION_MARKS });
+				
+				if (!unbalancedCharacters.isEmpty()) {
+					// There are unbalanced characters -> make sure they are not
+					// a comment or a String
+					currentStream.reset();
+					
+					List<Pair<Integer, String>> unbalancedPairsToReport = new ArrayList<Pair<Integer, String>>();
+					
+					for (org.antlr.v4.runtime.Token currentToken : currentStream
+							.getTokens()) {
+						if (currentToken
+								.getChannel() == org.antlr.v4.runtime.Token.HIDDEN_CHANNEL
+								|| currentToken.getType() == SQFParser.STRING) {
+							// Ignore hidden Tokens
+							continue;
+						} else {
+							for (Pair<Integer, String> currentPair : unbalancedCharacters) {
+								if (currentPair.getFirst() >= currentToken
+										.getStartIndex()) {
+									if (currentPair.getFirst() > currentToken
+											.getStopIndex()) {
+										// can only be considered when looking
+										// at the next Token
+										break;
+									} else {
+										// The offedning token is in a relevant
+										// part -> must be reported
+										unbalancedPairsToReport
+												.add(currentPair);
+									}
+								}
+							}
+						}
+					}
+					
+					listener.suppressErrors(false);
+					
+					for (Pair<Integer, String> currentPair : unbalancedPairsToReport) {
+						listener.reportError(currentPair.getFirst(), 1,
+								currentPair.getSecond());
+					}
+					
+					if (!unbalancedPairsToReport.isEmpty()) {
+						doSwitchToLL = false;
+					}
+				}
+				
+				if (doSwitchToLL) {
+					Thread notifyThread = null;
+					
+					if (SQDevPreferenceUtil.notifyAboutParseModeChange()
+							&& !switchedToLL) {
+						// TODO: log
+						notifyThread = new Thread(new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									Thread.sleep(2000);
+									
+									// notify the user as it can take very long
+									String msg = "The parser for  \""
+											+ getEditorInput().getName()
+											+ "\" had to switch to the LL(*) algorithm as the SSL(*) has failed. "
+											+ "This way of parsing can take very long (up to 20 sec!!!). "
+											+ "If you know for sure that your code does not contain errors "
+											+ "you might want to file an issue on GitHub with your code "
+											+ "as this shouldn't happen.\nThanks for your understanding.";
+									SQDevInfobox info = new SQDevInfobox(msg,
+											SWT.ERROR);
+									
+									info.open(false);
+								} catch (InterruptedException e) {
+								}
+							}
+						});
+						
+						notifyThread.start();
+					}
+					
+					listener.clearSuppressedErrors();
+					listener.suppressErrors(false);
+					
+					// parse with LL(*) to prevent false errors
+					parser.setErrorHandler(new DefaultErrorStrategy());
+					parser.getInterpreter().setPredictionMode(
+							PredictionMode.LL_EXACT_AMBIG_DETECTION);
+					
+					currentStream.reset();
+					
+					tree = parser.start();
+					
+					switchedToLL = true;
+					if (notifyThread != null && notifyThread.isAlive()) {
+						// Prevent message from being displayed
+						notifyThread.interrupt();
+					}
+				}
+			}
+		}
 		
-		return parser.start();
+		return tree;
 	}
 	
 	@Override

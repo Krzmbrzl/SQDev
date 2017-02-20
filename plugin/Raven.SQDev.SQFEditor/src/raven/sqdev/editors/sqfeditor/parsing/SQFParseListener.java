@@ -3,7 +3,7 @@ package raven.sqdev.editors.sqfeditor.parsing;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
@@ -60,23 +60,23 @@ public class SQFParseListener extends SQFBaseListener {
 	 * The respective <code>CommonTokenStream</code> associated with the parse
 	 * tree this listener corresponds to
 	 */
-	private CommonTokenStream stream;
+	private BufferedTokenStream stream;
 	
 	/**
 	 * Creates a new instance of this listener.
 	 * 
 	 * @param editor
 	 *            The editor the created listener should be configured to
-	 * @param stream
+	 * @param currentStream
 	 *            The <code>CommonTokenStream</code> associated with the
 	 *            respective parse tree
 	 */
-	public SQFParseListener(SQF_Editor editor, CommonTokenStream stream) {
+	public SQFParseListener(SQF_Editor editor, BufferedTokenStream currentStream) {
 		Assert.isNotNull(editor);
-		Assert.isNotNull(stream);
+		Assert.isNotNull(currentStream);
 		
 		this.editor = editor;
-		this.stream = stream;
+		this.stream = currentStream;
 		
 		localVariables = new ArrayList<Variable>();
 		globalVariables = new ArrayList<Variable>();
