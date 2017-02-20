@@ -304,7 +304,9 @@ public class SQF_Editor extends BasicCodeEditor
 			listener.flushSuppressedErros();
 		} catch (RuntimeException e) {
 			if (e.getCause() instanceof RecognitionException) {
-				// Before swithcing check that it is not caused by unpaired
+				boolean doSwitchToLL = true;
+				
+				// Before switching check that it is not caused by unpaired
 				// characters
 				List<Pair<Integer, String>> unbalancedCharacters = TextUtils
 						.findUnbalancedCharacterPairs(input,
@@ -355,22 +357,43 @@ public class SQF_Editor extends BasicCodeEditor
 						listener.reportError(currentPair.getFirst(), 1,
 								currentPair.getSecond());
 					}
-				} else {
+					
+					if (!unbalancedPairsToReport.isEmpty()) {
+						doSwitchToLL = false;
+					}
+				}
+				
+				if (doSwitchToLL) {
+					Thread notifyThread = null;
+					
 					if (SQDevPreferenceUtil.notifyAboutParseModeChange()
 							&& !switchedToLL) {
-						//TODO: log
+						// TODO: log
+						notifyThread = new Thread(new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									Thread.sleep(2000);
+									
+									// notify the user as it can take very long
+									String msg = "The parser for  \""
+											+ getEditorInput().getName()
+											+ "\" had to switch to the LL(*) algorithm as the SSL(*) has failed. "
+											+ "This way of parsing can take very long (up to 20 sec!!!). "
+											+ "If you know for sure that your code does not contain errors "
+											+ "you might want to file an issue on GitHub with your code "
+											+ "as this shouldn't happen.\nThanks for your understanding.";
+									SQDevInfobox info = new SQDevInfobox(msg,
+											SWT.ERROR);
+									
+									info.open(false);
+								} catch (InterruptedException e) {
+								}
+							}
+						});
 						
-						// notify the user as it can take very long
-						String msg = "The parser for  \""
-								+ getEditorInput().getName()
-								+ "\" had to switch to the LL(*) algorithm as the SSL(*) has failed. "
-								+ "This way of parsing can take very long (up to 20 sec!!!). "
-								+ "If you know for sure that your code does not contain errors "
-								+ "you might want to file an issue on GitHub with your code "
-								+ "as this shouldn't happen.\nThanks for your understanding.";
-						SQDevInfobox info = new SQDevInfobox(msg, SWT.ERROR);
-						
-						info.open(false);
+						notifyThread.start();
 					}
 					
 					listener.clearSuppressedErrors();
@@ -378,14 +401,18 @@ public class SQF_Editor extends BasicCodeEditor
 					
 					// parse with LL(*) to prevent false errors
 					parser.setErrorHandler(new DefaultErrorStrategy());
-					parser.getInterpreter()
-							.setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+					parser.getInterpreter().setPredictionMode(
+							PredictionMode.LL_EXACT_AMBIG_DETECTION);
 					
 					currentStream.reset();
 					
 					tree = parser.start();
 					
 					switchedToLL = true;
+					if (notifyThread != null && notifyThread.isAlive()) {
+						// Prevent message from being displayed
+						notifyThread.interrupt();
+					}
 				}
 			}
 		}

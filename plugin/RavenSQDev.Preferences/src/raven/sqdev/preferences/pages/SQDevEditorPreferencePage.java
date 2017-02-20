@@ -64,7 +64,7 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_MODE_CHANGE_NOTIFICATION,
 				"&ParseMode change",
-				"Whether the editor shoudl inform you whenever it has to switch to an alternative parse mode that can consume a lot of time",
+				"Whether the editor should inform you whenever it had to switch to an alternative parse mode that is currently causing delays in the parsing.",
 				behaviour));
 		
 		
