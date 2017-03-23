@@ -43,6 +43,7 @@ public class BasicMarkerManager implements IManager {
 		this.editor = editor;
 
 		markers = new ArrayList<MarkerInformation>();
+		isValid = true;
 	}
 
 	/**

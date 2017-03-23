@@ -3,8 +3,12 @@ package raven.sqdev.editors.other;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.text.rules.MultiLineRule;
+import org.eclipse.jface.text.rules.Token;
+
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.editors.BasicCodeEditor;
+import raven.sqdev.editors.BasicPartitionScanner;
 import raven.sqdev.editors.IMacroSupport;
 import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.editors.Macro;
@@ -22,13 +26,25 @@ public class ConfigEditor extends BasicCodeEditor implements IMacroSupport {
 		
 		// configure macro syntax highlighting
 		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY, true);
+				SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
+				true);
 		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, true);
+				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
+				true);
 		
 		// set keywords for this scanner
 		setKeywords(configuration.getKeywordScanner(
 				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY));
+		
+		// get PartitionScanner
+		BasicPartitionScanner partitionScanner = getBasicProvider()
+				.getPartitionScanner();
+		
+		// exchange the string rule of the partitionScanner
+		partitionScanner
+				.removeRule(BasicPartitionScanner.DOUBLE_QUOTE_STRING_RULE);
+		partitionScanner.addRule(new MultiLineRule("\"", "\"",
+				new Token(BasicPartitionScanner.BASIC_STRING), (char) 0, true));
 	}
 	
 	/**
@@ -51,7 +67,8 @@ public class ConfigEditor extends BasicCodeEditor implements IMacroSupport {
 			configuration
 					.getKeywordScanner(
 							SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(this.macros));
+					.getKeywordProvider()
+					.setKeywordList(new KeywordList(this.macros));
 			
 			if (update) {
 				update(false);

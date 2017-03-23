@@ -34,13 +34,12 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -204,7 +203,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 							return;
 						}
 						
-						List<StringTablePackage> packages = editor.getPackageList();
+						List<StringTablePackage> packages = editor
+								.getPackageList();
 						
 						if (packages.isEmpty()) {
 							setPackages(null);
@@ -268,11 +268,25 @@ public class StringTableEditor extends MultiPageEditorPart {
 			
 			@Override
 			public void handleEvent(Event event) {
-				if (packageTree.getSelection() == null || packageTree.getSelection()[0] == null) {
+				if (packageTree.getSelection() == null
+						|| packageTree.getSelection().length == 0) {
 					return;
 				}
 				
 				TreeItem selectedItem = packageTree.getSelection()[0];
+				
+				// just check whether the mouse is at the correct height
+				Rectangle area = selectedItem.getBounds();
+				area.x = 0;
+				area.width = packageTree.getSize().x;
+				
+				if (selectedItem == null
+						|| !area.contains(new Point(event.x, event.y))) {
+					// mouse event didn't occure on the respective TreeItem
+					packageTree.deselectAll();
+					
+					return;
+				}
 				
 				if (event.button == 1) {
 					// left mouseclick
@@ -287,7 +301,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 						setTableInput((StringTableContainer) data);
 					} else {
 						if (data.equals(ADD_ITEM)) {
-							StringTablePackage newPackage = new StringTablePackage("New package");
+							StringTablePackage newPackage = new StringTablePackage(
+									"New package");
 							
 							packageList.add(packageList.size(), newPackage);
 							
@@ -304,7 +319,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 					
 					Menu contextMenu = new Menu(packageTree);
 					
-					if (selectedItem == null || selectedItem.getData() == null) {
+					if (selectedItem == null
+							|| selectedItem.getData() == null) {
 						return;
 					}
 					
@@ -312,10 +328,13 @@ public class StringTableEditor extends MultiPageEditorPart {
 						addPackageContextItems(contextMenu,
 								(StringTablePackage) selectedItem.getData());
 					} else {
-						if (selectedItem.getData() instanceof StringTableContainer) {
+						if (selectedItem
+								.getData() instanceof StringTableContainer) {
 							addContainerContextItems(contextMenu,
-									(StringTableContainer) selectedItem.getData(),
-									(StringTablePackage) selectedItem.getParentItem().getData());
+									(StringTableContainer) selectedItem
+											.getData(),
+									(StringTablePackage) selectedItem
+											.getParentItem().getData());
 						}
 					}
 					
@@ -334,7 +353,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 					oldEditor.dispose();
 				}
 				
-				if (packageTree.getSelection() == null) {
+				if (packageTree.getSelection() == null
+						|| packageTree.getSelection().length == 0) {
 					return;
 				}
 				
@@ -348,12 +368,6 @@ public class StringTableEditor extends MultiPageEditorPart {
 				// Tree
 				Text newEditor = new Text(packageTree, SWT.NONE);
 				newEditor.setText(item.getText());
-				newEditor.addModifyListener(new ModifyListener() {
-					@Override
-					public void modifyText(ModifyEvent e) {
-						
-					}
-				});
 				
 				newEditor.addKeyListener(new KeyAdapter() {
 					
@@ -374,7 +388,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 									((StringTableContainer) data).setName(text);
 								} else {
 									if (data instanceof StringTablePackage) {
-										((StringTablePackage) data).setName(text);
+										((StringTablePackage) data)
+												.setName(text);
 									}
 								}
 							}
@@ -409,7 +424,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		expandedPackages.clear();
 		for (TreeItem currentItem : packageTree.getItems()) {
 			if (currentItem.getExpanded()) {
-				expandedPackages.add((StringTablePackage) currentItem.getData());
+				expandedPackages
+						.add((StringTablePackage) currentItem.getData());
 			}
 		}
 		
@@ -434,16 +450,17 @@ public class StringTableEditor extends MultiPageEditorPart {
 		
 		// restore selection
 		if (lastSelectedObjectData != null) {
-			TreeItem lastSelectedItem = TreeUtils.findTreeItemWithData(packageTree,
-					lastSelectedObjectData);
+			TreeItem lastSelectedItem = TreeUtils
+					.findTreeItemWithData(packageTree, lastSelectedObjectData);
 			
 			if (lastSelectedItem != null) {
 				packageTree.setSelection(lastSelectedItem);
 			}
 			
-			if (lastSelectedItem != null
-					&& lastSelectedItem.getData() instanceof StringTableContainer) {
-				setTableInput((StringTableContainer) lastSelectedItem.getData());
+			if (lastSelectedItem != null && lastSelectedItem
+					.getData() instanceof StringTableContainer) {
+				setTableInput(
+						(StringTableContainer) lastSelectedItem.getData());
 			} else {
 				setTableInput(null);
 			}
@@ -467,7 +484,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		addContainerItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				StringTableContainer newContainer = new StringTableContainer("New container");
+				StringTableContainer newContainer = new StringTableContainer(
+						"New container");
 				StringTableKey newKey = new StringTableKey("New_Key");
 				newKey.setString(Language.ORIGINAL, "");
 				newContainer.addKey(newKey);
@@ -496,7 +514,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 				
 				packageList.remove(pkg);
 				
-				for (StringTableContainer currentContainer : pkg.getContainer()) {
+				for (StringTableContainer currentContainer : pkg
+						.getContainer()) {
 					if (currentContainer.equals(currentTableContainer)) {
 						// don't display a container that does no longer exist
 						setTableInput(null);
@@ -505,7 +524,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 				}
 				
 				if (packageList.size() == 0) {
-					StringTablePackage defaultPackage = new StringTablePackage("Default package");
+					StringTablePackage defaultPackage = new StringTablePackage(
+							"Default package");
 					packageList.add(defaultPackage);
 				}
 				
@@ -524,8 +544,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 * @param pkg
 	 *            The package of the container
 	 */
-	private void addContainerContextItems(Menu menu, StringTableContainer container,
-			StringTablePackage pkg) {
+	private void addContainerContextItems(Menu menu,
+			StringTableContainer container, StringTablePackage pkg) {
 		MenuItem removeItem = new MenuItem(menu, SWT.PUSH);
 		removeItem.setText("Delete container \"" + container.getName() + "\"");
 		removeItem.setImage(getRemoveIconImage());
@@ -576,7 +596,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 			// find out the configured languages
 			for (Object current : tableInputList) {
 				if (current instanceof StringTableKey) {
-					for (Language currentLanguage : ((StringTableKey) current).getLanguages()) {
+					for (Language currentLanguage : ((StringTableKey) current)
+							.getLanguages()) {
 						if (!languages.contains(currentLanguage)) {
 							languages.add(currentLanguage);
 						}
@@ -589,7 +610,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 				addLanguageColumn(currentLanguage);
 			}
 			
-			viewer.setInput(tableInputList.toArray(new Object[tableInputList.size()]));
+			viewer.setInput(
+					tableInputList.toArray(new Object[tableInputList.size()]));
 			
 			// update table
 			viewer.getTable().setRedraw(true);
@@ -607,7 +629,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 *            The parent composite to use
 	 */
 	private void createTableViewer(Composite parent) {
-		viewer = new TableViewer(parent, SWT.SINGLE | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
+		viewer = new TableViewer(parent,
+				SWT.SINGLE | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 		
 		viewer.getTable().setLinesVisible(true);
 		viewer.getTable().setHeaderVisible(true);
@@ -624,9 +647,10 @@ public class StringTableEditor extends MultiPageEditorPart {
 				if (item instanceof TableItem) {
 					Object data = ((TableItem) item).getData();
 					
-					Point mousePos = PlatformUI.getWorkbench().getDisplay().getCursorLocation();
-					Point relPos = PlatformUI.getWorkbench().getDisplay().getFocusControl()
-							.toControl(mousePos);
+					Point mousePos = PlatformUI.getWorkbench().getDisplay()
+							.getCursorLocation();
+					Point relPos = PlatformUI.getWorkbench().getDisplay()
+							.getFocusControl().toControl(mousePos);
 					
 					ViewerCell cell = viewer.getCell(relPos);
 					
@@ -635,19 +659,20 @@ public class StringTableEditor extends MultiPageEditorPart {
 							return;
 						}
 						
-						if (viewer.getTable().getColumn(cell.getColumnIndex()).getData()
-								.equals(KEY_COLUMN)) {
+						if (viewer.getTable().getColumn(cell.getColumnIndex())
+								.getData().equals(KEY_COLUMN)) {
 							// only open when clicked on the plus cell
 							openAddRowMenu();
 						}
 					} else {
-						if (cell == null
-								|| viewer.getTable().getColumn(cell.getColumnIndex()) == null) {
+						if (cell == null || viewer.getTable()
+								.getColumn(cell.getColumnIndex()) == null) {
 							return;
 						}
 						
 						if (data instanceof StringTableKey && viewer.getTable()
-								.getColumn(cell.getColumnIndex()).getData().equals(REMOVE_COLUMN)) {
+								.getColumn(cell.getColumnIndex()).getData()
+								.equals(REMOVE_COLUMN)) {
 							// open when clicked on a key row
 							openRemoveRowMenu((StringTableKey) data);
 						}
@@ -656,17 +681,19 @@ public class StringTableEditor extends MultiPageEditorPart {
 			}
 		});
 		
-		TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(viewer,
-				new FocusCellOwnerDrawHighlighter(viewer));
+		TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(
+				viewer, new FocusCellOwnerDrawHighlighter(viewer));
 		
 		ColumnViewerEditorActivationStrategy activationSupport = new ColumnViewerEditorActivationStrategy(
 				viewer) {
 			@Override
-			protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+			protected boolean isEditorActivationEvent(
+					ColumnViewerEditorActivationEvent event) {
 				// Enable editor only with mouse double click
 				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
 					EventObject source = event.sourceEvent;
-					if (source instanceof MouseEvent && ((MouseEvent) source).button == 3)
+					if (source instanceof MouseEvent
+							&& ((MouseEvent) source).button == 3)
 						return false;
 					
 					return true;
@@ -692,7 +719,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		// key column
 		TableViewerColumn keyColumn = new TableViewerColumn(viewer, SWT.NONE);
 		keyColumn.getColumn().setText("Key");
-		keyColumn.getColumn().setToolTipText("The key for usage in scripts or config");
+		keyColumn.getColumn()
+				.setToolTipText("The key for usage in scripts or config");
 		keyColumn.getColumn().setWidth(100);
 		keyColumn.getColumn().setResizable(true);
 		keyColumn.getColumn().setData(KEY_COLUMN);
@@ -759,7 +787,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		});
 		
 		
-		TableViewerColumn removeRowColumn = new TableViewerColumn(viewer, SWT.NONE);
+		TableViewerColumn removeRowColumn = new TableViewerColumn(viewer,
+				SWT.NONE);
 		removeRowColumn.getColumn().setResizable(false);
 		removeRowColumn.getColumn().setWidth(50);
 		removeRowColumn.getColumn().setData(REMOVE_COLUMN);
@@ -783,7 +812,6 @@ public class StringTableEditor extends MultiPageEditorPart {
 	 *            The <code>Language</code> the column should be created for
 	 */
 	private void addLanguageColumn(Language language) {
-		// TODO: sort alphabetically
 		int index = viewer.getTable().getColumnCount() - 2;
 		
 		Language[] langs = displayedLanguages.keySet()
@@ -804,7 +832,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		displayedLanguages.put(language, index);
 		
 		// add the column before the "add" column
-		TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE, index);
+		TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE,
+				index);
 		
 		column.getColumn().setText(language.toString());
 		column.getColumn().setToolTipText(language.getTooltip());
@@ -832,7 +861,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 					
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						if (SQDevPreferenceUtil.promptUserValidationForDeletion()) {
+						if (SQDevPreferenceUtil
+								.promptUserValidationForDeletion()) {
 							// Only prompt if the user set up the plugin like
 							// this
 							SQDevInfobox info = new SQDevInfobox(
@@ -848,7 +878,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 						}
 						
 						// dispose respective column
-						viewer.getTable().getColumn(getColumnIndex(language)).dispose();
+						viewer.getTable().getColumn(getColumnIndex(language))
+								.dispose();
 						
 						// update input
 						for (Object current : tableInputList) {
@@ -888,7 +919,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 			InputStream plusStream = ResourceManager.getManager()
 					.getInternalResourceStream(ResourceManager.PLUS_ICON);
 			
-			plusIcon = new Image(PlatformUI.getWorkbench().getDisplay(), plusStream);
+			plusIcon = new Image(PlatformUI.getWorkbench().getDisplay(),
+					plusStream);
 		}
 		
 		return plusIcon;
@@ -902,7 +934,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 			InputStream removeStream = ResourceManager.getManager()
 					.getInternalResourceStream(ResourceManager.REMOVE_ICON);
 			
-			removeIcon = new Image(PlatformUI.getWorkbench().getDisplay(), removeStream);
+			removeIcon = new Image(PlatformUI.getWorkbench().getDisplay(),
+					removeStream);
 		}
 		
 		return removeIcon;
@@ -916,7 +949,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 			InputStream minusStream = ResourceManager.getManager()
 					.getInternalResourceStream(ResourceManager.MINUS_ICON);
 			
-			minusIcon = new Image(PlatformUI.getWorkbench().getDisplay(), minusStream);
+			minusIcon = new Image(PlatformUI.getWorkbench().getDisplay(),
+					minusStream);
 		}
 		
 		return minusIcon;
@@ -972,7 +1006,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 					currentTableContainer.addKey(newKey);
 					
 					// configure the new key with all displayed languages
-					Iterator<Language> it = displayedLanguages.keySet().iterator();
+					Iterator<Language> it = displayedLanguages.keySet()
+							.iterator();
 					while (it.hasNext()) {
 						newKey.setString(it.next(), "");
 					}
@@ -1063,8 +1098,10 @@ public class StringTableEditor extends MultiPageEditorPart {
 				packageItem.setText(currentPackage.getName());
 				packageItem.setData(currentPackage);
 				
-				for (StringTableContainer currentContainer : currentPackage.getContainer()) {
-					TreeItem containerItem = new TreeItem(packageItem, SWT.NONE);
+				for (StringTableContainer currentContainer : currentPackage
+						.getContainer()) {
+					TreeItem containerItem = new TreeItem(packageItem,
+							SWT.NONE);
 					containerItem.setText(currentContainer.getName());
 					containerItem.setData(currentContainer);
 				}
@@ -1115,7 +1152,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		
 		if (packages == null) {
 			packages = new ArrayList<StringTablePackage>();
-			StringTablePackage defaultPackage = new StringTablePackage("Default package");
+			StringTablePackage defaultPackage = new StringTablePackage(
+					"Default package");
 			
 			packages.add(defaultPackage);
 		}
@@ -1127,7 +1165,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		for (StringTablePackage currentPackage : packageList) {
 			configurePackageListener(currentPackage);
 			
-			if (!isSelectionContained && currentPackage.contains(currentTableContainer)) {
+			if (!isSelectionContained
+					&& currentPackage.contains(currentTableContainer)) {
 				isSelectionContained = true;
 			}
 		}
@@ -1261,7 +1300,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 			
 			// syncXMLPresentation();
 		} catch (PartInitException e) {
-			throw new SQDevCoreException("Couldn't create stringTableEditor", e);
+			throw new SQDevCoreException("Couldn't create stringTableEditor",
+					e);
 		}
 	}
 	
@@ -1274,14 +1314,16 @@ public class StringTableEditor extends MultiPageEditorPart {
 		}
 		
 		// the editor was selected
-		IDocument editorDocument = editor.getBasicProvider().getDocument(editor.getEditorInput());
+		IDocument editorDocument = editor.getBasicProvider()
+				.getDocument(editor.getEditorInput());
 		
 		IEditorInput input = getEditorInput();
 		
 		String projectName = "MyProject";
 		
 		if (input instanceof IFileEditorInput) {
-			IProject project = ((IFileEditorInput) input).getFile().getProject();
+			IProject project = ((IFileEditorInput) input).getFile()
+					.getProject();
 			
 			if (project != null) {
 				projectName = project.getName();
@@ -1289,7 +1331,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 			}
 		}
 		
-		StringBuilder builder = new StringBuilder("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
+		StringBuilder builder = new StringBuilder(
+				"<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
 		builder.append("<Project name=\"" + projectName + "\">\n");
 		
 		for (StringTablePackage currentPackage : packageList) {
@@ -1298,7 +1341,8 @@ public class StringTableEditor extends MultiPageEditorPart {
 		
 		String editorInput = builder.toString().trim().replace("\n", "\n\t");
 		
-		editorDocument.set(editorInput.replaceFirst("\n\t", "\n") + "\n</Project>");
+		editorDocument
+				.set(editorInput.replaceFirst("\n\t", "\n") + "\n</Project>");
 	}
 	
 	@Override

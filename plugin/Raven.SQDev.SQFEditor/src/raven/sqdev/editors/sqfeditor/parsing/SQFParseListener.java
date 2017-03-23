@@ -316,6 +316,8 @@ public class SQFParseListener extends SQFBaseListener {
 					
 					// process rule
 					exitNularOperator(nularCtx);
+					
+					return;
 				}
 			}
 		}

@@ -12,8 +12,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -101,8 +101,14 @@ public class BasicCodeEditor extends TextEditor {
 	 * A list of character pairs that should be used in this editor
 	 */
 	protected List<CharacterPair> characterPairs;
-	
+	/**
+	 * The <code>Job</code> used to parse if no suspension is wished
+	 */
 	private Job parseJob;
+	/**
+	 * Indicates whether the current parsing should be cancelled
+	 */
+	private Boolean parsingIsCancelled;
 	
 	public BasicCodeEditor() {
 		super();
@@ -115,6 +121,7 @@ public class BasicCodeEditor extends TextEditor {
 		
 		managerList = new ArrayList<IManager>();
 		characterPairs = getCharacterPairs();
+		parsingIsCancelled = false;
 		
 		// add a implementation for the autoCompletion of pairing characters
 		configureCharacterPairHandler();
@@ -150,11 +157,11 @@ public class BasicCodeEditor extends TextEditor {
 			getEditorKeyEventQueue().setManager(manager);
 			
 			((ITextViewerExtension) viewer).appendVerifyKeyListener(manager);
-			
-			// add listener that parses the input during typing
-			((ITextViewerExtension) viewer)
-					.appendVerifyKeyListener(new BasicParseTimeListener(this));
 		}
+		
+		// add parse listener
+		getBasicProvider().getDocument(getEditorInput())
+				.addDocumentListener(new BasicParseTimeListener(this));
 		
 		return viewer;
 	}
@@ -278,7 +285,7 @@ public class BasicCodeEditor extends TextEditor {
 		createManagers(managerList);
 		
 		// parse the input for the first time
-		parseInput();
+		parseInput(true);
 	}
 	
 	/**
@@ -358,16 +365,69 @@ public class BasicCodeEditor extends TextEditor {
 	}
 	
 	/**
+	 * This is a helper method that will do the parsing for the given input
+	 * wihtout any checks (whetehr there is an active parsing job) and in the
+	 * same thread as it is called
+	 * 
+	 * @param input
+	 *            The input to parse
+	 * @return The result of the parsing in form of an IStatus
+	 */
+	private IStatus startParsingInput(String input) {
+		// preprocess
+		doPreprocessorParsing(input);
+		
+		// check if this parsing should be cancelled
+		synchronized (parsingIsCancelled) {
+			if (parsingIsCancelled) {
+				parsingIsCancelled = false;
+				return Status.CANCEL_STATUS;
+			}
+		}
+		
+		// parse
+		ParseTree output = doParse(input);
+		
+		// check if this parsing should be cancelled
+		synchronized (parsingIsCancelled) {
+			if (parsingIsCancelled) {
+				parsingIsCancelled = false;
+				return Status.CANCEL_STATUS;
+			}
+		}
+		
+		if (output == null || output.getChildCount() == 0) {
+			applyParseChanges();
+			
+			return Status.CANCEL_STATUS;
+		} else {
+			parseTree = output;
+			
+			if (!processParseTree(parseTree)) {
+				applyParseChanges();
+			}
+			
+			return Status.OK_STATUS;
+		}
+	}
+	
+	/**
 	 * Parses the input of this editor, updates the parseTree and sends it to
 	 * the {@link #processParseTree(ParseTree)} method automatically. Before
 	 * doing so it will call the preprocessor parser via
 	 * {@link #doPreprocessorParsing(String)}. If you need to specify a custom
 	 * preprocessor parser or disable it you have to overwrite that method.
 	 * 
+	 * @param suspend
+	 *            Indicates whether the calling thread should be suspended until
+	 *            the parsing is done. If there is currently another
+	 *            {@link #parseJob} the parsing will be rescheduled but the
+	 *            suspension will be cancelled
+	 * 
 	 * @return <code>True</code> if the parsing could be done successfully and
 	 *         <code>False</code> otherwise
 	 */
-	public boolean parseInput() {
+	public boolean parseInput(boolean suspend) {
 		if (getEditorInput() == null) {
 			return false;
 		}
@@ -384,72 +444,76 @@ public class BasicCodeEditor extends TextEditor {
 			return false;
 		}
 		
+		synchronized (parsingIsCancelled) {
+			if (parsingIsCancelled
+					&& (parseJob == null || parseJob.getResult() != null)) {
+				// There is no other parsing in progress that should be
+				// cancelled and cancelling is only possible after having
+				// initialized it
+				parsingIsCancelled = false;
+			}
+		}
+		
 		if (parseJob != null && parseJob.getState() != Job.NONE) {
 			// Ther previous Job is still running -> reschedule
-			parseJob.addJobChangeListener(new IJobChangeListener() {
-				
-				@Override
-				public void sleeping(IJobChangeEvent event) {
-				}
-				
-				@Override
-				public void scheduled(IJobChangeEvent event) {
-				}
-				
-				@Override
-				public void running(IJobChangeEvent event) {
-				}
+			parseJob.addJobChangeListener(new JobChangeAdapter() {
 				
 				@Override
 				public void done(IJobChangeEvent event) {
-					// As there has been a request to parse the input again do
+					// As there has been a request to parse the input again
+					// do
 					// it now as the old parsing process is finished
 					parseInput();
-				}
-				
-				@Override
-				public void awake(IJobChangeEvent event) {
-				}
-				
-				@Override
-				public void aboutToRun(IJobChangeEvent event) {
 				}
 			});
 			
 			return false;
 		}
 		
-		parseJob = new Job(
-				"Parsing \"" + getEditorInput().getName() + "\"...") {
-			
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				// preprocess
-				doPreprocessorParsing(input);
+		if (suspend) {
+			startParsingInput(input);
+		} else {
+			parseJob = new Job(
+					"Parsing \"" + getEditorInput().getName() + "\"...") {
 				
-				// parse
-				ParseTree output = doParse(input);
-				
-				if (output == null) {
-					applyParseChanges();
-					
-					return Status.CANCEL_STATUS;
-				} else {
-					parseTree = output;
-					
-					if (!processParseTree(parseTree)) {
-						applyParseChanges();
-					}
-					
-					return Status.OK_STATUS;
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					return startParsingInput(input);
 				}
-			}
-		};
-		
-		// start parsing
-		parseJob.schedule();
+			};
+			
+			// schedule parsing
+			parseJob.schedule();
+		}
 		
 		return true;
+	}
+	
+	/**
+	 * Parses the input of this editor, updates the parseTree and sends it to
+	 * the {@link #processParseTree(ParseTree)} method automatically. Before
+	 * doing so it will call the preprocessor parser via
+	 * {@link #doPreprocessorParsing(String)}. If you need to specify a custom
+	 * preprocessor parser or disable it you have to overwrite that method.<br>
+	 * This method will not wait until the parsing is done. If you need the
+	 * parsing to be done when this method returns youo can use
+	 * {@link #parseInput(boolean)} instead
+	 * 
+	 * @return <code>True</code> if the parsing could be done successfully and
+	 *         <code>False</code> otherwise
+	 */
+	public boolean parseInput() {
+		return parseInput(false);
+	}
+	
+	/**
+	 * This method will cancel a running parse-process or at least the
+	 * corresponding processing of the parse result
+	 */
+	public void cancelParsing() {
+		synchronized (parsingIsCancelled) {
+			parsingIsCancelled = true;
+		}
 	}
 	
 	/**

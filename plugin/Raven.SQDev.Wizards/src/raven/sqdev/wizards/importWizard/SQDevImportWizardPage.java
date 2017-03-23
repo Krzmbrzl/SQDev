@@ -63,13 +63,15 @@ public class SQDevImportWizardPage extends WizardPage {
 		
 		for (String currentProfile : Util.getProfiles()) {
 			// add the profiles directories
-			for (File currentFile : new File(Util.getMissionsDirectory(currentProfile).toOSString())
-					.listFiles()) {
-					
+			for (File currentFile : new File(
+					Util.getMissionsDirectory(currentProfile).toOSString())
+							.listFiles()) {
+				
 				String fileName = currentFile.getName();
-				fileName = (fileName.contains(".")) ? fileName.substring(0, fileName.indexOf("."))
+				fileName = (fileName.contains("."))
+						? fileName.substring(0, fileName.indexOf("."))
 						: fileName;
-						
+				
 				if (!ProjectUtil.exists(fileName)) {
 					// add all paths to the respective missions if their names
 					// don't conflict with an existing project
@@ -94,9 +96,9 @@ public class SQDevImportWizardPage extends WizardPage {
 		browseButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent event) {
-				DirectoryDialog dialog = new DirectoryDialog(
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-						
+				DirectoryDialog dialog = new DirectoryDialog(PlatformUI
+						.getWorkbench().getActiveWorkbenchWindow().getShell());
+				
 				String initialPath = directoryCombo.getText();
 				
 				if (initialPath != null && !initialPath.isEmpty()) {
@@ -127,14 +129,20 @@ public class SQDevImportWizardPage extends WizardPage {
 	 * Validates the current input
 	 */
 	protected void validate() {
-		Path filePath = new Path(directoryCombo.getText());
+		Path filePath = new Path(directoryCombo.getText().trim());
+		
+		if (filePath.isEmpty()) {
+			updateStatus("You have to enter a path!");
+			return;
+		}
 		
 		filePath = (Path) filePath.makeAbsolute();
 		
 		File file = filePath.toFile();
 		
 		if (!file.exists()) {
-			updateStatus("The file\"" + file.getAbsolutePath() + "\" does not exist!");
+			updateStatus("The file\"" + file.getAbsolutePath()
+					+ "\" does not exist!");
 			return;
 		}
 		
@@ -143,12 +151,15 @@ public class SQDevImportWizardPage extends WizardPage {
 			return;
 		}
 		
-		if (!Util.isMissionFolder(file)) {
-			updateStatus("The given folder is not a mission!");
-			return;
+		String projectName;
+		if (Util.isMissionFolder(file)) {
+			projectName = file.getName().substring(0,
+					file.getName().lastIndexOf("."));
+		} else {
+			projectName = file.getName();
 		}
 		
-		if (ProjectUtil.exists(file.getName().substring(0, file.getName().indexOf(".")))) {
+		if (ProjectUtil.exists(projectName)) {
 			updateStatus("A project with the given name does already exist!");
 			return;
 		}
