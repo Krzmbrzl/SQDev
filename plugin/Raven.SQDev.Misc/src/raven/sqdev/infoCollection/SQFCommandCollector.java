@@ -1441,7 +1441,7 @@ public class SQFCommandCollector {
 				continue;
 			}
 			// process alternative data types
-			parameters += "�PARAM� "
+			parameters += "$PARAM$ "
 					+ formatAlternativeDataTypes(currentParameter);
 		}
 		
@@ -1470,7 +1470,7 @@ public class SQFCommandCollector {
 					if (dataTypeEndOffset < 0
 							|| builder.length() - dataTypeEndOffset < 40
 							|| ArrayUtils.containsElementInmaxDistance(areas,
-									"�param�", i, 3)) {
+									"$param$", i, 3)) {
 						
 						// mark optional parameter
 						if (dataTypeEndOffset < 0) {
@@ -1492,7 +1492,7 @@ public class SQFCommandCollector {
 				}
 			} else {
 				switch (currentArea.toLowerCase()) {
-					case "�param�":
+					case "$param$":
 						// maintan proper format
 						currentArea = "param:\n";
 						
