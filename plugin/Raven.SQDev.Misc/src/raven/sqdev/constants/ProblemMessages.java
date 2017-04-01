@@ -48,6 +48,19 @@ public class ProblemMessages {
 	}
 	
 	/**
+	 * Creates the error message stating that the operator was wrongly used as a
+	 * binary operator
+	 * 
+	 * @param operatorName
+	 *            The name of the operator
+	 * @return The created error message
+	 */
+	public static final String operatorIsNotBinary(String operatorName) {
+		return "The operator \"" + operatorName
+				+ "\" can not be used as a binary operator!";
+	}
+	
+	/**
 	 * Creates the error message stating that the given operator is unknown
 	 * 
 	 * @param operatorName

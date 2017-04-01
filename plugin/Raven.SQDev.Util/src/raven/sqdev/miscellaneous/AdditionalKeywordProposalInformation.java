@@ -92,7 +92,7 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 				if (command.hasReturnValue()) {
 					// return value
 					overviewContent += SQDev.BOLD.getOpener() + "Return Value: "
-							+ SQDev.BOLD.getCloser() + command.getReturnType();
+							+ SQDev.BOLD.getCloser() + command.getAllReturnTypes();
 				}
 				
 				if (!overviewContent.isEmpty()) {

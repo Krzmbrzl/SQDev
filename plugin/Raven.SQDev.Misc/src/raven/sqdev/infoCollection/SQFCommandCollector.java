@@ -23,6 +23,7 @@ import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.SQFElement;
 import raven.sqdev.misc.ArrayUtils;
+import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
 import raven.sqdev.misc.SQDev;
 import raven.sqdev.misc.TextUtils;
@@ -121,15 +122,14 @@ public class SQFCommandCollector {
 			{ EDataType.NUMBER + " > " + EDataType.NUMBER },
 			{ EDataType.NUMBER + " >= " + EDataType.NUMBER },
 			{ EDataType.BOOLEAN + " && " + EDataType.BOOLEAN
-					+ SQFCommand.TYPE_SEPERATOR + EDataType.CODE },
+					+ DataTypeList.TYPE_SEPERATOR + EDataType.CODE },
 			{ EDataType.BOOLEAN + " || " + EDataType.BOOLEAN
-					+ SQFCommand.TYPE_SEPERATOR + EDataType.CODE },
+					+ DataTypeList.TYPE_SEPERATOR + EDataType.CODE },
 			{ EDataType.NUMBER + " + " + EDataType.NUMBER,
 					EDataType.STRING + " + " + EDataType.STRING,
 					EDataType.ARRAY + " + " + EDataType.ARRAY,
-					"+ " + EDataType.NUMBER + SQFCommand.TYPE_SEPERATOR
-							+ EDataType.ARRAY + SQFCommand.TYPE_SEPERATOR
-							+ EDataType.STRING },
+					"+ " + EDataType.NUMBER, "+ " + EDataType.ARRAY,
+					"+ " + EDataType.STRING },
 			{ EDataType.NUMBER + " - " + EDataType.NUMBER,
 					EDataType.ARRAY + " - " + EDataType.ARRAY,
 					"- " + EDataType.NUMBER },
@@ -166,19 +166,21 @@ public class SQFCommandCollector {
 	/**
 	 * The corresponding return values to {@link #MANUAL_COMMANDS}
 	 */
-	public static final String[] MANUAL_COMMANDS_RETURN_TYPE = {
-			EDataType.BOOLEAN.toString(), EDataType.BOOLEAN.toString(),
-			EDataType.BOOLEAN.toString(), EDataType.BOOLEAN.toString(),
-			EDataType.BOOLEAN.toString(), EDataType.BOOLEAN.toString(),
-			EDataType.BOOLEAN.toString(), EDataType.BOOLEAN.toString(),
-			EDataType.BOOLEAN.toString(),
-			EDataType.NUMBER + SQFCommand.TYPE_SEPERATOR + EDataType.STRING
-					+ SQFCommand.TYPE_SEPERATOR + EDataType.ARRAY,
-			EDataType.NUMBER + SQFCommand.TYPE_SEPERATOR + EDataType.ARRAY,
-			EDataType.NUMBER.toString(),
-			EDataType.NUMBER + SQFCommand.TYPE_SEPERATOR + EDataType.CONFIG,
-			EDataType.NUMBER.toString(), EDataType.NUMBER.toString(),
-			EDataType.CONFIG.toString(), EDataType.NOTHING.toString() };
+	public static final String[][] MANUAL_COMMANDS_RETURN_TYPE = {
+			{ EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() },
+			{ EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() },
+			{ EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() },
+			{ EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() },
+			{ EDataType.BOOLEAN.toString() },
+			{ EDataType.NUMBER.toString(), EDataType.STRING.toString(),
+					EDataType.ARRAY.toString(), EDataType.NUMBER.toString(),
+					EDataType.ARRAY.toString(), EDataType.STRING.toString() },
+			{ EDataType.NUMBER.toString(), EDataType.ARRAY.toString(),
+					EDataType.NUMBER.toString() },
+			{ EDataType.NUMBER.toString() },
+			{ EDataType.NUMBER.toString(), EDataType.CONFIG.toString() },
+			{ EDataType.NUMBER.toString() }, { EDataType.NUMBER.toString() },
+			{ EDataType.CONFIG.toString() }, { EDataType.NOTHING.toString() } };
 	
 	/**
 	 * The URL to the base site where all commands are listed
@@ -236,15 +238,17 @@ public class SQFCommandCollector {
 	public KeywordList collect(IProgressMonitor monitor)
 			throws SQDevCollectionException {
 		String siteContent;
+		
 		try {
 			siteContent = getSite(baseSite);
 			
-			// get relevant content only
+			// get relevant content only siteContent =
 			siteContent = trimToRelevantListOnly(siteContent);
 		} catch (IOException e) {
 			// rethrow
 			throw new SQDevCollectionException(e, null, null);
 		}
+		
 		
 		// compose the line where the collecting should start at
 		String relevantStartLine = "<li><a href=\"/wiki/" + firstCommandName
@@ -319,17 +323,22 @@ public class SQFCommandCollector {
 			SQFCommand command = new SQFCommand(currentCommand,
 					currentDescription);
 			
-			for (String currentSynax : MANUAL_COMMANDS_SYNTAX[i]) {
+			for (int k = 0; k < MANUAL_COMMANDS_SYNTAX[i].length; k++) {
+				String currentSyntax = MANUAL_COMMANDS_SYNTAX[i][k];
+				DataTypeList returnTypes = DataTypeList
+						.fillWith(MANUAL_COMMANDS_RETURN_TYPE[i][k]);
 				try {
-					command.addSyntax(
-							Syntax.parseSyntax(currentSynax, currentCommand));
+					Syntax syntax = Syntax.parseSyntax(currentSyntax,
+							currentCommand);
+					
+					command.addSyntax(syntax);
+					
+					command.setReturnType(syntax, returnTypes);
 				} catch (BadSyntaxException e) {
 					throw new SQDevCollectionException(e.getMessage(), command,
 							list);
 				}
 			}
-			
-			command.setReturnType(MANUAL_COMMANDS_RETURN_TYPE[i]);
 			
 			try {
 				String url = MANUAL_COMMANDS_WIKI[i];
@@ -461,20 +470,20 @@ public class SQFCommandCollector {
 		BufferedReader reader = new BufferedReader(
 				new StringReader(htmlContent));
 		
-		String content = "";
+		StringBuilder content = new StringBuilder();
 		
 		String currentLine = "";
 		
 		while ((currentLine = reader.readLine()) != null) {
 			// only consider lines containing a link to the wiki
 			if (currentLine.contains("<li><a href=\"/wiki/")) {
-				content += currentLine + "\n";
+				content.append(currentLine + "\n");
 			}
 		}
 		
 		reader.close();
 		
-		return content.trim();
+		return content.toString().trim();
 	}
 	
 	/**
@@ -1050,13 +1059,16 @@ public class SQFCommandCollector {
 			
 			// replace all array constructs with Array type keyword
 			while (arrayMatcher.find()) {
-				syntax = arrayMatcher.replaceAll("Array");
+				syntax = arrayMatcher.replaceAll(EDataType.ARRAY.toString());
 				
 				arrayMatcher = arrayPattern.matcher(syntax);
 			}
 			
 			syntax = processSyntax(syntax, currentSyntax[SYNTAXPART_PARAMETERS],
 					command);
+			
+			DataTypeList returnTypes = DataTypeList
+					.fillWith(currentSyntax[SYNTAXPART_RETURN_VALUE]);
 			
 			try {
 				if (syntax.contains(String.valueOf(OPTIONAL_MARKER))) {
@@ -1135,39 +1147,42 @@ public class SQFCommandCollector {
 					// add all possible syntax variants
 					for (String currentLeadingCombination : possibleLeadingArgCombinations) {
 						for (String currentTrailingCombination : possibleTrailingArgCombinations) {
-							command.addSyntax(Syntax.parseSyntax(
+							Syntax parsedSyntax = Syntax.parseSyntax(
 									currentLeadingCombination + " "
 											+ command.getKeyword() + " "
 											+ currentTrailingCombination,
-									command.getKeyword()));
+									command.getKeyword());
+							
+							command.addSyntax(parsedSyntax);
+							
+							command.setReturnType(parsedSyntax, returnTypes);
 						}
 					}
 					
 					if (possibleLeadingArgCombinations.size()
 							+ possibleTrailingArgCombinations.size() != 0) {
 						// add complete syntax
-						command.addSyntax(Syntax.parseSyntax(syntax
+						Syntax parsedSyntax = Syntax.parseSyntax(syntax
 								.replace(String.valueOf(OPTIONAL_MARKER), ""),
-								command.getKeyword()));
+								command.getKeyword());
+						
+						command.addSyntax(parsedSyntax);
+						
+						command.setReturnType(parsedSyntax, returnTypes);
 					}
 				} else {
-					command.addSyntax(
-							Syntax.parseSyntax(syntax, command.getKeyword()));
+					Syntax parsedSyntax = Syntax.parseSyntax(syntax,
+							command.getKeyword());
+					
+					command.addSyntax(parsedSyntax);
+					
+					command.setReturnType(parsedSyntax, returnTypes);
 				}
 			} catch (BadSyntaxException e) {
 				throw new SQDevCollectionException(
 						"Failed at parsing syntax for command \""
 								+ command.getKeyword() + "\"",
 						command, list);
-			}
-		}
-		
-		if (syntaxes.length > 0) {
-			// add return type
-			String returnType = syntaxes[0][SYNTAXPART_RETURN_VALUE];
-			
-			if (returnType != null && !returnType.isEmpty()) {
-				command.setReturnType(returnType);
 			}
 		}
 		
@@ -1534,7 +1549,7 @@ public class SQFCommandCollector {
 		}
 		
 		parameters = builder.toString().trim().replace(" :", ":").replace(" / ",
-				SQFCommand.TYPE_SEPERATOR);
+				DataTypeList.TYPE_SEPERATOR);
 		
 		return parameters;
 	}
@@ -1574,17 +1589,17 @@ public class SQFCommandCollector {
 		
 		
 		// replace all seperators by slash
-		relevantPart = relevantPart.replace(",", SQFCommand.TYPE_SEPERATOR)
-				.replaceAll("\\bor\\b", SQFCommand.TYPE_SEPERATOR);
+		relevantPart = relevantPart.replace(",", DataTypeList.TYPE_SEPERATOR)
+				.replaceAll("\\bor\\b", DataTypeList.TYPE_SEPERATOR);
 		
 		// make sure the seperators are not seperated from the next word
 		while (relevantPart.contains(" /")) {
 			relevantPart = relevantPart.replace(" /",
-					SQFCommand.TYPE_SEPERATOR);
+					DataTypeList.TYPE_SEPERATOR);
 		}
 		while (relevantPart.contains("/ ")) {
 			relevantPart = relevantPart.replace("/ ",
-					SQFCommand.TYPE_SEPERATOR);
+					DataTypeList.TYPE_SEPERATOR);
 		}
 		
 		return prefix + relevantPart + postfix;
@@ -1626,18 +1641,18 @@ public class SQFCommandCollector {
 		
 		
 		// process multiple return values
-		returnValue = returnValue.replace(",", SQFCommand.TYPE_SEPERATOR)
-				.replaceAll("\\bor\\b", SQFCommand.TYPE_SEPERATOR);
+		returnValue = returnValue.replace(",", DataTypeList.TYPE_SEPERATOR)
+				.replaceAll("\\bor\\b", DataTypeList.TYPE_SEPERATOR);
 		
 		// remove leading whitespace in fromt of seperator
-		while (returnValue.contains(" " + SQFCommand.TYPE_SEPERATOR)) {
-			returnValue = returnValue.replace(" " + SQFCommand.TYPE_SEPERATOR,
-					SQFCommand.TYPE_SEPERATOR);
+		while (returnValue.contains(" " + DataTypeList.TYPE_SEPERATOR)) {
+			returnValue = returnValue.replace(" " + DataTypeList.TYPE_SEPERATOR,
+					DataTypeList.TYPE_SEPERATOR);
 		}
 		// remove trailing whitespace in fromt of seperator
-		while (returnValue.contains(SQFCommand.TYPE_SEPERATOR + " ")) {
-			returnValue = returnValue.replace(SQFCommand.TYPE_SEPERATOR + " ",
-					SQFCommand.TYPE_SEPERATOR);
+		while (returnValue.contains(DataTypeList.TYPE_SEPERATOR + " ")) {
+			returnValue = returnValue.replace(DataTypeList.TYPE_SEPERATOR + " ",
+					DataTypeList.TYPE_SEPERATOR);
 		}
 		
 		if (returnValue.contains("-")) {
@@ -1692,7 +1707,7 @@ public class SQFCommandCollector {
 		
 		type = type.trim();
 		
-		for (String currentType : type.split(SQFCommand.TYPE_SEPERATOR)) {
+		for (String currentType : type.split(DataTypeList.TYPE_SEPERATOR)) {
 			if (currentType.isEmpty()) {
 				continue;
 			}
@@ -1705,7 +1720,7 @@ public class SQFCommandCollector {
 			} else {
 				newDataType.append((newDataType.length() == 0)
 						? dataType.toString()
-						: SQFCommand.TYPE_SEPERATOR + dataType.toString());
+						: DataTypeList.TYPE_SEPERATOR + dataType.toString());
 			}
 		}
 		
