@@ -7819,7 +7819,7 @@
 		camSetFocus
 	</Keyword>
 	<Description>
-		focusRange is in format [distance,blur]. Sets the camera focus blur. It does not automatically commit changes.
+		Sets camera focus range in format [distance, blur]. blur param - sets the camera focus blur. It does not automatically commit changes (see camCommit ). Use [-1, -1] to disable focus completely.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/camSetFocus
@@ -7831,7 +7831,7 @@
 		camera camSetFocus focusRange
 	</RawSyntax>
 	<Example>
-		$Code$_camera camSetFocus [50, 1]$/Code$
+		$Code$_camera camSetFocus [50, 1];$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -12155,24 +12155,24 @@
 		https://community.bistudio.com/wiki/createUnit
 	</WikiPage>
 	<Syntax>
-		String createUnit Array
-	</NextSyntax>
 		Group createUnit Array
+	</NextSyntax>
+		String createUnit Array
 	</Syntax>
 	<RawSyntax>
-		type createUnit [position, group, init, skill, rank]
-	</NextRawSyntax>
 		group createUnit [type, position, markers, placement, special]
+	</NextRawSyntax>
+		type createUnit [position, group, init, skill, rank]
 	</RawSyntax>
 	<Example>
+		$Code$_unit = group player createUnit ["SoldierWB", position player, [], 0, "FORM"];$/Code$
+	</NextExample>
 		$Code$"SoldierWB" createUnit [ position player, group player ];$/Code$
 	</NextExample>
 		$Code$"soldierWB" createUnit [ getMarkerPos "barracks", _groupAlpha];$/Code$
 	</NextExample>
 		$Code$"soldierWB" createUnit [ getMarkerPos "marker_1", _groupAlpha, "loon1 = this;
 	this addWeapon 'BAF_L85A2_RIS_SUSAT'", 0.6, "corporal"];$/Code$
-	</NextExample>
-		$Code$_unit = group player createUnit ["SoldierWB", position player, [], 0, "FORM"];$/Code$
 	</Example>
 	<Locality>
 		undefined / global
@@ -12217,7 +12217,7 @@
 	We can use join command family or fill the _grp with entities in advance to set _ap to our desired side.
 	</Note>
 	<ReturnValue>
-		Nothing - Object</ReturnValue>
+		Object - Nothing</ReturnValue>
 
 </NextListItem>
 
@@ -24494,34 +24494,6 @@
 </NextListItem>
 
 	<Keyword>
-		for
-	</Keyword>
-	<Description>
-		Helper used in the for-loop
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/for
-	</WikiPage>
-	<Syntax>
-		for String/Code
-	</Syntax>
-	<RawSyntax>
-		for arg
-	</RawSyntax>
-	<Example>
-		TestExample
-	</Example>
-	<Locality>
-		undefined / undefined
-	</Locality>
-	<Note>
-	</Note>
-	<ReturnValue>
-		For_Type</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
 		fog
 	</Keyword>
 	<Description>
@@ -25519,6 +25491,38 @@
 	</Note>
 	<ReturnValue>
 		Array - Array</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		for
+	</Keyword>
+	<Description>
+		This operator creates a For Type which is used in the for-constructs (There is the for forspec and the for var syntax available for this construct)
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/for
+	</WikiPage>
+	<Syntax>
+		for String/Array
+	</Syntax>
+	<RawSyntax>
+		for arg
+	</RawSyntax>
+	<Example>
+		$Code$for "_i" from 1 to 10 do { debugLog _i;};$/Code$
+	</NextExample>
+		$Code$for "_i" from 9 to 1 step -2 do { debugLog _i;};$/Code$
+	</NextExample>
+		$Code$for [{_i=0}, {_i 10}, {_i = _i + 1}] do {hint str _i};$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		For_Type</ReturnValue>
 
 </NextListItem>
 
@@ -65308,11 +65312,8 @@
 	<Note>
 		When applied to a unit, this returns the variable name that was assigned to the unit in the editor. For example, if you have created a playable unit with the name 'thePlayer' then you can use 'str player' to return "thePlayer";
 	</NextNote>
-		(April 5, 2012)
-	When applied to a string, places quotes around it. If it also contains quotes, be careful in how you use it; e.g. including it as part of a string and then compiling it as code won't work.
-	</NextNote>
 		(December 5, 2014)
-	In addition to the note above, if you try to count that string, the added quotations marks are valid characters and will be counted.
+	If you try to count string, the added quotations marks are valid characters and will be counted.
 	</Note>
 	<ReturnValue>
 		String</ReturnValue>
@@ -65704,34 +65705,6 @@
 	</Note>
 	<ReturnValue>
 		Nothing</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
-		switch
-	</Keyword>
-	<Description>
-		Helper constructs used in switch-do
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/switch
-	</WikiPage>
-	<Syntax>
-		switch Anything
-	</Syntax>
-	<RawSyntax>
-		switch arg
-	</RawSyntax>
-	<Example>
-	</Example>
-	<Locality>
-		undefined / undefined
-	</Locality>
-	<Note>
-	</Note>
-	<ReturnValue>
-		Switch_Type
-	</ReturnValue>
 
 </NextListItem>
 
@@ -66258,6 +66231,47 @@
 	</Note>
 	<ReturnValue>
 		Number</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		switch
+	</Keyword>
+	<Description>
+		Creates a switch type that can be used inside a switch do -block
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/switch
+	</WikiPage>
+	<Syntax>
+		switch Anything
+	</Syntax>
+	<RawSyntax>
+		switch arg
+	</RawSyntax>
+	<Example>
+		$Code$_mySwitch = switch "Test";
+	_mySwitch do {/*Something*/};$/Code$
+	</NextExample>
+		$Code$switch (_a) do { case 1 : { /*...code...*/ }; case 2 : { /*...code...*/ }; default { /*...code...*/ }; }; switch (_condition) do {
+	case 1: { hint "1" };
+	case 2: { hint "2" };
+	default { hint "default" };
+	}; switch (_condition) do {
+	case "string1";
+	case "string2": { hint "string1 or string2" };
+	case "string3";
+	case "string4": { hint "string3 or string4" };
+	default { hint "default" };
+	};$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Switch_Type</ReturnValue>
 
 </NextListItem>
 

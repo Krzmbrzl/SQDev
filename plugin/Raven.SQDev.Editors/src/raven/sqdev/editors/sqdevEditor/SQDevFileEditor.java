@@ -42,22 +42,27 @@ public class SQDevFileEditor extends BasicCodeEditor {
 		KeywordList keywordList = new KeywordList();
 		
 		// add all attributes
-		for (ESQDevFileAttribute currentAttribute : ESQDevFileAttribute.values()) {
-			keywordList.addKeyword(
-					new Keyword(currentAttribute.toString(), currentAttribute.getDescription()));
+		for (ESQDevFileAttribute currentAttribute : ESQDevFileAttribute
+				.values()) {
+			keywordList.addKeyword(new Keyword(currentAttribute.toString(),
+					currentAttribute.getDescription()));
 		}
 		
+		
 		// add all annotations including the "@"
-		for (ESQDevFileAnnotation currentAnnotation : ESQDevFileAnnotation.values()) {
-			keywordList.addKeyword(new Keyword("@" + currentAnnotation.toString(),
-					currentAnnotation.getDescription()));
+		for (ESQDevFileAnnotation currentAnnotation : ESQDevFileAnnotation
+				.values()) {
+			keywordList
+					.addKeyword(new Keyword("@" + currentAnnotation.toString(),
+							currentAnnotation.getDescription()));
 		}
 		
 		if (!getBasicConfiguration().scannerExists(
 				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)) {
 			// create keyword scanner
 			getBasicConfiguration().createKeywordScanner(
-					SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
+					SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY,
+					false);
 		}
 		
 		// set the keywords

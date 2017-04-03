@@ -75,6 +75,14 @@ public class SQFCommandCollector {
 	public static final char OPTIONAL_MARKER = '?';
 	
 	/**
+	 * A set of essential commands that are forced to be included in the
+	 * collection process
+	 */
+	public static final String[] ESSENTIAL_COMMANDS = { "if", "then", "else",
+			"while", "do", "for", "with", "switch", "from", "to", "step",
+			"count", "forEach" };
+	
+	/**
 	 * A list of operators that are not retrieved by the normal command
 	 * collection as they are listed in a different format
 	 */
@@ -251,13 +259,9 @@ public class SQFCommandCollector {
 		
 		
 		// compose the line where the collecting should start at
-		String relevantStartLine = "<li><a href=\"/wiki/" + firstCommandName
-				+ "\" title=\"" + firstCommandName + "\">" + firstCommandName
-				+ "</a></li>";
+		String relevantStartLine = constructReferenceLine(firstCommandName);
 		
-		String relevantEndLine = "<li><a href=\"/wiki/" + lastCommandName
-				+ "\" title=\"" + lastCommandName + "\">" + lastCommandName
-				+ "</a></li>";
+		String relevantEndLine = constructReferenceLine(lastCommandName);
 		
 		if (!siteContent.contains(relevantStartLine)
 				|| !siteContent.contains(relevantEndLine)) {
@@ -301,6 +305,15 @@ public class SQFCommandCollector {
 				siteContent.indexOf(relevantStartLine),
 				siteContent.indexOf(relevantEndLine) + relevantEndLine.length())
 				.trim();
+		
+		// check that the essential commands are included in the list
+		for (String currentCommand : ESSENTIAL_COMMANDS) {
+			String linkLine = constructReferenceLine(currentCommand);
+			
+			if (!siteContent.contains(linkLine)) {
+				siteContent += "\n" + linkLine;
+			}
+		}
 		
 		// create keywordList
 		list = new KeywordList();
@@ -402,6 +415,17 @@ public class SQFCommandCollector {
 		}
 		
 		return list;
+	}
+	
+	/**
+	 * Constructs the wiki link entry for a command witht he given name
+	 * 
+	 * @param name
+	 *            The name of the command whose link entry should be created
+	 */
+	private String constructReferenceLine(String name) {
+		return "<li><a href=\"/wiki/" + name + "\" title=\"" + name + "\">"
+				+ name + "</a></li>";
 	}
 	
 	/**

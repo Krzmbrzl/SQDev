@@ -299,6 +299,8 @@ public class BasicCodeEditor extends TextEditor {
 	 *            Whether it is necessary to reconfigure the sourceVieweer
 	 */
 	public void update(boolean reconfigureSourceViewer) {
+		// TODO: gets called way to often on editor opening
+		
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			
 			@Override
