@@ -128,7 +128,7 @@ public class SQDevStarter implements IStartup, IVersionListener {
 			return;
 		}
 		
-		if (event.getOldVersion().compareTo(new Version(0, 3, 1)) <= 0
+		if (event.getOldVersion().compareTo(new Version(0, 4, 3)) <= 0
 				|| isDev) {
 			// update the keyword list on the hard drive as there is the new
 			// syntax attribute or the new syntax of the file itself
