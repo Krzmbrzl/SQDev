@@ -12,9 +12,9 @@ import raven.sqdev.exceptions.FailedAtCreatingFileException;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 
 public enum EProjectType {
-	SQF("SQF", "Creates a new SQF-project"), OOS("OOS", "Creates a new OOS-project"), MIXED("Mixed",
-			"Creates new project that will contain both: SQF and OOS");
-			
+	MISSION("Mission", "Creates a new mission-project"), MOD("Mod",
+			"Creates a new mod-project");
+	
 	private String displayName;
 	private String creationDescription;
 	
@@ -73,7 +73,8 @@ public enum EProjectType {
 		} else {
 			try {
 				throw new FailedAtCreatingFileException(
-						"A project with the name \"" + projectName + "\" does already exist!");
+						"A project with the name \"" + projectName
+								+ "\" does already exist!");
 			} catch (FailedAtCreatingFileException e) {
 				e.printStackTrace();
 				return;
@@ -81,16 +82,51 @@ public enum EProjectType {
 		}
 		
 		switch (this) {
-			case MIXED:
+			case MOD:
+				createModProject(project, root);
 				break;
-			case OOS:
-				break;
-			case SQF:
-				createSQFProject(project, root);
+			case MISSION:
+				createMissionProject(project, root);
 				break;
 			default:
 				break;
 		}
+	}
+	
+	private void createModProject(IProject project, IWorkspaceRoot root) {
+		IFolder addonsFolder = project.getFolder("addons");
+		
+		try {
+			// open the project
+			project.open(new NullProgressMonitor());
+		} catch (CoreException e2) {
+			e2.printStackTrace();
+		}
+		
+		if (!addonsFolder.exists()) {
+			// create addonsFolder
+			try {
+				addonsFolder.create(IResource.NONE, true, null);
+			} catch (CoreException e) {
+				try {
+					throw new FailedAtCreatingFileException(e);
+				} catch (FailedAtCreatingFileException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		
+		// create config file
+		EFileType file = EFileType.CPP;
+		file.setPath(project.getFullPath().toOSString());
+		file.setInformation(getInformation());
+		file.create("config");
+		
+		// create the link.sqdev
+		file = EFileType.SQDEV;
+		file.setPath(project.getFullPath().toOSString());
+		file.setInformation(getInformation());
+		file.create(ESQDevFileType.LINK.toString(), false);
 	}
 	
 	/**
@@ -101,7 +137,7 @@ public enum EProjectType {
 	 * @param root
 	 *            The root of the project
 	 */
-	private void createSQFProject(IProject project, IWorkspaceRoot root) {
+	private void createMissionProject(IProject project, IWorkspaceRoot root) {
 		IFolder scriptFolder = project.getFolder("scripts");
 		
 		try {

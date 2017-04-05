@@ -44,11 +44,13 @@ public enum EDataType implements IReplaceTester {
 			}
 			
 			return type.equals(POSITION) || type.equals(POSITION2D)
-					|| type.equals(EDataType.POSITION3D) || type.equals(POSITION_CONFIG)
-					|| type.equals(POSITION_AGL) || type.equals(POSITION_AGLS)
-					|| type.equals(POSITION_ASL) || type.equals(POSITION_ASLW)
-					|| type.equals(POSITION_ATL) || type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD) || type.equals(WAYPOINT);
+					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD)
+					|| type.equals(WAYPOINT);
 		}
 	},
 	BOOLEAN {
@@ -84,7 +86,8 @@ public enum EDataType implements IReplaceTester {
 	DIARY_RECORD {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Diary_Record", "Diary Record", "Diary", "DiaryRecord" };
+			return new String[] { "Diary_Record", "Diary Record", "Diary",
+					"DiaryRecord" };
 		}
 	},
 	EDEN_ENTITY {
@@ -96,7 +99,8 @@ public enum EDataType implements IReplaceTester {
 	EDITOR_OBJECT {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Ediotor_Object", "Editor Object", "Editor", "EditorObject" };
+			return new String[] { "Ediotor_Object", "Editor Object", "Editor",
+					"EditorObject" };
 		}
 	},
 	EXCEPTION {
@@ -187,11 +191,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(POSITION2D)
-					|| type.equals(EDataType.POSITION3D) || type.equals(POSITION_CONFIG)
-					|| type.equals(POSITION_AGL) || type.equals(POSITION_AGLS)
-					|| type.equals(POSITION_ASL) || type.equals(POSITION_ASLW)
-					|| type.equals(POSITION_ATL) || type.equals(POSITION_RELATIVE)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(POSITION2D)
+					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
+					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
+					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE)
 					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
@@ -207,11 +213,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	POSITION3D {
@@ -226,11 +234,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_CONFIG {
@@ -245,10 +255,12 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_AGL) || type.equals(POSITION_AGLS)
 					|| type.equals(POSITION_ASL) || type.equals(POSITION_ASLW)
-					|| type.equals(POSITION_ATL) || type.equals(POSITION_RELATIVE)
+					|| type.equals(POSITION_ATL)
+					|| type.equals(POSITION_RELATIVE)
 					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
@@ -264,11 +276,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_AGLS {
@@ -283,11 +297,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_ASL {
@@ -302,11 +318,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_ASLW {
@@ -321,11 +339,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_ATL {
@@ -340,11 +360,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_WORLD {
@@ -359,11 +381,13 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_RELATIVE {
@@ -378,18 +402,20 @@ public enum EDataType implements IReplaceTester {
 				return true;
 			}
 			
-			return type.equals(ARRAY) || type.equals(POSITION) || type.equals(EDataType.POSITION3D)
+			return type.equals(ARRAY) || type.equals(POSITION)
+					|| type.equals(EDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
-					|| type.equals(POSITION_RELATIVE) || type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(POSITION_RELATIVE)
+					|| type.equals(EDataType.POSITION_WORLD);
 		}
 	},
 	SCRIPT_HANDLE {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Script_Handle", "Script Handle", "Script", "ScriptHandle",
-					"Script_" };
+			return new String[] { "Script_Handle", "Script Handle", "Script",
+					"ScriptHandle", "Script_" };
 		}
 	},
 	SIDE {
@@ -407,14 +433,15 @@ public enum EDataType implements IReplaceTester {
 	STRUCTURED_TEXT {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Structured_Text", "Structured Text", "Structured", "Text",
-					"StructuredText" };
+			return new String[] { "Structured_Text", "Structured Text",
+					"Structured", "Text", "StructuredText" };
 		}
 	},
 	SWITCH_TYPE {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Switch_Type", "Switch Type", "Switch", "SwitchType" };
+			return new String[] { "Switch_Type", "Switch Type", "Switch",
+					"SwitchType" };
 		}
 	},
 	TARGET {
@@ -432,7 +459,8 @@ public enum EDataType implements IReplaceTester {
 	TEAM_MEMBER {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Team_Member", "Team Member", "Team", "TeamMember" };
+			return new String[] { "Team_Member", "Team Member", "Team",
+					"TeamMember" };
 		}
 	},
 	TRANS {
@@ -470,13 +498,15 @@ public enum EDataType implements IReplaceTester {
 	WHILE_TYPE {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "While_Type", "While Type", "While", "WhileType" };
+			return new String[] { "While_Type", "While Type", "While",
+					"WhileType" };
 		}
 	},
 	WITH_TYPE {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "With_Type", "With Type", "With", "WithType" };
+			return new String[] { "With_Type", "With Type", "With",
+					"WithType" };
 		}
 	};
 	
@@ -492,7 +522,12 @@ public enum EDataType implements IReplaceTester {
 	 *            The data type to test this one against
 	 */
 	public boolean canBeUsedAs(EDataType type) {
-		return type.equals(this) || type.equals(ANYTHING) || type.equals(ANY_VALUE);
+		if (type == null) {
+			return false;
+		}
+		
+		return type.equals(this) || type.equals(ANYTHING)
+				|| type.equals(ANY_VALUE);
 	}
 	
 	/**
@@ -510,7 +545,8 @@ public enum EDataType implements IReplaceTester {
 		str = str.toLowerCase().trim();
 		
 		for (EDataType currentType : values()) {
-			for (String currentRepresentation : currentType.getStringRepresentations()) {
+			for (String currentRepresentation : currentType
+					.getStringRepresentations()) {
 				if (currentRepresentation.toLowerCase().equals(str)) {
 					return currentType;
 				}
@@ -518,6 +554,17 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Checks whether the given String represents a valid datatype
+	 * 
+	 * @param type
+	 *            The type to check
+	 * @return Whether the data type could be resolved
+	 */
+	public static boolean isValidDataType(String type) {
+		return resolve(type) != null;
 	}
 	
 	@Override

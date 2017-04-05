@@ -1,11 +1,19 @@
 package raven.sqdev.infoCollection.base;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 
 import raven.sqdev.exceptions.BadSyntaxException;
+import raven.sqdev.exceptions.SQDevException;
+import raven.sqdev.misc.DataTypeList;
+import raven.sqdev.misc.EDataType;
 import raven.sqdev.misc.SQDev;
 import raven.sqdev.syntax.Syntax;
 
@@ -17,12 +25,21 @@ import raven.sqdev.syntax.Syntax;
  * 
  */
 public class SQFCommand extends SQFElement {
-
+	
 	/**
-	 * The seperator used to seperate different data types
+	 * The seperator used to seperate different data types. this field has been
+	 * relocated to {@link EDataType} as it makes more sense to specify it
+	 * there. This field does only support for backwards-compability reasons.
+	 * 
+	 * @deprecated
 	 */
-	public static final String TYPE_SEPERATOR = "/";
-
+	public static final String TYPE_SEPERATOR = DataTypeList.TYPE_SEPERATOR;
+	/**
+	 * The seperator used in order to show that the different sets of return
+	 * values correspond to a different syntax
+	 */
+	public static final String RETURN_VALUE_SYNTAX_SEPERATOR = " - ";
+	
 	/**
 	 * The sequence indicating the start of the syntax attribute in the saveable
 	 * String format of this class
@@ -108,7 +125,7 @@ public class SQFCommand extends SQFElement {
 	 * saveable String format of this class
 	 */
 	public static final String RETURNVALUE_END_SAVESEQUENCE = "</ReturnValue>";
-
+	
 	/**
 	 * The syntaxes of this command
 	 */
@@ -118,35 +135,35 @@ public class SQFCommand extends SQFElement {
 	 * processed with their parameters
 	 */
 	private ArrayList<String> rawSytaxes;
-
+	
 	/**
 	 * An example of the usage of this command
 	 */
 	private ArrayList<String> examples;
-
+	
 	/**
 	 * An array containing the locality of this command's arguments (index 0)
 	 * and the locality of it's effect (index 1)
 	 */
 	private ELocality[] locality;
-
+	
 	/**
 	 * The notes attached to this command
 	 */
 	private ArrayList<String> notes;
-
+	
 	/**
-	 * The ruturn type of this command
+	 * A map that maps a return value to each syntax
 	 */
-	private String returnType;
-
+	private Map<Syntax, DataTypeList> returnValues;
+	
 	/**
 	 * Creates an instance of a SQF command
 	 */
 	public SQFCommand() {
 		this("", null);
 	}
-
+	
 	/**
 	 * Creates an instance of a SQF command
 	 * 
@@ -156,7 +173,7 @@ public class SQFCommand extends SQFElement {
 	public SQFCommand(String command) {
 		this(command, null);
 	}
-
+	
 	/**
 	 * Creates an instance of a SQF command
 	 * 
@@ -167,17 +184,19 @@ public class SQFCommand extends SQFElement {
 	 */
 	public SQFCommand(String command, String description) {
 		super(command, description);
-
+		
 		locality = new ELocality[2];
 		locality[0] = ELocality.UNDEFINED;
 		locality[1] = ELocality.UNDEFINED;
-
+		
 		examples = new ArrayList<String>(0);
 		syntaxes = new ArrayList<Syntax>(1);
 		notes = new ArrayList<String>(0);
 		rawSytaxes = new ArrayList<String>(1);
+		
+		returnValues = new HashMap<Syntax, DataTypeList>();
 	}
-
+	
 	/**
 	 * Gets the syntaxes of this command. If the syntaxlist has not been
 	 * initialized yet this will initialize it as an empty list and then returns
@@ -189,10 +208,10 @@ public class SQFCommand extends SQFElement {
 		if (syntaxes == null) {
 			syntaxes = new ArrayList<Syntax>();
 		}
-
+		
 		return syntaxes;
 	}
-
+	
 	/**
 	 * Gets the syntaxes of this command as a String representation.
 	 * 
@@ -200,14 +219,14 @@ public class SQFCommand extends SQFElement {
 	 */
 	public ArrayList<String> getStringSyntaxes() {
 		ArrayList<String> syntaxes = new ArrayList<String>();
-
+		
 		for (Syntax currentSyntax : getSyntaxes()) {
 			syntaxes.add(currentSyntax.toString());
 		}
-
+		
 		return syntaxes;
 	}
-
+	
 	/**
 	 * Sets the syntaxes of this command
 	 * 
@@ -216,10 +235,10 @@ public class SQFCommand extends SQFElement {
 	 */
 	public void setSyntaxes(ArrayList<Syntax> syntaxes) {
 		Assert.isNotNull(syntaxes);
-
+		
 		this.syntaxes = syntaxes;
 	}
-
+	
 	/**
 	 * Adds a syntax to this command if it is not already registered
 	 * 
@@ -228,19 +247,19 @@ public class SQFCommand extends SQFElement {
 	 */
 	public void addSyntax(Syntax syntax) {
 		Assert.isTrue(syntax != null && !syntax.isEmpty());
-
+		
 		if (!getSyntaxes().contains(syntax)) {
 			getSyntaxes().add(syntax);
 		}
 	}
-
+	
 	/**
 	 * Checks if this command has a stored syntax
 	 */
 	public boolean hasSyntax() {
 		return !getSyntaxes().isEmpty();
 	}
-
+	
 	/**
 	 * Gets the examples associated with this command
 	 * 
@@ -251,10 +270,10 @@ public class SQFCommand extends SQFElement {
 		if (examples == null) {
 			examples = new ArrayList<String>();
 		}
-
+		
 		return examples;
 	}
-
+	
 	/**
 	 * Sets the examples of this command
 	 * 
@@ -263,10 +282,10 @@ public class SQFCommand extends SQFElement {
 	 */
 	public void setExamples(ArrayList<String> examples) {
 		Assert.isNotNull(examples);
-
+		
 		this.examples = examples;
 	}
-
+	
 	/**
 	 * Adds an example to this command
 	 * 
@@ -275,65 +294,70 @@ public class SQFCommand extends SQFElement {
 	 */
 	public void addExample(String example) {
 		example = example.trim();
-
+		
 		Assert.isTrue(example != null && !example.isEmpty());
-
+		
 		String codeOpener = SQDev.CODE.getOpener();
 		String codeCloser = SQDev.CODE.getCloser();
-
+		
 		if (!example.contains(codeOpener) && !example.contains(codeCloser)) {
 			// surround with Code tags
 			example = codeOpener + example.trim() + codeCloser;
 		}
-
+		
 		String taggedExample = "";
-
+		
 		for (String current : example.split(Pattern.quote(codeOpener))) {
 			// put the example part that is not yet in code bracket into it as
 			// a comment
-
+			
 			if (current.isEmpty()) {
 				// don't process empty parts
 				continue;
 			}
-
+			
 			// get the part that might has to be put into a comment
 			String comment = "\n// ";
 			if (current.contains(codeCloser)) {
-				comment += current.substring(current.indexOf(codeCloser) + codeCloser.length()).trim().replace("\n",
-						"\n//");
+				comment += current
+						.substring(current.indexOf(codeCloser)
+								+ codeCloser.length())
+						.trim().replace("\n", "\n//");
 			} else {
 				comment += current.trim().replace("\n", "\n//") + "\n";
-
+				
 				current = codeCloser;
 			}
-
+			
 			// reassemble the example so that everything is contained in code
 			// tags
-			taggedExample += current.substring((current.startsWith(codeOpener)) ? codeOpener.length() : 0,
-					current.indexOf(codeCloser)) + ((comment.equals("\n// ")) ? "" : comment);
+			taggedExample += current.substring(
+					(current.startsWith(codeOpener)) ? codeOpener.length() : 0,
+					current.indexOf(codeCloser))
+					+ ((comment.equals("\n// ")) ? "" : comment);
 		}
-
+		
 		taggedExample = taggedExample.trim();
 		taggedExample = taggedExample.replace("\n ", "\n");
-
+		
 		// make sure the example is surrounded by code tags
-		taggedExample = ((taggedExample.startsWith(codeOpener)) ? "" : codeOpener) + taggedExample
+		taggedExample = ((taggedExample.startsWith(codeOpener)) ? ""
+				: codeOpener) + taggedExample
 				+ ((taggedExample.endsWith(codeCloser)) ? "" : codeCloser);
-
+		
 		// add example if it has not been added yet
 		if (!getExamples().contains(taggedExample)) {
 			getExamples().add(taggedExample);
 		}
 	}
-
+	
 	/**
 	 * Checks if this command has stored examples
 	 */
 	public boolean hasExample() {
 		return !getExamples().isEmpty();
 	}
-
+	
 	/**
 	 * Gets the locality of this command's arguments (index 0) and the locality
 	 * of it's effect (index 1)
@@ -343,7 +367,7 @@ public class SQFCommand extends SQFElement {
 	public ELocality[] getLocality() {
 		return locality;
 	}
-
+	
 	/**
 	 * Sets the localities of this command
 	 * 
@@ -352,10 +376,10 @@ public class SQFCommand extends SQFElement {
 	protected void setLocality(ELocality[] locality) {
 		Assert.isNotNull(locality);
 		Assert.isTrue(locality.length == 2);
-
+		
 		this.locality = locality;
 	}
-
+	
 	/**
 	 * Sets the locality of the command's arguments
 	 * 
@@ -365,17 +389,17 @@ public class SQFCommand extends SQFElement {
 	public void setArgumentLocality(ELocality locality) {
 		ELocality[] loc = getLocality();
 		loc[0] = locality;
-
+		
 		setLocality(loc);
 	}
-
+	
 	/**
 	 * Gets this command's argument's locality
 	 */
 	public ELocality getArgumentLocality() {
 		return getLocality()[0];
 	}
-
+	
 	/**
 	 * Checks whether this command has a defined argument locality
 	 * 
@@ -384,7 +408,7 @@ public class SQFCommand extends SQFElement {
 	public boolean isArgumentLocalityDefined() {
 		return !getArgumentLocality().equals(ELocality.UNDEFINED);
 	}
-
+	
 	/**
 	 * Sets the locality of the command's effect
 	 * 
@@ -394,17 +418,17 @@ public class SQFCommand extends SQFElement {
 	public void setEffectLocality(ELocality locality) {
 		ELocality[] loc = getLocality();
 		loc[1] = locality;
-
+		
 		setLocality(loc);
 	}
-
+	
 	/**
 	 * Gets this command's effect's locality
 	 */
 	public ELocality getEffectLocality() {
 		return getLocality()[1];
 	}
-
+	
 	/**
 	 * Checks whether this command has a defined effect locality
 	 * 
@@ -413,7 +437,7 @@ public class SQFCommand extends SQFElement {
 	public boolean isEffectLocalityDefined() {
 		return !getEffectLocality().equals(ELocality.UNDEFINED);
 	}
-
+	
 	/**
 	 * Gets the notes of this command
 	 */
@@ -421,10 +445,10 @@ public class SQFCommand extends SQFElement {
 		if (notes == null) {
 			notes = new ArrayList<String>();
 		}
-
+		
 		return notes;
 	}
-
+	
 	/**
 	 * Sets the notes for this command
 	 * 
@@ -434,7 +458,7 @@ public class SQFCommand extends SQFElement {
 	public void setNotes(ArrayList<String> notes) {
 		this.notes = notes;
 	}
-
+	
 	/**
 	 * Adds a note ot he ones already associated to this command
 	 * 
@@ -442,52 +466,102 @@ public class SQFCommand extends SQFElement {
 	 */
 	public void addNote(String note) {
 		note = note.trim();
-
+		
 		Assert.isTrue(note != null && !note.isEmpty());
-
+		
 		if (!getNotes().contains(note)) {
 			getNotes().add(note);
 		}
 	}
-
+	
 	/**
 	 * Checks if this command has notes attached to it
 	 */
 	public boolean hasNote() {
 		return !getNotes().isEmpty();
 	}
-
+	
 	/**
-	 * Gets the return type of this command. "Nothing" is returned when this
-	 * command does not have a return value
-	 */
-	public String getReturnType() {
-		return (returnType == null) ? "Nothing" : returnType;
-	}
-
-	/**
-	 * Sets the return type for this command
+	 * Gets the return types of this command when used in the given Syntax
 	 * 
-	 * @param returnType
-	 *            The return type
+	 * @return The respective <code>DataTypeList</code> or <code>null</code> if
+	 *         no return value for the given syntax could be found
 	 */
-	public void setReturnType(String returnType) {
-		if (returnType == null || returnType.trim().isEmpty()) {
-			returnType = "Nothing";
-		}
-
-		returnType = returnType.trim();
-
-		this.returnType = returnType;
+	public DataTypeList getReturnTypes(Syntax syntax) {
+		DataTypeList types = returnValues.get(syntax);
+		
+		// return copy of list in order to prevent accidental modifactions of
+		// the original list
+		return (types == null) ? types : new DataTypeList(types);
 	}
-
+	
+	/**
+	 * Gets the list of all possible return values of this command
+	 */
+	public DataTypeList getAllReturnTypes() {
+		synchronized (returnValues) {
+			DataTypeList types = new DataTypeList();
+			
+			Iterator<Entry<Syntax, DataTypeList>> it = returnValues.entrySet()
+					.iterator();
+			
+			while (it.hasNext()) {
+				types.addAllUnique(it.next().getValue());
+			}
+			
+			return types;
+		}
+	}
+	
+	/**
+	 * Sets the return values for when this command is used in the given syntax.
+	 * Different return values have to be seperated with type seperator
+	 * specified in {@link EDataType}
+	 * 
+	 * @param syntax
+	 *            The syntax this return value applies to
+	 * @param types
+	 *            The return value
+	 */
+	public void setReturnType(Syntax syntax, String types) {
+		if (types == null || types.trim().isEmpty()) {
+			setReturnType(syntax, new DataTypeList(EDataType.NOTHING));
+			return;
+		}
+		
+		DataTypeList typeList = DataTypeList.fillWith(types);
+		
+		setReturnType(syntax, typeList);
+	}
+	
+	/**
+	 * Sets the return value for when this command is used in the given syntax
+	 * 
+	 * @param syntax
+	 *            The syntax this return value applies to
+	 * @param types
+	 *            The corresponding return values. If it is <code>null</code> or
+	 *            empty a new list will be created that only contains the
+	 *            NOTHING type
+	 */
+	public void setReturnType(Syntax syntax, DataTypeList types) {
+		Assert.isNotNull(syntax);
+		
+		if (types == null || types.isEmpty()) {
+			types = new DataTypeList(EDataType.NOTHING);
+		}
+		
+		// Use a copy of the list in order to prevent accidentally modifications
+		returnValues.put(syntax, new DataTypeList(types));
+	}
+	
 	/**
 	 * Checks whether this command has a return type
 	 */
 	public boolean hasReturnValue() {
-		return !getReturnType().equals("Nothing");
+		return !getAllReturnTypes().isEmpty();
 	}
-
+	
 	/**
 	 * Gets the raw syntaxes of this command. These are for display purposes
 	 * only as they have not been processed with their parameters
@@ -495,7 +569,7 @@ public class SQFCommand extends SQFElement {
 	public ArrayList<String> getRawSytaxes() {
 		return rawSytaxes;
 	}
-
+	
 	/**
 	 * Sets the raw syntaxes of this command
 	 * 
@@ -505,10 +579,10 @@ public class SQFCommand extends SQFElement {
 	 */
 	public void setRawSytaxes(ArrayList<String> rawSytaxes) {
 		Assert.isNotNull(rawSytaxes);
-
+		
 		this.rawSytaxes = rawSytaxes;
 	}
-
+	
 	/**
 	 * Adds a raw syntax to this command
 	 * 
@@ -517,19 +591,19 @@ public class SQFCommand extends SQFElement {
 	 */
 	public void addRawSyntax(String rawSyntax) {
 		rawSyntax = rawSyntax.trim();
-
+		
 		Assert.isTrue(rawSyntax != null && !rawSyntax.isEmpty());
-
+		
 		getRawSytaxes().add(rawSyntax);
 	}
-
+	
 	/**
 	 * Checks if this command has raw syntaxes attached to it
 	 */
 	public boolean hasRawSyntax() {
 		return !getRawSytaxes().isEmpty();
 	}
-
+	
 	/**
 	 * Checks whether this command can be used as a binary operator
 	 */
@@ -539,10 +613,10 @@ public class SQFCommand extends SQFElement {
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Checks whether this command can be used as a unary operator
 	 */
@@ -552,10 +626,10 @@ public class SQFCommand extends SQFElement {
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Checks whether this command can be used as a nular operator
 	 */
@@ -565,14 +639,14 @@ public class SQFCommand extends SQFElement {
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	@Override
 	public String toString() {
 		String representation = "";
-
+		
 		representation += "Name: " + getKeyword() + "\n";
 		representation += "hasDescription: " + hasDescription() + "\n";
 		representation += "hasSyntax: " + hasSyntax() + "\n";
@@ -580,14 +654,14 @@ public class SQFCommand extends SQFElement {
 		representation += "hasExamples: " + hasExample() + "\n";
 		representation += "hasNotes: " + hasNote() + "\n";
 		representation += "hasReturnValue: " + hasReturnValue() + "\n";
-
+		
 		return representation;
 	}
-
+	
 	@Override
 	public String getSaveableFormat() {
 		String format = super.getSaveableFormat() + "\n";
-
+		
 		// add syntaxes
 		format += SYNTAX_START_SAVESEQUENCE + "\n\t";
 		for (Syntax currentSyntax : getSyntaxes()) {
@@ -596,10 +670,11 @@ public class SQFCommand extends SQFElement {
 		}
 		if (getSyntaxes().size() > 0) {
 			// remove last seperator
-			format = format.substring(0, format.length() - (SYNTAX_SEPERATOR_SAVESEQUENCE.length() + 2));
+			format = format.substring(0, format.length()
+					- (SYNTAX_SEPERATOR_SAVESEQUENCE.length() + 2));
 		}
 		format += SYNTAX_END_SAVESEQUENCE + "\n";
-
+		
 		// add rawSyntaxes
 		format += RAWSYNTAX_START_SAVESEQUENCE + "\n\t";
 		for (String currentSyntax : getRawSytaxes()) {
@@ -608,10 +683,11 @@ public class SQFCommand extends SQFElement {
 		}
 		if (getRawSytaxes().size() > 0) {
 			// remove last seperator
-			format = format.substring(0, format.length() - (RAWSYNTAX_SEPERATOR_SAVESEQUENCE.length() + 2));
+			format = format.substring(0, format.length()
+					- (RAWSYNTAX_SEPERATOR_SAVESEQUENCE.length() + 2));
 		}
 		format += RAWSYNTAX_END_SAVESEQUENCE + "\n";
-
+		
 		// add examples
 		format += EXAMPLE_START_SAVESEQUENCE + "\n\t";
 		for (String currentExample : getExamples()) {
@@ -620,16 +696,18 @@ public class SQFCommand extends SQFElement {
 		}
 		if (getExamples().size() > 0) {
 			// remove last seperator
-			format = format.substring(0, format.length() - (EXAMPLE_SEPERATOR_SAVESEQUENCE.length() + 2));
+			format = format.substring(0, format.length()
+					- (EXAMPLE_SEPERATOR_SAVESEQUENCE.length() + 2));
 		}
 		format += EXAMPLE_END_SAVESEQUENCE + "\n";
-
+		
 		// add locality
 		format += LOCALITY_START_SAVESEQUENCE + "\n\t";
-		format += getLocality()[0].toString() + " " + LOCALITY_SEPERATOR_SAVESEQUENCE + " "
+		format += getLocality()[0].toString() + " "
+				+ LOCALITY_SEPERATOR_SAVESEQUENCE + " "
 				+ getLocality()[1].toString() + "\n";
 		format += LOCALITY_END_SAVESEQUENCE + "\n";
-
+		
 		// add notes
 		format += NOTE_START_SAVESEQUENCE + "\n\t";
 		for (String currentNote : getNotes()) {
@@ -638,137 +716,201 @@ public class SQFCommand extends SQFElement {
 		}
 		if (getNotes().size() > 0) {
 			// remove last seperator and unnecessary whitespace
-			format = format.substring(0, format.length() - (NOTE_SEPERATOR_SAVESEQUENCE.length() + 2)) + "\t";
+			format = format.substring(0,
+					format.length()
+							- (NOTE_SEPERATOR_SAVESEQUENCE.length() + 2))
+					+ "\t";
 		}
 		
 		// remove last tab
-		format= format.substring(0, format.length() - 1);
+		format = format.substring(0, format.length() - 1);
 		
 		format += NOTE_END_SAVESEQUENCE + "\n";
-
-		// add returnType
+		
+		// add returnTypes
 		format += RETURNVALUE_START_SAVESEQUENCE + "\n\t";
-		format += getReturnType() + "\n";
+		// make sure the return values are listed in the same order as
+		for (Syntax currentSyntax : getSyntaxes()) {
+			DataTypeList types = getReturnTypes(currentSyntax);
+			
+			if (types == null) {
+				try {
+					throw new SQDevException(
+							"Unable to retrieve return values for syntax \""
+									+ currentSyntax + "\"");
+				} catch (SQDevException e) {
+					// TODO log
+					e.printStackTrace();
+				}
+				
+				// fallback solution: pretend return value is nothing
+				types = new DataTypeList(EDataType.NOTHING);
+			}
+			
+			format += types + RETURN_VALUE_SYNTAX_SEPERATOR;
+		}
+		
+		if (getSyntaxes().size() > 0) {
+			// remove last seperator
+			format = format.substring(0, format.length() - RETURN_VALUE_SYNTAX_SEPERATOR.length());
+		}
+		
 		format += RETURNVALUE_END_SAVESEQUENCE;
-
+		
 		return format;
 	}
-
+	
 	@Override
 	public boolean recreateFrom(String savedFormat) throws BadSyntaxException {
 		if (!super.recreateFrom(savedFormat) || !isSaveFormat(savedFormat)) {
 			return false;
 		}
-
+		
 		// syntax
-		String syntaxContent = savedFormat
-				.substring(savedFormat.indexOf(SYNTAX_START_SAVESEQUENCE) + SYNTAX_START_SAVESEQUENCE.length(),
-						savedFormat.indexOf(SYNTAX_END_SAVESEQUENCE))
-				.trim();
-
-		for (String currentSyntax : syntaxContent.split(SYNTAX_SEPERATOR_SAVESEQUENCE)) {
+		String syntaxContent = savedFormat.substring(
+				savedFormat.indexOf(SYNTAX_START_SAVESEQUENCE)
+						+ SYNTAX_START_SAVESEQUENCE.length(),
+				savedFormat.indexOf(SYNTAX_END_SAVESEQUENCE)).trim();
+		
+		for (String currentSyntax : syntaxContent
+				.split(SYNTAX_SEPERATOR_SAVESEQUENCE)) {
 			// process each syntax
 			currentSyntax = currentSyntax.trim();
-
+			
 			if (!currentSyntax.isEmpty()) {
 				addSyntax(Syntax.parseSyntax(currentSyntax, getKeyword()));
 			}
 		}
-
+		
 		// rawSyntax
-		String rawSyntaxContent = savedFormat
-				.substring(savedFormat.indexOf(RAWSYNTAX_START_SAVESEQUENCE) + RAWSYNTAX_START_SAVESEQUENCE.length(),
-						savedFormat.indexOf(RAWSYNTAX_END_SAVESEQUENCE))
-				.trim();
-
-		for (String currentRawSyntax : rawSyntaxContent.split(RAWSYNTAX_SEPERATOR_SAVESEQUENCE)) {
+		String rawSyntaxContent = savedFormat.substring(
+				savedFormat.indexOf(RAWSYNTAX_START_SAVESEQUENCE)
+						+ RAWSYNTAX_START_SAVESEQUENCE.length(),
+				savedFormat.indexOf(RAWSYNTAX_END_SAVESEQUENCE)).trim();
+		
+		for (String currentRawSyntax : rawSyntaxContent
+				.split(RAWSYNTAX_SEPERATOR_SAVESEQUENCE)) {
 			// process each rawSyntax
 			currentRawSyntax = currentRawSyntax.trim();
-
+			
 			if (!currentRawSyntax.isEmpty()) {
 				addRawSyntax(currentRawSyntax);
 			}
 		}
-
+		
 		// examples
-		String exampleContent = savedFormat
-				.substring(savedFormat.indexOf(EXAMPLE_START_SAVESEQUENCE) + EXAMPLE_START_SAVESEQUENCE.length(),
-						savedFormat.indexOf(EXAMPLE_END_SAVESEQUENCE))
-				.trim();
-
-		for (String currentExample : exampleContent.split(EXAMPLE_SEPERATOR_SAVESEQUENCE)) {
+		String exampleContent = savedFormat.substring(
+				savedFormat.indexOf(EXAMPLE_START_SAVESEQUENCE)
+						+ EXAMPLE_START_SAVESEQUENCE.length(),
+				savedFormat.indexOf(EXAMPLE_END_SAVESEQUENCE)).trim();
+		
+		for (String currentExample : exampleContent
+				.split(EXAMPLE_SEPERATOR_SAVESEQUENCE)) {
 			// process each example
 			currentExample = currentExample.trim();
-
+			
 			if (!currentExample.isEmpty()) {
 				addExample(currentExample);
 			}
 		}
-
+		
 		// locality
-		String localityContent = savedFormat
-				.substring(savedFormat.indexOf(LOCALITY_START_SAVESEQUENCE) + LOCALITY_START_SAVESEQUENCE.length(),
-						savedFormat.indexOf(LOCALITY_END_SAVESEQUENCE))
+		String localityContent = savedFormat.substring(
+				savedFormat.indexOf(LOCALITY_START_SAVESEQUENCE)
+						+ LOCALITY_START_SAVESEQUENCE.length(),
+				savedFormat.indexOf(LOCALITY_END_SAVESEQUENCE)).trim();
+		
+		String argumentLocality = localityContent
+				.substring(0,
+						localityContent
+								.indexOf(LOCALITY_SEPERATOR_SAVESEQUENCE))
 				.trim();
-
-		String argumentLocality = localityContent.substring(0, localityContent.indexOf(LOCALITY_SEPERATOR_SAVESEQUENCE))
+		String effectsLocality = localityContent
+				.substring(
+						localityContent.indexOf(LOCALITY_SEPERATOR_SAVESEQUENCE)
+								+ LOCALITY_SEPERATOR_SAVESEQUENCE.length())
 				.trim();
-		String effectsLocality = localityContent.substring(
-				localityContent.indexOf(LOCALITY_SEPERATOR_SAVESEQUENCE) + LOCALITY_SEPERATOR_SAVESEQUENCE.length())
-				.trim();
-
-		if (ELocality.resolve(argumentLocality) == null || ELocality.resolve(effectsLocality) == null) {
+		
+		if (ELocality.resolve(argumentLocality) == null
+				|| ELocality.resolve(effectsLocality) == null) {
 			return false;
 		}
 		setArgumentLocality(ELocality.resolve(argumentLocality));
 		setEffectLocality(ELocality.resolve(effectsLocality));
-
+		
 		// notes
-		String noteContent = savedFormat
-				.substring(savedFormat.indexOf(NOTE_START_SAVESEQUENCE) + NOTE_START_SAVESEQUENCE.length(),
-						savedFormat.indexOf(NOTE_END_SAVESEQUENCE))
-				.trim();
-
-		for (String currentNote : noteContent.split(NOTE_SEPERATOR_SAVESEQUENCE)) {
+		String noteContent = savedFormat.substring(
+				savedFormat.indexOf(NOTE_START_SAVESEQUENCE)
+						+ NOTE_START_SAVESEQUENCE.length(),
+				savedFormat.indexOf(NOTE_END_SAVESEQUENCE)).trim();
+		
+		for (String currentNote : noteContent
+				.split(NOTE_SEPERATOR_SAVESEQUENCE)) {
 			// process each note
 			currentNote = currentNote.trim();
-
+			
 			if (!currentNote.isEmpty()) {
 				addNote(currentNote);
 			}
 		}
-
+		
 		// return type
-		String returnType = savedFormat.substring(
-				savedFormat.indexOf(RETURNVALUE_START_SAVESEQUENCE) + RETURNVALUE_START_SAVESEQUENCE.length(),
-				savedFormat.indexOf(RETURNVALUE_END_SAVESEQUENCE)).trim();
-
-		if (returnType.isEmpty()) {
+		String returnTypes = savedFormat
+				.substring(
+						savedFormat.indexOf(RETURNVALUE_START_SAVESEQUENCE)
+								+ RETURNVALUE_START_SAVESEQUENCE.length(),
+						savedFormat.indexOf(RETURNVALUE_END_SAVESEQUENCE))
+				.trim();
+		
+		// There is a return value entry for each syntax
+		List<Syntax> syntaxes = getSyntaxes();
+		String[] returnValues = returnTypes
+				.split(RETURN_VALUE_SYNTAX_SEPERATOR);
+		
+		if (syntaxes.size() != returnValues.length) {
+			try {
+				throw new SQDevException(
+						"savable format has to contain as many return values as syntaxes");
+			} catch (SQDevException e) {
+				// TODO: log
+				e.printStackTrace();
+			}
+			
 			return false;
-		} else {
-			setReturnType(returnType);
 		}
-
+		
+		// map the return values to the respective syntax
+		for (int i = 0; i < returnValues.length; i++) {
+			setReturnType(syntaxes.get(i),
+					DataTypeList.fillWith(returnValues[i]));
+		}
+		
 		return true;
 	}
-
+	
 	@Override
 	public boolean isSaveFormat(String format) {
 		if (!super.isSaveFormat(format)) {
 			return false;
 		}
-
-		if (!format.contains(SYNTAX_START_SAVESEQUENCE) || !format.contains(SYNTAX_END_SAVESEQUENCE)
-				|| !format.contains(RAWSYNTAX_START_SAVESEQUENCE) || !format.contains(RAWSYNTAX_END_SAVESEQUENCE)
-				|| !format.contains(EXAMPLE_START_SAVESEQUENCE) || !format.contains(EXAMPLE_END_SAVESEQUENCE)
-				|| !format.contains(LOCALITY_START_SAVESEQUENCE) || !format.contains(LOCALITY_END_SAVESEQUENCE)
-				|| !format.contains(LOCALITY_SEPERATOR_SAVESEQUENCE) || !format.contains(NOTE_START_SAVESEQUENCE)
-				|| !format.contains(NOTE_END_SAVESEQUENCE) || !format.contains(RETURNVALUE_START_SAVESEQUENCE)
+		
+		if (!format.contains(SYNTAX_START_SAVESEQUENCE)
+				|| !format.contains(SYNTAX_END_SAVESEQUENCE)
+				|| !format.contains(RAWSYNTAX_START_SAVESEQUENCE)
+				|| !format.contains(RAWSYNTAX_END_SAVESEQUENCE)
+				|| !format.contains(EXAMPLE_START_SAVESEQUENCE)
+				|| !format.contains(EXAMPLE_END_SAVESEQUENCE)
+				|| !format.contains(LOCALITY_START_SAVESEQUENCE)
+				|| !format.contains(LOCALITY_END_SAVESEQUENCE)
+				|| !format.contains(LOCALITY_SEPERATOR_SAVESEQUENCE)
+				|| !format.contains(NOTE_START_SAVESEQUENCE)
+				|| !format.contains(NOTE_END_SAVESEQUENCE)
+				|| !format.contains(RETURNVALUE_START_SAVESEQUENCE)
 				|| !format.contains(RETURNVALUE_END_SAVESEQUENCE)) {
 			// an info is not properly given
 			return false;
 		}
-
+		
 		int syntaxStart = format.indexOf(SYNTAX_START_SAVESEQUENCE);
 		int syntaxEnd = format.indexOf(SYNTAX_END_SAVESEQUENCE);
 		int rawSyntaxStart = format.indexOf(RAWSYNTAX_START_SAVESEQUENCE);
@@ -781,12 +923,13 @@ public class SQFCommand extends SQFElement {
 		int noteEnd = format.indexOf(NOTE_END_SAVESEQUENCE);
 		int returnStart = format.indexOf(RETURNVALUE_START_SAVESEQUENCE);
 		int returnEnd = format.indexOf(RETURNVALUE_END_SAVESEQUENCE);
-
-		if (syntaxEnd < syntaxStart || rawSyntaxEnd < rawSyntaxStart || exampleEnd < exampleStart
-				|| localityEnd < localityStart || noteEnd < noteStart || returnEnd < returnStart) {
+		
+		if (syntaxEnd < syntaxStart || rawSyntaxEnd < rawSyntaxStart
+				|| exampleEnd < exampleStart || localityEnd < localityStart
+				|| noteEnd < noteStart || returnEnd < returnStart) {
 			return false;
 		}
-
+		
 		return true;
 	}
 }

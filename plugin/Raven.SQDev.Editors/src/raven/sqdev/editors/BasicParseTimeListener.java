@@ -6,8 +6,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.swt.custom.VerifyKeyListener;
-import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.jface.text.DocumentEvent;
+import org.eclipse.jface.text.IDocumentListener;
 
 import raven.sqdev.util.SQDevPreferenceUtil;
 
@@ -18,7 +18,7 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  * @author Raven
  *
  */
-public class BasicParseTimeListener implements VerifyKeyListener {
+public class BasicParseTimeListener implements IDocumentListener {
 	/**
 	 * The editor this listener works on
 	 */
@@ -52,31 +52,19 @@ public class BasicParseTimeListener implements VerifyKeyListener {
 	}
 	
 	@Override
-	public void verifyKey(VerifyEvent event) {
-		if (runningTask != null && !runningTask.isCancelled() && !runningTask.isDone()) {
+	public void documentChanged(DocumentEvent event) {
+		if (runningTask != null && !runningTask.isCancelled()
+				&& !runningTask.isDone()) {
 			runningTask.cancel(true);
+			editor.cancelParsing();
 		}
 		
-		int basicDelay = SQDevPreferenceUtil.getParseDelay();
-		
-		switch (event.character) {
-			case ';':
-				// semicolon=end of statement -> parse fastly after key event
-				runningTask = timer.schedule(parsing, basicDelay / 4, TimeUnit.MILLISECONDS);
-				break;
-			
-			case ' ':
-			case '\n':
-			case '\b':
-				// whitespace indicates the end of a word -> parse normal after
-				// key event
-				runningTask = timer.schedule(parsing, basicDelay / 2, TimeUnit.MILLISECONDS);
-				break;
-			
-			default:
-				// any other character -> parse slowly after key event
-				runningTask = timer.schedule(parsing, basicDelay, TimeUnit.MILLISECONDS);
-		}
+		runningTask = timer.schedule(parsing,
+				SQDevPreferenceUtil.getParseDelay(), TimeUnit.MILLISECONDS);
+	}
+	
+	@Override
+	public void documentAboutToBeChanged(DocumentEvent event) {
 	}
 	
 }

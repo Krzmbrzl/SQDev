@@ -58,7 +58,8 @@ public class ProjectUtil {
 	 *         <li>ProjectUtil.FAILED</li>
 	 */
 	public static String export(IProject project, IPath destination,
-			ArrayList<String> filesToIgnore, ArrayList<String> filesToPreserve) {
+			ArrayList<String> filesToIgnore,
+			ArrayList<String> filesToPreserve) {
 		if (!new File(destination.toOSString()).exists()) {
 			// check how many folders have to be created
 			IPath copy = new Path(destination.toOSString());
@@ -79,7 +80,8 @@ public class ProjectUtil {
 				// normally there should be only the mission folder to be
 				// created
 				SQDevInfobox info = new SQDevInfobox(
-						"The export process would require an unusual high amount (" + diff
+						"The export process would require an unusual high amount ("
+								+ diff
 								+ ") of new folders being created.\n\nDo you want to proceed?",
 						SWT.ICON_QUESTION | SWT.YES | SWT.NO);
 				
@@ -113,10 +115,12 @@ public class ProjectUtil {
 			// clean the directory
 			for (File currentFile : missionFolder.listFiles()) {
 				// delete the respective files
-				if (!FileSystemUtil.deleteFilesWithException(currentFile, filesToPreserve)) {
+				if (!FileSystemUtil.deleteFilesWithException(currentFile,
+						filesToPreserve)) {
 					// report that the cleaning couldn't be performed
 					SQDevInfobox info = new SQDevInfobox(
-							"Failed to delete file \"" + currentFile.getAbsolutePath()
+							"Failed to delete file \""
+									+ currentFile.getAbsolutePath()
 									+ "\"\nMake sure the files are not opened somewhere and try again"
 									+ "\n\nCanceled the export process.",
 							SWT.ICON_INFORMATION);
@@ -131,7 +135,8 @@ public class ProjectUtil {
 		
 		try {
 			for (IResource currentResource : project.members()) {
-				File currentFile = new File(currentResource.getRawLocationURI());
+				File currentFile = new File(
+						currentResource.getRawLocationURI());
 				
 				if (filesToIgnore.contains(currentFile.getName())) {
 					// skip if this resource is specified to be ignored
@@ -143,15 +148,17 @@ public class ProjectUtil {
 					continue;
 				}
 				
-				FileSystemUtil.copyFilesWithExceptions(currentFile, destination, filesToIgnore);
+				FileSystemUtil.copyFilesWithExceptions(currentFile, destination,
+						filesToIgnore);
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
 			
 			// inform the user about the failure
-			String message = "Failed at exporting \"" + project.getName() + "\"\nReason: "
-					+ ((e.getMessage() == null || e.getMessage().isEmpty()) ? "Unknown"
-							: e.getMessage());
+			String message = "Failed at exporting \"" + project.getName()
+					+ "\"\nReason: "
+					+ ((e.getMessage() == null || e.getMessage().isEmpty())
+							? "Unknown" : e.getMessage());
 			
 			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
 			
@@ -173,8 +180,8 @@ public class ProjectUtil {
 	 * @return
 	 */
 	public static boolean isSQDevProject(IProject project) {
-		IFile testFile = project
-				.getFile(ESQDevFileType.LINK.toString() + EFileType.SQDEV.getExtension());
+		IFile testFile = project.getFile(ESQDevFileType.LINK.toString()
+				+ EFileType.SQDEV.getExtension());
 		
 		return testFile.exists();
 	}
@@ -191,14 +198,16 @@ public class ProjectUtil {
 		SQDevFile linkFile = getLinkFile(project);
 		
 		try {
-			String profile = linkFile.parseAttribute(ESQDevFileAttribute.PROFILE).getValue()
+			String profile = linkFile
+					.parseAttribute(ESQDevFileAttribute.PROFILE).getValue()
 					.toString();
 			
 			return profile;
 		} catch (SQDevFileIsInvalidException e) {
 			// inform the user
 			SQDevInfobox info = new SQDevInfobox(
-					"The linkFile in the project \"" + project.getName() + "\" is invalid!",
+					"The linkFile in the project \"" + project.getName()
+							+ "\" is invalid!",
 					SWT.ICON_ERROR);
 			
 			info.open();
@@ -219,8 +228,8 @@ public class ProjectUtil {
 	public static SQDevFile getLinkFile(IProject project) {
 		Assert.isTrue(isSQDevProject(project));
 		
-		IResource linkMember = project
-				.findMember(ESQDevFileType.LINK + EFileType.SQDEV.getExtension());
+		IResource linkMember = project.findMember(
+				ESQDevFileType.LINK + EFileType.SQDEV.getExtension());
 		
 		if (linkMember.getType() == IResource.FILE) {
 			try {
@@ -279,17 +288,23 @@ public class ProjectUtil {
 	 * @return
 	 */
 	public static String importAsProject(Path path) {
-		Assert.isTrue(path.isAbsolute() && path.toFile().exists()
-				&& Util.isMissionFolder(new File(path.toOSString())));
+		Assert.isTrue(path.isAbsolute() && path.toFile().exists());
 		
-		String projectName = path.lastSegment().substring(0, path.lastSegment().indexOf("."));
+		boolean isMission = Util.isMissionFolder(new File(path.toOSString()));
 		
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		String projectName = path.lastSegment();
+		
+		if (isMission) {
+			projectName = projectName.substring(0, projectName.indexOf("."));
+		}
+		
+		IProject project = ResourcesPlugin.getWorkspace().getRoot()
+				.getProject(projectName);
 		
 		if (project.exists()) {
 			String message = "Failed at importing \"" + path.toOSString()
-					+ "\" because there is already a project with the name \"" + projectName
-					+ "\"!";
+					+ "\" because there is already a project with the name \""
+					+ projectName + "\"!";
 			
 			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
 			info.open();
@@ -306,9 +321,10 @@ public class ProjectUtil {
 			// gather information
 			SQDevInformation information = new SQDevInformation();
 			information.setProfile(SQDevPreferenceUtil.getDefaultProfile());
-			information
-					.setTerrain(path.lastSegment().substring(path.lastSegment().indexOf(".") + 1));
-			information.autoExport = SQDevPreferenceUtil.getAutoExportDefaultEnabled();
+			information.setTerrain(path.lastSegment()
+					.substring(path.lastSegment().indexOf(".") + 1));
+			information.autoExport = SQDevPreferenceUtil
+					.getAutoExportDefaultEnabled();
 			information.name = projectName;
 			
 			// create linkFile
@@ -320,17 +336,21 @@ public class ProjectUtil {
 			// copy files and folders
 			for (File currentFile : path.toFile().listFiles()) {
 				if (currentFile.isDirectory()) {
-					FileUtil.copyFolder(currentFile, (Path) project.getLocation());
+					FileUtil.copyFolder(currentFile,
+							(Path) project.getLocation());
 				} else {
-					FileUtil.copyFile(currentFile, (Path) project.getLocation());
+					FileUtil.copyFile(currentFile,
+							(Path) project.getLocation());
 				}
 			}
 			
 			// refresh project
-			project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+			project.refreshLocal(IResource.DEPTH_INFINITE,
+					new NullProgressMonitor());
 			
 		} catch (CoreException e) {
-			String message = "Failed at importing \"" + path.toOSString() + "\"";
+			String message = "Failed at importing \"" + path.toOSString()
+					+ "\"";
 			
 			SQDevInfobox info = new SQDevInfobox(message, e);
 			info.open();

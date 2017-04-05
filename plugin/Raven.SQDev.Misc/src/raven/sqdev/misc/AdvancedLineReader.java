@@ -34,17 +34,25 @@ public class AdvancedLineReader implements Closeable {
 	 */
 	private boolean endOfBufferReached;
 	/**
-	 * An array containing the saved values after the mark method
-	 */
-	private int[] savedValues;
-	/**
 	 * The lineDelimiter of the last read line
 	 */
 	private StringBuilder lastLineDelimiter;
 	/**
+	 * Stores the last line prefix that has been cut off
+	 */
+	private String lastLinePrefix;
+	/**
+	 * An array containing the saved values after the mark method
+	 */
+	private int[] savedValues;
+	/**
 	 * For the storage of {@link #lastLineDelimiter} in case of {@link #mark()}
 	 */
 	private StringBuilder savedLineDelimiter;
+	/**
+	 * For the storage of {@link #lastLinePrefix} in case of {@link #mark()}
+	 */
+	private String savedLastLinePrefix;
 	/**
 	 * The stack containing unread lines
 	 */
@@ -157,7 +165,8 @@ public class AdvancedLineReader implements Closeable {
 			lastLineLength++; // NL also is part of line length
 			lastLineDelimiter.append("\n");
 			
-			if (charBuffer.length() > 0 && charBuffer.charAt(charBuffer.length() - 1) == '\r') {
+			if (charBuffer.length() > 0
+					&& charBuffer.charAt(charBuffer.length() - 1) == '\r') {
 				// delete carriage return
 				charBuffer.deleteCharAt(charBuffer.length() - 1);
 				lastLineDelimiter.insert(0, "\r");
@@ -186,9 +195,10 @@ public class AdvancedLineReader implements Closeable {
 	 *            {@link #unread(String)}
 	 * @throws IOException
 	 */
-	public void unreadLine(String line, boolean useLastDelimiter) throws IOException {
-		unreadLineStack.push((line
-				+ ((useLastDelimiter) ? getLineDelimiter() : String.format("%n").toCharArray())));
+	public void unreadLine(String line, boolean useLastDelimiter)
+			throws IOException {
+		unreadLineStack.push((line + ((useLastDelimiter) ? getLineDelimiter()
+				: String.format("%n").toCharArray())));
 		
 		lastLineLength = 0;
 	}
@@ -231,6 +241,7 @@ public class AdvancedLineReader implements Closeable {
 		
 		
 		if (matcher.find() && matcher.start() == 0) {
+			lastLinePrefix = line.substring(0, matcher.end());
 			line = line.substring(matcher.end());
 		}
 		
@@ -263,7 +274,9 @@ public class AdvancedLineReader implements Closeable {
 		savedValues[LENGTH] = lastLineLength;
 		savedLineDelimiter = lastLineDelimiter;
 		savedUnreadLineStack = (Stack<String>) unreadLineStack.clone();
-		savedUnreadCharacterStack = (Stack<Character>) unreadCharacterStack.clone();
+		savedUnreadCharacterStack = (Stack<Character>) unreadCharacterStack
+				.clone();
+		savedLastLinePrefix = lastLinePrefix;
 		
 		this.in.mark(READ_AHEAD_LIMIT);
 	}
@@ -279,7 +292,9 @@ public class AdvancedLineReader implements Closeable {
 		lastLineLength = savedValues[LENGTH];
 		lastLineDelimiter = savedLineDelimiter;
 		unreadLineStack = (Stack<String>) savedUnreadLineStack.clone();
-		unreadCharacterStack = (Stack<Character>) savedUnreadCharacterStack.clone();
+		unreadCharacterStack = (Stack<Character>) savedUnreadCharacterStack
+				.clone();
+		lastLinePrefix = savedLastLinePrefix;
 		
 		this.in.reset();
 	}
@@ -300,6 +315,16 @@ public class AdvancedLineReader implements Closeable {
 	 */
 	public boolean markSupported() {
 		return in.markSupported();
+	}
+	
+	/**
+	 * Gets the filtered prefix of the last line obtained via
+	 * {@link #readLineWithoutPrefix(String)}.
+	 * 
+	 * @return The prefix or <code>null</code> if none is present
+	 */
+	public String getLinePrefix() {
+		return lastLinePrefix;
 	}
 	
 	/**

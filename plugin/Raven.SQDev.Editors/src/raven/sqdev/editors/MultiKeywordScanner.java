@@ -72,7 +72,8 @@ public class MultiKeywordScanner extends RuleBasedScanner
 	 * @param editor
 	 *            The <code>BasicCodeEditor</code> this scanner works for
 	 */
-	public MultiKeywordScanner(Collection<KeywordScanner> scanners, BasicCodeEditor editor) {
+	public MultiKeywordScanner(Collection<KeywordScanner> scanners,
+			BasicCodeEditor editor) {
 		this(editor);
 		
 		addScanners(scanners);
@@ -213,6 +214,10 @@ public class MultiKeywordScanner extends RuleBasedScanner
 					scanner.unread();
 					return Token.UNDEFINED;
 				}
+				
+				// go on to the next char -> prevents endless loop in case c is
+				// word start but not a word part
+				c = (char) scanner.read();
 				
 				while (detector.isWordPart(c)) {
 					c = (char) scanner.read();

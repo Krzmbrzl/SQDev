@@ -31,7 +31,8 @@ import raven.sqdev.utilInterfaces.ISQDevInformationProvider;
  * @author Raven
  * 
  */
-public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformationProvider {
+public class SQDevProjectWizardPage extends WizardPage
+		implements ISQDevInformationProvider {
 	
 	/**
 	 * Field for the name of the project
@@ -52,6 +53,10 @@ public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformat
 	 * Field for the selection of the terrain
 	 */
 	private Combo terrainCombo;
+	/**
+	 * The label for the terrain selection
+	 */
+	private Label terrainLabel;
 	
 	/**
 	 * Field for enabling autoExport
@@ -68,7 +73,8 @@ public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformat
 		setTitle("New SQDev project");
 	}
 	
-	public SQDevProjectWizardPage(String pageName, String title, ImageDescriptor titleImage) {
+	public SQDevProjectWizardPage(String pageName, String title,
+			ImageDescriptor titleImage) {
 		super(pageName, title, titleImage);
 	}
 	
@@ -122,17 +128,29 @@ public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformat
 			
 			@Override
 			public void modifyText(ModifyEvent e) {
-				setProjectType(EProjectType.getIndex(typeCombo.getSelectionIndex()));
+				EProjectType type = EProjectType
+						.getIndex(typeCombo.getSelectionIndex());
+				
+				if (!type.equals(EProjectType.MISSION) && terrainCombo != null
+						&& terrainLabel != null) {
+					terrainCombo.setVisible(false);
+					terrainLabel.setVisible(false);
+				} else {
+					terrainCombo.setVisible(true);
+					terrainLabel.setVisible(true);
+				}
+				
+				setProjectType(type);
 				dialogChanged();
 			}
 		});
 		
 		// map selection
-		String mapToolTip = "The map the mission should be played on";
+		String terrainToolTip = "The map the mission should be played on";
 		
-		Label mapLabel = new Label(container, SWT.NULL);
-		mapLabel.setText("&Map:");
-		mapLabel.setToolTipText(mapToolTip);
+		terrainLabel = new Label(container, SWT.NULL);
+		terrainLabel.setText("&Map:");
+		terrainLabel.setToolTipText(terrainToolTip);
 		
 		terrainCombo = new Combo(container, SWT.DROP_DOWN);
 		
@@ -141,7 +159,7 @@ public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformat
 		}
 		
 		terrainCombo.setText(SQDevPreferenceUtil.getDefaultTerrain());
-		terrainCombo.setToolTipText(mapToolTip);
+		terrainCombo.setToolTipText(terrainToolTip);
 		terrainCombo.setLayoutData(gd);
 		
 		terrainCombo.addModifyListener(new ModifyListener() {
@@ -167,15 +185,16 @@ public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformat
 			profileCombo.add(currentProfile);
 		}
 		
-		int index = profileCombo.indexOf(SQDevPreferenceUtil.getDefaultProfile());
+		int index = profileCombo
+				.indexOf(SQDevPreferenceUtil.getDefaultProfile());
 		if (index >= 0) {
 			profileCombo.select(index);
 		} else {
 			profileCombo.select(0);
 			
 			SQDevInfobox info = new SQDevInfobox("The default profile \""
-					+ SQDevPreferenceUtil.getDefaultProfile() + "\" can no longer be found!",
-					SWT.ICON_WARNING);
+					+ SQDevPreferenceUtil.getDefaultProfile()
+					+ "\" can no longer be found!", SWT.ICON_WARNING);
 			
 			info.open(false);
 		}
@@ -198,7 +217,8 @@ public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformat
 		
 		autoExportButton = new Button(container, SWT.CHECK);
 		autoExportButton.setToolTipText(autoExportTooltip);
-		autoExportButton.setSelection(SQDevPreferenceUtil.getAutoExportDefaultEnabled());
+		autoExportButton.setSelection(
+				SQDevPreferenceUtil.getAutoExportDefaultEnabled());
 		
 		getNameText().setFocus();
 		dialogChanged();
@@ -219,14 +239,6 @@ public class SQDevProjectWizardPage extends WizardPage implements ISQDevInformat
 	 * Validates the given input
 	 */
 	private void validate() {
-		// check if the cosen project type is valid
-		if (getProjectType() != EProjectType.SQF) {
-			// any other prject type is not yet implemented
-			updateStatus("The projectType \"" + getProjectType().getDisplayName()
-					+ "\" is not yet available!");
-			return;
-		}
-		
 		// check if the entered project name is valid
 		if (!TextUtils.isValidFileName(getProjectName())) {
 			updateStatus(TextUtils.whyIsInvalidFileName(getProjectName()));

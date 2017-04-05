@@ -135,11 +135,17 @@ public class BasicErrorListener extends BaseErrorListener {
 	 */
 	public void flushSuppressedErros() {
 		synchronized (suppressedErrors) {
+			boolean wasSuppressing = suppressErrors;
+			suppressErrors = false;
+			
 			for (Error currentError : suppressedErrors) {
 				reportError(currentError);
 			}
 			
 			suppressedErrors.clear();
+			
+			// recreate status from before
+			suppressErrors = wasSuppressing;
 		}
 	}
 	

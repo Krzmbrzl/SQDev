@@ -1,7 +1,9 @@
 package raven.sqdev.editors.sqfeditor.parsing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -25,6 +27,7 @@ import raven.sqdev.editors.sqfeditor.parsing.SQFParser.ArrayContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.AssignmentContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.BinaryExpressionContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.CodeContext;
+import raven.sqdev.editors.sqfeditor.parsing.SQFParser.CommonErrorContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.InlineCodeContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.MacroContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.NularExpressionContext;
@@ -35,13 +38,28 @@ import raven.sqdev.editors.sqfeditor.parsing.SQFParser.StartContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.StatementContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.StringContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.UnaryExpressionContext;
+import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.infoCollection.base.SQFCommand;
+import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
-import raven.sqdev.syntax.Syntax;
 import raven.sqdev.util.SQDevInfobox;
 
+/**
+ * This class can be registered as an ANTLR-listener while traversing the parse
+ * tree. It will extract information such as variable declarations and it will
+ * also perform the syntax check
+ * 
+ * @author Raven
+ *
+ */
 public class SQFParseListener extends SQFBaseListener {
+	
+	/**
+	 * The invoking state indicating that this context object has been created
+	 * by this listener and therefore is not part of the original parseTree
+	 */
+	protected static final int CREATED_STATE = -10;
 	
 	/**
 	 * The editor this listener should report to
@@ -61,6 +79,14 @@ public class SQFParseListener extends SQFBaseListener {
 	 * tree this listener corresponds to
 	 */
 	private BufferedTokenStream stream;
+	/**
+	 * A map mapping ParserRuleContext objects to the respective return values
+	 * in order to access them faster and in order to be able to handle context
+	 * specific return values (The value is set right after teh expression has
+	 * been parsed therefore the contextual information about which syntaxa has
+	 * been used is still available at this time)
+	 */
+	protected Map<ParseTree, DataTypeList> resolvedReturnValues;
 	
 	/**
 	 * Creates a new instance of this listener.
@@ -71,7 +97,8 @@ public class SQFParseListener extends SQFBaseListener {
 	 *            The <code>CommonTokenStream</code> associated with the
 	 *            respective parse tree
 	 */
-	public SQFParseListener(SQF_Editor editor, BufferedTokenStream currentStream) {
+	public SQFParseListener(SQF_Editor editor,
+			BufferedTokenStream currentStream) {
 		Assert.isNotNull(editor);
 		Assert.isNotNull(currentStream);
 		
@@ -80,6 +107,8 @@ public class SQFParseListener extends SQFBaseListener {
 		
 		localVariables = new ArrayList<Variable>();
 		globalVariables = new ArrayList<Variable>();
+		
+		resolvedReturnValues = new HashMap<ParseTree, DataTypeList>();
 	}
 	
 	/**
@@ -302,7 +331,7 @@ public class SQFParseListener extends SQFBaseListener {
 					unaryCtx.addChild((RuleContext) ctx.getChild(1));
 					unaryCtx.start = ctx.start;
 					unaryCtx.stop = ctx.stop;
-					
+					unaryCtx.invokingState = CREATED_STATE;
 					// process rule
 					exitUnaryExpression(unaryCtx);
 				} else {
@@ -316,6 +345,8 @@ public class SQFParseListener extends SQFBaseListener {
 					
 					// process rule
 					exitNularOperator(nularCtx);
+					
+					return;
 				}
 			}
 		}
@@ -326,18 +357,42 @@ public class SQFParseListener extends SQFBaseListener {
 				operatorName);
 		
 		if (operator != null) {
-			EDataType[] leftTypes = getReturnValues(ctx.getChild(0));
-			EDataType[] rightTypes = getReturnValues(ctx.getChild(2));
+			DataTypeList leftTypes = getReturnValues(ctx.getChild(0));
+			DataTypeList rightTypes = getReturnValues(ctx.getChild(2));
 			
-			List<Syntax> syntaxes = operator.getSyntaxes();
+			SQFSyntaxProcessor processor = new SQFSyntaxProcessor(operator);
+			processor.setLeftArgumentTypes(leftTypes.toArray());
+			processor.setRightArgumentTypes(rightTypes.toArray());
 			
-			SQFSyntaxMatcher matcher = new SQFSyntaxMatcher(
-					syntaxes.toArray(new Syntax[syntaxes.size()]), editor);
+			if (!processor.isValid()) {
+				String errorMsg = processor.getErrorMessage();
+				int[] offsets;
+				
+				switch (processor.getErrorMarkerPosition()) {
+					case CENTER:
+						offsets = getStartOffsetAndLength(ctx.getChild(1));
+						break;
+					case LEFT:
+						offsets = getStartOffsetAndLength(ctx.getChild(0));
+						break;
+					case RIGHT:
+						offsets = getStartOffsetAndLength(ctx.getChild(2));
+						break;
+					case NONE:
+					default:
+						offsets = new int[] { 0, 1 };
+						System.err.println(
+								"Unexpected marker position for binary expression");
+						// TODO: log
+						
+				}
+				
+				editor.createMarker(IMarker.PROBLEM, offsets[0], offsets[1],
+						errorMsg, IMarker.SEVERITY_ERROR);
+			}
 			
-			matcher.applyLeftArgument(leftTypes,
-					getStartOffsetAndLength(ctx.getChild(0)));
-			matcher.applyRightArgument(rightTypes,
-					getStartOffsetAndLength(ctx.getChild(2)));
+			// map the resolved processor to the ctx object
+			resolvedReturnValues.put(ctx, processor.getReturnValues());
 		}
 	}
 	
@@ -360,50 +415,51 @@ public class SQFParseListener extends SQFBaseListener {
 			return;
 		}
 		
-		int start = ctx.getStart().getStartIndex();
-		int length = ctx.getStart().getStopIndex()
-				- ctx.getStart().getStartIndex() + 1;
-		String msg = null;
-		
 		String operatorName = ctx.getChild(0).getText();
 		
-		SQFCommand operator = resolveOperator(editor.getUnaryOperators(),
-				operatorName);
+		SQFCommand operator = resolveOperator(operatorName);
 		
 		if (operator != null) {
-			EDataType[] argumentTypes = getReturnValues(ctx.getChild(1));
+			DataTypeList argumentTypes = getReturnValues(ctx.getChild(1));
 			
-			List<Syntax> syntaxes = operator.getSyntaxes();
+			SQFSyntaxProcessor processor = new SQFSyntaxProcessor(operator);
 			
-			SQFSyntaxMatcher matcher = new SQFSyntaxMatcher(
-					syntaxes.toArray(new Syntax[syntaxes.size()]), editor);
+			processor.setRightArgumentTypes(argumentTypes.toArray());
 			
-			matcher.applyRightArgument(argumentTypes,
-					getStartOffsetAndLength(ctx.getChild(1)));
+			if (!processor.isValid()) {
+				String errorMsg = processor.getErrorMessage();
+				int[] offsets;
+				
+				if (processor
+						.getErrorMarkerPosition() == ERelativPosition.RIGHT) {
+					// error has to be on the right argument
+					offsets = getStartOffsetAndLength(ctx.getChild(1));
+				} else {
+					// error has to be on the operator itself
+					offsets = getStartOffsetAndLength(ctx.getChild(0));
+				}
+				
+				editor.createMarker(IMarker.PROBLEM, offsets[0], offsets[1],
+						errorMsg, IMarker.SEVERITY_ERROR);
+			}
+			
+			// Map the resolved processor
+			if (ctx.invokingState != CREATED_STATE) {
+				resolvedReturnValues.put(ctx, processor.getReturnValues());
+			} else {
+				// If the ctx has been self-created map the processor to the
+				// actual parseTree element
+				resolvedReturnValues.put(ctx.getParent(),
+						processor.getReturnValues());
+			}
 		} else {
 			// check if operator is a macro
 			Macro macro = resolveMacro(editor.getMacros(), operatorName);
 			
-			if (macro == null) {
-				if (resolveOperator(editor.getBinaryOperators(),
-						operatorName) != null) {
-					// binary operator
-					msg = ProblemMessages.missingArgLeft(operatorName);
-				} else {
-					if (resolveOperator(editor.getNularOperators(),
-							operatorName) != null) {
-						// nular operator
-						msg = ProblemMessages.operatorIsNular(operatorName);
-					} else {
-						msg = ProblemMessages.unknownOperator(operatorName);
-					}
-				}
+			if (macro != null) {
+				resolvedReturnValues.put(ctx,
+						new DataTypeList(EDataType.ANYTHING));
 			}
-		}
-		
-		if (msg != null) {
-			editor.createMarker(IMarker.PROBLEM, start, length, msg,
-					IMarker.SEVERITY_ERROR);
 		}
 	}
 	
@@ -436,9 +492,13 @@ public class SQFParseListener extends SQFBaseListener {
 				}
 			}
 		} else {
-			if (!operator.isNularOperator()) {
-				msg = ProblemMessages.operatorIsNotNular(operatorName);
+			SQFSyntaxProcessor processor = new SQFSyntaxProcessor(operator);
+			if (!processor.isValid()) {
+				msg = processor.getErrorMessage();
 			}
+			
+			// map the resolved operator to the ctx object
+			resolvedReturnValues.put(ctx, processor.getReturnValues());
 		}
 		
 		if (msg != null) {
@@ -561,169 +621,123 @@ public class SQFParseListener extends SQFBaseListener {
 	
 	/**
 	 * Gets all possible return values for the given <code>ParseTree</code>
-	 * element
+	 * element. this function buffers all return types it finds in order to
+	 * allow quick access if needed again
 	 * 
 	 * @param element
 	 *            The element to check
-	 * @return An array of all possible return types
+	 * @return A <code>DataTypeList</code> of all possible return types
 	 */
-	protected EDataType[] getReturnValues(ParseTree element) {
+	protected DataTypeList getReturnValues(ParseTree element) {
+		if (!resolvedReturnValues.containsKey(element)) {
+			resolvedReturnValues.put(element, doGetReturnValues(element));
+		}
+		
+		return resolvedReturnValues.get(element);
+	}
+	
+	/**
+	 * Gets all possible return values for the given <code>ParseTree</code>
+	 * element. This function should not be called at any other point than
+	 * {@link #getReturnValues(ParseTree)} because it can't handle the return
+	 * values of commands as those are processed elsewhere and then bufferedn
+	 * into {@link #resolvedReturnValues} which is then accessed by
+	 * {@link #getReturnValues(ParseTree)}
+	 * 
+	 * @param element
+	 *            The element to check
+	 * @return A <code>DataTypeList</code> of all possible return types
+	 */
+	private DataTypeList doGetReturnValues(ParseTree element) {
+		// Check cache first
+		if (resolvedReturnValues.containsKey(element)) {
+			return resolvedReturnValues.get(element);
+		}
+		
 		if (element.getClass().equals(MacroContext.class)) {
-			return new EDataType[] { EDataType.ANYTHING };
+			return new DataTypeList(EDataType.ANYTHING);
 		}
 		
 		if (element.getClass().equals(AssignmentContext.class)) {
-			return new EDataType[] { EDataType.NOTHING };
+			return new DataTypeList(EDataType.NOTHING);
 		}
 		
 		if (element.getClass().equals(CodeContext.class)
 				|| element.getClass().equals(InlineCodeContext.class)) {
-			return new EDataType[] { EDataType.CODE };
+			return new DataTypeList(EDataType.CODE);
 		}
 		
 		if (element.getClass().equals(ArrayContext.class)) {
-			return new EDataType[] { EDataType.ARRAY };
+			return new DataTypeList(EDataType.ARRAY);
 		}
 		
 		if (element.getClass().equals(ParenthesisContext.class)) {
 			if (element.getChildCount() != 3) {
 				// no args in parenthesis
-				return new EDataType[] { EDataType.NOTHING };
+				return new DataTypeList(EDataType.NOTHING);
 			}
 			
-			return getReturnValues(element.getChild(1));
+			return doGetReturnValues(element.getChild(1));
 		}
 		
-		if (element.getClass().equals(BinaryExpressionContext.class)) {
-			if (element.getChildCount() != 3) {
-				// resolve for primary expression
-				return getReturnValues(element.getChild(0));
-			}
-			
-			String operatorName = element.getChild(1).getText();
-			
-			return getOperatorReturnValues(operatorName);
-		}
+		/*
+		 * if (element.getClass().equals(BinaryExpressionContext.class)) { if
+		 * (element.getChildCount() != 3) { // resolve for primary expression
+		 * return getReturnValues(element.getChild(0)); }
+		 * 
+		 * String operatorName = element.getChild(1).getText();
+		 * 
+		 * return getOperatorReturnValues(operatorName); }
+		 */
 		
 		if (element instanceof TerminalNodeImpl) {
 			switch (((TerminalNodeImpl) element).getSymbol().getType()) {
 				case SQFParser.NUMBER:
-					return new EDataType[] { EDataType.NUMBER };
+					return new DataTypeList(EDataType.NUMBER);
 				case SQFParser.STRING:
-					return new EDataType[] { EDataType.STRING };
+					return new DataTypeList(EDataType.STRING);
 				default:
-					SQFCommand operator = resolveOperator(element.getText());
+					String varName = element.getText().toLowerCase();
 					
-					if (operator != null) {
-						return getOperatorReturnValues(operator);
-					} else {
-						String varName = element.getText().toLowerCase();
+					// must be a variable | Can't be a command as the return
+					// value of a command would already been handled by
+					// getReturnValue()
+					if (!varName.startsWith("_")) {
+						// is global variable
+						boolean found = false;
 						
-						// not a known operator -> must be a variable
-						if (!varName.startsWith("_")) {
-							// is global variable
-							boolean found = false;
-							
-							for (Variable currentVariable : globalVariables) {
-								if (currentVariable.getKeyword().toLowerCase()
-										.equals(varName)) {
-									found = true;
-									break;
-								}
-							}
-							
-							if (!found) {
-								// assume it's declared somewhere else
-								// TODO: potential error
-								globalVariables.add(new Variable(varName));
+						for (Variable currentVariable : globalVariables) {
+							if (currentVariable.getKeyword().toLowerCase()
+									.equals(varName)) {
+								found = true;
+								break;
 							}
 						}
+						
+						if (!found) {
+							// assume it's declared somewhere else
+							// TODO: potential error
+							globalVariables.add(new Variable(varName));
+						}
 					}
-					
-					// a variable can be anything
-					return new EDataType[] { EDataType.ANYTHING };
 			}
+			
+			// a variable can be anything
+			return new DataTypeList(EDataType.ANYTHING);
+		}
+		
+		if (element instanceof CommonErrorContext) {
+			// return values of errors are undefined
+			return new DataTypeList(EDataType.ANYTHING);
+		}
+		
+		if (element.getChildCount() != 1) {
+			// TODO: gets reached on unbalanced braces
+			throw new SQDevCoreException(
+					"Unexpected program flow in SQF syntax checking");
 		} else {
-			// can either be a nular or unary expression; either way the
-			// operator is
-			// the first node
-			return getReturnValues(element.getChild(0));
+			return doGetReturnValues(element.getChild(0));
 		}
-		
-	}
-	
-	/**
-	 * Gets all possible return types for the command with the given name
-	 * 
-	 * @param operatorName
-	 *            the name of the operator
-	 * @return An array of return types
-	 */
-	protected EDataType[] getOperatorReturnValues(String operatorName) {
-		List<SQFCommand> allOperators = new ArrayList<SQFCommand>(
-				editor.getNularOperators());
-		allOperators.addAll(editor.getUnaryOperators());
-		allOperators.addAll(editor.getBinaryOperators());
-		
-		SQFCommand operator = resolveOperator(allOperators, operatorName);
-		
-		if (operator == null) {
-			// most likely a variable
-			return new EDataType[] { EDataType.ANYTHING };
-		}
-		
-		return getOperatorReturnValues(operator);
-	}
-	
-	/**
-	 * Gets all possible return types for the given command
-	 * 
-	 * @param operator
-	 *            The respective command
-	 * @return An array of return types
-	 */
-	protected EDataType[] getOperatorReturnValues(SQFCommand operator) {
-		if (operator == null) {
-			// TODO: log
-			System.err.println("Null operator in SQFparseListener!");
-			
-			return new EDataType[] { EDataType.NOTHING };
-		}
-		
-		if (!operator.hasReturnValue()) {
-			return new EDataType[] { EDataType.NOTHING };
-		}
-		
-		List<EDataType> returnTypes = new ArrayList<EDataType>();
-		
-		for (String currentReturnType : operator.getReturnType()
-				.split(SQFCommand.TYPE_SEPERATOR)) {
-			if (currentReturnType.isEmpty()) {
-				continue;
-			}
-			
-			EDataType type = EDataType.resolve(currentReturnType);
-			
-			if (type == null) {
-				// TODO: log
-				System.err.println(
-						"Unsupported data type \"" + currentReturnType + "\"!");
-			} else {
-				if (!returnTypes.contains(type)) {
-					returnTypes.add(type);
-				}
-			}
-		}
-		
-		if (returnTypes.isEmpty()) {
-			returnTypes.add(EDataType.NOTHING);
-			
-			// TODO: log
-			System.err.print(
-					"Inserted Nothing data types as none could be found!");
-		}
-		
-		return returnTypes.toArray(new EDataType[returnTypes.size()]);
 	}
 	
 	/**
@@ -764,7 +778,7 @@ public class SQFParseListener extends SQFBaseListener {
 		}
 		
 		if (node.getChildCount() > 0) {
-			return getLeftNodeOfClass(node.getChild(node.getChildCount() - 1),
+			return getRightNodeOfClass(node.getChild(node.getChildCount() - 1),
 					cl);
 		} else {
 			return null;
@@ -780,10 +794,6 @@ public class SQFParseListener extends SQFBaseListener {
 	 *         length
 	 */
 	protected int[] getStartOffsetAndLength(ParseTree node) {
-		if (node == null) {
-			System.out.println("");
-		}
-		
 		TerminalNodeImpl startNode = (TerminalNodeImpl) getLeftNodeOfClass(node,
 				TerminalNodeImpl.class);
 		TerminalNodeImpl endNode = (TerminalNodeImpl) getRightNodeOfClass(node,
