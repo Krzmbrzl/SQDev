@@ -148,7 +148,7 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 	 * @return The path of the directory or an empty string if the directory
 	 *         couldn't be found
 	 */
-	private String locateArmaMainDirectory() {
+	public static String locateArmaMainDirectory() {
 		// navigate to the desired folder through the Steam folder
 		String path;
 		
@@ -182,7 +182,7 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 	 * @return The path of the directory or an empty string if the directory
 	 *         couldn't be found
 	 */
-	private String locateArmaDocumentsDirectory() {
+	public static String locateArmaDocumentsDirectory() {
 		String path;
 		
 		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
@@ -204,8 +204,10 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		}
 	}
 	
-	
-	private String locateRPT() {
+	/**
+	 * Gets the default RPT-directory
+	 */
+	public static String locateRPT() {
 		String path = System.getProperty("user.home");
 		
 		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
