@@ -3,7 +3,10 @@ package raven.sqdev.editors;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.source.Annotation;
 
+import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevEditorException;
 
 /**
@@ -62,8 +65,8 @@ public class MarkerInformation {
 	 * @param message
 	 *            The marker's message
 	 */
-	public MarkerInformation(String type, int line, int offset, int length, int severity,
-			String message) {
+	public MarkerInformation(String type, int line, int offset, int length,
+			int severity, String message) {
 		setType(type);
 		setLine(line);
 		setOffset(offset);
@@ -149,6 +152,43 @@ public class MarkerInformation {
 				return null;
 			}
 		}
+	}
+	
+	/**
+	 * Converts the information of this object into an annotation
+	 * 
+	 * @return The craeted annotation
+	 */
+	public Annotation toAnnotation() {
+		return new Annotation(getAnnotationType(), true, getMessage());
+	}
+	
+	/**
+	 * Gets the annotation type that corresponds to this marker information
+	 */
+	public String getAnnotationType() {
+		switch (getType()) {
+			case IMarker.PROBLEM:
+				switch (getSeverity()) {
+					case IMarker.SEVERITY_ERROR:
+						// error annotation type
+						return "org.eclipse.ui.workbench.texteditor.error";
+					
+					default:
+						throw new SQDevCoreException(
+								"Unsupported marker severity");
+				}
+				
+			default:
+				throw new SQDevCoreException("Unsupported marker type");
+		}
+	}
+	
+	/**
+	 * Gets the Position of this marker
+	 */
+	public Position getPosition() {
+		return new Position(getOffset(), getLength());
 	}
 	
 }

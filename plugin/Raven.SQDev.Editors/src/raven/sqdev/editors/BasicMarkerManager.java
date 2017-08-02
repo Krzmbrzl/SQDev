@@ -1,12 +1,15 @@
 package raven.sqdev.editors;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.ui.IFileEditorInput;
 
 import raven.sqdev.exceptions.SQDevEditorException;
@@ -35,17 +38,17 @@ public class BasicMarkerManager implements IManager {
 	 * Indicates whether this manager is in a valid state
 	 */
 	protected boolean isValid;
-
-
+	
+	
 	public BasicMarkerManager(BasicCodeEditor editor) {
 		Assert.isNotNull(editor, "Editor may not be null!");
-
+		
 		this.editor = editor;
-
+		
 		markers = new ArrayList<MarkerInformation>();
 		isValid = true;
 	}
-
+	
 	/**
 	 * Adds a marker with the given information to this manager
 	 * 
@@ -63,65 +66,108 @@ public class BasicMarkerManager implements IManager {
 	 *            The marker's message
 	 * @return <code>True</Code> on success and <code>False</code> otherwise
 	 */
-	public boolean addMarker(String type, int line, int offset, int length, int severity, String message) {
-		if (!(editor.getEditorInput() instanceof IFileEditorInput)) {
-			return false;
-		}
-
+	public boolean addMarker(String type, int line, int offset, int length,
+			int severity, String message) {
 		synchronized (markers) {
-			markers.add(new MarkerInformation(type, line, offset, length, severity, message));
+			markers.add(new MarkerInformation(type, line, offset, length,
+					severity, message));
 		}
-
+		
 		return true;
 	}
-
+	
 	@Override
 	public void apply() {
-		if (!(editor.getEditorInput() instanceof IFileEditorInput)) {
-			return;
-		}
-
-		try {
-			((IFileEditorInput) editor.getEditorInput()).getFile().deleteMarkers(null, false,
-					IResource.DEPTH_INFINITE);
-		} catch (CoreException e) {
+		if (editor.getEditorInput() instanceof IFileEditorInput) {
+			IAnnotationModel model = editor.getDocumentProvider()
+					.getAnnotationModel(editor.getEditorInput());
+			Iterator<Annotation> it = model.getAnnotationIterator();
+			
+			while (it.hasNext()) {
+				Annotation ann = it.next();
+				System.out.println(ann.getType());
+			}
+			
 			try {
-				throw new SQDevEditorException("Failed at deleting marker!", e);
-			} catch (SQDevEditorException e1) {
-				e1.printStackTrace();
-
+				((IFileEditorInput) editor.getEditorInput()).getFile()
+						.deleteMarkers(null, false, IResource.DEPTH_INFINITE);
+			} catch (CoreException e) {
+				try {
+					throw new SQDevEditorException("Failed at deleting marker!",
+							e);
+				} catch (SQDevEditorException e1) {
+					e1.printStackTrace();
+					
+					return;
+				}
+			}
+			
+			IResource resource = ((IFileEditorInput) editor.getEditorInput())
+					.getFile();
+			
+			isValid = true;
+			
+			synchronized (markers) {
+				for (MarkerInformation currentMarker : markers) {
+					if (isValid && currentMarker
+							.getSeverity() == IMarker.SEVERITY_ERROR) {
+						isValid = false;
+					}
+					
+					// create the actual markers
+					currentMarker.applyOn(resource);
+				}
+				
+				markers.clear();
+			}
+		} else {
+			IAnnotationModel model = editor.getDocumentProvider()
+					.getAnnotationModel(editor.getEditorInput());
+			
+			if (model == null) {
+				try {
+					throw new SQDevEditorException("No annotation model found");
+				} catch (SQDevEditorException e) {
+					e.printStackTrace();
+				}
+				
 				return;
 			}
-		}
-
-		IResource resource = ((IFileEditorInput) editor.getEditorInput()).getFile();
-
-		isValid = true;
-
-		synchronized (markers) {
-			for (MarkerInformation currentMarker : markers) {
-				if (isValid && currentMarker.getSeverity() == IMarker.SEVERITY_ERROR) {
-					isValid = false;
-				}
-
-				// create the actual markers
-				currentMarker.applyOn(resource);
+			
+			// clear old annotations
+			Iterator<Annotation> it = model.getAnnotationIterator();
+			
+			while (it.hasNext()) {
+				model.removeAnnotation(it.next());
 			}
-
-			markers.clear();
+			
+			synchronized (markers) {
+				for (MarkerInformation currentMarker : markers) {
+					if (isValid && currentMarker
+							.getSeverity() == IMarker.SEVERITY_ERROR) {
+						isValid = false;
+					}
+					
+					// create annotation
+					model.addAnnotation(currentMarker.toAnnotation(),
+							currentMarker.getPosition());
+				}
+				
+				markers.clear();
+			}
 		}
 	}
-
+	
 	@Override
 	public String getType() {
 		return TYPE;
 	}
-
+	
 	/**
 	 * Checks whether this manager represents a valid state (= no errors)
 	 */
 	public boolean isValidState() {
 		return isValid;
 	}
-
+	
 }

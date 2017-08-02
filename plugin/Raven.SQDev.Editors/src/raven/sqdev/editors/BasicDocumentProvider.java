@@ -60,7 +60,8 @@ public class BasicDocumentProvider extends TextFileDocumentProvider {
 		IDocument document = super.getDocument(element);
 		
 		if (partitioner == null && document != null) {
-			IDocumentPartitioner partitioner = new FastPartitioner(getPartitionScanner(),
+			IDocumentPartitioner partitioner = new FastPartitioner(
+					getPartitionScanner(),
 					getPartitionScanner().getConfiguredContentTypes());
 			
 			partitioner.connect(document);

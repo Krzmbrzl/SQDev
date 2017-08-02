@@ -175,7 +175,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 																// to match
 		ICharacterPairMatcher matcher = new DefaultCharacterPairMatcher(
 				matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
-		
+		getDocumentProvider().getAnnotationModel(getEditorInput());
 		// character pair matching
 		support.setCharacterPairMatcher(matcher);
 		support.setMatchingCharacterPainterPreferenceKeys(
