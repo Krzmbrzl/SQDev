@@ -95,11 +95,11 @@ public class SQF_Editor extends BasicCodeEditor
 	/**
 	 * A list of defined macros for this editor
 	 */
-	private List<Macro> macros;
+	protected List<Macro> macros;
 	/**
 	 * A list of the macro-names defined for this editor
 	 */
-	private List<String> macroNames;
+	protected List<String> macroNames;
 	/**
 	 * The <code>CommonTokenStream</code> that is associated with the current
 	 * parse tree
@@ -706,5 +706,12 @@ public class SQF_Editor extends BasicCodeEditor
 	@Override
 	public List<Macro> getMacros() {
 		return macros;
+	}
+	
+	/**
+	 * Gets the names of all macros that are configured for this editor
+	 */
+	public List<String> getMacroNames() {
+		return macroNames;
 	}
 }

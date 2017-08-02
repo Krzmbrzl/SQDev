@@ -60588,7 +60588,7 @@
 		https://community.bistudio.com/wiki/setUnitTrait
 	</WikiPage>
 	<Syntax>
-		unit setUnitTrait Array
+		Object setUnitTrait Array
 	</Syntax>
 	<RawSyntax>
 		unit setUnitTrait [skill_name, value, isCustom]

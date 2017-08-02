@@ -29,7 +29,6 @@ import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
@@ -41,6 +40,7 @@ import raven.sqdev.editors.parser.preprocessor.PreprocessorParseListener;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParser;
 import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.interfaces.IManager;
+import raven.sqdev.interfaces.IMarkerSupport;
 import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.misc.MultiPreferenceStore;
 import raven.sqdev.util.SQDevPreferenceUtil;
@@ -63,7 +63,7 @@ import raven.sqdev.util.SQDevPreferenceUtil;
  * @see {@linkplain EditorKeyEventManager}
  * 
  */
-public class BasicCodeEditor extends TextEditor {
+public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	
 	/**
 	 * The color manager
@@ -602,23 +602,7 @@ public class BasicCodeEditor extends TextEditor {
 		managerList.add(new BasicMarkerManager(this));
 	}
 	
-	/**
-	 * Creates a problem marker that will be visible in the editor.<br>
-	 * Note: Can only be called if {@link #getEditorInput()} does not return
-	 * null and is of type {@linkplain IFileEditorInput}
-	 * 
-	 * @param type
-	 *            The marker type
-	 * @param offset
-	 *            The offset of this marker area
-	 * @param length
-	 *            The length of the marker area
-	 * @param message
-	 *            The message of this marker
-	 * @param severity
-	 *            The severity of the marker (has to be one specified by
-	 *            <code>IMarker</code>)
-	 */
+	@Override
 	public void createMarker(String type, int offset, int length,
 			String message, int severity) {
 		if (getEditorInput() == null) {

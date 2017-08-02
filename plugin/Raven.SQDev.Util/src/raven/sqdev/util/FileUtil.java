@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Path;
@@ -20,7 +22,7 @@ import raven.sqdev.exceptions.SQDevException;
  * A class containing static util methods for files
  * 
  * @author Raven
- * 		
+ * 
  */
 public class FileUtil {
 	
@@ -44,11 +46,12 @@ public class FileUtil {
 		
 		if (targetFile.exists()) {
 			SQDevInfobox info = new SQDevInfobox(
-					"Trying to copy the file \"" + file.getAbsolutePath() + "\" to \""
+					"Trying to copy the file \"" + file.getAbsolutePath()
+							+ "\" to \""
 							+ destination.append(file.getName()).toOSString()
 							+ "\" but the file does already exist.\n\nDo you want to overwrite the file?",
 					SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-					
+			
 			int result = info.open();
 			
 			if (result == SWT.NO) {
@@ -87,7 +90,8 @@ public class FileUtil {
 			e.printStackTrace();
 			
 			SQDevInfobox info = new SQDevInfobox(
-					"Failed at copying file \"" + targetFile.getName() + "\"", e);
+					"Failed at copying file \"" + targetFile.getName() + "\"",
+					e);
 			info.open();
 		}
 		
@@ -115,12 +119,13 @@ public class FileUtil {
 		
 		if (targetFolder.exists()) {
 			SQDevInfobox info = new SQDevInfobox(
-					"Trying tocopy the folder \"" + folder.getAbsolutePath() + "\" to \""
+					"Trying tocopy the folder \"" + folder.getAbsolutePath()
+							+ "\" to \""
 							+ destination.append(folder.getName()).toOSString()
 							+ "\" but there is already a folder with this name.\n\n"
 							+ "Do you want to overwrite this folder?",
 					SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-					
+			
 			int result = info.open();
 			
 			if (result == SWT.NO) {
@@ -133,9 +138,11 @@ public class FileUtil {
 		
 		for (File currentFile : folder.listFiles()) {
 			if (currentFile.isDirectory()) {
-				copyFolder(currentFile, (Path) destination.append(folder.getName()));
+				copyFolder(currentFile,
+						(Path) destination.append(folder.getName()));
 			} else {
-				copyFile(currentFile, (Path) destination.append(folder.getName()));
+				copyFile(currentFile,
+						(Path) destination.append(folder.getName()));
 			}
 		}
 		
@@ -155,8 +162,10 @@ public class FileUtil {
 	public static String getContent(File file) throws SQDevException {
 		if (!file.exists()) {
 			throw new SQDevException(
-					"Failed at getting content of file \"" + file.getAbsolutePath() + "\"",
-					new FileNotFoundException("The requested file does not exist"));
+					"Failed at getting content of file \""
+							+ file.getAbsolutePath() + "\"",
+					new FileNotFoundException(
+							"The requested file does not exist"));
 		}
 		
 		try {
@@ -177,8 +186,8 @@ public class FileUtil {
 			return readAll(new FileInputStream(file), (int) file.length());
 			
 		} catch (IOException e) {
-			throw new SQDevException(
-					"Failed at getting content of file \"" + file.getAbsolutePath() + "\"", e);
+			throw new SQDevException("Failed at getting content of file \""
+					+ file.getAbsolutePath() + "\"", e);
 		}
 	}
 	
@@ -235,6 +244,37 @@ public class FileUtil {
 	 */
 	public static String readAll(InputStream in) throws IOException {
 		return readAll(in, -1);
+	}
+	
+	/**
+	 * Gets all files in a directory and it's subdirectories
+	 * 
+	 * @param parentDir
+	 *            The parent directory whose files should be obtained
+	 * @return The list of files found by this method
+	 */
+	public static List<File> getAllSubFiles(File parentDir) {
+		List<File> files = new ArrayList<File>();
+		
+		if (parentDir.isFile()) {
+			files.add(parentDir);
+			
+			return files;
+		}
+		
+		if (parentDir.isDirectory()) {
+			for (File subFile : parentDir.listFiles()) {
+				if (subFile.isFile()) {
+					files.add(subFile);
+				} else {
+					if (subFile.isDirectory()) {
+						files.addAll(getAllSubFiles(subFile));
+					}
+				}
+			}
+		}
+		
+		return files;
 	}
 	
 }

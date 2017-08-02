@@ -868,7 +868,7 @@ public class SQFParseListener extends SQFBaseListener {
 						
 						getVariableDeclaration(
 								(TerminalNodeImpl) currentElement,
-								declaredVariables);
+								declaredVariables, true);
 					} else {
 						boolean wrongType = true;
 						ArrayContext arrayNode = (ArrayContext) getLeftNodeOfClass(
@@ -882,7 +882,7 @@ public class SQFParseListener extends SQFBaseListener {
 							if (stringNode != null) {
 								wrongType = false;
 								getVariableDeclaration(stringNode,
-										declaredVariables);
+										declaredVariables, true);
 							}
 						} else {
 							StringContext stringNode = (StringContext) getLeftNodeOfClass(
@@ -897,7 +897,7 @@ public class SQFParseListener extends SQFBaseListener {
 										stringNode, TerminalNodeImpl.class);
 								
 								getVariableDeclaration(terminalNode,
-										declaredVariables);
+										declaredVariables, true);
 							}
 						}
 						
@@ -933,7 +933,7 @@ public class SQFParseListener extends SQFBaseListener {
 							
 							getVariableDeclaration(
 									(TerminalNodeImpl) currentElement,
-									declaredVariables);
+									declaredVariables, false);
 						} else {
 							int offsets[] = getStartOffsetAndLength(
 									currentElement);
@@ -950,7 +950,8 @@ public class SQFParseListener extends SQFBaseListener {
 					if (argument.getChild(0) instanceof StringContext) {
 						// get varaible dec from the terminal node of the string
 						getVariableDeclaration((TerminalNodeImpl) argument
-								.getChild(0).getChild(0), declaredVariables);
+								.getChild(0).getChild(0), declaredVariables,
+								false);
 					} else {
 						int offsets[] = getStartOffsetAndLength(argument);
 						
@@ -1009,9 +1010,11 @@ public class SQFParseListener extends SQFBaseListener {
 	 * @param varlist
 	 *            The list of variables a successfull declaration should be
 	 *            added to
+	 * @param allowEmpty
+	 *            Whether an empty String is a valid input at this point
 	 */
 	private void getVariableDeclaration(TerminalNodeImpl node,
-			List<Variable> varlist) {
+			List<Variable> varlist, boolean allowEmpty) {
 		int start = node.symbol.getStartIndex();
 		int length = node.symbol.getStopIndex() - node.symbol.getStartIndex()
 				+ 1;
@@ -1021,12 +1024,23 @@ public class SQFParseListener extends SQFBaseListener {
 			// remove quotes
 			varName = varName.substring(1, varName.length() - 1);
 			
+			if (varName.isEmpty()) {
+				if (allowEmpty) {
+					// empty String is fine
+					return;
+				} else {
+					// empty String is invalid
+					editor.createMarker(IMarker.PROBLEM, start, length,
+							ProblemMessages.stringMayNotBeEmpty(),
+							IMarker.SEVERITY_ERROR);
+				}
+			}
+			
 			if (varName.contains(" ")) {
 				editor.createMarker(IMarker.PROBLEM, start, length,
 						ProblemMessages.variableMayNotContainBlank(),
 						IMarker.SEVERITY_ERROR);
 			} else {
-				
 				if (varName.startsWith("_")) {
 					varlist.add(new Variable(varName));
 				} else {

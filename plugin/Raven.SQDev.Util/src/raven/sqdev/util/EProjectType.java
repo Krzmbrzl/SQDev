@@ -51,8 +51,10 @@ public enum EProjectType {
 	 *            The name of the project to be created
 	 * @param root
 	 *            The location where the project should be created
+	 * @return The created project or <code>null</code> if the project creation
+	 *         has failed
 	 */
-	public void create(IWorkspaceRoot root) {
+	public IProject create(IWorkspaceRoot root) {
 		String projectName = info.getName();
 		
 		IProject project = root.getProject(projectName);
@@ -67,7 +69,7 @@ public enum EProjectType {
 					throw new FailedAtCreatingFileException(e);
 				} catch (FailedAtCreatingFileException e1) {
 					e1.printStackTrace();
-					return;
+					return null;
 				}
 			}
 		} else {
@@ -77,7 +79,7 @@ public enum EProjectType {
 								+ "\" does already exist!");
 			} catch (FailedAtCreatingFileException e) {
 				e.printStackTrace();
-				return;
+				return null;
 			}
 		}
 		
@@ -91,6 +93,8 @@ public enum EProjectType {
 			default:
 				break;
 		}
+		
+		return project;
 	}
 	
 	private void createModProject(IProject project, IWorkspaceRoot root) {

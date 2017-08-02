@@ -10,6 +10,8 @@ import org.antlr.v4.runtime.Token;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 
+import raven.sqdev.interfaces.IMarkerSupport;
+
 /**
  * A basic error listener implementation that can be added to an ANTLR parser
  * that will create error markers on the editor for every syntax error reported
@@ -46,7 +48,7 @@ public class BasicErrorListener extends BaseErrorListener {
 	/**
 	 * The editor this listener resports to
 	 */
-	private BasicCodeEditor editor;
+	private IMarkerSupport markerAcceptor;
 	
 	/**
 	 * Indicates whether errors should be suppressed and stored instead of being
@@ -61,11 +63,12 @@ public class BasicErrorListener extends BaseErrorListener {
 	 * Create an instance of this error listener
 	 * 
 	 * @param editor
-	 *            The editor the syntax errors should be reported to
+	 *            The markerAcceptor the syntax errors and warnings should be
+	 *            reported to
 	 */
-	public BasicErrorListener(BasicCodeEditor editor) {
-		Assert.isNotNull(editor);
-		this.editor = editor;
+	public BasicErrorListener(IMarkerSupport markerAcceptor) {
+		Assert.isNotNull(markerAcceptor);
+		this.markerAcceptor = markerAcceptor;
 		
 		suppressedErrors = new ArrayList<Error>();
 	}
@@ -98,7 +101,7 @@ public class BasicErrorListener extends BaseErrorListener {
 				suppressedErrors.add(error);
 			}
 		} else {
-			editor.createMarker(IMarker.PROBLEM, error.getOffset(),
+			markerAcceptor.createMarker(IMarker.PROBLEM, error.getOffset(),
 					error.getLength(), error.getMessage(),
 					IMarker.SEVERITY_ERROR);
 		}

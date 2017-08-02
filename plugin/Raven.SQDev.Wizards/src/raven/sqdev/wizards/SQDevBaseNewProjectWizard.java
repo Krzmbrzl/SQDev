@@ -1,9 +1,13 @@
 package raven.sqdev.wizards;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
@@ -56,7 +60,13 @@ public abstract class SQDevBaseNewProjectWizard extends Wizard
 		try {
 			EProjectType project = getProjectType();
 			project.setInformation(getInformation());
-			project.create(ResourcesPlugin.getWorkspace().getRoot());
+			IProject createdProject = project.create(ResourcesPlugin.getWorkspace().getRoot());
+			
+			// Make sure the project is being encoded in UTF-8
+			IScopeContext projectScope = new ProjectScope(createdProject);
+			IEclipsePreferences projectNode = projectScope.getNode("org.eclipse.core.resources");
+			projectNode.node("encoding").put("<project>", "UTF-8");
+			projectNode.flush();
 			
 			BasicNewProjectResourceWizard.updatePerspective(configElement);
 			
