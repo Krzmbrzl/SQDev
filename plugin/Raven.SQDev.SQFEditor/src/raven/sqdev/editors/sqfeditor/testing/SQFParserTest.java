@@ -16,7 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import raven.sqdev.editors.BasicErrorListener;
-import raven.sqdev.editors.Macro;
 import raven.sqdev.editors.sqfeditor.SQF_Editor;
 import raven.sqdev.editors.sqfeditor.parsing.SQFLexer;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParseListener;
@@ -26,6 +25,7 @@ import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.interfaces.IMarkerSupport;
+import raven.sqdev.misc.Macro;
 import raven.sqdev.util.FileUtil;
 import raven.sqdev.util.StringUtils;
 import raven.sqdev.util.Util;

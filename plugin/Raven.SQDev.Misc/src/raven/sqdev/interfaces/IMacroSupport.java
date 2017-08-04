@@ -1,6 +1,8 @@
-package raven.sqdev.editors;
+package raven.sqdev.interfaces;
 
 import java.util.List;
+
+import raven.sqdev.misc.Macro;
 
 /**
  * An interface describing a class that provides macro-support

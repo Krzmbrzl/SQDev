@@ -9,11 +9,11 @@ import org.eclipse.jface.text.rules.Token;
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicPartitionScanner;
-import raven.sqdev.editors.IMacroSupport;
 import raven.sqdev.editors.KeywordScanner;
-import raven.sqdev.editors.Macro;
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
+import raven.sqdev.interfaces.IMacroSupport;
+import raven.sqdev.misc.Macro;
 
 public class ConfigEditor extends BasicCodeEditor implements IMacroSupport {
 	

@@ -78,16 +78,7 @@ public class BasicMarkerManager implements IManager {
 	
 	@Override
 	public void apply() {
-		if (editor.getEditorInput() instanceof IFileEditorInput) {
-			IAnnotationModel model = editor.getDocumentProvider()
-					.getAnnotationModel(editor.getEditorInput());
-			Iterator<Annotation> it = model.getAnnotationIterator();
-			
-			while (it.hasNext()) {
-				Annotation ann = it.next();
-				System.out.println(ann.getType());
-			}
-			
+		if (editor.getEditorInput() instanceof IFileEditorInput) {			
 			try {
 				((IFileEditorInput) editor.getEditorInput()).getFile()
 						.deleteMarkers(null, false, IResource.DEPTH_INFINITE);

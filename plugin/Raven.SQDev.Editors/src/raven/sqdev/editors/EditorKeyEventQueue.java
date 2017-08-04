@@ -67,7 +67,7 @@ public class EditorKeyEventQueue {
 		if (getManager() != null) {
 			try {
 				throw new IllegalModificationException("Can't change the manager of"
-						+" EditorKeyEventQueue after it has been already set");
+						+" EditorKeyEventQueue after it has been set");
 			} catch (IllegalModificationException e) {
 				e.printStackTrace();
 			}

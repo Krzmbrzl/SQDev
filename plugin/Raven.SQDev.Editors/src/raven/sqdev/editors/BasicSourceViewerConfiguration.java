@@ -80,11 +80,6 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration
 	}
 	
 	@Override
-	public String getConfiguredDocumentPartitioning(ISourceViewer sourceViewer) {
-		return BasicPartitionScanner.BASIC_PARTITIONING;
-	}
-	
-	@Override
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
 		return editor.getBasicProvider().getPartitionScanner().getConfiguredContentTypes();
 	}

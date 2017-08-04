@@ -22,10 +22,10 @@ import org.eclipse.ui.part.FileEditorInput;
 
 import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.editors.BasicCodeEditor;
-import raven.sqdev.editors.Macro;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParser.DefineContext;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParser.ErrorContext;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParser.IncludeContext;
+import raven.sqdev.misc.Macro;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 public class PreprocessorParseListener extends PreprocessorBaseListener {

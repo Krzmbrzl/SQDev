@@ -20,7 +20,6 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.swt.SWT;
 
 import raven.sqdev.constants.ProblemMessages;
-import raven.sqdev.editors.Macro;
 import raven.sqdev.editors.sqfeditor.SQF_Editor;
 import raven.sqdev.editors.sqfeditor.Variable;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.ArrayContext;
@@ -43,6 +42,7 @@ import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.Macro;
 import raven.sqdev.util.SQDevInfobox;
 
 /**

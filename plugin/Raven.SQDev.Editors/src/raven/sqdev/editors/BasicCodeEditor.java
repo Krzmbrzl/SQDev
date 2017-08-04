@@ -39,6 +39,7 @@ import raven.sqdev.editors.parser.preprocessor.PreprocessorLexer;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParseListener;
 import raven.sqdev.editors.parser.preprocessor.PreprocessorParser;
 import raven.sqdev.exceptions.SQDevEditorException;
+import raven.sqdev.interfaces.IMacroSupport;
 import raven.sqdev.interfaces.IManager;
 import raven.sqdev.interfaces.IMarkerSupport;
 import raven.sqdev.misc.CharacterPair;
@@ -123,8 +124,8 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 		characterPairs = getCharacterPairs();
 		parsingIsCancelled = false;
 		
-		// add a implementation for the autoCompletion of pairing characters
-		configureCharacterPairHandler();
+		// set up key handlers
+		configureKeyHandler();
 	}
 	
 	@Override
@@ -175,7 +176,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 																// to match
 		ICharacterPairMatcher matcher = new DefaultCharacterPairMatcher(
 				matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
-		getDocumentProvider().getAnnotationModel(getEditorInput());
+		
 		// character pair matching
 		support.setCharacterPairMatcher(matcher);
 		support.setMatchingCharacterPainterPreferenceKeys(
@@ -693,5 +694,13 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	public boolean isValid() {
 		return ((BasicMarkerManager) getManager(BasicMarkerManager.TYPE))
 				.isValidState();
+	}
+	
+	/**
+	 * Confidures all KeyHandler for this editor
+	 */
+	protected void configureKeyHandler() {
+		// set up character completion
+		configureCharacterPairHandler();
 	}
 }

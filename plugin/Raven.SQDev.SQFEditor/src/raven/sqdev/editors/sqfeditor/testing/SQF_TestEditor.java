@@ -3,10 +3,10 @@ package raven.sqdev.editors.sqfeditor.testing;
 import java.util.ArrayList;
 import java.util.List;
 
-import raven.sqdev.editors.Macro;
 import raven.sqdev.editors.MarkerInformation;
 import raven.sqdev.editors.sqfeditor.SQF_Editor;
 import raven.sqdev.editors.sqfeditor.Variable;
+import raven.sqdev.misc.Macro;
 
 /**
  * A test editor that is used in order to test the SQF parsing

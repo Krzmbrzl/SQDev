@@ -22,8 +22,6 @@ import org.eclipse.jface.text.rules.Token;
  */
 public class BasicPartitionScanner extends RuleBasedPartitionScanner {
 	
-	public static final String BASIC_PARTITIONING = "__basic_partitioning";
-	
 	public static final String BASIC_COMMENT = "__basic_Comment";
 	public static final String BASIC_STRING = "__basic_String";
 	

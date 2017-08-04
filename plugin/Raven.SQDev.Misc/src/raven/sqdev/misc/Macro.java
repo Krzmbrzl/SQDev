@@ -1,4 +1,4 @@
-package raven.sqdev.editors;
+package raven.sqdev.misc;
 
 import raven.sqdev.infoCollection.base.Keyword;
 

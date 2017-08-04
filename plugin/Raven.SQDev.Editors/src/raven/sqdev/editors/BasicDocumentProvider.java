@@ -1,7 +1,5 @@
 package raven.sqdev.editors;
 
-import java.nio.charset.StandardCharsets;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
@@ -33,8 +31,6 @@ public class BasicDocumentProvider extends TextFileDocumentProvider {
 	 */
 	public BasicDocumentProvider() {
 		super();
-		
-		this.setEncoding(null, StandardCharsets.UTF_8.name());
 	}
 	
 	/**
@@ -64,7 +60,7 @@ public class BasicDocumentProvider extends TextFileDocumentProvider {
 					getPartitionScanner(),
 					getPartitionScanner().getConfiguredContentTypes());
 			
-			partitioner.connect(document);
+			partitioner.connect(document);		
 			document.setDocumentPartitioner(partitioner);
 			
 			// store the partitioner
