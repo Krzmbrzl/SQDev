@@ -2,6 +2,8 @@ package raven.sqdev.sqdevFile;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IPath;
+
 import raven.sqdev.util.EFileType;
 import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.util.Util;
@@ -10,7 +12,7 @@ import raven.sqdev.util.Util;
  * An enum representing all possible names for a .sqdev file
  * 
  * @author Raven
- * 		
+ * 
  */
 public enum ESQDevFileType {
 	/**
@@ -31,10 +33,18 @@ public enum ESQDevFileType {
 			// add attributes
 			addAttribute(ESQDevFileAttribute.PROFILE, info.getProfile());
 			
+			IPath exportPath = Util.getMissionsDirectory(info.getProfile());
+			
+			if (info.isMp()) {
+				exportPath = exportPath.removeLastSegments(1);
+				exportPath = exportPath.append("mpMissions");
+			}
+			
 			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY,
-					Util.getMissionsDirectory(info.getProfile()).toOSString());
-					
-			addAttribute(ESQDevFileAttribute.AUTOEXPORT, String.valueOf(info.getAutoExport()));
+					exportPath.toOSString());
+			
+			addAttribute(ESQDevFileAttribute.AUTOEXPORT,
+					String.valueOf(info.getAutoExport()));
 			
 			addAttribute(ESQDevFileAttribute.TERRAIN, info.getTerrain());
 			
@@ -42,12 +52,12 @@ public enum ESQDevFileType {
 			initialContent += "\n\n";
 			addAnnotation(ESQDevFileAnnotation.IGNORE,
 					filesToIgnore.toArray(new String[filesToIgnore.size()]));
-					
+			
 			initialContent += "\n";
 			
-			addAnnotation(ESQDevFileAnnotation.PRESERVE,
-					filesToPreserve.toArray(new String[filesToPreserve.size()]));
-					
+			addAnnotation(ESQDevFileAnnotation.PRESERVE, filesToPreserve
+					.toArray(new String[filesToPreserve.size()]));
+			
 			return initialContent.trim() + "\n";
 		}
 	};
@@ -124,8 +134,8 @@ public enum ESQDevFileType {
 	 *            The value of this attribute
 	 */
 	protected void addAttribute(ESQDevFileAttribute attr, String value) {
-		initialContent += ((initialContent.endsWith("\n")) ? "" : "\n") + attr + " = " + value
-				+ ";\n";
+		initialContent += ((initialContent.endsWith("\n")) ? "" : "\n") + attr
+				+ " = " + value + ";\n";
 	}
 	
 	/**
@@ -136,10 +146,11 @@ public enum ESQDevFileType {
 	 * @param value
 	 *            The values of this annotation
 	 */
-	protected void addAnnotation(ESQDevFileAnnotation annotation, String[] values) {
+	protected void addAnnotation(ESQDevFileAnnotation annotation,
+			String[] values) {
 		for (String currentValue : values) {
-			initialContent += ((initialContent.endsWith("\n")) ? "" : "\n") + "@" + annotation
-					+ " \"" + currentValue + "\"\n";
+			initialContent += ((initialContent.endsWith("\n")) ? "" : "\n")
+					+ "@" + annotation + " \"" + currentValue + "\"\n";
 		}
 	}
 	
@@ -149,17 +160,19 @@ public enum ESQDevFileType {
 	public boolean isInformationSet() {
 		return info != null;
 	}
-
+	
 	/**
 	 * Gets the set information
 	 */
 	public SQDevInformation getInformation() {
-		return (isInformationSet())? info : new SQDevInformation();
+		return (isInformationSet()) ? info : new SQDevInformation();
 	}
 	
 	/**
 	 * Sets the information
-	 * @param info The new information
+	 * 
+	 * @param info
+	 *            The new information
 	 */
 	public void setInformation(SQDevInformation info) {
 		this.info = info;

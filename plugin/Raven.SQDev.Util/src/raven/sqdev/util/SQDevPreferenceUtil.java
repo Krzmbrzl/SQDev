@@ -393,27 +393,23 @@ public class SQDevPreferenceUtil {
 	
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND</code>
-	 * preference that holds the first command in the BIKI that should be
-	 * processed
+	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_API_ADRESS</code>
+	 * preference that holds the default terrain
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
-	public static String getFirstCommand() {
-		return getPreferenceStore().getString(
-				SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND);
+	public static String getAPIAdress() {
+		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_COLLECTION_API_ADRESS);
 	}
 	
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND</code>
-	 * preference that holds the last command in the BIKI that should be
-	 * processed
+	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_API_MAINPAGE</code>
+	 * preference that holds the default terrain
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
-	public static String getLastCommand() {
-		return getPreferenceStore().getString(
-				SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND);
+	public static String getAPIMainPage() {
+		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_COLLECTION_API_MAINPAGE);
 	}
 }

@@ -16,6 +16,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
@@ -51,8 +55,8 @@ public class Util {
 		// it has to be an SQDevProject
 		Assert.isTrue(ProjectUtil.isSQDevProject(project));
 		
-		IFile file = project
-				.getFile(ESQDevFileType.LINK.toString() + EFileType.SQDEV.getExtension());
+		IFile file = project.getFile(ESQDevFileType.LINK.toString()
+				+ EFileType.SQDEV.getExtension());
 		
 		IPath path = file.getRawLocation().makeAbsolute();
 		
@@ -67,11 +71,12 @@ public class Util {
 		Path exportPath;
 		try {
 			// create the folder name including the map name
-			String projectFolderName = project.getName() + "."
-					+ linkFile.parseAttribute(ESQDevFileAttribute.TERRAIN).getValue();
+			String projectFolderName = project.getName() + "." + linkFile
+					.parseAttribute(ESQDevFileAttribute.TERRAIN).getValue();
 			
 			// get the mission directory
-			String expPath = linkFile.parseAttribute(ESQDevFileAttribute.EXPORTDIRECTORY)
+			String expPath = linkFile
+					.parseAttribute(ESQDevFileAttribute.EXPORTDIRECTORY)
 					.getValue();
 			
 			// create the path according to the gathered path and name
@@ -92,7 +97,8 @@ public class Util {
 		// add the default profile that is always present
 		profiles.add(System.getProperty("user.name"));
 		
-		File profileDir = new File(SQDevPreferenceUtil.getProfilesDocumentDirectory());
+		File profileDir = new File(
+				SQDevPreferenceUtil.getProfilesDocumentDirectory());
 		
 		if (!profileDir.exists() || !profileDir.isDirectory()) {
 			return profiles;
@@ -117,7 +123,8 @@ public class Util {
 	public static Path getMissionsDirectory(String profile) {
 		// make sure the profile exists
 		if (!getProfiles().contains(profile)) {
-			String message = "The requested profile \"" + profile + "\" does not exist!";
+			String message = "The requested profile \"" + profile
+					+ "\" does not exist!";
 			
 			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
 			
@@ -130,20 +137,24 @@ public class Util {
 		
 		if (isSystemUserProfile(profile)) {
 			// make sure the path leads to the correct folder
-			requestedPath = new Path(SQDevPreferenceUtil.getDefaultDocumentsDirectory());
+			requestedPath = new Path(
+					SQDevPreferenceUtil.getDefaultDocumentsDirectory());
 			
 			if (requestedPath.lastSegment().contains("-")) {
 				String lastSegment = requestedPath.lastSegment();
 				
 				requestedPath = (Path) requestedPath.removeLastSegments(1);
 				
-				lastSegment = lastSegment.substring(0, lastSegment.indexOf("-")).trim();
+				lastSegment = lastSegment.substring(0, lastSegment.indexOf("-"))
+						.trim();
 				
 				// append the necessary segments
-				requestedPath = (Path) requestedPath.append(lastSegment).append("missions");
+				requestedPath = (Path) requestedPath.append(lastSegment)
+						.append("missions");
 			}
 		} else {
-			File profilesDir = new File(SQDevPreferenceUtil.getProfilesDocumentDirectory());
+			File profilesDir = new File(
+					SQDevPreferenceUtil.getProfilesDocumentDirectory());
 			
 			if (!profilesDir.exists()) {
 				String message = "Unable to locate profile \"" + profile + "\"";
@@ -156,7 +167,8 @@ public class Util {
 			}
 			
 			for (File current : profilesDir.listFiles()) {
-				if (current.isDirectory() && current.getName().equals(profile)) {
+				if (current.isDirectory()
+						&& current.getName().equals(profile)) {
 					requestedPath = new Path(current.getAbsolutePath());
 					
 					requestedPath = (Path) requestedPath.append("missions");
@@ -165,8 +177,8 @@ public class Util {
 		}
 		
 		if (requestedPath == null || !requestedPath.toFile().exists()) {
-			String message = "The missions directory for the profile \"" + profile
-					+ "\" could not be found!";
+			String message = "The missions directory for the profile \""
+					+ profile + "\" could not be found!";
 			
 			SQDevInfobox info = new SQDevInfobox(message, SWT.ICON_ERROR);
 			
@@ -198,7 +210,8 @@ public class Util {
 	public static boolean isMissionFolder(File file) {
 		Assert.isNotNull(file);
 		
-		if (!file.exists() || !file.isDirectory() || !file.getName().contains(".")) {
+		if (!file.exists() || !file.isDirectory()
+				|| !file.getName().contains(".")) {
 			return false;
 		}
 		
@@ -232,7 +245,8 @@ public class Util {
 		
 		info.append("OS: " + System.getProperty("os.name") + "\n");
 		info.append("Architecture: " + System.getProperty("osgi.arch") + "\n");
-		info.append("Eclipse version: " + System.getProperty("eclipse.buildId") + "\n");
+		info.append("Eclipse version: " + System.getProperty("eclipse.buildId")
+				+ "\n");
 		info.append("SQDev plugin versions:\n");
 		info.append("\t" + getSQDevpluginversions().replaceAll("\n", "\n\t"));
 		
@@ -263,14 +277,17 @@ public class Util {
 		String zipPath = System.getProperty("java.io.tmpdir") + File.separator
 				+ PLUGIN_INFO_FILE_NAME;
 		
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipPath));
+		ZipOutputStream out = new ZipOutputStream(
+				new FileOutputStream(zipPath));
 		
 		out.putNextEntry(new ZipEntry("SQDevGeneralInformation.txt"));
 		out.write(getStandardInformation().getBytes());
 		out.closeEntry();
 		
-		IPath errorFilePath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-		errorFilePath = errorFilePath.append(".metadata" + File.separator + ".log");
+		IPath errorFilePath = ResourcesPlugin.getWorkspace().getRoot()
+				.getLocation();
+		errorFilePath = errorFilePath
+				.append(".metadata" + File.separator + ".log");
 		
 		out.putNextEntry(new ZipEntry("EclipseLog.txt"));
 		FileInputStream in = new FileInputStream(errorFilePath.toFile());
@@ -288,6 +305,34 @@ public class Util {
 		out.close();
 		
 		return new File(zipPath);
+	}
+	
+	/**
+	 * Closes and restarts all currently opened editors
+	 */
+	public static void restartAllEditors() {
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				// restart all SQF editors
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				
+				IEditorReference[] editors = page.getEditorReferences();
+				
+				page.closeAllEditors(true);
+				
+				for (IEditorReference currentEditor : editors) {
+					try {
+						page.openEditor(currentEditor.getEditorInput(),
+								currentEditor.getId());
+					} catch (PartInitException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 	
 }

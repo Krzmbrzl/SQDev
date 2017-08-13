@@ -119,16 +119,15 @@ public class SQDevPreferenceConstants {
 	public static final String SQDEV_EXPORT_AUTOCLEAN = "raven.sqdev.autoClean";
 	
 	/**
-	 * The preference holding the command that will be the first one to be
-	 * processed during keyword update
+	 * The preference holding the web adress to the BIKI API
 	 */
-	public static final String SQDEV_COLLECTION_STARTCOMMAND = "raven.sqdev.collection.startCommand";
+	public static final String SQDEV_COLLECTION_API_ADRESS = "raven.sqdev.collection.apiAdress";
 	
 	/**
-	 * The preference holding the command that will be the last one to be
-	 * processed during keyword update
+	 * The preference holding the wname of the main page that lists all the SQF
+	 * commands
 	 */
-	public static final String SQDEV_COLLECTION_ENDCOMMAND = "raven.sqdev.collection.endCommand";
+	public static final String SQDEV_COLLECTION_API_MAINPAGE = "raven.sqdev.collection.apiMainPage";
 	
 	/**
 	 * The preference holding the path to the folder where ArmA stores it's RPTs

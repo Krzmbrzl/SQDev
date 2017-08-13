@@ -10,7 +10,7 @@ import raven.sqdev.interfaces.ISaveable;
  * represented keyword
  * 
  * @author Raven
- * 		
+ * 
  */
 public class Keyword implements Comparable<Keyword>, ISaveable {
 	
@@ -166,7 +166,7 @@ public class Keyword implements Comparable<Keyword>, ISaveable {
 			compare = keyword.getDescription();
 		} else {
 			own = getKeyword();
-			compare = getKeyword();
+			compare = keyword.getKeyword();
 		}
 		
 		int minLength = own.length();
@@ -192,11 +192,11 @@ public class Keyword implements Comparable<Keyword>, ISaveable {
 	@Override
 	public String getSaveableFormat() {
 		// store attributes
-		String saveFormat = KEYWORD_START_SAVESEQUENCE + "\n\t" + getKeyword() + "\n"
-				+ KEYWORD_END_SAVESEQUENCE + "\n";
-		saveFormat += DESCRIPTION_START_SAVESEQUENCE + "\n\t" + getDescription() + "\n"
-				+ DESCRIPTION_END_SAVESEQUENCE;
-				
+		String saveFormat = KEYWORD_START_SAVESEQUENCE + "\n\t" + getKeyword()
+				+ "\n" + KEYWORD_END_SAVESEQUENCE + "\n";
+		saveFormat += DESCRIPTION_START_SAVESEQUENCE + "\n\t" + getDescription()
+				+ "\n" + DESCRIPTION_END_SAVESEQUENCE;
+		
 		return saveFormat;
 	}
 	
@@ -212,11 +212,13 @@ public class Keyword implements Comparable<Keyword>, ISaveable {
 						+ KEYWORD_START_SAVESEQUENCE.length(),
 				savedFormat.indexOf(KEYWORD_END_SAVESEQUENCE)).trim();
 		// get the description
-		String description = savedFormat.substring(
-				savedFormat.indexOf(DESCRIPTION_START_SAVESEQUENCE)
-						+ DESCRIPTION_START_SAVESEQUENCE.length(),
-				savedFormat.indexOf(DESCRIPTION_END_SAVESEQUENCE)).trim();
-				
+		String description = savedFormat
+				.substring(
+						savedFormat.indexOf(DESCRIPTION_START_SAVESEQUENCE)
+								+ DESCRIPTION_START_SAVESEQUENCE.length(),
+						savedFormat.indexOf(DESCRIPTION_END_SAVESEQUENCE))
+				.trim();
+		
 		// apply the values
 		setKeyword(keyword);
 		setDescription(description);
@@ -241,26 +243,33 @@ public class Keyword implements Comparable<Keyword>, ISaveable {
 		int descriptionEnd = format.indexOf(DESCRIPTION_END_SAVESEQUENCE);
 		
 		if (keywordEnd < keywordStart || descriptionEnd < descriptionStart
-				|| keywordStart > descriptionStart || descriptionStart < keywordEnd) {
+				|| keywordStart > descriptionStart
+				|| descriptionStart < keywordEnd) {
 			// the order of the keywords is messed up
 			return false;
 		}
 		
 		// check that there is actually content in it
 		String keyword = format.substring(
-				format.indexOf(KEYWORD_START_SAVESEQUENCE) + KEYWORD_START_SAVESEQUENCE.length(),
+				format.indexOf(KEYWORD_START_SAVESEQUENCE)
+						+ KEYWORD_START_SAVESEQUENCE.length(),
 				format.indexOf(KEYWORD_END_SAVESEQUENCE)).trim();
 		String description = format.substring(
 				format.indexOf(DESCRIPTION_START_SAVESEQUENCE)
 						+ DESCRIPTION_START_SAVESEQUENCE.length(),
 				format.indexOf(DESCRIPTION_END_SAVESEQUENCE)).trim();
-				
+		
 		if (keyword.isEmpty() || description.isEmpty()) {
 			return false;
 		}
 		
 		// everything is ok
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return getKeyword();
 	}
 	
 }

@@ -136,7 +136,7 @@ public enum EDataType implements IReplaceTester {
 	NAMESPACE {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Namespace" };
+			return new String[] { "Namespace", "missionNamespace", "uiNamespace" };
 		}
 	},
 	NETOBJECT {

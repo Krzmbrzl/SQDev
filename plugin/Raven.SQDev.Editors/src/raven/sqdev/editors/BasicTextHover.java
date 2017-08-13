@@ -49,7 +49,7 @@ public class BasicTextHover
 			
 			@Override
 			public IInformationControl createInformationControl(Shell parent) {
-				return new BasicInformationControl(parent);
+				return new BasicInformationControl(parent, false);
 			}
 		};
 	}

@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
-
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.exceptions.SQDevCollectionException;
 import raven.sqdev.exceptions.SQDevException;
@@ -26,6 +25,7 @@ import raven.sqdev.preferences.preferenceEditors.BooleanSQDevPreferenceEditor;
 import raven.sqdev.preferences.preferenceEditors.ValueSQDevPreferenceEditor;
 import raven.sqdev.util.SQDevInfobox;
 import raven.sqdev.util.SQDevPreferenceUtil;
+import raven.sqdev.util.Util;
 
 public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 	/**
@@ -53,7 +53,8 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 		updateButton = new Button(createContainer(), SWT.PUSH);
 		updateButton.setToolTipText(
 				"Updates the SQF commands according to the BIKI. This may take a while");
-		updateButton.setEnabled(collectionJob == null || collectionJob.getResult() != null);
+		updateButton.setEnabled(
+				collectionJob == null || collectionJob.getResult() != null);
 		
 		// set text according to status
 		if (!updateButton.isEnabled()) {
@@ -80,14 +81,16 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 		if (ResourceManager.getManager().isOnBackup("SQFKeywords.txt")) {
 			resetButton.setEnabled(false);
 		} else {
-			resetButton.setToolTipText("Resets the keywords to the backup version");
+			resetButton.setToolTipText(
+					"Resets the keywords to the backup version");
 			
 			resetButton.addMouseListener(new MouseAdapter() {
 				
 				@Override
 				public void mouseUp(MouseEvent e) {
 					// backup keywords
-					ResourceManager.getManager().switchToBackup("SQFKeywords.txt");
+					ResourceManager.getManager()
+							.switchToBackup("SQFKeywords.txt");
 					
 					resetButton.setEnabled(false);
 				}
@@ -97,33 +100,38 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 		// preferences about the command collection
 		Group keywordGroup = createGroup("Command collection/updating");
 		
-		createDescription(keywordGroup, "Preferences about the command update process");
+		createDescription(keywordGroup,
+				"Preferences about the command update process");
 		
 		addPreferenceEditor(new ValueSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND, "&First command:",
-				"The name of the first command in the list in the BIKI that should be"
-						+ " processed. If there is no urgent need do not change this value!",
+				SQDevPreferenceConstants.SQDEV_COLLECTION_API_ADRESS,
+				"&BIKI API:",
+				"The adress to the BIKI API. If there is no urgent need do not change this value!",
 				keywordGroup));
 		
 		addPreferenceEditor(new ValueSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND, "&Last command:",
-				"The name of the last command in the list in the BIKI that should be"
-						+ " processed. If there is no urgent need do not change this value!",
+				SQDevPreferenceConstants.SQDEV_COLLECTION_API_MAINPAGE,
+				"&Main Page Name:",
+				"The name of the main page that lists the SQF commands."
+						+ " If there is no urgent need do not change this value!",
 				keywordGroup));
 		
 		
 		// all preferences about user prompts
 		Group promptGroup = createGroup("User prompt");
 		
-		createDescription(promptGroup, "Preferences about when to prompt the user to do something");
+		createDescription(promptGroup,
+				"Preferences about when to prompt the user to do something");
 		
 		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT, "&Always save on exit:",
+				SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT,
+				"&Always save on exit:",
 				"Whether unsaved preferences should get saved automatically when clicking \"OK\" without a popup asking for it",
 				promptGroup));
 		
 		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION, "&Validate deletions:",
+				SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION,
+				"&Validate deletions:",
 				"Whether the plugin should prompt the user to validate a deletion he caused",
 				promptGroup));
 	}
@@ -134,8 +142,7 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 	private void updateKeywords() {
 		commandList = new KeywordList();
 		
-		updateKeywords(SQDevPreferenceUtil.getFirstCommand(), SQDevPreferenceUtil.getLastCommand(),
-				false);
+		updateKeywords(null);
 	}
 	
 	/**
@@ -147,27 +154,23 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 	 *            The command to stop at
 	 * @param previous
 	 *            A list of already gathered commands
-	 * @param skipFirst
-	 *            Indicating whether the first command should be skipped
+	 * @param repeat
+	 *            The URL that should be repeated. <code>Null</code> if none
 	 */
-	private void updateKeywords(String firstCommand, String lastCommand, boolean skipFirst) {
+	private void updateKeywords(URL repeat) {
 		collectionJob = new Job("Updating keywords") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				monitor.beginTask("Updating keywords", IProgressMonitor.UNKNOWN);
+				monitor.beginTask("Updating keywords",
+						IProgressMonitor.UNKNOWN);
 				
 				try {
 					// gather keywords from the wiki
 					SQFCommandCollector collector = new SQFCommandCollector(
-							new URL("https://community.bistudio.com/wiki/Category:"
-									+ "Scripting_Commands_Arma_3"),
-							firstCommand, lastCommand);
+							SQDevPreferenceUtil.getAPIAdress(),
+							SQDevPreferenceUtil.getAPIMainPage());
 					
-					if (skipFirst) {
-						collector.skipNext();
-					}
-					
-					KeywordList list = collector.collect(monitor);
+					KeywordList list = collector.collect(monitor, repeat);
 					
 					list.addKeywords(commandList.getKeywords()); // add
 																	// previously
@@ -189,51 +192,67 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 						}
 					}
 					
+					// sort keywords
+					list.sort();
+					
+					System.out.println(commandList);
+					
 					// save the keywords
 					monitor.done();
-					monitor.beginTask("Storing keywords...", IProgressMonitor.UNKNOWN);
+					monitor.beginTask("Storing keywords...",
+							IProgressMonitor.UNKNOWN);
 					
 					ResourceManager manager = ResourceManager.getManager();
 					manager.updateResource(ResourceManager.KEYWORDS_RESOURCE,
 							list.getSaveableFormat());
 					
-					// tell the user to restart
+					// tell the user about restart
 					SQDevInfobox info = new SQDevInfobox(
 							"In order for the new keywords to take effect"
-									+ " you have to restart all respective editors",
+									+ " all respective editors will be restarted",
 							SWT.ICON_INFORMATION);
 					
-					info.open();
+					if (info.open() != SWT.OK) {
+						return Status.OK_STATUS;
+					}
 					
+					// restart all editors in order to overtake the changes
+					Util.restartAllEditors();
 				} catch (IOException | SQDevException e) {
 					if (e instanceof SQDevCollectionException
-							&& ((SQDevCollectionException) e).getFailedKeyword() != null) {
+							&& ((SQDevCollectionException) e)
+									.getFailedKeywordURL() != null) {
 						SQDevCollectionException ex = (SQDevCollectionException) e;
 						
-						commandList.addKeywords(ex.getPreviouslyProcessedKeywords().getKeywords());
+						commandList
+								.addKeywords(ex.getPreviouslyProcessedKeywords()
+										.getKeywords());
 						
 						SQDevInfobox info = new SQDevInfobox(
 								"Failed at updating keywords at \""
-										+ ex.getFailedKeyword().getKeyword() + "\"",
+										+ ((ex.getFailedKeywordURL() == null)
+												? "Internal"
+												: ex.getFailedKeywordURL()
+														.toString())
+										+ "\"",
 								ex, "Do you want to retry this command?");
 						info.addStyle(SWT.CANCEL);
 						
 						int result = info.open();
-						// TODO: store prev-Keywords in case of multiple
-						// interruptions
+						
 						switch (result) {
 							case SWT.YES:
-								updateKeywords(ex.getFailedKeyword().getKeyword(),
-										SQDevPreferenceUtil.getLastCommand(), false);
+								updateKeywords(ex.getFailedKeywordURL());
 								break;
 							
 							case SWT.NO:
-								updateKeywords(ex.getFailedKeyword().getKeyword(),
-										SQDevPreferenceUtil.getLastCommand(), true);
+								updateKeywords(null);
 								break;
 						}
+						
 					} else {
-						SQDevInfobox info = new SQDevInfobox("Failed at updating keywords!", e);
+						SQDevInfobox info = new SQDevInfobox(
+								"Failed at updating keywords!", e);
 						info.open();
 					}
 					
@@ -242,17 +261,20 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 				} finally {
 					if (!PlatformUI.getWorkbench().getDisplay().isDisposed()) {
 						// reset buton status
-						PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-							
-							@Override
-							public void run() {
-								if (updateButton != null && !updateButton.isDisposed()) {
-									updateButton.setText("Update keywords");
-									updateButton.setEnabled(true);
-									updateButton.pack(true);
-								}
-							}
-						});
+						PlatformUI.getWorkbench().getDisplay()
+								.syncExec(new Runnable() {
+									
+									@Override
+									public void run() {
+										if (updateButton != null
+												&& !updateButton.isDisposed()) {
+											updateButton
+													.setText("Update keywords");
+											updateButton.setEnabled(true);
+											updateButton.pack(true);
+										}
+									}
+								});
 					}
 					
 					monitor.done();
@@ -263,9 +285,11 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 		};
 		
 		// make sure eclipse is not closed with this job running
-		SQDevEclipseEventManager.getManager().registerCloseSuspendingJob(collectionJob);
+		SQDevEclipseEventManager.getManager()
+				.registerCloseSuspendingJob(collectionJob);
 		
 		collectionJob.schedule();
 	}
+	
 	
 }

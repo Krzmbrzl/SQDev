@@ -9,6 +9,8 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -53,6 +55,14 @@ public class SQDevProjectWizardPage extends WizardPage
 	 * Field for the selection of the terrain
 	 */
 	private Combo terrainCombo;
+	/**
+	 * The label corresponding to {@link #mpButton}
+	 */
+	private Label mpLabel;
+	/**
+	 * Checkbox to indicate that it is a MP mission
+	 */
+	private Button mpButton;
 	/**
 	 * The label for the terrain selection
 	 */
@@ -131,13 +141,16 @@ public class SQDevProjectWizardPage extends WizardPage
 				EProjectType type = EProjectType
 						.getIndex(typeCombo.getSelectionIndex());
 				
-				if (!type.equals(EProjectType.MISSION) && terrainCombo != null
-						&& terrainLabel != null) {
+				if (!type.equals(EProjectType.MISSION)) {
 					terrainCombo.setVisible(false);
 					terrainLabel.setVisible(false);
+					mpLabel.setVisible(false);
+					mpButton.setVisible(false);
 				} else {
 					terrainCombo.setVisible(true);
 					terrainLabel.setVisible(true);
+					mpLabel.setVisible(true);
+					mpButton.setVisible(true);
 				}
 				
 				setProjectType(type);
@@ -149,7 +162,7 @@ public class SQDevProjectWizardPage extends WizardPage
 		String terrainToolTip = "The map the mission should be played on";
 		
 		terrainLabel = new Label(container, SWT.NULL);
-		terrainLabel.setText("&Map:");
+		terrainLabel.setText("&Terrain:");
 		terrainLabel.setToolTipText(terrainToolTip);
 		
 		terrainCombo = new Combo(container, SWT.DROP_DOWN);
@@ -219,6 +232,28 @@ public class SQDevProjectWizardPage extends WizardPage
 		autoExportButton.setToolTipText(autoExportTooltip);
 		autoExportButton.setSelection(
 				SQDevPreferenceUtil.getAutoExportDefaultEnabled());
+		
+		// MP selection
+		String mpTooltip = "Indicates whether this mission should be a MP mission";
+		
+		mpLabel = new Label(container, SWT.NONE);
+		mpLabel.setText("&Multiplayer:");
+		mpLabel.setToolTipText(mpTooltip);
+		
+		mpButton = new Button(container, SWT.CHECK);
+		mpButton.setToolTipText(mpTooltip);
+		
+		mpButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				dialogChanged();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 		
 		getNameText().setFocus();
 		dialogChanged();
@@ -332,6 +367,13 @@ public class SQDevProjectWizardPage extends WizardPage
 	}
 	
 	/**
+	 * Gets the user chosen value whether the mission is going to be MP
+	 */
+	public boolean getMP() {
+		return mpButton.getSelection();
+	}
+	
+	/**
 	 * Gets the data of this page bundled into a SQDevInformation
 	 */
 	public SQDevInformation getInformation() {
@@ -341,6 +383,7 @@ public class SQDevProjectWizardPage extends WizardPage
 		info.setName(getProjectName());
 		info.setProfile(getProfile());
 		info.setTerrain(getTerrain());
+		info.setMp(getMP());
 		
 		return info;
 	}

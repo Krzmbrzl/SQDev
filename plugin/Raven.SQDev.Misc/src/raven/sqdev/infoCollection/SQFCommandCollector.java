@@ -1,10 +1,8 @@
 package raven.sqdev.infoCollection;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -191,47 +189,33 @@ public class SQFCommandCollector {
 			{ EDataType.CONFIG.toString() }, { EDataType.NOTHING.toString() } };
 	
 	/**
-	 * The URL to the base site where all commands are listed
+	 * The string represnetation of the webadress to the BIKI API
 	 */
-	private URL baseSite;
+	private final String apiAdress;
+	/**
+	 * The name of the main page where all the commands are listed
+	 */
+	private final String mainPageName;
 	
-	/**
-	 * The name of the first command in the list on the base site
-	 */
-	private String firstCommandName;
-	/**
-	 * The name of the last command in the list on the base site
-	 */
-	private String lastCommandName;
 	/**
 	 * The list of processed Keywords
 	 */
 	private KeywordList list;
-	/**
-	 * A flag indicating whether the next command should be skipped
-	 */
-	private boolean skipNext = false;
 	
 	/**
 	 * Creates an instance of this collector
 	 * 
-	 * @param baseSite
-	 *            The base site that lists all commands
-	 * @param firstCommandName
-	 *            The name of the first command in the list (The one to start
-	 *            with)
-	 * @param lastCommandName
-	 *            The name of the last ommand in the list (The one to end with)
+	 * @param apiAdress
+	 *            The string represnetation of the webadress to the BIKI API
+	 * @param mainPageName
+	 *            The name of the main page where all commands are listed
 	 */
-	public SQFCommandCollector(URL baseSite, String firstCommandName,
-			String lastCommandName) {
-		Assert.isNotNull(baseSite);
-		Assert.isTrue(firstCommandName != null && !firstCommandName.isEmpty());
-		Assert.isTrue(lastCommandName != null && !lastCommandName.isEmpty());
+	public SQFCommandCollector(String apiAdress, String mainPageName) {
+		Assert.isTrue(apiAdress != null && !apiAdress.isEmpty());
+		Assert.isTrue(mainPageName != null && !mainPageName.isEmpty());
 		
-		this.baseSite = baseSite;
-		this.firstCommandName = firstCommandName;
-		this.lastCommandName = lastCommandName;
+		this.apiAdress = apiAdress;
+		this.mainPageName = mainPageName;
 	}
 	
 	/**
@@ -240,91 +224,42 @@ public class SQFCommandCollector {
 	 * @param monitor
 	 *            The <code>IProgressMonitor</code> used to watch this
 	 *            collection
+	 * @param repeat
+	 *            The URL to repeat. This is only if one command has failed and
+	 *            should be repeated. If there is no such command this argument
+	 *            should be <code>null</code>
 	 * @return The <code>KeywordList</code> conatining the gathered keywords
 	 * @throws SQDevCollectionException
 	 */
-	public KeywordList collect(IProgressMonitor monitor)
+	public KeywordList collect(IProgressMonitor monitor, URL repeat)
 			throws SQDevCollectionException {
-		String siteContent;
+		monitor.subTask("Initializing");
 		
+		SQFCommandPageProvider provider;
 		try {
-			siteContent = getSite(baseSite);
+			provider = new SQFCommandPageProvider(apiAdress, mainPageName);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 			
-			// get relevant content only siteContent =
-			siteContent = trimToRelevantListOnly(siteContent);
-		} catch (IOException e) {
-			// rethrow
-			throw new SQDevCollectionException(e, null, null);
+			// rethrow exception
+			throw new SQDevCollectionException(e1.getMessage(), null,
+					new KeywordList());
 		}
 		
-		
-		// compose the line where the collecting should start at
-		String relevantStartLine = constructReferenceLine(firstCommandName);
-		
-		String relevantEndLine = constructReferenceLine(lastCommandName);
-		
-		if (!siteContent.contains(relevantStartLine)
-				|| !siteContent.contains(relevantEndLine)) {
-			boolean throwException = true;
-			
-			if (!siteContent.contains(relevantStartLine)) {
-				relevantStartLine = "<li><a href=\"/wiki/" + firstCommandName
-						+ "\" title=\"" + firstCommandName.replace("_", " ")
-						+ "\">" + firstCommandName.replace("_", " ")
-						+ "</a></li>";
-				if (siteContent.contains(relevantStartLine)) {
-					throwException = false;
-				}
-			}
-			
-			if (!siteContent.contains(relevantEndLine)) {
-				throwException = true;
-				
-				relevantEndLine = "<li><a href=\"/wiki/" + lastCommandName
-						+ "\" title=\"" + lastCommandName.replace("_", " ")
-						+ "\">" + lastCommandName.replace("_", " ")
-						+ "</a></li>";
-				
-				if (siteContent.contains(relevantEndLine)) {
-					throwException = false;
-				}
-			}
-			
-			if (throwException) {
-				throw new SQDevCollectionException(
-						"The specified base site \"" + baseSite.toString()
-								+ "\" does not contain a line corresponding to the specified first command \""
-								+ firstCommandName + "\" or last command \""
-								+ lastCommandName + "\"",
-						null, list);
-			}
-		}
-		
-		// start the list at the first command
-		siteContent = siteContent.substring(
-				siteContent.indexOf(relevantStartLine),
-				siteContent.indexOf(relevantEndLine) + relevantEndLine.length())
-				.trim();
-		
-		// check that the essential commands are included in the list
-		for (String currentCommand : ESSENTIAL_COMMANDS) {
-			String linkLine = constructReferenceLine(currentCommand);
-			
-			if (!siteContent.contains(linkLine)) {
-				siteContent += "\n" + linkLine;
-			}
+		if (repeat != null) {
+			provider.popBack(repeat);
 		}
 		
 		// create keywordList
 		list = new KeywordList();
 		
 		monitor.beginTask("Gathering SQF commands",
-				siteContent.split("\n").length + MANUAL_COMMANDS.length);
+				provider.size() + MANUAL_COMMANDS.length);
 		
 		// Add a few operators manually
 		for (int i = 0; i < MANUAL_COMMANDS.length; i++) {
 			if (monitor.isCanceled()) {
-				// if the job was canceled return the current state of the list
+				// if the job was cancelled return the current state of the list
 				return list;
 			}
 			
@@ -348,7 +283,7 @@ public class SQFCommandCollector {
 					
 					command.setReturnType(syntax, returnTypes);
 				} catch (BadSyntaxException e) {
-					throw new SQDevCollectionException(e.getMessage(), command,
+					throw new SQDevCollectionException(e.getMessage(), null,
 							list);
 				}
 			}
@@ -360,8 +295,7 @@ public class SQFCommandCollector {
 					command.setWikiPage(new URL(url));
 				}
 			} catch (MalformedURLException e) {
-				throw new SQDevCollectionException(e.getMessage(), command,
-						list);
+				throw new SQDevCollectionException(e.getMessage(), null, list);
 			}
 			
 			list.addKeyword(command);
@@ -369,43 +303,25 @@ public class SQFCommandCollector {
 			monitor.worked(1);
 		}
 		
+		int size = provider.size();
 		// go through each link and gather respective information
-		for (String currentLine : siteContent.split("\n")) {
+		for (int i = 0; i < size; i++) {
 			if (monitor.isCanceled()) {
 				// if the job was cancelled return the current state of the list
 				return list;
 			}
 			
-			if (skipNext) {
-				skipNext = false;
-				continue;
-			}
+			URL currentCommandURL = provider.next();
 			
-			// get the postfix for the wiki page of the current command
-			String postfix = currentLine
-					.substring(currentLine.indexOf("\"") + 1);
-			postfix = postfix.substring(0, postfix.indexOf("\""));
-			
-			String name = postfix.substring(postfix.lastIndexOf("/") + 1);
+			// get the name of the current command
+			String strURL = currentCommandURL.toString();
+			String name = strURL.substring(strURL.lastIndexOf("/") + 1).trim();
 			
 			// display which cammand currently is processed
 			monitor.subTask("Current Command: \"" + name + "\"");
 			
-			URL commandPageURL;
-			try {
-				String strURL = baseSite.toString();
-				strURL = strURL.substring(0, strURL.indexOf("/wiki")) + postfix;
-				
-				commandPageURL = new URL(strURL);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				
-				// rethrow
-				throw new SQDevCollectionException(e, null, list);
-			}
-			
 			SQFCommand command = processCommand(new SQFCommand(name),
-					commandPageURL);
+					currentCommandURL);
 			
 			if (command != null) {
 				list.addKeyword(command);
@@ -418,25 +334,14 @@ public class SQFCommandCollector {
 	}
 	
 	/**
-	 * Constructs the wiki link entry for a command witht he given name
-	 * 
-	 * @param name
-	 *            The name of the command whose link entry should be created
-	 */
-	private String constructReferenceLine(String name) {
-		return "<li><a href=\"/wiki/" + name + "\" title=\"" + name + "\">"
-				+ name + "</a></li>";
-	}
-	
-	/**
 	 * Gets the trimmed content of the specified site
 	 * 
 	 * @param url
 	 *            The URL to the site
-	 * @return
+	 * @return The site's content as a String
 	 * @throws SQDevCollectionException
 	 */
-	private String getSite(URL url) throws IOException {
+	public static String getSite(URL url) throws IOException {
 		// read the site's content
 		InputStream in = url.openStream();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -478,36 +383,7 @@ public class SQFCommandCollector {
 			matcher = escapePattern.matcher(content);
 		}
 		
-		return content;
-	}
-	
-	/**
-	 * Trims the given html content so that it only contains the lines relevant
-	 * for the list containing the SQF commands
-	 * 
-	 * @param htmlContent
-	 *            The content to trim
-	 * @throws SQDevCollectionException
-	 */
-	private String trimToRelevantListOnly(String htmlContent)
-			throws IOException {
-		BufferedReader reader = new BufferedReader(
-				new StringReader(htmlContent));
-		
-		StringBuilder content = new StringBuilder();
-		
-		String currentLine = "";
-		
-		while ((currentLine = reader.readLine()) != null) {
-			// only consider lines containing a link to the wiki
-			if (currentLine.contains("<li><a href=\"/wiki/")) {
-				content.append(currentLine + "\n");
-			}
-		}
-		
-		reader.close();
-		
-		return content.toString().trim();
+		return content.replace("&quot;", "\"").replace("&amp;", "&");
 	}
 	
 	/**
@@ -518,7 +394,7 @@ public class SQFCommandCollector {
 	 *            The command the gathered information should be associated with
 	 * @param commandPage
 	 *            The <code>URL</code> to the command's wiki page
-	 * @return The command filled with information
+	 * @return The command filled with information or <code>null</code>
 	 * @throws SQDevCollectionException
 	 */
 	private SQFCommand processCommand(SQFCommand command, URL commandPage)
@@ -529,7 +405,7 @@ public class SQFCommandCollector {
 			siteContent = formatCommandPageContent(getSite(commandPage));
 		} catch (IOException e) {
 			// rethrow
-			throw new SQDevCollectionException(e, command, list);
+			throw new SQDevCollectionException(e, commandPage, list);
 		}
 		
 		String[] categories = categorizeContent(siteContent);
@@ -538,63 +414,66 @@ public class SQFCommandCollector {
 				|| !categories[CATEGORY_SYNTAX].toLowerCase()
 						.contains(command.getKeyword().toLowerCase())) {
 			// The current command should be integrated in the previous command
-			// with this name TODO
+			// with this name or stripped out TODO
 			return null;
 		}
 		
 		// store information
-		
-		// commandInfo
-		String commandInfo = categories[CATEGORY_COMMAND_INFO];
-		applyCommandInfo(command, commandInfo);
-		
-		// wikiPage
-		command.setWikiPage(commandPage);
-		
-		// description
-		String description = categories[CATEGORY_DESCRIPTION];
-		if (description.startsWith("Description:\n")) {
-			// remove that unnecessary line
-			description = description.substring(description.indexOf("\n") + 1);
-		}
-		
-		if (!description.isEmpty()) {
-			command.setDescription(description);
-		}
-		
-		// syntax
-		String syntax = categories[CATEGORY_SYNTAX];
-		
-		if (!syntax.isEmpty()) {
-			if (command.getKeyword().toLowerCase().equals("private")) {
-				// exception for private as a keyword
-				syntax = syntax.substring(0,
-						syntax.toLowerCase().lastIndexOf("alternative syntax"));
+		try {
+			// commandInfo
+			String commandInfo = categories[CATEGORY_COMMAND_INFO];
+			applyCommandInfo(command, commandInfo);
+			
+			// wikiPage
+			command.setWikiPage(commandPage);
+			
+			// description
+			String description = categories[CATEGORY_DESCRIPTION];
+			if (description.startsWith("Description:\n")) {
+				// remove that unnecessary line
+				description = description
+						.substring(description.indexOf("\n") + 1);
 			}
 			
-			applySyntax(command, syntax);
-		} else {
-			throw new SQDevCollectionException("The command \""
-					+ command.getKeyword() + "\" does not specify a syntax!",
-					command, list);
-		}
-		
-		// examples
-		String examples = categories[CATEGORY_EXAMPLES];
-		
-		if (!examples.isEmpty()) {
-			applyExamples(command, examples);
-		}
-		
-		// Notes
-		String notes = categories[CATEGORY_NOTES];
-		
-		if (!notes.isEmpty()) {
-			try {
-				applyNotes(command, notes);
-			} catch (SQDevCollectionException e) {
-				e.printStackTrace();
+			if (!description.isEmpty()) {
+				command.setDescription(description);
 			}
+			
+			// syntax
+			String syntax = categories[CATEGORY_SYNTAX];
+			
+			if (!syntax.isEmpty()) {
+				if (command.getKeyword().toLowerCase().equals("private")) {
+					// exception for private as a keyword
+					syntax = syntax.substring(0, syntax.toLowerCase()
+							.lastIndexOf("alternative syntax"));
+				}
+				
+				applySyntax(command, syntax);
+			} else {
+				throw new SQDevCollectionException(
+						"The command \"" + command.getKeyword()
+								+ "\" does not specify a syntax!",
+						commandPage, list);
+			}
+			
+			// examples
+			String examples = categories[CATEGORY_EXAMPLES];
+			
+			if (!examples.isEmpty()) {
+				applyExamples(command, examples);
+			}
+			
+			// Notes
+			String notes = categories[CATEGORY_NOTES];
+			
+			if (!notes.isEmpty()) {
+				applyNotes(command, notes);
+			}
+		} catch (SQDevException e) {
+			e.printStackTrace();
+			
+			throw new SQDevCollectionException(e, commandPage, list);
 		}
 		
 		return command;
@@ -720,7 +599,8 @@ public class SQFCommandCollector {
 			content = content.replace("\n\n", "\n");
 		}
 		
-		content = content.replaceAll("&[^;]*;", " ");
+		// remove all unnecessary HTML escape stuff
+		content = content.replaceAll("&[^;\\s]*;", " ");
 		
 		while (content.contains("  ")) {
 			content = content.replace("  ", " ");
@@ -885,20 +765,19 @@ public class SQFCommandCollector {
 	 *            The command the info should get added to
 	 * @param info
 	 *            The info to add up
-	 * @throws SQDevCollectionException
+	 * @throws SQDevException
 	 */
 	private void applyCommandInfo(SQFCommand command, String info)
-			throws SQDevCollectionException {
+			throws SQDevException {
 		String name = info
 				.substring(info.indexOf("Name:") + 5, info.indexOf("\n"))
 				.trim();
 		
 		if (!name.toLowerCase().equals(command.getKeyword().toLowerCase())) {
-			throw new SQDevCollectionException(
+			throw new SQDevException(
 					"The given commandInfo does not specify the same name (\""
 							+ name + "\") as the SQFCommand object (\""
-							+ command.getKeyword() + "\")!",
-					command, list);
+							+ command.getKeyword() + "\")!");
 		}
 		
 		// remove processed line
@@ -998,17 +877,16 @@ public class SQFCommandCollector {
 	 *            The command the notes should be applied to
 	 * @param notes
 	 *            The notes to apply
-	 * @throws SQDevCollectionException
+	 * @throws SQDevException
 	 */
 	private void applyNotes(SQFCommand command, String notes)
-			throws SQDevCollectionException {
+			throws SQDevException {
 		String currentNote = "";
 		boolean skippedName = false;
 		
 		if (!notes.contains("Posted on")) {
-			throw new SQDevCollectionException("The notes of "
-					+ command.getKeyword() + "are not in the proper format!",
-					command, list);
+			throw new SQDevException("The notes of " + command.getKeyword()
+					+ "are not in the proper format!");
 		}
 		
 		for (String currentLine : notes.split("\n")) {
@@ -1060,17 +938,12 @@ public class SQFCommandCollector {
 	 * @param syntaxContent
 	 *            The syntax with it's parameters that should be applied to the
 	 *            command
-	 * @throws SQDevCollectionException
+	 * @throws SQDevException
 	 */
 	private void applySyntax(SQFCommand command, String syntaxContent)
-			throws SQDevCollectionException {
+			throws SQDevException {
 		
-		String[][] syntaxes;
-		try {
-			syntaxes = splitSyntaxes(syntaxContent, command);
-		} catch (SQDevException e1) {
-			throw new SQDevCollectionException(e1, command, list);
-		}
+		String[][] syntaxes = splitSyntaxes(syntaxContent, command);
 		
 		for (String[] currentSyntax : syntaxes) {
 			String syntax = currentSyntax[SYNTAXPART_SYNTAX];
@@ -1203,10 +1076,9 @@ public class SQFCommandCollector {
 					command.setReturnType(parsedSyntax, returnTypes);
 				}
 			} catch (BadSyntaxException e) {
-				throw new SQDevCollectionException(
+				throw new SQDevException(
 						"Failed at parsing syntax for command \""
-								+ command.getKeyword() + "\"",
-						command, list);
+								+ command.getKeyword() + "\"");
 			}
 		}
 		
@@ -1223,10 +1095,10 @@ public class SQFCommandCollector {
 	 * @param The
 	 *            <code>SQFElement</code> this syntax applies to
 	 * @return The processed syntax with data types instead of placeholders
-	 * @throws SQDevCollectionException
+	 * @throws SQDevException
 	 */
 	private String processSyntax(String syntax, String parameter,
-			SQFElement element) throws SQDevCollectionException {
+			SQFElement element) throws SQDevException {
 		for (String currentParameter : parameter.split("param:\n")) {
 			// process each listed parameter
 			currentParameter = currentParameter.trim();
@@ -1238,56 +1110,49 @@ public class SQFCommandCollector {
 			// make a copy in order to avoid case sensitive problems
 			String syntaxCopy = syntax.toLowerCase();
 			
-			String[] elements;
-			try {
-				elements = TextUtils.getTextAreas(currentParameter);
-				
-				// make sure parameter are in proper format
-				if (!elements[0].contains(":") || elements.length == 1) {
-					if (elements.length > 2 && (elements[1].equals(":")
-							|| elements[1].equals("-"))) {
-						// add needed colon
-						elements[0] = elements[0] + ":";
-						// Move parameter data type
-						elements[1] = elements[2];
-					} else {
-						throw new SQDevCollectionException(
-								"Unexpected parameter format - missing\":\" at "
-										+ elements[0],
-								element, list);
-					}
+			String[] elements = TextUtils.getTextAreas(currentParameter);
+			
+			// make sure parameter are in proper format
+			if (!elements[0].contains(":") || elements.length == 1) {
+				if (elements.length > 2 && (elements[1].equals(":")
+						|| elements[1].equals("-"))) {
+					// add needed colon
+					elements[0] = elements[0] + ":";
+					// Move parameter data type
+					elements[1] = elements[2];
+				} else {
+					throw new SQDevException(
+							"Unexpected parameter format - missing\":\" at "
+									+ elements[0]);
 				}
-				
-				String parameterName = elements[0]
-						.substring(0, elements[0].indexOf(":")).toLowerCase();
-				
-				// remove dots from dataType
-				String value = elements[1].replace(".", "");
-				
-				String[] syntaxElements = TextUtils.getTextAreas(syntax);
-				String[] syntaxCopyElements = TextUtils
-						.getTextAreas(syntaxCopy);
-				
-				for (int i = 0; i < syntaxCopyElements.length; i++) {
-					if (syntaxCopyElements[i].equals(parameterName)) {
-						// replace placeholder with actual value
-						value = formatDataType(value, element.getKeyword());
-						syntaxElements[i] = value;
-						break;
-					}
-				}
-				
-				// convert syntax back to String
-				StringBuilder builder = new StringBuilder();
-				
-				for (String currentElement : syntaxElements) {
-					builder.append(" " + currentElement);
-				}
-				
-				syntax = builder.toString().trim();
-			} catch (SQDevException e) {
-				throw new SQDevCollectionException(e, element, list);
 			}
+			
+			String parameterName = elements[0]
+					.substring(0, elements[0].indexOf(":")).toLowerCase();
+			
+			// remove dots from dataType
+			String value = elements[1].replace(".", "");
+			
+			String[] syntaxElements = TextUtils.getTextAreas(syntax);
+			String[] syntaxCopyElements = TextUtils.getTextAreas(syntaxCopy);
+			
+			for (int i = 0; i < syntaxCopyElements.length; i++) {
+				if (syntaxCopyElements[i].equals(parameterName)) {
+					// replace placeholder with actual value
+					value = formatDataType(value, element.getKeyword());
+					syntaxElements[i] = value;
+					break;
+				}
+			}
+			
+			// convert syntax back to String
+			StringBuilder builder = new StringBuilder();
+			
+			for (String currentElement : syntaxElements) {
+				builder.append(" " + currentElement);
+			}
+			
+			syntax = builder.toString().trim();
 		}
 		
 		return syntax;
@@ -1468,10 +1333,10 @@ public class SQFCommandCollector {
 	 * @param element
 	 *            The <code>SQFElement</code> the given parameters belong to
 	 * @return The formatted parameters
-	 * @throws SQDevCollectionException
+	 * @throws SQDevException
 	 */
 	private String formatParameters(String parameters, SQFElement element)
-			throws SQDevCollectionException {
+			throws SQDevException {
 		String[] paramArray = parameters.split("param:\n");
 		parameters = "";
 		
@@ -1488,8 +1353,7 @@ public class SQFCommandCollector {
 		try {
 			areas = TextUtils.getTextAreas(parameters);
 		} catch (BadSyntaxException e) {
-			throw new SQDevCollectionException("Can't format parameter", e,
-					element, list);
+			throw new SQDevException("Can't format parameter", e);
 		}
 		
 		StringBuilder builder = new StringBuilder();
@@ -1755,12 +1619,5 @@ public class SQFCommandCollector {
 		
 		return (isOptionalType) ? newDataType.toString() + OPTIONAL_MARKER
 				: newDataType.toString();
-	}
-	
-	/**
-	 * Sets the respective flag so that the next command will be skipped
-	 */
-	public void skipNext() {
-		skipNext = true;
 	}
 }

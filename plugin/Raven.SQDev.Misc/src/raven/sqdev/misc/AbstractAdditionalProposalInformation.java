@@ -8,7 +8,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
 import raven.sqdev.interfaces.IAdditionalProposalInformation;
 import raven.sqdev.interfaces.IProposalInformationCategory;
 
@@ -91,10 +90,10 @@ public abstract class AbstractAdditionalProposalInformation
 			// create the parent Control for the categories
 			ScrolledComposite scroller = new ScrolledComposite(parent,
 					SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-			
+			//TODO: removing these styles solves the sizing problem (GTK 3) but also removes the ScrollBars completely
 			scroller.setAlwaysShowScrollBars(true);
 			
-			Composite comp = new Composite(scroller, SWT.NULL);
+			Composite comp = new Composite(scroller, SWT.NONE);
 			
 			// set GridLayout as the default Layout
 			comp.setLayout(new GridLayout());
@@ -161,6 +160,5 @@ public abstract class AbstractAdditionalProposalInformation
 	 */
 	protected abstract ArrayList<IProposalInformationCategory> computeCategories(
 			ArrayList<IProposalInformationCategory> categories);
-	
 	
 }

@@ -28,7 +28,6 @@ import raven.sqdev.interfaces.IMarkerSupport;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.util.FileUtil;
 import raven.sqdev.util.StringUtils;
-import raven.sqdev.util.Util;
 
 public class SQFParserTest {
 	
@@ -75,7 +74,49 @@ public class SQFParserTest {
 	}
 	
 	@Test
-	public void OurAltisScriptTest() throws SQDevException {
+	public void speedTest() throws InterruptedException {
+		int lines = 100;
+		
+		StringBuilder builder = new StringBuilder("{[");
+		for (int i = 0; i < lines; i++) {
+			builder.append("{hint \"" + i + "\";},");
+		}
+		builder.setLength(builder.length() - 1);
+		builder.append("]}");
+		String input = builder.toString();
+		
+		double avgTime = 0;
+		
+		int loops = 50;
+		
+		SQF_TestEditor editor = new SQF_TestEditor(binaryCommands,
+				unaryCommands, nularCommands, new ArrayList<Macro>());
+		
+		for (int i = 0; i < loops; i++) {
+			long time = Calendar.getInstance().getTimeInMillis();
+			
+			Object[] result = parseInput(input, editor.getMacroNames(), false,
+					editor);
+			
+			validateParseTree((ParseTree) result[0],
+					(BufferedTokenStream) result[1], editor);
+			
+			time = Calendar.getInstance().getTimeInMillis() - time;
+			
+			System.out.println(
+					"Speed test: " + time + "ms -- " + (time / lines) + "ms/l");
+			
+			avgTime += (time / (double)loops);
+		}
+		
+		System.out.println("\nAvg. time: " + avgTime + "ms -- " + (avgTime / lines) + "ms/l\n\n");
+		
+		Assert.assertTrue("Time exceeds limit! (" + avgTime + " instead of max "
+				+ (0.5 * lines), avgTime < (0.5 * lines));
+	}
+	
+	@Test
+	public void ourAltisScriptTest() throws SQDevException {
 		String scriptsPath = "/home/robert/Documents/GitHub/OurAltis/OurAltis_Mission.Altis/scripts";
 		
 		List<Macro> macros = new ArrayList<Macro>();
@@ -123,8 +164,8 @@ public class SQFParserTest {
 						false, editor);
 				
 				long timeDiff = Calendar.getInstance().getTimeInMillis() - time;
-				System.out.print(timeDiff + "ms" + " : "
-						+ (timeDiff / lines) + "ms/pl");
+				System.out.print(
+						timeDiff + "ms" + " : " + (timeDiff / lines) + "ms/pl");
 				
 				
 				time = Calendar.getInstance().getTimeInMillis();
@@ -138,8 +179,8 @@ public class SQFParserTest {
 						editor.containsMarker());
 				
 				timeDiff = Calendar.getInstance().getTimeInMillis() - time;
-				System.out.print(
-						" -- " + timeDiff + "ms" + " : " + (timeDiff / lines) + "ms/pl");
+				System.out.print(" -- " + timeDiff + "ms" + " : "
+						+ (timeDiff / lines) + "ms/pl");
 				
 				System.out.println("\t\t - " + currentScript.getAbsolutePath());
 			}

@@ -13,14 +13,10 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.ui.PlatformUI;
-
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.interfaces.IAdditionalProposalInformation;
 import raven.sqdev.interfaces.IProposalInformationCategory;
@@ -57,13 +53,18 @@ public class BasicInformationControl extends AbstractInformationControl
 	 */
 	private TabFolder folder;
 	/**
+	 * The composite used to display the information
+	 */
+	private InfoComposite infoComp;
+	/**
 	 * The additional info that should be displayed
 	 */
 	private IAdditionalProposalInformation info;
 	/**
-	 * The listener that watchs for hover events over the info popup
+	 * Indicates whether the enriched version of this InformationControl is
+	 * desired
 	 */
-	private static Listener mouseHoverListener;
+	private boolean enriched;
 	
 	/**
 	 * The compsoite uniquely used for this info popup
@@ -85,30 +86,50 @@ public class BasicInformationControl extends AbstractInformationControl
 	 *            <code>true</code> if the control should be resizable
 	 */
 	public BasicInformationControl(Shell parentShell) {
+		this(parentShell, false);
+	}
+	
+	/**
+	 * Creates a basic information control with the given shell as parent.
+	 *
+	 * @param parentShell
+	 *            the parent of this control's shell
+	 * @param isResizable
+	 *            <code>true</code> if the control should be resizable
+	 * @param enriched
+	 *            Indicates whether the enriched version of this
+	 *            InformationControl is desired
+	 */
+	public BasicInformationControl(Shell parentShell, boolean enriched) {
 		super(parentShell, new ToolBarManager());
+		
+		this.enriched = enriched;
 		
 		create();
 	}
 	
 	@Override
 	public boolean hasContents() {
-		return (info == null || folder != null);
+		return (info == null
+				|| ((isEnriched()) ? folder != null : infoComp != null));
 	}
 	
 	@Override
 	protected void createContent(Composite parent) {
-		InfoComposite comp = new InfoComposite(parent, SWT.NONE);
-		comp.setBackground(parent.getBackground());
-		comp.setForeground(parent.getForeground());
+		infoComp = new InfoComposite(parent, SWT.NONE);
+		infoComp.setBackground(parent.getBackground());
+		infoComp.setForeground(parent.getForeground());
 		
 		parent.setLayout(new FillLayout());
-		comp.setLayout(new FillLayout());
+		infoComp.setLayout(new FillLayout());
 		
-		folder = new TabFolder(comp, SWT.TOP);
-		
-		// inherit color scheme
-		folder.setForeground(comp.getForeground());
-		folder.setBackground(comp.getBackground());
+		if (isEnriched()) {
+			folder = new TabFolder(infoComp, SWT.TOP);
+			
+			// inherit color scheme
+			folder.setForeground(infoComp.getForeground());
+			folder.setBackground(infoComp.getBackground());
+		}
 	}
 	
 	/**
@@ -143,7 +164,34 @@ public class BasicInformationControl extends AbstractInformationControl
 	protected void setInfo(IAdditionalProposalInformation info) {
 		this.info = info;
 		
-		updateTabFolder();
+		if (isEnriched()) {
+			updateTabFolder();
+		} else {
+			showBasicInfo();
+		}
+	}
+	
+	private void showBasicInfo() {
+		String[] categoryNames = info.getCategoryNames();
+		Control[] categoryControls = info.getCategoryControls(infoComp);
+		
+		int found = -1;
+		
+		for (int i = 0; i < info.getCategoryCount(); i++) {
+			// dispose all unneeded controls
+			if (!categoryNames[i]
+					.equals(AdditionalKeywordProposalInformation.OVERVIEW)) {
+				if (i != 0) { // leave on alive as a fall-back
+					categoryControls[i].dispose();
+				}
+			} else {
+				found = i;
+			}
+		}
+		
+		if (found != 0) {
+			categoryControls[0].dispose();
+		}
 	}
 	
 	private void updateTabFolder() {
@@ -161,7 +209,7 @@ public class BasicInformationControl extends AbstractInformationControl
 			
 			@Override
 			public IInformationControl createInformationControl(Shell parent) {
-				return new BasicInformationControl(parent);
+				return new BasicInformationControl(parent, true);
 			}
 		};
 	}
@@ -174,7 +222,8 @@ public class BasicInformationControl extends AbstractInformationControl
 			if (input instanceof AdditionalKeywordProposalInformation) {
 				// add the respective toolbar action this info does provide
 				
-				Action action = ((AdditionalKeywordProposalInformation) input).getToolbarAction();
+				Action action = ((AdditionalKeywordProposalInformation) input)
+						.getToolbarAction();
 				
 				if (action != null) {
 					// add action if available
@@ -189,8 +238,8 @@ public class BasicInformationControl extends AbstractInformationControl
 				@Override
 				protected ArrayList<IProposalInformationCategory> computeCategories(
 						ArrayList<IProposalInformationCategory> categories) {
-					categories.add(
-							new StringProposalInformationCategory("General", input.toString()));
+					categories.add(new StringProposalInformationCategory(
+							"General", input.toString()));
 					
 					return categories;
 				}
@@ -200,12 +249,11 @@ public class BasicInformationControl extends AbstractInformationControl
 	
 	@Override
 	public void setVisible(boolean visible) {		
-		// add a MouseListener
-		configureMouseListener();
-		
 		super.setVisible(visible);
 		
-		configureScrolledComposite(folder);
+		if (isEnriched()) {
+			configureScrolledComposite(folder);
+		}
 	}
 	
 	/**
@@ -228,8 +276,10 @@ public class BasicInformationControl extends AbstractInformationControl
 					// adjust the scroller to the proper size
 					int border = scroller.getBorderWidth();
 					int width = scroller.getSize().x - 2 * border;
-					int height = content.computeSize(scroller.getSize().x, SWT.DEFAULT, true).y
-							+ getToolBarManager().createControl(getShell()).getSize().y;
+					int height = content.computeSize(scroller.getSize().x,
+							SWT.DEFAULT, true).y
+							+ getToolBarManager().createControl(getShell())
+									.getSize().y;
 					
 					scroller.setMinSize(width, height);
 					
@@ -240,7 +290,8 @@ public class BasicInformationControl extends AbstractInformationControl
 						// scroller's minWidth to make sure the horizontal
 						// Scrollbar does not have to appear when the vertical
 						// on does
-						scroller.setMinWidth(scroller.getMinWidth() - scrollBar.getSize().x);
+						scroller.setMinWidth(
+								scroller.getMinWidth() - scrollBar.getSize().x);
 					}
 				}
 			} else {
@@ -249,78 +300,6 @@ public class BasicInformationControl extends AbstractInformationControl
 					configureScrolledComposite((Composite) currentControl);
 				}
 			}
-		}
-	}
-	
-	/**
-	 * Configures a MouseListener that processesHoverEvents of the mouse in
-	 * order to activate the respective info popup.<br>
-	 * If it has already been configured before it will do nothing
-	 */
-	private void configureMouseListener() {
-		if (mouseHoverListener != null) {
-			// has already been configured
-			return;
-		}
-		mouseHoverListener = new Listener() {
-			
-			@Override
-			public void handleEvent(Event event) {
-				if (event.widget instanceof InfoComposite) {
-					((InfoComposite) event.widget).setFocus();
-				} else {
-					if (event.widget instanceof Composite) {
-						Composite currentComp = (Composite) event.widget;
-						
-						boolean doFocus = false;
-						
-						while (currentComp != null) {
-							Class<?> enclosing = currentComp.getClass().getEnclosingClass();
-							
-							if (enclosing != null
-									&& enclosing.equals(BasicInformationControl.class)) {
-								// the defining compsoite has been identified
-								break;
-							}
-							
-							if (currentComp instanceof Shell) {
-								if (currentComp.equals(getParentShell())) {
-									doFocus = true;
-									break;
-								}
-							}
-							
-							currentComp = currentComp.getParent();
-						}
-						
-						if (currentComp != null && !doFocus) {
-							// the given widget is part of the one for this info
-							// popup
-							// emulate mouseClick
-							event.widget.notifyListeners(SWT.MouseDown, new Event());
-							event.widget.notifyListeners(SWT.MouseUp, new Event());
-						} else {
-							if (doFocus) {
-								((Composite) event.widget).setFocus();
-							}
-						}
-					}
-				}
-			}
-		};
-		
-		PlatformUI.getWorkbench().getDisplay().addFilter(SWT.MouseMove, mouseHoverListener);
-	}
-	
-	@Override
-	public void dispose() {
-		super.dispose();
-		
-		if (mouseHoverListener != null) {
-			// remove the listener
-			PlatformUI.getWorkbench().getDisplay().removeFilter(SWT.MouseMove, mouseHoverListener);
-			
-			mouseHoverListener = null;
 		}
 	}
 	
@@ -344,5 +323,9 @@ public class BasicInformationControl extends AbstractInformationControl
 		}
 		
 		return (Shell) comp;
+	}
+	
+	public boolean isEnriched() {
+		return enriched;
 	}
 }

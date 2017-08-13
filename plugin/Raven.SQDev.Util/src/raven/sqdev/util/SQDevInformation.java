@@ -48,6 +48,11 @@ public class SQDevInformation {
 	protected String name;
 	
 	/**
+	 * Indicating whether this information is for a MP enironment
+	 */
+	protected boolean mp;
+	
+	/**
 	 * Creates a new instance of this <code>SQDevInformation</code> with default
 	 * values
 	 */
@@ -63,20 +68,24 @@ public class SQDevInformation {
 		try {
 			// gather information from the given file
 			if (file.contains(ESQDevFileAttribute.PROFILE)) {
-				this.profile = file.parseAttribute(ESQDevFileAttribute.PROFILE).getValue();
+				this.profile = file.parseAttribute(ESQDevFileAttribute.PROFILE)
+						.getValue();
 			}
 			
 			if (file.contains(ESQDevFileAttribute.TERRAIN)) {
-				this.terrain = file.parseAttribute(ESQDevFileAttribute.TERRAIN).getValue();
+				this.terrain = file.parseAttribute(ESQDevFileAttribute.TERRAIN)
+						.getValue();
 			}
 			
 			if (file.contains(ESQDevFileAttribute.AUTOEXPORT)) {
-				setAutoExport(file.parseAttribute(ESQDevFileAttribute.AUTOEXPORT).getValue());
+				setAutoExport(
+						file.parseAttribute(ESQDevFileAttribute.AUTOEXPORT)
+								.getValue());
 			}
 		} catch (IOException | SQDevFileIsInvalidException e) {
 			// report
-			SQDevInfobox info = new SQDevInfobox("Couldn't get information from the SQDevFile...",
-					e);
+			SQDevInfobox info = new SQDevInfobox(
+					"Couldn't get information from the SQDevFile...", e);
 			info.open();
 			e.printStackTrace();
 		}
@@ -96,7 +105,8 @@ public class SQDevInformation {
 	 * Gets the value for the profile
 	 */
 	public String getProfile() {
-		return (isProfileSet()) ? profile : SQDevPreferenceUtil.getDefaultProfile();
+		return (isProfileSet()) ? profile
+				: SQDevPreferenceUtil.getDefaultProfile();
 	}
 	
 	/**
@@ -122,7 +132,8 @@ public class SQDevInformation {
 	 * Gets the value of the terrain
 	 */
 	public String getTerrain() {
-		return (isTerrainSet()) ? terrain : SQDevPreferenceUtil.getDefaultTerrain();
+		return (isTerrainSet()) ? terrain
+				: SQDevPreferenceUtil.getDefaultTerrain();
 	}
 	
 	/**
@@ -146,7 +157,8 @@ public class SQDevInformation {
 	 * Gets the value of the autoExport field
 	 */
 	public boolean getAutoExport() {
-		return (isAutoExportSet()) ? autoExport : SQDevPreferenceUtil.getAutoExportDefaultEnabled();
+		return (isAutoExportSet()) ? autoExport
+				: SQDevPreferenceUtil.getAutoExportDefaultEnabled();
 	}
 	
 	/**
@@ -192,6 +204,17 @@ public class SQDevInformation {
 	 */
 	public void setName(String name) {
 		this.name = name.trim();
+	}
+	
+	/**
+	 * Checks whether this info is for an MP environment
+	 */
+	public boolean isMp() {
+		return mp;
+	}
+	
+	public void setMp(boolean mp) {
+		this.mp = mp;
 	}
 	
 }

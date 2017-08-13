@@ -20,7 +20,13 @@ import raven.sqdev.misc.StyledProposalInformationCategory;
  * @author Raven
  * 
  */
-public class AdditionalKeywordProposalInformation extends AbstractAdditionalProposalInformation {
+public class AdditionalKeywordProposalInformation
+		extends AbstractAdditionalProposalInformation {
+	
+	/**
+	 * The name of the overview category
+	 */
+	public static final String OVERVIEW = "Overview";
 	
 	/**
 	 * The <code>Keyword</code> this info will correspond to
@@ -47,8 +53,8 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 			ArrayList<IProposalInformationCategory> categories) {
 		// Description
 		if (keyword.hasDescription()) {
-			categories.add(
-					new StyledProposalInformationCategory("Description", keyword.getDescription()));
+			categories.add(new StyledProposalInformationCategory("Description",
+					keyword.getDescription()));
 		}
 		
 		if (keyword instanceof SQFElement) {
@@ -64,61 +70,67 @@ public class AdditionalKeywordProposalInformation extends AbstractAdditionalProp
 				
 				// description
 				if (command.getDescription().length() > 100) {
-					overviewContent += command.getDescription().substring(0, 99) + "...\n\n";
+					overviewContent += command.getDescription().substring(0, 99)
+							+ "...\n\n";
 				} else {
 					overviewContent += command.getDescription() + "\n\n";
 				}
 				
 				if (command.hasRawSyntax()) {
 					// syntax
-					overviewContent += SQDev.BOLD.getOpener() + "Possible syntax: "
-							+ SQDev.BOLD.getCloser()
-							+ command.getRawSytaxes().get(command.getRawSytaxes().size() - 1)
+					overviewContent += SQDev.BOLD.getOpener()
+							+ "Possible syntax: " + SQDev.BOLD.getCloser()
+							+ command.getRawSytaxes()
+									.get(command.getRawSytaxes().size() - 1)
 							+ "\n\n";
 				}
 				
 				// locality
 				if (command.isArgumentLocalityDefined()) {
-					overviewContent += SQDev.BOLD.getOpener() + "Argument locality: "
-							+ SQDev.BOLD.getCloser() + command.getArgumentLocality() + "\n\n";
+					overviewContent += SQDev.BOLD.getOpener()
+							+ "Argument locality: " + SQDev.BOLD.getCloser()
+							+ command.getArgumentLocality() + "\n\n";
 				}
 				if (command.isEffectLocalityDefined()) {
 					// remove one newLine
-					overviewContent = overviewContent.substring(0, overviewContent.length() - 1);
-					overviewContent += SQDev.BOLD.getOpener() + "Effect locality: "
-							+ SQDev.BOLD.getCloser() + command.getEffectLocality() + "\n\n";
+					overviewContent = overviewContent.substring(0,
+							overviewContent.length() - 1);
+					overviewContent += SQDev.BOLD.getOpener()
+							+ "Effect locality: " + SQDev.BOLD.getCloser()
+							+ command.getEffectLocality() + "\n\n";
 				}
 				
 				if (command.hasReturnValue()) {
 					// return value
 					overviewContent += SQDev.BOLD.getOpener() + "Return Value: "
-							+ SQDev.BOLD.getCloser() + command.getAllReturnTypes();
+							+ SQDev.BOLD.getCloser()
+							+ command.getAllReturnTypes();
 				}
 				
 				if (!overviewContent.isEmpty()) {
-					categories.add(0,
-							new StyledProposalInformationCategory("Overview", overviewContent));
+					categories.add(0, new StyledProposalInformationCategory(
+							OVERVIEW, overviewContent));
 				}
 				
 				
 				if (command.hasExample()) {
-					categories.add(new StyledProposalInformationCategory("Example",
-							command.getExamples()));
+					categories.add(new StyledProposalInformationCategory(
+							"Example", command.getExamples()));
 				}
 				
 				if (command.hasNote()) {
-					categories
-							.add(new StyledProposalInformationCategory("Note", command.getNotes()));
+					categories.add(new StyledProposalInformationCategory("Note",
+							command.getNotes()));
 				}
 				
 				if (command.hasRawSyntax()) {
-					categories.add(new StyledProposalInformationCategory("Raw Syntax",
-							command.getRawSytaxes()));
+					categories.add(new StyledProposalInformationCategory(
+							"Raw Syntax", command.getRawSytaxes()));
 				}
 				
 				if (command.hasSyntax()) {
-					categories.add(new StyledProposalInformationCategory("Syntax",
-							command.getStringSyntaxes()));
+					categories.add(new StyledProposalInformationCategory(
+							"Syntax", command.getStringSyntaxes()));
 				}
 			}
 		}

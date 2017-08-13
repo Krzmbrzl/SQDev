@@ -369,4 +369,23 @@ public class KeywordList implements ISaveable {
 		return failures;
 	}
 	
+	/**
+	 * Sorts the content of this keyword list alphabetically
+	 */
+	public void sort() {
+		for (List<Keyword> currentList : keywords) {
+			Collections.sort(currentList);
+		}
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		
+		for (List<Keyword> list : keywords) {
+			builder.append(list.toString() + "\n");
+		}
+		
+		return builder.toString();
+	}
 }

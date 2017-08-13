@@ -182,7 +182,7 @@ public class BasicCompletionProposal implements ICompletionProposal, ICompletion
 		return new IInformationControlCreator() {
 			@Override
 			public IInformationControl createInformationControl(Shell parent) {
-				return new BasicInformationControl(parent);
+				return new BasicInformationControl(parent, false);
 			}
 		};
 	}

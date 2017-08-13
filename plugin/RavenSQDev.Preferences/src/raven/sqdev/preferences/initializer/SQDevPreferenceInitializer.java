@@ -115,11 +115,13 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN,
 				false);
 		
-		// set start and end command for keyword update
-		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_STARTCOMMAND,
-				"abs");
-		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_ENDCOMMAND,
-				"worldToScreen");
+		// set default API adress
+		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_API_ADRESS,
+				"https://community.bistudio.com/wikidata/api.php");
+		
+		// set default API main page
+		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_API_MAINPAGE,
+				"Category:Scripting_Commands_Arma_3");
 		
 		// set path to the RPT logs
 		store.setDefault(
