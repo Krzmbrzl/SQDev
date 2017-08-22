@@ -195,8 +195,6 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 					// sort keywords
 					list.sort();
 					
-					System.out.println(commandList);
-					
 					// save the keywords
 					monitor.done();
 					monitor.beginTask("Storing keywords...",

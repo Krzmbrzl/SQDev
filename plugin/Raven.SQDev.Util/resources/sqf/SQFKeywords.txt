@@ -957,7 +957,7 @@
 	<Note>
 	</Note>
 	<ReturnValue>
-		Array</ReturnValue>
+		Array/Nothing</ReturnValue>
 
 </NextListItem>
 
@@ -1023,7 +1023,7 @@
 		activateAddons Array
 	</Syntax>
 	<RawSyntax>
-		activateAddons [addon1,...]
+		activateAddons [addon1,]
 	</RawSyntax>
 	<Example>
 		$Code$activateAddons ["BISOFP"];$/Code$
@@ -1616,6 +1616,8 @@
 	</Keyword>
 	<Description>
 		Add an object to the editor and assign arguments. Create script is,called with _new equal to true. Returns the ID of the new EditorObject.,Subtype class is optional.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/addEditorObject
@@ -1624,7 +1626,7 @@
 		Control addEditorObject Array
 	</Syntax>
 	<RawSyntax>
-		map addEditorObject [type,[name1,value1,...],subtype class]
+		map addEditorObject [type,[name1,value1,],subtype class]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -1746,8 +1748,6 @@
 		https://community.bistudio.com/wiki/addGroupIcon
 	</WikiPage>
 	<Syntax>
-		Group addGroupIcon addGroupIcon
-	</NextSyntax>
 		Group addGroupIcon Array
 	</Syntax>
 	<RawSyntax>
@@ -1762,7 +1762,7 @@
 	<Note>
 	</Note>
 	<ReturnValue>
-		Number - Number</ReturnValue>
+		Number</ReturnValue>
 
 </NextListItem>
 
@@ -1892,7 +1892,7 @@
 		addItemPool Array
 	</Syntax>
 	<RawSyntax>
-		addItemPool ["itemName", count]
+		addItemPool [itemName, count]
 	</RawSyntax>
 	<Example>
 		$Code$addItemPool ["ItemGPS", 5];$/Code$
@@ -2347,6 +2347,8 @@
 	</Keyword>
 	<Description>
 		Creates a new menu item. Menu can be "file" or "view",index is index,as returned from addMenu command. priority is optional and determines,where in the menu the item will reside (higher priority items first).
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/addMenuItem
@@ -2374,6 +2376,8 @@
 	</Keyword>
 	<Description>
 		Adds a new menu button. Priority is optional.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/addMenu
@@ -2470,10 +2474,10 @@
 		https://community.bistudio.com/wiki/addOwnedMine
 	</WikiPage>
 	<Syntax>
-		unti addOwnedMine Object
+		Object addOwnedMine Object
 	</Syntax>
 	<RawSyntax>
-		unti addOwnedMine mine
+		Unit addOwnedMine mine
 	</RawSyntax>
 	<Example>
 		$Code$player addOwnedMine SuperMine;$/Code$
@@ -2687,7 +2691,7 @@
 		Team_Member addResources Array
 	</Syntax>
 	<RawSyntax>
-		teamMember addResources [resource1, resource2,...]
+		teamMember addResources [resource1, resource2,]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -4034,7 +4038,7 @@
 		allSimpleObjects Array
 	</Syntax>
 	<RawSyntax>
-		allSimpleObjects [className1, className2,...classNameN]
+		allSimpleObjects [className1, className2,classNameN]
 	</RawSyntax>
 	<Example>
 		$Code$allSimpleObjects ["Box_NATO_Equip_F", "Land_CampingChair_V2_F"];$/Code$
@@ -4234,6 +4238,8 @@
 	</Keyword>
 	<Description>
 		Allow/dissallow 3D mode.,
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/allow3DMode
@@ -4397,6 +4403,8 @@
 	</Keyword>
 	<Description>
 		Allow/dissallow file ops (load/save etc).
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/allowFileOperations
@@ -4568,6 +4576,8 @@
 		undefined / undefined
 	</Locality>
 	<Note>
+		(August 18, 2017)
+	The pylon indices start at 1 and not at 0.
 	</Note>
 	<ReturnValue>
 		Number/Boolean</ReturnValue>
@@ -4659,7 +4669,7 @@
 		Object animateBay Array
 	</Syntax>
 	<RawSyntax>
-		vehicle animateBay [pylon name/index, anim phase]
+		vehicle animateBay [pylon nameindex, anim phase]
 	</RawSyntax>
 	<Example>
 		$Code$( vehicle player ) animateBay ["pylonLeft1", 0.5];$/Code$
@@ -4733,7 +4743,7 @@
 		Object animatePylon Array
 	</Syntax>
 	<RawSyntax>
-		vehicle animatePylon [pylon name/index, anim phase]
+		vehicle animatePylon [pylon nameindex, anim phase]
 	</RawSyntax>
 	<Example>
 		$Code$( vehicle player ) animatePylon [1, 0.5];$/Code$
@@ -9545,6 +9555,8 @@
 	</Keyword>
 	<Description>
 		Clear the current overlay.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/clearOverlay
@@ -9785,6 +9797,8 @@
 	</Keyword>
 	<Description>
 		Closes the current overlay without committing.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/closeOverlay
@@ -9812,6 +9826,8 @@
 	</Keyword>
 	<Description>
 		Collapse the object tree.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/collapseObjectTree
@@ -10423,6 +10439,8 @@
 	</Keyword>
 	<Description>
 		Commit the current overlay.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/commitOverlay
@@ -10563,7 +10581,7 @@
 		composeText Array
 	</Syntax>
 	<RawSyntax>
-		composeText [text1, text2,...]
+		composeText [text1, text2,]
 	</RawSyntax>
 	<Example>
 		$Code$_txt = composeText ["First line", image "data\isniper.paa", lineBreak, "Second line"];$/Code$
@@ -12067,6 +12085,8 @@
 	</Keyword>
 	<Description>
 		Creates a previously added menu.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/createMenu
@@ -12426,7 +12446,7 @@
 		Team_Member createTask Array
 	</Syntax>
 	<RawSyntax>
-		teamMember createTask [[type, parentTask], priority, name1, value1...nameN, valueN]
+		teamMember createTask [[type, parentTask], priority, name1, value1nameN, valueN]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -13594,7 +13614,8 @@
 		ctrlClassName
 	</Keyword>
 	<Description>
-		Returns the class name of a control as it defined in config.
+		Returns the class name of a Control as it is defined in config. If you need config class of a game created Display, it is stored on display itself:
+	$Code$_className = findDisplay 12 getVariable ["BIS_fnc_initDisplay_configClass", ""]; // "RscDiary"$/Code$
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/ctrlClassName
@@ -17991,6 +18012,8 @@
 	</Keyword>
 	<Description>
 		Delete the editor object. Requires all editor object links to be removed prior.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/deleteEditorObject
@@ -18237,7 +18260,7 @@
 		Team_Member deleteResources Array
 	</Syntax>
 	<RawSyntax>
-		teamMember deleteResources [resource1, resource2,...]
+		teamMember deleteResources [resource1, resource2,]
 	</RawSyntax>
 	<Example>
 		$Code$teamMember _agent deleteResources ["Legs"];$/Code$
@@ -18833,7 +18856,7 @@
 		https://community.bistudio.com/wiki/diag_enabled
 	</WikiPage>
 	<Syntax>
-		diag_enabled diag_mode
+		diag_enabled String
 	</Syntax>
 	<RawSyntax>
 		diag_enabled diag_mode
@@ -18863,7 +18886,7 @@
 		https://community.bistudio.com/wiki/diag_enable
 	</WikiPage>
 	<Syntax>
-		diag_mode diag_enable state
+		String diag_enable Boolean
 	</Syntax>
 	<RawSyntax>
 		diag_mode diag_enable state
@@ -18980,10 +19003,10 @@
 		https://community.bistudio.com/wiki/diag_list
 	</WikiPage>
 	<Syntax>
-		diag_list toggle/drawMode
+		diag_list String
 	</Syntax>
 	<RawSyntax>
-		diag_list toggle/drawMode
+		diag_list name
 	</RawSyntax>
 	<Example>
 		$Code$diag_list "toggle";$/Code$
@@ -19093,7 +19116,7 @@
 		diag_mergeConfigFile Array
 	</Syntax>
 	<RawSyntax>
-		diag_mergeConfigFile ["PathToConfigOnDrive"]
+		diag_mergeConfigFile [PathToConfigOnDrive]
 	</RawSyntax>
 	<Example>
 		$Code$diag_mergeConfigFile ["O:\Arma3\A3\Stuff_F\config.cpp"]$/Code$
@@ -19119,10 +19142,10 @@
 		https://community.bistudio.com/wiki/diag_recordTurretLimits
 	</WikiPage>
 	<Syntax>
-		diag_recordTurretLimits true/false
+		diag_recordTurretLimits Boolean
 	</Syntax>
 	<RawSyntax>
-		diag_recordTurretLimits true/false
+		diag_recordTurretLimits section
 	</RawSyntax>
 	<Example>
 		$Code$diag_recordTurretLimits true;$/Code$
@@ -19214,7 +19237,7 @@
 		https://community.bistudio.com/wiki/diag_toggle
 	</WikiPage>
 	<Syntax>
-		diag_toggle diag_mode
+		diag_toggle String
 	</Syntax>
 	<RawSyntax>
 		diag_toggle diag_mode
@@ -19787,7 +19810,8 @@
 		disableDebriefingStats
 	</Keyword>
 	<Description>
-		Disable debrifing score table.
+		Disable debriefing score table.
+	This command is broken.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/disableDebriefingStats
@@ -20162,7 +20186,7 @@
 		displayRemoveAllEventHandlers
 	</Keyword>
 	<Description>
-		Remove all even handlers from the given display.
+		Remove all event handlers from the given display.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/displayRemoveAllEventHandlers
@@ -21229,6 +21253,8 @@
 	</Keyword>
 	<Description>
 		The editor will draw a line between the two specified editor objects. Line type can be LINE or ARROW.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/drawLink
@@ -21721,6 +21747,8 @@
 	</Keyword>
 	<Description>
 		Show the edit object dialog for the given object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/editObject
@@ -21748,6 +21776,8 @@
 	</Keyword>
 	<Description>
 		Sets given event handler of given editor.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/editorSetEventHandler
@@ -22980,13 +23010,9 @@
 	</WikiPage>
 	<Syntax>
 		Object enableVehicleSensor Array
-	</NextSyntax>
-		vehicleClass enableVehicleSensor Array
 	</Syntax>
 	<RawSyntax>
 		vehicle enableVehicleSensor [componentName, state]
-	</NextRawSyntax>
-		vehicleClass enableVehicleSensor [componentClassName, state]
 	</RawSyntax>
 	<Example>
 		$Code$vehicle player enableVehicleSensor ["PassiveRadarSensorComponent",false]; // disables passive radar$/Code$
@@ -22997,7 +23023,7 @@
 	<Note>
 	</Note>
 	<ReturnValue>
-		Nothing - Nothing</ReturnValue>
+		Nothing</ReturnValue>
 
 </NextListItem>
 
@@ -23423,6 +23449,8 @@
 	</Keyword>
 	<Description>
 		Return argument in mission editor of a given object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/evalObjectArgument
@@ -23560,6 +23588,8 @@
 	</Keyword>
 	<Description>
 		Execute an editor script for the specified object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/execEditorScript
@@ -24356,6 +24386,44 @@
 	</NextNote>
 		(June 25, 2017)
 	I have tested the behavior of this command and I found out that it [ findDisplay ] appears to only return the display AFTER any onLoad event handler of that display is done. So, using findDisplay inside an onLoad event handler is useless.
+	</NextNote>
+		(August 14, 2017)
+	There are some specific cases, where findDisplay will not be able to find an existing display. Here's the cases and how to act on them:
+	$Code$//Your display has IDD= -1.
+	class RscDisplayNew
+	{
+	idd=-1;
+	scriptName = "RscDisplayNew";
+	...
+	};$/Code$
+	$Code$//Your display doesn't have IDD
+	class RscDisplayNew
+	{
+	scriptName = "RscDisplayNew";
+	...
+	};$/Code$
+	$Code$//Your display doesn't have scriptname with IDD = -1
+	class RscDisplayNew
+	{
+	idd=-1;
+	...
+	};$/Code$
+	$Code$//Your display doesn't have scriptname, neither IDD
+	class RscDisplayNew
+	{
+	...
+	};$/Code$
+	1.
+	You actually can find a -1 display, but this means finding a display with this IDD might be a problem, when there are a few displays marked as -1.
+	So as you can see, theres an entry called scriptName. You can get a reference to this display by using uiNamespace :
+	$Code$(uiNamespace getVariable "RscDisplayNew")$/Code$
+	NOTE : Variables are overwritten with a reference of the last declared display under the same scriptName entry. Take a look at case 3 for solution.
+	2.
+	Displays without IDD's can actually exist. They can be manipulated only in a way described in the first case using uiNamespace.
+	3.
+	You can really have this display seeking it manually in a allDisplays return. This is experimental, but working option.
+	4.
+	You will have a problem finding this display, since this display doesn't exist even in allDisplays (?) return. Behaviour unknown.
 	</Note>
 	<ReturnValue>
 		Display</ReturnValue>
@@ -24367,6 +24435,8 @@
 	</Keyword>
 	<Description>
 		Return object that matches the provided reference.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/findEditorObject
@@ -25834,7 +25904,7 @@
 		format Array
 	</Syntax>
 	<RawSyntax>
-		format [formatString, var1, var2...]
+		format [formatString, var1, var2]
 	</RawSyntax>
 	<Example>
 		$Code$format ["Player:%1, player's side:%2", player, side player ];
@@ -25877,7 +25947,7 @@
 		formatText Array
 	</Syntax>
 	<RawSyntax>
-		formatText [format, arg1, arg2,...]
+		formatText [format, arg1, arg2,]
 	</RawSyntax>
 	<Example>
 		$Code$_text = formatText ["Image: %1", image "data\isniper.paa"];$/Code$
@@ -26959,7 +27029,7 @@
 		getArtilleryAmmo Array
 	</Syntax>
 	<RawSyntax>
-		getArtilleryAmmo [unit1, unit2, unit3....]
+		getArtilleryAmmo [unit1, unit2, unit3]
 	</RawSyntax>
 	<Example>
 		$Code$if ("8Rnd_82mm_Mo_Flare_white" in getArtilleryAmmo [
@@ -27554,7 +27624,7 @@
 		getCursorObjectParams
 	</Keyword>
 	<Description>
-		Returns the object under cursor, named selection pointed at as well as distance to the object.
+		Returns object and named selections under cursor and distance to object's surface (to the point cursor points at). If object surface is further away then 50 meters, selections are always an empty array and distance is 1e10 (10^10).
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getCursorObjectParams
@@ -27800,6 +27870,8 @@
 	</Keyword>
 	<Description>
 		Fetches a reference to the mission editor camera.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getEditorCamera
@@ -27827,6 +27899,8 @@
 	</Keyword>
 	<Description>
 		Returns the current mode of the editor.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getEditorMode
@@ -27854,6 +27928,8 @@
 	</Keyword>
 	<Description>
 		Returns the editor object scope of the specified editor object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getEditorObjectScope
@@ -28773,6 +28849,8 @@
 	</Keyword>
 	<Description>
 		Return name of object argument in mission editor.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getObjectArgument
@@ -28804,6 +28882,8 @@
 	</Keyword>
 	<Description>
 		Return a list of all the children of the specified object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getObjectChildren
@@ -28892,6 +28972,8 @@
 	</Keyword>
 	<Description>
 		Return the proxy object associated with the given editor object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getObjectProxy
@@ -29896,10 +29978,10 @@
 		https://community.bistudio.com/wiki/getStamina
 	</WikiPage>
 	<Syntax>
-		getStamina unit;
+		getStamina Object
 	</Syntax>
 	<RawSyntax>
-		getStamina unit;
+		getStamina unit
 	</RawSyntax>
 	<Example>
 		$Code$getStamina player;$/Code$
@@ -31674,10 +31756,10 @@
 		https://community.bistudio.com/wiki/hideSelection
 	</WikiPage>
 	<Syntax>
-		object hideSelection Array;
+		object hideSelection Array
 	</Syntax>
 	<RawSyntax>
-		object hideSelection [selection, hidden];
+		object hideSelection [selection, hidden]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -31745,7 +31827,7 @@
 	<RawSyntax>
 		hintC content
 	</NextRawSyntax>
-		title hintC [content1, content2,...]
+		title hintC [content1, content2,]
 	</NextRawSyntax>
 		title hintC content
 	</NextRawSyntax>
@@ -32171,6 +32253,8 @@
 	</Keyword>
 	<Description>
 		Imports all groups into the RTE.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/importAllGroups
@@ -32778,6 +32862,8 @@
 	</Keyword>
 	<Description>
 		Insert an object to the editor and assign arguments. Create script is,not called. Returns the ID of the new EditorObject. Subtype class is,optional.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/insertEditorObject
@@ -32786,7 +32872,7 @@
 		Control insertEditorObject Array
 	</Syntax>
 	<RawSyntax>
-		map insertEditorObject [type,value,[name1,value1,...],subtype class]
+		map insertEditorObject [type,value,[name1,value1,],subtype class]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -34540,6 +34626,8 @@
 	</Keyword>
 	<Description>
 		Returns true if the mission editor is operating in real time mode.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/isRealTime
@@ -34684,6 +34772,8 @@
 	</Keyword>
 	<Description>
 		Returns true if the editor is set to draw 3D icons.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/isShowing3DIcons
@@ -34772,10 +34862,10 @@
 		https://community.bistudio.com/wiki/isStaminaEnabled
 	</WikiPage>
 	<Syntax>
-		isStaminaEnabled unit;
+		isStaminaEnabled Object
 	</Syntax>
 	<RawSyntax>
-		isStaminaEnabled unit;
+		isStaminaEnabled unit
 	</RawSyntax>
 	<Example>
 		$Code$isStaminaEnabled player;$/Code$
@@ -35163,13 +35253,9 @@
 	</WikiPage>
 	<Syntax>
 		Object isVehicleSensorEnabled String
-	</NextSyntax>
-		vehicleClass isVehicleSensorEnabled componentClassName
 	</Syntax>
 	<RawSyntax>
 		vehicle isVehicleSensorEnabled componentName
-	</NextRawSyntax>
-		vehicleClass isVehicleSensorEnabled componentClassName
 	</RawSyntax>
 	<Example>
 		$Code$vehicle player isVehicleSensorEnabled "PassiveRadarSensorComponent"; // [ ["PassiveRadarSensorComponent",true] ]$/Code$
@@ -35180,7 +35266,7 @@
 	<Note>
 	</Note>
 	<ReturnValue>
-		Array - Array</ReturnValue>
+		Array</ReturnValue>
 
 </NextListItem>
 
@@ -35641,7 +35727,7 @@
 		Object kbAddTopic Array
 	</Syntax>
 	<RawSyntax>
-		person kbAddTopic [TopicName, filename.bikb, filename.fsm, event_handler]
+		person kbAddTopic [TopicName, filenamebikb, filenamefsm, event_handler]
 	</RawSyntax>
 	<Example>
 		$Code$player kbAddtopic["myTest", "myTest.bikb", "myTest.fsm", {call compile preprocessFileLineNumbers "myTest.sqf"}];$/Code$
@@ -35699,7 +35785,7 @@
 		Object kbReact Array
 	</Syntax>
 	<RawSyntax>
-		person kbReact [receiver,topic,sentenceID,[argumentName,argumentValue,argumentText,argumentSpeech],...]
+		person kbReact [receiver,topic,sentenceID,[argumentName,argumentValue,argumentText,argumentSpeech],]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -35753,7 +35839,7 @@
 		Object kbTell Array
 	</Syntax>
 	<RawSyntax>
-		person kbTell [receiver, TopicName, SentenceClass, [argumentName, argumentValue, argumentText, argumentSpeech],...,forceRadio]
+		person kbTell [receiver, TopicName, SentenceClass, [argumentName, argumentValue, argumentText, argumentSpeech],,forceRadio]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -38242,6 +38328,8 @@
 	</Keyword>
 	<Description>
 		Return the list of all objects of given type.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/listObjects
@@ -38370,7 +38458,7 @@
 		lnbAddArray Array
 	</Syntax>
 	<RawSyntax>
-		lnbAddArray [idc, [[[text,text],[value,..],[data,..]],[[text,text],[value,..],[data,..]],]]
+		lnbAddArray [idc, [[[text,text],[value,],[data,]],[[text,text],[value,],[data,]],]]
 	</RawSyntax>
 	<Example>
 		$Code$lnbAddArray [102,[[["#1"],[1],["#1"]]]];$/Code$
@@ -38435,9 +38523,9 @@
 		Control lnbAddRow Array
 	</Syntax>
 	<RawSyntax>
-		lnbAddRow [IDC,[ String, String... ]]
+		lnbAddRow [IDC,[ String, String ]]
 	</NextRawSyntax>
-		_ctrl lnbAddRow [ String, String... ]
+		_ctrl lnbAddRow [ String, String ]
 	</RawSyntax>
 	<Example>
 		$Code$lnbAddRow [1,["COL1","COL2"]];$/Code$
@@ -39956,6 +40044,8 @@
 	</Keyword>
 	<Description>
 		Creates the load overlay dialog for the specified type of overlay.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/loadOverlay
@@ -40707,6 +40797,8 @@
 	</Keyword>
 	<Description>
 		Center the map on,and point the camera at,the position.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/lookAtPos
@@ -43322,6 +43414,8 @@
 	</Keyword>
 	<Description>
 		Shifts an editor object to the end of the objects array. This means,that the object will be drawn last (after all other objects).
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/moveObjectToEnd
@@ -43560,6 +43654,8 @@
 	</Keyword>
 	<Description>
 		Returns the total number of user-added menu items belonging to the given menu.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/nMenuItems
@@ -44017,7 +44113,7 @@
 		nearestLocations Array
 	</Syntax>
 	<RawSyntax>
-		nearestLocations [position, [locationType,...], radius, sortPosition]
+		nearestLocations [position, [locationType,], radius, sortPosition]
 	</RawSyntax>
 	<Example>
 		$Code$_nearbyLocations = nearestLocations [ position player, ["RockArea","VegetationFir"], 100];$/Code$
@@ -44358,6 +44454,8 @@
 	</Keyword>
 	<Description>
 		Creates the new overlay dialog for the specified type of overlay.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/newOverlay
@@ -44385,6 +44483,8 @@
 	</Keyword>
 	<Description>
 		Returns the next available menu item index.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/nextMenuItemIndex
@@ -44856,7 +44956,8 @@
 	</Keyword>
 	<Description>
 		Defines an action performed when the user double clicks on the map. Command receives:,_pos array position,_units array selected units,_shift,_alt bool key state
-	NOTE: This is old mission editor command.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/onDoubleClick
@@ -45344,6 +45445,8 @@
 	</Keyword>
 	<Description>
 		Defines an action performed when the user right clicks on the map and,selects New Object. Set to empty for default behavior. Command receives:,_pos array position,
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/onShowNewObject
@@ -45837,9 +45940,9 @@
 		Anything params Array
 	</Syntax>
 	<RawSyntax>
-		params [element1, element2,...elementN]
+		params [element1, element2,elementN]
 	</NextRawSyntax>
-		argument params [element1, element2,...elementN]
+		argument params [element1, element2,elementN]
 	</RawSyntax>
 	<Example>
 		$Code$[1, 2, 3] call {
@@ -47036,8 +47139,7 @@
 		playersNumber
 	</Keyword>
 	<Description>
-		Return count of players playing on given side. Works only in multiplayer, in singleplayer always returns 0.
-	Returns number of playable slots taken by a side, not actual number of players of the side present in the mission. As a result, players who claimed a slot in the lobby but didn't start the mission yet are counted in as well.
+		Returns count of occupied role selection slots for given side. Players who claimed a slot in the lobby but didn't start the mission are counted as well. If disabledAI = 0; in description.ext or Enable AI option is checked in 3DEN, AI bots will be treated as valid players and will be counted too. Multiplayer only, in singleplayer always returns 0.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/playersNumber
@@ -47345,7 +47447,7 @@
 	</NextRawSyntax>
 		effect ppEffectCommit commit
 	</NextRawSyntax>
-		[effect1,...] ppEffectCommit commit
+		[effect1,] ppEffectCommit commit
 	</RawSyntax>
 	<Example>
 		$Code$"colorCorrection" ppEffectCommit 3;$/Code$
@@ -47386,7 +47488,7 @@
 	<RawSyntax>
 		ppEffectCreate [name, priority]
 	</NextRawSyntax>
-		ppEffectCreate [[name1, priority1],...]
+		ppEffectCreate [[name1, priority1],]
 	</RawSyntax>
 	<Example>
 		$Code$_ppGrain = ppEffectCreate ["filmGrain", 2005];$/Code$
@@ -47420,7 +47522,7 @@
 	<RawSyntax>
 		ppEffectDestroy effect
 	</NextRawSyntax>
-		ppEffectDestroy [effect1,...]
+		ppEffectDestroy [effect1,]
 	</RawSyntax>
 	<Example>
 		$Code$ppEffectDestroy _hndl;$/Code$
@@ -47458,7 +47560,7 @@
 	</NextRawSyntax>
 		effect ppEffectEnable enable
 	</NextRawSyntax>
-		[effect1,...] ppEffectEnable enable
+		[effect1,] ppEffectEnable enable
 	</RawSyntax>
 	<Example>
 		$Code$"colorCorrections" ppEffectEnable true ;$/Code$
@@ -49528,10 +49630,10 @@
 		https://community.bistudio.com/wiki/remoteExec
 	</WikiPage>
 	<Syntax>
-		Anything remoteExec Array;
+		Anything remoteExec Array
 	</Syntax>
 	<RawSyntax>
-		params remoteExec [functionName, targets, JIP];
+		params remoteExec [functionName, targets, JIP]
 	</RawSyntax>
 	<Example>
 		$Code$// runs hint "hello" on each connected client
@@ -50414,6 +50516,8 @@
 	</Keyword>
 	<Description>
 		Removes an icon for an editor object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/removeDrawIcon
@@ -50441,6 +50545,8 @@
 	</Keyword>
 	<Description>
 		Remove all drawn links for the given editor object for the given editor,object type. Pass an empty string as param type to remove all draw,links for an object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/removeDrawLinks
@@ -50969,6 +51075,8 @@
 	</Keyword>
 	<Description>
 		Removes a previously added menu item.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/removeMenuItem
@@ -51296,7 +51404,7 @@
 		Object removeWeaponAttachmentCargo Array
 	</Syntax>
 	<RawSyntax>
-		vehicle removeWeaponAttachmentCargo [weaponID,creatorID,"attachment"]
+		vehicle removeWeaponAttachmentCargo [weaponID,creatorID,attachment]
 	</RawSyntax>
 	<Example>
 		$Code$rearmTruckOne removeWeaponAttachmentCargo[weaponID,creatorID,"attachment"]$/Code$
@@ -51698,6 +51806,8 @@
 	</Keyword>
 	<Description>
 		Restarts the mission editor camera (if it was deleted by a script,for example).
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/restartEditorCamera
@@ -52185,10 +52295,10 @@
 		https://community.bistudio.com/wiki/ropeDetach
 	</WikiPage>
 	<Syntax>
-		Object ropeDetach rope;
+		Object ropeDetach Object
 	</Syntax>
 	<RawSyntax>
-		vehicle ropeDetach rope;
+		vehicle ropeDetach rope
 	</RawSyntax>
 	<Example>
 		$Code$vehicle player ropeDetach myRope;$/Code$
@@ -52769,6 +52879,8 @@
 	</Keyword>
 	<Description>
 		Save the current overlay.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/saveOverlay
@@ -53589,6 +53701,8 @@
 	</Keyword>
 	<Description>
 		Select an editor object. Does not un-select previously selected objects.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/selectEditorObject
@@ -54002,6 +54116,8 @@
 	</Keyword>
 	<Description>
 		Returns a list of currently selected editor objects.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/selectedEditorObjects
@@ -54036,10 +54152,10 @@
 		https://community.bistudio.com/wiki/selectionNames
 	</WikiPage>
 	<Syntax>
-		selectionNames object;
+		selectionNames Object
 	</Syntax>
 	<RawSyntax>
-		selectionNames object;
+		selectionNames object
 	</RawSyntax>
 	<Example>
 		$Code$_house= "Land_i_House_Small_02_V3_F" createVehicle _pos;
@@ -54262,25 +54378,26 @@
 		sendSimpleCommand
 	</Keyword>
 	<Description>
-		Sends a simple command to the vehicle's driver / gunner.
+		Sends a simple command to the vehicle's driver / gunner. The player executing command should be in the vehicle.
 	Gunner commands
-	FIRE
-	CEASE FIRE
-	MANUAL FIRE
-	CANCEL MANUAL FIRE
-	KEY FIRE
+	"FIRE"
+	"CEASE FIRE"
+	"MANUAL FIRE"
+	"CANCEL MANUAL FIRE"
+	"KEY FIRE"
 	Driver commands
-	FORWARD
-	STOP
-	BACK
-	FAST
-	KEY FAST
-	SLOW
-	KEY SLOW
-	LEFT
-	RIGHT
-	KEY UP
-	KEY DOWN
+	"FORWARD" - move forward
+	"FAST" - move forward, fast
+	"SLOW" - move forward, slow
+	"STOP" - stop moving forward or backward
+	"BACK" - move backward
+	"LEFT" - turn left, while moving or not
+	"RIGHT" - turn right, while moving or not
+	"STOPTURNING" - cancel turning (special case, normally would be called by the engine when LEFT or RIGHT turn key is released by the player) ( since Arma 3 v1.77 )
+	"KEY UP"
+	"KEY DOWN"
+	"KEY FAST"
+	"KEY SLOW"
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/sendSimpleCommand
@@ -54349,7 +54466,7 @@
 		Team_Member sendTask Array
 	</Syntax>
 	<RawSyntax>
-		sender sendTask [receiver,[type] or [type,parentTask],priority,name1,value1,name2,value2,...]
+		sender sendTask [receiver,[type] or [type,parentTask],priority,name1,value1,name2,value2,]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -54641,7 +54758,7 @@
 		set3DENAttributes Array
 	</Syntax>
 	<RawSyntax>
-		set3DENAttributes [[ entities1, class1, value1 ],..., [ entitiesN, classN, valueN ]]
+		set3DENAttributes [[ entities1, class1, value1 ],, [ entitiesN, classN, valueN ]]
 	</RawSyntax>
 	<Example>
 		$Code$set3DENAttributes [[ get3DENSelected "Object","ControlMP", true ]];
@@ -54852,7 +54969,7 @@
 		set3DENMissionAttributes Array
 	</Syntax>
 	<RawSyntax>
-		set3DENMissionAttributes [[ section, class1, value1 ],..., [ section, classN, valueN ]]
+		set3DENMissionAttributes [[ section, class1, value1 ],, [ section, classN, valueN ]]
 	</RawSyntax>
 	<Example>
 		$Code$set3DENMissionAttributes [["Multiplayer","respawn",3],["Multiplayer","respawnDelay",10]];
@@ -55090,7 +55207,7 @@
 		Object setAmmoOnPylon Array
 	</Syntax>
 	<RawSyntax>
-		vehicle setAmmoOnPylon [pylon name/index, ammo count]
+		vehicle setAmmoOnPylon [pylon nameindex, ammo count]
 	</RawSyntax>
 	<Example>
 		$Code$( vehicle player ) setAmmoOnPylon [1, 12];$/Code$
@@ -55099,6 +55216,8 @@
 		undefined / undefined
 	</Locality>
 	<Note>
+		(August 18, 2017)
+	The pylon indices start at 1 and not at 0.
 	</Note>
 	<ReturnValue>
 		Nothing</ReturnValue>
@@ -55321,7 +55440,7 @@
 		String/Structured_Text setAttributes Array
 	</Syntax>
 	<RawSyntax>
-		text setAttributes [name1, value1, name2, value2,...]
+		text setAttributes [name1, value1, name2, value2,]
 	</RawSyntax>
 	<Example>
 		$Code$txt = img setAttributes ["image", "data\iSoldier.paa"]$/Code$
@@ -56210,6 +56329,7 @@
 	</Keyword>
 	<Description>
 		Sets debriefing text for endType defined in CfgDebriefing.
+	This command is broken. https://feedback.bistudio.com/T85682
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setDebriefingText
@@ -56458,6 +56578,8 @@
 	</Keyword>
 	<Description>
 		Set the icon to be shown in 2D editor for the specified editor object. If maintain size is false,icon will not scale depending on the scale,of the map. If maintain size is a number,the icon will maintain size,if map scale is below that number. is3D,show line and priority are,optional.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setDrawIcon
@@ -56466,7 +56588,7 @@
 		Control setDrawIcon Array
 	</Syntax>
 	<RawSyntax>
-		map setDrawIcon [object,texture,color,offset,width,height,maintain size?,angle,string identifier,shadow,is3D,draw line?,priority]
+		map setDrawIcon [object,texture,color,offset,width,height,maintain size,angle,string identifier,shadow,is3D,draw line,priority]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -56616,6 +56738,8 @@
 	</Keyword>
 	<Description>
 		Sets map mode to MAP,3D or PREVIEW.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setEditorMode
@@ -56648,6 +56772,8 @@
 	"condition" is an executable string that must evaluate to true or false. If true, the scope of the evaluated editor object will be modified. "_x" can be used in the string as reference to the ingame representation of the currently processed array member.
 	"scope" is one of "HIDE", "VIEW", "SELECT", "LINKTO", "LINKFROM", "ALLNODRAG", "ALLNOTREE", "ALLNOCOPY", "ALLNOSELECT" or "ALL".
 	"subordinatesAlso" is a boolean value. If true then subordinates in the editor will be assigned the same scope as the parent.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setEditorObjectScope
@@ -57471,7 +57597,7 @@
 		Object/Group setGroupIdGlobal Array
 	</Syntax>
 	<RawSyntax>
-		group setGroupIdGlobal [nameFormat, nameParam1,..., nameParamN]
+		group setGroupIdGlobal [nameFormat, nameParam1,, nameParamN]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -57574,7 +57700,7 @@
 		Object/Group setGroupId Array
 	</Syntax>
 	<RawSyntax>
-		group setGroupId [nameFormat, nameParam1,..., nameParamN]
+		group setGroupId [nameFormat, nameParam1,, nameParamN]
 	</RawSyntax>
 	<Example>
 		$Code$// Arma 3 :
@@ -59540,6 +59666,8 @@
 	</Keyword>
 	<Description>
 		Set object arguments in mission editor.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setObjectArguments
@@ -59548,7 +59676,7 @@
 		Control setObjectArguments Array
 	</Syntax>
 	<RawSyntax>
-		map setObjectArguments [object,[name1,value1,...]]
+		map setObjectArguments [object,[name1,value1,]]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -59624,6 +59752,8 @@
 	</Keyword>
 	<Description>
 		Set the proxy object associated with the given editor object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setObjectProxy
@@ -60126,7 +60256,7 @@
 		Object setParticleRandom Array
 	</Syntax>
 	<RawSyntax>
-		particleSource setParticleRandom [lifeTime, position, moveVelocity, rotationVelocity, size, color, randomDirectionPeriod, randomDirectionIntensity, {angle}, bounceOnSurface]
+		particleSource setParticleRandom [lifeTime, position, moveVelocity, rotationVelocity, size, color, randomDirectionPeriod, randomDirectionIntensity, angle, bounceOnSurface]
 	</RawSyntax>
 	<Example>
 		$Code$_PS setParticleRandom [0, [0.1, 0.1, 0.1], [0, 0, 0.5], 0, 0.1, [0, 0, 0, 0], 0, 0];$/Code$
@@ -60164,7 +60294,7 @@
 		String setPiPEffect Array
 	</Syntax>
 	<RawSyntax>
-		name setPiPEffect [effect, optionalParam1,..., optionalParamN]
+		name setPiPEffect [effect, optionalParam1,, optionalParamN]
 	</RawSyntax>
 	<Example>
 		$Code$"rendersurface" setPiPEffect [0];$/Code$
@@ -60636,10 +60766,10 @@
 		https://community.bistudio.com/wiki/setPylonLoadOut
 	</WikiPage>
 	<Syntax>
-		Object setPylonLoadOut Array;
+		Object setPylonLoadOut Array
 	</Syntax>
 	<RawSyntax>
-		vehicle setPylonLoadOut [pylon name/index, magazine name, forced, turret];
+		vehicle setPylonLoadOut [pylon nameindex, magazine name, forced, turret]
 	</RawSyntax>
 	<Example>
 		$Code$( vehicle player ) setPylonLoadOut ["pylon1", ""];$/Code$
@@ -60667,7 +60797,7 @@
 		Object setPylonsPriority Array
 	</Syntax>
 	<RawSyntax>
-		vehicle setPylonsPriority [priority pylon1, priority pylon2,...]
+		vehicle setPylonsPriority [priority pylon1, priority pylon2,]
 	</RawSyntax>
 	<Example>
 		$Code$( vehicle player ) setPylonsPriority [0,1,2,3,4,5,5,4,3,2,1,0];$/Code$
@@ -63502,6 +63632,8 @@
 	</Keyword>
 	<Description>
 		Sets whether or not the object is visible even if the tree is collapsed.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setVisibleIfTreeCollapsed
@@ -64367,6 +64499,8 @@
 	</Keyword>
 	<Description>
 		Toggle the drawing of 3D icons.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/show3DIcons
@@ -64693,7 +64827,7 @@
 	<RawSyntax>
 		showHUD enable
 	</NextRawSyntax>
-		showHUD [hud, info, radar, compass, direction, menu, group, cursors]
+		showHUD [hud, info, radar, compass, direction, menu, group, cursors, panels]
 	</RawSyntax>
 	<Example>
 		$Code$showHUD false ;$/Code$
@@ -64721,6 +64855,8 @@
 	</Keyword>
 	<Description>
 		Show/hide map legend.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/showLegend
@@ -64778,6 +64914,8 @@
 	</Keyword>
 	<Description>
 		Show the add editor object dialog,type is editor object type,class is,class definition to automatically select,side filters by a certain,side,pos is position to create the object.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/showNewEditorObject
@@ -67101,7 +67239,7 @@
 		https://community.bistudio.com/wiki/stopEngineRTD
 	</WikiPage>
 	<Syntax>
-		stopEngineRTD heli
+		stopEngineRTD Object
 	</Syntax>
 	<RawSyntax>
 		stopEngineRTD heli
@@ -67990,7 +68128,7 @@
 		Object synchronizeTrigger Array
 	</Syntax>
 	<RawSyntax>
-		trigger synchronizeTrigger [waypoint1, waypoint2,...]
+		trigger synchronizeTrigger [waypoint1, waypoint2,]
 	</RawSyntax>
 	<Example>
 		$Code$_trigger synchronizeTrigger []$/Code$
@@ -68022,7 +68160,7 @@
 		Array synchronizeWaypoint Array
 	</Syntax>
 	<RawSyntax>
-		waypoint synchronizeWaypoint [waypoint1, waypoint2,...]
+		waypoint synchronizeWaypoint [waypoint1, waypoint2,]
 	</RawSyntax>
 	<Example>
 		$Code$[_group1, 2] synchronizeWaypoint [ [_group2, 3] ];$/Code$
@@ -69105,7 +69243,7 @@
 		textLogFormat Array
 	</Syntax>
 	<RawSyntax>
-		textLogFormat [format, arg1, arg2,...]
+		textLogFormat [format, arg1, arg2,]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -72667,6 +72805,8 @@
 	</Keyword>
 	<Description>
 		Updates the icon to be shown in 2D editor for the specified editor,object. If maintain size is false,icon will not scale depending on the,scale of the map. If maintain size is a number,the icon will maintain,size if map scale is below that number.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/updateDrawIcon
@@ -72675,7 +72815,7 @@
 		Control updateDrawIcon Array
 	</Syntax>
 	<RawSyntax>
-		map updateDrawIcon [object,string identifier,color,offset,width,height,maintain size?,angle,shadow]
+		map updateDrawIcon [object,string identifier,color,offset,width,height,maintain size,angle,shadow]
 	</RawSyntax>
 	<Example>
 		</Example>
@@ -72694,6 +72834,8 @@
 	</Keyword>
 	<Description>
 		Sets the text and command for the menu item. index is index as returned from addMenuItem command. command is optional.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/updateMenuItem
@@ -72721,6 +72863,8 @@
 	</Keyword>
 	<Description>
 		Update the editor object tree.
+	i
+	Some Old Editor Command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/updateObjectTree
@@ -74643,10 +74787,10 @@
 		https://community.bistudio.com/wiki/waypointForceBehaviour
 	</WikiPage>
 	<Syntax>
-		waypointForceBehaviour waypoint;
+		waypointForceBehaviour Waypoint
 	</Syntax>
 	<RawSyntax>
-		waypointForceBehaviour waypoint;
+		waypointForceBehaviour waypoint
 	</RawSyntax>
 	<Example>
 		$Code$_isForced = waypointForceBehaviour [groupOne, 1];$/Code$

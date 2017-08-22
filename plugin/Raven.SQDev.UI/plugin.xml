@@ -114,6 +114,30 @@
             name="RPT Viewer"
             restorable="true">
       </view>
+      <view
+            class="raven.sqdev.ui.views.SQDevNavigator"
+            id="raven.sqdev.views.sqdevnavigator"
+            name="SQDev Navigator">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="raven.sqdev.views.sqdevnavigator">
+         <includes>
+            <contentExtension
+                  pattern="org.eclipse.ui.navigator.resourceContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+      <viewerActionBinding
+            viewerId="raven.sqdev.views.sqdevnavigator">
+         <includes>
+            <actionExtension
+                  pattern="org.eclipse.ui.navigator.resources.*">
+            </actionExtension>
+         </includes>
+      </viewerActionBinding>
    </extension>
 
 </plugin>

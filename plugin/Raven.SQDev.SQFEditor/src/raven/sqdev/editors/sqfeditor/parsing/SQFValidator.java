@@ -14,14 +14,10 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
 import org.eclipse.swt.SWT;
 
 import raven.sqdev.constants.ProblemMessages;
-import raven.sqdev.editors.sqfeditor.SQF_Editor;
-import raven.sqdev.editors.sqfeditor.Variable;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.ArrayContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.AssignmentContext;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser.BinaryExpressionContext;
@@ -40,6 +36,9 @@ import raven.sqdev.editors.sqfeditor.parsing.SQFParser.UnaryExpressionContext;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.infoCollection.base.SQFCommand;
+import raven.sqdev.infoCollection.base.Variable;
+import raven.sqdev.interfaces.ISQFParseInformation;
+import raven.sqdev.interfaces.ISQFParseResult;
 import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
 import raven.sqdev.misc.Macro;
@@ -53,7 +52,7 @@ import raven.sqdev.util.SQDevInfobox;
  * @author Raven
  *
  */
-public class SQFParseListener extends SQFBaseListener {
+public class SQFValidator extends SQFBaseListener {
 	
 	/**
 	 * The invoking state indicating that this context object has been created
@@ -62,9 +61,13 @@ public class SQFParseListener extends SQFBaseListener {
 	protected static final int CREATED_STATE = -10;
 	
 	/**
-	 * The editor this listener should report to
+	 * The parse reult object that holds information about the parse result
 	 */
-	private SQF_Editor editor;
+	private ISQFParseResult parseResult;
+	/**
+	 * The information that are needed in order to parse the input properly
+	 */
+	private ISQFParseInformation info;
 	
 	/**
 	 * A list of found localVariables
@@ -88,34 +91,53 @@ public class SQFParseListener extends SQFBaseListener {
 	 */
 	protected Map<ParseTree, DataTypeList> resolvedReturnValues;
 	
+	
 	/**
-	 * Creates a new instance of this listener.
+	 * Creates a new instance of this validator.
 	 * 
-	 * @param editor
-	 *            The editor the created listener should be configured to
+	 * @param info
+	 *            The {@link SQFParseInformation} needed to parse the input
+	 *            properly
 	 * @param currentStream
 	 *            The <code>CommonTokenStream</code> associated with the
 	 *            respective parse tree
 	 */
-	public SQFParseListener(SQF_Editor editor,
+	public SQFValidator(ISQFParseInformation info,
 			BufferedTokenStream currentStream) {
-		Assert.isNotNull(editor);
+		this(info, null, currentStream);
+	}
+	
+	/**
+	 * Creates a new instance of this validator.
+	 * 
+	 * @param info
+	 *            The {@link SQFParseInformation} needed to parse the input
+	 *            properly
+	 * @param parseResult
+	 *            The {@link SQFParseResult} to report any parsing results to.
+	 *            If thi is <code>null</code> a new one will be created
+	 * @param currentStream
+	 *            The <code>CommonTokenStream</code> associated with the
+	 *            respective parse tree
+	 */
+	public SQFValidator(ISQFParseInformation info, ISQFParseResult parseResult,
+			BufferedTokenStream currentStream) {
+		Assert.isNotNull(info);
 		Assert.isNotNull(currentStream);
 		
-		this.editor = editor;
+		this.info = info;
 		this.stream = currentStream;
+		
+		if (parseResult != null) {
+			this.parseResult = parseResult;
+		} else {
+			this.parseResult = new SQFParseResult();
+		}
 		
 		localVariables = new ArrayList<Variable>();
 		globalVariables = new ArrayList<Variable>();
 		
 		resolvedReturnValues = new HashMap<ParseTree, DataTypeList>();
-	}
-	
-	/**
-	 * Gets the editor this listener is configured on
-	 */
-	public SQF_Editor getConfiguredEditor() {
-		return editor;
 	}
 	
 	@Override
@@ -159,7 +181,7 @@ public class SQFParseListener extends SQFBaseListener {
 		// end of document has been reached
 		
 		// set editors variables
-		editor.setVariables(localVariables, globalVariables);
+		parseResult.setVariables(localVariables, globalVariables);
 	}
 	
 	@Override
@@ -179,7 +201,7 @@ public class SQFParseListener extends SQFBaseListener {
 					if (currentChild instanceof StatementContext) {
 						// a statement before the previous statement has been
 						// closed -> create error
-						editor.createMarker(IMarker.PROBLEM,
+						parseResult.addMarker(IMarker.PROBLEM,
 								openStatement.getStop().getStopIndex(), 1,
 								"Missing ';' at \""
 										+ openStatement.getStop().getText()
@@ -210,25 +232,6 @@ public class SQFParseListener extends SQFBaseListener {
 		int start = ctx.getStart().getStartIndex();
 		int stop = ctx.getStop().getStopIndex();
 		
-		IDocument doc = editor.getDocumentProvider()
-				.getDocument(editor.getEditorInput());
-		
-		// don't fold if the code is only one line long
-		try {
-			if (doc == null || doc.getLineOfOffset(start) == doc
-					.getLineOfOffset(stop)) {
-				return;
-			}
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-			
-			SQDevInfobox info = new SQDevInfobox(
-					"Error in code folding framework!", e);
-			info.open(false);
-			
-			return;
-		}
-		
 		ParserRuleContext parent = ctx.getParent();
 		ParserRuleContext previous = ctx;
 		
@@ -257,7 +260,7 @@ public class SQFParseListener extends SQFBaseListener {
 		}
 		
 		// add foldable area
-		editor.addFoldingArea(new Position(start,
+		parseResult.addFoldingArea(new Position(start,
 				stop - start + ctx.getStop().getText().length() + offset));
 	}
 	
@@ -353,7 +356,7 @@ public class SQFParseListener extends SQFBaseListener {
 		
 		String operatorName = ctx.getChild(1).getText();
 		
-		SQFCommand operator = resolveOperator(editor.getBinaryOperators(),
+		SQFCommand operator = resolveOperator(info.getBinaryOperators(),
 				operatorName);
 		
 		if (operator != null) {
@@ -387,7 +390,7 @@ public class SQFParseListener extends SQFBaseListener {
 						
 				}
 				
-				editor.createMarker(IMarker.PROBLEM, offsets[0], offsets[1],
+				parseResult.addMarker(IMarker.PROBLEM, offsets[0], offsets[1],
 						errorMsg, IMarker.SEVERITY_ERROR);
 			}
 			
@@ -439,7 +442,7 @@ public class SQFParseListener extends SQFBaseListener {
 					offsets = getStartOffsetAndLength(ctx.getChild(0));
 				}
 				
-				editor.createMarker(IMarker.PROBLEM, offsets[0], offsets[1],
+				parseResult.addMarker(IMarker.PROBLEM, offsets[0], offsets[1],
 						errorMsg, IMarker.SEVERITY_ERROR);
 			}
 			
@@ -454,7 +457,7 @@ public class SQFParseListener extends SQFBaseListener {
 			}
 		} else {
 			// check if operator is a macro
-			Macro macro = resolveMacro(editor.getMacros(), operatorName);
+			Macro macro = resolveMacro(info.getMacros(), operatorName);
 			
 			if (macro != null) {
 				resolvedReturnValues.put(ctx,
@@ -472,7 +475,7 @@ public class SQFParseListener extends SQFBaseListener {
 		
 		String operatorName = ctx.getText();
 		
-		SQFCommand operator = resolveOperator(editor.getNularOperators(),
+		SQFCommand operator = resolveOperator(info.getNularOperators(),
 				operatorName);
 		
 		if (operator == null) {
@@ -502,7 +505,7 @@ public class SQFParseListener extends SQFBaseListener {
 		}
 		
 		if (msg != null) {
-			editor.createMarker(IMarker.PROBLEM, start, length, msg,
+			parseResult.addMarker(IMarker.PROBLEM, start, length, msg,
 					IMarker.SEVERITY_ERROR);
 		}
 	}
@@ -541,9 +544,9 @@ public class SQFParseListener extends SQFBaseListener {
 	 *         none could be found
 	 */
 	protected SQFCommand resolveOperator(String operatorName) {
-		List<SQFCommand> allOperators = editor.getNularOperators();
-		allOperators.addAll(editor.getUnaryOperators());
-		allOperators.addAll(editor.getBinaryOperators());
+		List<SQFCommand> allOperators = info.getNularOperators();
+		allOperators.addAll(info.getUnaryOperators());
+		allOperators.addAll(info.getBinaryOperators());
 		
 		return resolveOperator(allOperators, operatorName);
 	}
@@ -577,7 +580,7 @@ public class SQFParseListener extends SQFBaseListener {
 	 *            The macro name to search for
 	 */
 	protected boolean isDefinedMacro(String macroName) {
-		return resolveMacro(editor.getMacros(), macroName) != null;
+		return resolveMacro(info.getMacros(), macroName) != null;
 	}
 	
 	/**
@@ -588,10 +591,10 @@ public class SQFParseListener extends SQFBaseListener {
 	 *            The name to search for
 	 */
 	protected boolean isOperator(String operatorName) {
-		return resolveOperator(editor.getNularOperators(), operatorName) != null
-				|| resolveOperator(editor.getUnaryOperators(),
+		return resolveOperator(info.getNularOperators(), operatorName) != null
+				|| resolveOperator(info.getUnaryOperators(),
 						operatorName) != null
-				|| resolveOperator(editor.getBinaryOperators(),
+				|| resolveOperator(info.getBinaryOperators(),
 						operatorName) != null;
 	}
 	
@@ -605,7 +608,7 @@ public class SQFParseListener extends SQFBaseListener {
 	protected boolean isDefinedLocalVariable(String varName) {
 		varName = varName.toLowerCase();
 		
-		for (Variable currentVariable : editor.getMagicVariables()) {
+		for (Variable currentVariable : info.getMagicVariables()) {
 			if (currentVariable.getKeyword().toLowerCase().equals(varName)) {
 				return true;
 			}
@@ -850,7 +853,8 @@ public class SQFParseListener extends SQFBaseListener {
 					// some weird shit is going on -> warn about it
 					int offsets[] = getStartOffsetAndLength(argument);
 					
-					editor.createMarker(IMarker.PROBLEM, offsets[0], offsets[1],
+					parseResult.addMarker(IMarker.PROBLEM, offsets[0],
+							offsets[1],
 							ProblemMessages.failedVarProcessingExpectedArray(),
 							IMarker.SEVERITY_WARNING);
 					
@@ -905,7 +909,7 @@ public class SQFParseListener extends SQFBaseListener {
 							int offsets[] = getStartOffsetAndLength(
 									currentElement);
 							
-							editor.createMarker(IMarker.PROBLEM, offsets[0],
+							parseResult.addMarker(IMarker.PROBLEM, offsets[0],
 									offsets[1],
 									ProblemMessages.expectedTypes(
 											new EDataType[] { EDataType.STRING,
@@ -938,7 +942,7 @@ public class SQFParseListener extends SQFBaseListener {
 							int offsets[] = getStartOffsetAndLength(
 									currentElement);
 							
-							editor.createMarker(IMarker.PROBLEM, offsets[0],
+							parseResult.addMarker(IMarker.PROBLEM, offsets[0],
 									offsets[1],
 									ProblemMessages.expectedTypes(
 											new EDataType[] { EDataType.STRING,
@@ -955,7 +959,7 @@ public class SQFParseListener extends SQFBaseListener {
 					} else {
 						int offsets[] = getStartOffsetAndLength(argument);
 						
-						editor.createMarker(IMarker.PROBLEM, offsets[0],
+						parseResult.addMarker(IMarker.PROBLEM, offsets[0],
 								offsets[1],
 								ProblemMessages.expectedTypes(new EDataType[] {
 										EDataType.STRING, EDataType.ARRAY }),
@@ -978,7 +982,7 @@ public class SQFParseListener extends SQFBaseListener {
 						// may not be empty -> create error
 						int[] offsets = getStartOffsetAndLength(varString);
 						
-						editor.createMarker(IMarker.PROBLEM, offsets[0],
+						parseResult.addMarker(IMarker.PROBLEM, offsets[0],
 								offsets[1],
 								ProblemMessages.stringMayNotBeEmpty(),
 								IMarker.SEVERITY_ERROR);
@@ -987,7 +991,7 @@ public class SQFParseListener extends SQFBaseListener {
 							// can only declare local variable -> create error
 							int[] offsets = getStartOffsetAndLength(varString);
 							
-							editor.createMarker(IMarker.PROBLEM, offsets[0],
+							parseResult.addMarker(IMarker.PROBLEM, offsets[0],
 									offsets[1],
 									ProblemMessages
 											.canOnlyDeclareLocalVariable(),
@@ -1030,30 +1034,38 @@ public class SQFParseListener extends SQFBaseListener {
 					return;
 				} else {
 					// empty String is invalid
-					editor.createMarker(IMarker.PROBLEM, start, length,
+					parseResult.addMarker(IMarker.PROBLEM, start, length,
 							ProblemMessages.stringMayNotBeEmpty(),
 							IMarker.SEVERITY_ERROR);
 				}
 			}
 			
 			if (varName.contains(" ")) {
-				editor.createMarker(IMarker.PROBLEM, start, length,
+				parseResult.addMarker(IMarker.PROBLEM, start, length,
 						ProblemMessages.variableMayNotContainBlank(),
 						IMarker.SEVERITY_ERROR);
 			} else {
 				if (varName.startsWith("_")) {
 					varlist.add(new Variable(varName));
 				} else {
-					editor.createMarker(IMarker.PROBLEM, start, length,
+					parseResult.addMarker(IMarker.PROBLEM, start, length,
 							ProblemMessages.canOnlyDeclareLocalVariable(),
 							IMarker.SEVERITY_ERROR);
 				}
 			}
 		} else {
-			editor.createMarker(IMarker.PROBLEM, start, length,
+			parseResult.addMarker(IMarker.PROBLEM, start, length,
 					ProblemMessages.expectedTypes(new EDataType[] {
 							EDataType.STRING, EDataType.ARRAY }),
 					IMarker.SEVERITY_ERROR);
 		}
+	}
+	
+	/**
+	 * Gets the parse result. This implementation always returns an instance of
+	 * {@link SQFParseResult}.
+	 */
+	public ISQFParseResult getParseResult() {
+		return parseResult;
 	}
 }

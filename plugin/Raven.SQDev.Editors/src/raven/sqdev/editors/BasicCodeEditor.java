@@ -44,6 +44,7 @@ import raven.sqdev.interfaces.IManager;
 import raven.sqdev.interfaces.IMarkerSupport;
 import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.misc.MultiPreferenceStore;
+import raven.sqdev.util.SQDevInfobox;
 import raven.sqdev.util.SQDevPreferenceUtil;
 
 /***
@@ -673,6 +674,25 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 *            The <code>Position</code> this area should be on
 	 */
 	public void addFoldingArea(Position position) {
+		IDocument doc = getDocumentProvider()
+				.getDocument(getEditorInput());
+		
+		// don't fold if the code is only one line long
+		try {
+			if (doc == null || doc.getLineOfOffset(position.offset) == doc
+					.getLineOfOffset(position.offset + position.length)) {
+				return;
+			}
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+			
+			SQDevInfobox info = new SQDevInfobox(
+					"Error in code folding framework!", e);
+			info.open(false);
+			
+			return;
+		}
+		
 		ProjectionAnnotation annotation = new ProjectionAnnotation();
 		
 		BasicFoldingManager foldingManager = (BasicFoldingManager) getManager(

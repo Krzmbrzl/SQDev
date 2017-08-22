@@ -136,7 +136,8 @@ public enum EDataType implements IReplaceTester {
 	NAMESPACE {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Namespace", "missionNamespace", "uiNamespace" };
+			return new String[] { "Namespace", "missionNamespace",
+					"uiNamespace" };
 		}
 	},
 	NETOBJECT {
@@ -565,6 +566,25 @@ public enum EDataType implements IReplaceTester {
 	 */
 	public static boolean isValidDataType(String type) {
 		return resolve(type) != null;
+	}
+	
+	/**
+	 * Checks whether the given set of dataTypes are valid. If this set should
+	 * contain more than one datatYpe they have to be sepearted with
+	 * {@link DataTypeList#TYPE_SEPERATOR}
+	 * 
+	 * @param types
+	 *            The set to check
+	 * @return Whether the data types could be resolved
+	 */
+	public static boolean isValidDataTypeSet(String types) {
+		for (String currentType : types.split(DataTypeList.TYPE_SEPERATOR)) {
+			if (isValidDataType(currentType)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	@Override

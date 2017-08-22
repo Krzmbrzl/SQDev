@@ -9,7 +9,7 @@ public class SQDevPerspective implements IPerspectiveFactory {
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
 		// add navigator
-		layout.addView("org.eclipse.ui.views.ResourceNavigator", IPageLayout.LEFT, (float) 0.2,
+		layout.addView("raven.sqdev.views.sqdevnavigator", IPageLayout.LEFT, (float) 0.2,
 				layout.getEditorArea());
 		
 		// add additional views to a bottom folder

@@ -3,6 +3,7 @@ package raven.sqdev.infoCollection;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -1004,7 +1005,7 @@ public class SQFCommandCollector {
 								// optional arg after command
 								StringBuilder builder = new StringBuilder();
 								
-								for (int j = commandIndex; j < i; j++) {
+								for (int j = commandIndex + 1; j <= i; j++) {
 									// assemble parameter combi
 									builder.append(areas[j].replace(
 											String.valueOf(OPTIONAL_MARKER), "")
@@ -1040,6 +1041,8 @@ public class SQFCommandCollector {
 						possibleTrailingArgCombinations
 								.add(builder.toString().trim());
 					}
+					
+					//TODO: optional args don't process properly... See addMenu
 					
 					// add all possible syntax variants
 					for (String currentLeadingCombination : possibleLeadingArgCombinations) {
@@ -1322,7 +1325,32 @@ public class SQFCommandCollector {
 			bracketMatcher = bracketPattern.matcher(syntax);
 		}
 		
-		return syntax;
+		final List<Character> allowedSpecials = new ArrayList<Character>() {
+			private static final long serialVersionUID = -7392233157557632681L;
+
+			{
+				add('[');
+				add(']');
+				add(',');
+				add('_');
+				add('-');
+			}
+		};
+		OutputStream out = new ByteArrayOutputStream();
+		// remove all characters that seem to not fit in there
+		for (char c : syntax.toCharArray()) {
+			if (Character.isLetterOrDigit(c) || Character.isWhitespace(c) || allowedSpecials.contains(c)) {
+				try {
+					out.write(c);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				System.out.println("Omitting character " + c);
+			}
+		}
+		
+		return out.toString();
 	}
 	
 	/**
@@ -1567,10 +1595,10 @@ public class SQFCommandCollector {
 	}
 	
 	/**
-	 * Formats the given dataType accorsing to <code>EDataType</code>
+	 * Formats the given dataType according to <code>EDataType</code>
 	 * 
 	 * @param type
-	 *            The raw type tpo format
+	 *            The raw data type format
 	 * @param commandName
 	 *            The name of the currently processed command
 	 * @return The fornatted dataType

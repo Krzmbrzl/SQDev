@@ -18,7 +18,7 @@ import org.junit.Test;
 import raven.sqdev.editors.BasicErrorListener;
 import raven.sqdev.editors.sqfeditor.SQF_Editor;
 import raven.sqdev.editors.sqfeditor.parsing.SQFLexer;
-import raven.sqdev.editors.sqfeditor.parsing.SQFParseListener;
+import raven.sqdev.editors.sqfeditor.parsing.SQFValidator;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.base.Keyword;
@@ -256,6 +256,6 @@ public class SQFParserTest {
 			SQF_Editor editor) {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		
-		walker.walk(new SQFParseListener(editor, stream), tree);
+		walker.walk(new SQFValidator(editor, stream), tree);
 	}
 }

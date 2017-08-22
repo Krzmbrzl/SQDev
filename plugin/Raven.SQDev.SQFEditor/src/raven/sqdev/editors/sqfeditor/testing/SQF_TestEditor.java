@@ -5,7 +5,7 @@ import java.util.List;
 
 import raven.sqdev.editors.MarkerInformation;
 import raven.sqdev.editors.sqfeditor.SQF_Editor;
-import raven.sqdev.editors.sqfeditor.Variable;
+import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.misc.Macro;
 
 /**

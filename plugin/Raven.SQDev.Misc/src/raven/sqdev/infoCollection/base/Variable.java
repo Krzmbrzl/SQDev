@@ -1,6 +1,4 @@
-package raven.sqdev.editors.sqfeditor;
-
-import raven.sqdev.infoCollection.base.Keyword;
+package raven.sqdev.infoCollection.base;
 
 /**
  * A <code>Keyword</code> corresponding to a variable

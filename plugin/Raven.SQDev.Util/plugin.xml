@@ -7,5 +7,14 @@
             class="raven.sqdev.startup.SQDevStarter">
       </startup>
    </extension>
+   <extension
+         id="raven.sqdev.builder.sqdevprojectbuilder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="raven.sqdev.util.SQDevProjectBuilder">
+         </run>
+      </builder>
+   </extension>
 
 </plugin>

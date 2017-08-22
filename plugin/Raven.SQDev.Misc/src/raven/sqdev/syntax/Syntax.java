@@ -187,10 +187,13 @@ public class Syntax {
 	 * @throws BadSyntaxException
 	 *             If the input is invalid
 	 */
-	public static Syntax parseSyntax(String input, String commandName) throws BadSyntaxException {
-		if (input == null || input.trim().isEmpty() || commandName == null || commandName.isEmpty()) {
+	public static Syntax parseSyntax(String input, String commandName)
+			throws BadSyntaxException {
+		if (input == null || input.trim().isEmpty() || commandName == null
+				|| commandName.isEmpty()) {
 			// can't process
-			throw new IllegalArgumentException("The given input or commandName is invalid!");
+			throw new IllegalArgumentException(
+					"The given input or commandName is invalid!");
 		}
 		
 		input = input.trim();
@@ -204,8 +207,8 @@ public class Syntax {
 			elements = TextUtils.getTextAreas(input);
 			lowerElements = TextUtils.getTextAreas(input.toLowerCase());
 		} catch (BadSyntaxException e) {
-			throw new BadSyntaxException(
-					"The syntax input for the command \"" + commandName + "\" is invalid!", e);
+			throw new BadSyntaxException("The syntax input for the command \""
+					+ commandName + "\" is invalid!", e);
 		}
 		
 		String lowerCommandName = commandName.toLowerCase();
@@ -222,8 +225,8 @@ public class Syntax {
 		}
 		
 		if (!isContained) {
-			throw new BadSyntaxException(
-					"The command \"" + commandName + "\" is not contained in the given input!");
+			throw new BadSyntaxException("The command \"" + commandName
+					+ "\" is not contained in the given input!");
 		}
 		
 		// recreate String out of the array
@@ -239,33 +242,41 @@ public class Syntax {
 		Matcher commandMatcher;
 		if (!Character.isLetter(commandName.charAt(0))) {
 			// match without word boundaries
-			commandMatcher = Pattern.compile(Pattern.quote(commandName)).matcher(input);
+			commandMatcher = Pattern.compile(Pattern.quote(commandName))
+					.matcher(input);
 		} else {
 			// match with word boundaries
-			commandMatcher = Pattern.compile("\\b" + Pattern.quote(commandName) + "\\b")
+			commandMatcher = Pattern
+					.compile("\\b" + Pattern.quote(commandName) + "\\b")
 					.matcher(input);
 		}
 		commandMatcher.find();
 		
-		String inputBeforeCommand = input.substring(0, commandMatcher.start()).trim();
+		String inputBeforeCommand = input.substring(0, commandMatcher.start())
+				.trim();
 		String inputAfterCommand = input.substring(commandMatcher.end()).trim();
 		
 		try {
 			if (!inputBeforeCommand.isEmpty()) {
 				// add leading syntaxElement
-				syntax.addElement(SyntaxElement.parseSyntaxElement(inputBeforeCommand));
+				syntax.addElement(
+						SyntaxElement.parseSyntaxElement(inputBeforeCommand));
 			}
 			
 			// add the command as a syntaxElement
-			syntax.addElement(SyntaxElement.parseSyntaxElement(commandName));
+			syntax.addElement(
+					SyntaxElement.parseSyntaxElement(commandName, true));
 			
 			if (!inputAfterCommand.isEmpty()) {
 				// add trailing syntaxElement
-				syntax.addElement(SyntaxElement.parseSyntaxElement(inputAfterCommand));
+				syntax.addElement(
+						SyntaxElement.parseSyntaxElement(inputAfterCommand));
 			}
 		} catch (BadSyntaxException e) {
-			throw new BadSyntaxException("Can't parse sub-elements fo command \"" + commandName
-					+ "\" into SyntaxElements!");
+			throw new BadSyntaxException(
+					"Can't parse sub-elements fo command \"" + commandName
+							+ "\" into SyntaxElements!",
+					e);
 		}
 		
 		return syntax;

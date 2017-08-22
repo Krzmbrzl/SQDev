@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
@@ -30,7 +31,8 @@ import raven.sqdev.editors.BasicPartitionScanner;
 import raven.sqdev.editors.BasicSourceViewerConfiguration;
 import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.editors.sqfeditor.parsing.SQFLexer;
-import raven.sqdev.editors.sqfeditor.parsing.SQFParseListener;
+import raven.sqdev.editors.sqfeditor.parsing.SQFParseResult;
+import raven.sqdev.editors.sqfeditor.parsing.SQFValidator;
 import raven.sqdev.editors.sqfeditor.parsing.SQFParser;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
@@ -38,8 +40,10 @@ import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
+import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.interfaces.IKeywordListChangeListener;
 import raven.sqdev.interfaces.IMacroSupport;
+import raven.sqdev.interfaces.ISQFParseInformation;
 import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.Pair;
@@ -60,8 +64,8 @@ import raven.sqdev.util.Util;
  * @author Raven
  * 
  */
-public class SQF_Editor extends BasicCodeEditor
-		implements IKeywordListChangeListener, IMacroSupport {
+public class SQF_Editor extends BasicCodeEditor implements
+		IKeywordListChangeListener, IMacroSupport, ISQFParseInformation {
 	
 	/**
 	 * The KeywordProvider for the SQF keywords
@@ -293,6 +297,7 @@ public class SQF_Editor extends BasicCodeEditor
 		
 		ParseTree tree = null;
 		try {
+			// TODO: make fallback to LL optional in prefs
 			// try to parse with SLL(*)
 			listener.suppressErrors(true);
 			parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
@@ -424,7 +429,21 @@ public class SQF_Editor extends BasicCodeEditor
 	public boolean processParseTree(ParseTree parseTree) {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		
-		walker.walk(new SQFParseListener(this, currentStream), parseTree);
+		SQFValidator validator = new SQFValidator(this, currentStream);
+		
+		walker.walk(validator, parseTree);
+		
+		// process parse result
+		SQFParseResult result = (SQFParseResult) validator.getParseResult();
+		
+		setVariables(result.getDeclaredLocalVariables(),
+				result.getDeclaredGlobalVariables());
+		result.applyMarkersTo(this);
+		
+		for (Position currentFoldingPos : result.getFoldingAreas()) {
+			addFoldingArea(currentFoldingPos);
+		}
+		
 		
 		applyParseChanges();
 		
