@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="SQDevProjectNature"
+         name="SQDev project nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="raven.sqdev.misc.SQDevProjectNature">
+         </run>
+      </runtime>
+   </extension>
+  
+
+</plugin>

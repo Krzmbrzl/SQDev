@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="raven.sqdev.startup.SQDevStarter">
+      </startup>
+   </extension>
+   <extension
+         id="raven.sqdev.builder.sqdevprojectbuilder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="raven.sqdev.util.SQDevProjectBuilder">
+         </run>
+      </builder>
+   </extension>
+
+</plugin>
