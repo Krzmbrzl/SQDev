@@ -220,7 +220,7 @@ public class SQFParserTest {
 	 */
 	private Object[] parseInput(String input, List<String> macroNames,
 			boolean useLL, IMarkerSupport acceptor) {
-		BasicErrorListener listener = new BasicErrorListener(acceptor);
+		BasicErrorListener listener = new BasicErrorListener();
 		
 		ANTLRInputStream in = new ANTLRInputStream(input);
 		

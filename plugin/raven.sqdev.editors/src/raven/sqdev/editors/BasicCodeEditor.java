@@ -4,10 +4,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -44,11 +41,8 @@ import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.misc.MultiPreferenceStore;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
-import raven.sqdev.parser.preprocessor.PreprocessorErrorListener;
-import raven.sqdev.parser.preprocessor.PreprocessorLexer;
-import raven.sqdev.parser.preprocessor.PreprocessorParseListener;
+import raven.sqdev.parser.misc.ParseUtil;
 import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
-import raven.sqdev.parser.preprocessor.PreprocessorParser;
 
 /***
  * A default implementation of a code editor. This contains the autoCompletion
@@ -69,22 +63,22 @@ import raven.sqdev.parser.preprocessor.PreprocessorParser;
  * 
  */
 public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
-	
+
 	/**
 	 * The color manager
 	 */
 	protected ColorManager colorManager;
-	
+
 	/**
 	 * The queue for the keyEvents
 	 */
 	protected EditorKeyEventQueue editorKeyEventQueue;
-	
+
 	/**
 	 * The source viewer configuration for this editor
 	 */
 	protected BasicSourceViewerConfiguration configuration;
-	
+
 	/**
 	 * The parse tree representing the input of this editor
 	 */
@@ -93,7 +87,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 * The name of the rules used for parsing this editor's input
 	 */
 	protected List<String> parseRuleNames;
-	
+
 	/**
 	 * The document provider of this editor
 	 */
@@ -114,86 +108,84 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 * Indicates whether the current parsing should be cancelled
 	 */
 	private Boolean parsingIsCancelled;
-	
+
 	public BasicCodeEditor() {
 		super();
-		
+
 		setColorManager(new ColorManager());
 		setEditorKeyEventQueue(new EditorKeyEventQueue());
-		
+
 		this.setSourceViewerConfiguration(getBasicConfiguration());
 		this.setDocumentProvider(getBasicProvider());
-		
+
 		managerList = new ArrayList<IManager>();
 		characterPairs = getCharacterPairs();
 		parsingIsCancelled = false;
-		
+
 		// set up key handlers
 		configureKeyHandler();
 	}
-	
+
 	@Override
 	public void dispose() {
 		this.getColorManager().dispose();
 		super.dispose();
 	}
-	
+
 	public ColorManager getColorManager() {
 		return colorManager;
 	}
-	
+
 	public void setColorManager(ColorManager colorManager) {
 		this.colorManager = colorManager;
 	}
-	
+
 	@Override
-	public ISourceViewer createSourceViewer(Composite parent,
-			IVerticalRuler ruler, int styles) {
-		ISourceViewer viewer = new ProjectionViewer(parent, ruler,
-				getOverviewRuler(), isOverviewRulerVisible(), styles);
-		
+	public ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(),
+				isOverviewRulerVisible(), styles);
+
 		getSourceViewerDecorationSupport(viewer);
-		
+
 		if (viewer instanceof ITextViewerExtension) {
 			EditorKeyEventManager manager = new EditorKeyEventManager();
-			
+
 			// associate the newly created manager with the EditorKeyEventQueue
 			// of this editor
 			getEditorKeyEventQueue().setManager(manager);
-			
+
 			((ITextViewerExtension) viewer).appendVerifyKeyListener(manager);
 		}
-		
+
 		// add parse listener
 		getBasicProvider().getDocument(getEditorInput())
 				.addDocumentListener(new BasicParseTimeListener(this));
-		
+
 		return viewer;
 	}
-	
+
 	@Override
-	protected void configureSourceViewerDecorationSupport(
-			SourceViewerDecorationSupport support) {
+	protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
 		super.configureSourceViewerDecorationSupport(support);
-		
+
 		char[] matchChars = { '(', ')', '[', ']', '{', '}' }; // which brackets
 																// to match
-		ICharacterPairMatcher matcher = new DefaultCharacterPairMatcher(
-				matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
-		
+		ICharacterPairMatcher matcher = new DefaultCharacterPairMatcher(matchChars,
+				IDocumentExtension3.DEFAULT_PARTITIONING, true);
+
 		// character pair matching
 		support.setCharacterPairMatcher(matcher);
 		support.setMatchingCharacterPainterPreferenceKeys(
 				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY,
 				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY);
-		
+
 		// newLine highlighting
 		support.setCursorLinePainterPreferenceKeys(
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY,
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY);
-		
+
 	}
-	
+
 	/**
 	 * Gets the <code>EditorKeyEventQueue</code> of this editor.
 	 * 
@@ -202,12 +194,11 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	public EditorKeyEventQueue getEditorKeyEventQueue() {
 		return editorKeyEventQueue;
 	}
-	
-	public void setEditorKeyEventQueue(
-			EditorKeyEventQueue editorKeyEventQueue) {
+
+	public void setEditorKeyEventQueue(EditorKeyEventQueue editorKeyEventQueue) {
 		this.editorKeyEventQueue = editorKeyEventQueue;
 	}
-	
+
 	/**
 	 * Adds the configured <code>CharacterPairs</code> as a
 	 * <code>CharacterPairHandler</code> to this editor.<br>
@@ -219,14 +210,14 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 */
 	protected void configureCharacterPairHandler() {
 		CharacterPairHandler pairHandler = new CharacterPairHandler(this);
-		
+
 		for (CharacterPair currentPair : getConfiguredCharacterPairs()) {
 			pairHandler.addPair(currentPair);
 		}
-		
+
 		getEditorKeyEventQueue().queueEditorKeyHandler(pairHandler);
 	}
-	
+
 	/**
 	 * Gets the <code>CharacterPairs</code> that should be used by this editor
 	 * 
@@ -234,16 +225,16 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 */
 	protected List<CharacterPair> getCharacterPairs() {
 		List<CharacterPair> pairList = new ArrayList<CharacterPair>();
-		
+
 		pairList.add(CharacterPair.DOUBLE_QUOTATION_MARKS);
 		pairList.add(CharacterPair.SINGLE_QUOTATION_MARKS);
 		pairList.add(CharacterPair.ROUND_BRACKETS);
 		pairList.add(CharacterPair.SQUARE_BRACKETS);
 		pairList.add(CharacterPair.CURLY_BRACKETS);
-		
+
 		return pairList;
 	}
-	
+
 	/**
 	 * Gets a list of all configured character pairs from this editor
 	 */
@@ -251,52 +242,52 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 		if (characterPairs == null) {
 			characterPairs = new ArrayList<CharacterPair>(0);
 		}
-		
+
 		return characterPairs;
 	}
-	
+
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		
+
 		// infrastructure for code folding
 		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
-		
-		ProjectionSupport projectionSupport = new ProjectionSupport(viewer,
-				getAnnotationAccess(), getSharedColors());
-		
+
+		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(),
+				getSharedColors());
+
 		projectionSupport.install();
-		
+
 		// turn projection mode on
 		viewer.doOperation(ProjectionViewer.TOGGLE);
-		
-		
+
+
 		if (fSourceViewerDecorationSupport != null) {
 			// combine the SQDev PreferenceStore with the editor's one
-			
+
 			// use the SQDev preferenceStore as the baseStore
 			MultiPreferenceStore multiStore = new MultiPreferenceStore(
 					SQDevPreferenceUtil.getPreferenceStore());
-			
+
 			// add the editor's preferenceStore if available
 			IPreferenceStore editorStore = this.getPreferenceStore();
 			if (editorStore != null) {
 				multiStore.addPreferenceStore(editorStore);
 			}
-			
+
 			fSourceViewerDecorationSupport.install(multiStore);
 		}
-		
+
 		createManagers(managerList);
-		
+
 		// parse the input for the first time
 		parseInput(true);
 	}
-	
+
 	/**
-	 * Updates the editor. Needed when some changes are made to the way the
-	 * editor content should be displayed or when the behaviour of the editor
-	 * should change.<br>
+	 * Updates the editor. Needed when some changes are made to the way the editor
+	 * content should be displayed or when the behaviour of the editor should
+	 * change.<br>
 	 * <br>
 	 * <b>Note:</b> This method can be called from any Thread
 	 * 
@@ -305,26 +296,24 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 */
 	public void update(boolean reconfigureSourceViewer) {
 		// TODO: gets called way to often on editor opening
-		
+
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if (getSourceViewer() != null) {
 					getSourceViewer().invalidateTextPresentation();
-					
-					if ((getSourceViewer() instanceof ISourceViewerExtension2)
-							&& reconfigureSourceViewer) {
+
+					if ((getSourceViewer() instanceof ISourceViewerExtension2) && reconfigureSourceViewer) {
 						// reconfigure the SourceViewer
-						((ISourceViewerExtension2) getSourceViewer())
-								.unconfigure();
+						((ISourceViewerExtension2) getSourceViewer()).unconfigure();
 						getSourceViewer().configure(getBasicConfiguration());
 					}
 				}
 			}
 		});
 	}
-	
+
 	/**
 	 * Gets the <code>BasicSourceViewerConfiguration</code> of this editor
 	 * 
@@ -332,13 +321,12 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 */
 	public BasicSourceViewerConfiguration getBasicConfiguration() {
 		if (configuration == null) {
-			configuration = new BasicSourceViewerConfiguration(
-					getColorManager(), this);
+			configuration = new BasicSourceViewerConfiguration(getColorManager(), this);
 		}
-		
+
 		return configuration;
 	}
-	
+
 	/**
 	 * Gets the <code>BasicDocumentProvider</code> of this editor
 	 * 
@@ -348,20 +336,20 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 		if (provider == null) {
 			provider = new BasicDocumentProvider();
 		}
-		
+
 		return provider;
 	}
-	
+
 	/**
 	 * Gets the <code>ParseTree</code> representing the input of this editor
 	 * 
-	 * @return The <code>ParseTree</code> or <code>null</code> if none has been
-	 *         set so far
+	 * @return The <code>ParseTree</code> or <code>null</code> if none has been set
+	 *         so far
 	 */
 	public ParseTree getParseTree() {
 		return parseTree;
 	}
-	
+
 	/**
 	 * Gets the names of the rules used for parsing this editor's input
 	 * 
@@ -370,11 +358,11 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	public List<String> getParseRuleNames() {
 		return parseRuleNames;
 	}
-	
+
 	/**
-	 * This is a helper method that will do the parsing for the given input
-	 * wihtout any checks (whetehr there is an active parsing job) and in the
-	 * same thread as it is called
+	 * This is a helper method that will do the parsing for the given input wihtout
+	 * any checks (whetehr there is an active parsing job) and in the same thread as
+	 * it is called
 	 * 
 	 * @param input
 	 *            The input to parse
@@ -383,7 +371,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	private IStatus startParsingInput(String input) {
 		// preprocess
 		doPreprocessorParsing(input);
-		
+
 		// check if this parsing should be cancelled
 		synchronized (parsingIsCancelled) {
 			if (parsingIsCancelled) {
@@ -391,10 +379,10 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 				return Status.CANCEL_STATUS;
 			}
 		}
-		
+
 		// parse
 		ParseTree output = doParse(input);
-		
+
 		// check if this parsing should be cancelled
 		synchronized (parsingIsCancelled) {
 			if (parsingIsCancelled) {
@@ -402,34 +390,34 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 				return Status.CANCEL_STATUS;
 			}
 		}
-		
+
 		if (output == null || output.getChildCount() == 0) {
 			applyParseChanges();
-			
+
 			return Status.CANCEL_STATUS;
 		} else {
 			parseTree = output;
-			
+
 			if (!processParseTree(parseTree)) {
 				applyParseChanges();
 			}
-			
+
 			return Status.OK_STATUS;
 		}
 	}
-	
+
 	/**
-	 * Parses the input of this editor, updates the parseTree and sends it to
-	 * the {@link #processParseTree(ParseTree)} method automatically. Before
-	 * doing so it will call the preprocessor parser via
-	 * {@link #doPreprocessorParsing(String)}. If you need to specify a custom
-	 * preprocessor parser or disable it you have to overwrite that method.
+	 * Parses the input of this editor, updates the parseTree and sends it to the
+	 * {@link #processParseTree(ParseTree)} method automatically. Before doing so it
+	 * will call the preprocessor parser via {@link #doPreprocessorParsing(String)}.
+	 * If you need to specify a custom preprocessor parser or disable it you have to
+	 * overwrite that method.
 	 * 
 	 * @param suspend
-	 *            Indicates whether the calling thread should be suspended until
-	 *            the parsing is done. If there is currently another
-	 *            {@link #parseJob} the parsing will be rescheduled but the
-	 *            suspension will be cancelled
+	 *            Indicates whether the calling thread should be suspended until the
+	 *            parsing is done. If there is currently another {@link #parseJob}
+	 *            the parsing will be rescheduled but the suspension will be
+	 *            cancelled
 	 * 
 	 * @return <code>True</code> if the parsing could be done successfully and
 	 *         <code>False</code> otherwise
@@ -438,33 +426,32 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 		if (getEditorInput() == null) {
 			return false;
 		}
-		
+
 		IDocument document = getBasicProvider().getDocument(getEditorInput());
-		
+
 		if (document == null) {
 			return false;
 		}
-		
+
 		String input = document.get();
-		
+
 		if (input == null) {
 			return false;
 		}
-		
+
 		synchronized (parsingIsCancelled) {
-			if (parsingIsCancelled
-					&& (parseJob == null || parseJob.getResult() != null)) {
+			if (parsingIsCancelled && (parseJob == null || parseJob.getResult() != null)) {
 				// There is no other parsing in progress that should be
 				// cancelled and cancelling is only possible after having
 				// initialized it
 				parsingIsCancelled = false;
 			}
 		}
-		
+
 		if (parseJob != null && parseJob.getState() != Job.NONE) {
 			// Ther previous Job is still running -> reschedule
 			parseJob.addJobChangeListener(new JobChangeAdapter() {
-				
+
 				@Override
 				public void done(IJobChangeEvent event) {
 					// As there has been a request to parse the input again
@@ -473,38 +460,37 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 					parseInput();
 				}
 			});
-			
+
 			return false;
 		}
-		
+
 		if (suspend) {
 			startParsingInput(input);
 		} else {
-			parseJob = new Job(
-					"Parsing \"" + getEditorInput().getName() + "\"...") {
-				
+			parseJob = new Job("Parsing \"" + getEditorInput().getName() + "\"...") {
+
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					return startParsingInput(input);
 				}
 			};
-			
+
 			// schedule parsing
 			parseJob.schedule();
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
-	 * Parses the input of this editor, updates the parseTree and sends it to
-	 * the {@link #processParseTree(ParseTree)} method automatically. Before
-	 * doing so it will call the preprocessor parser via
-	 * {@link #doPreprocessorParsing(String)}. If you need to specify a custom
-	 * preprocessor parser or disable it you have to overwrite that method.<br>
-	 * This method will not wait until the parsing is done. If you need the
-	 * parsing to be done when this method returns youo can use
-	 * {@link #parseInput(boolean)} instead
+	 * Parses the input of this editor, updates the parseTree and sends it to the
+	 * {@link #processParseTree(ParseTree)} method automatically. Before doing so it
+	 * will call the preprocessor parser via {@link #doPreprocessorParsing(String)}.
+	 * If you need to specify a custom preprocessor parser or disable it you have to
+	 * overwrite that method.<br>
+	 * This method will not wait until the parsing is done. If you need the parsing
+	 * to be done when this method returns youo can use {@link #parseInput(boolean)}
+	 * instead
 	 * 
 	 * @return <code>True</code> if the parsing could be done successfully and
 	 *         <code>False</code> otherwise
@@ -512,147 +498,118 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	public boolean parseInput() {
 		return parseInput(false);
 	}
-	
+
 	/**
-	 * This method will cancel a running parse-process or at least the
-	 * corresponding processing of the parse result
+	 * This method will cancel a running parse-process or at least the corresponding
+	 * processing of the parse result
 	 */
 	public void cancelParsing() {
 		synchronized (parsingIsCancelled) {
 			parsingIsCancelled = true;
 		}
 	}
-	
+
 	/**
-	 * A default implementation of a preprocessor parser that parses the input
-	 * first and sets the found macros if this editor is an instance of
+	 * A default implementation of a preprocessor parser that parses the input first
+	 * and sets the found macros if this editor is an instance of
 	 * <code>IMacroSupport</code>.
 	 */
 	protected void doPreprocessorParsing(String input) {
-		if (this instanceof IMacroSupport
-				&& getEditorInput() instanceof IFileEditorInput) {
-			ANTLRInputStream prepIn = new ANTLRInputStream(input);
-			
-			PreprocessorLexer prepLexer = new PreprocessorLexer(prepIn);
-			
-			CommonTokenStream prepTokens = new CommonTokenStream(prepLexer);
-			
-			PreprocessorParser prepParser = new PreprocessorParser(prepTokens);
-			
-			prepParser.removeErrorListeners();
-			PreprocessorErrorListener errorListener = new PreprocessorErrorListener(
-					0);
-			prepParser.addErrorListener(errorListener);
-			
-			ParseTreeWalker prepWalker = new ParseTreeWalker();
-			
-			PreprocessorParseListener preprocessorListener = new PreprocessorParseListener(
-					((IFileEditorInput) getEditorInput()).getFile()
-							.getLocation());
-			
-			prepWalker.walk(preprocessorListener, prepParser.start());
-			
-			PreprocessorParseResult result = errorListener.getParseResult();
-			
-			((IMacroSupport) this)
-					.setMacros(preprocessorListener.getDefinedMacros(), true);
-			
-			// merge parse results and apply them
-			result.mergeWith(preprocessorListener.getParseResult());
+		if (this instanceof IMacroSupport && getEditorInput() instanceof IFileEditorInput) {
+			PreprocessorParseResult result = ParseUtil.parseAndValidatePreprocess(input,
+					((IFileEditorInput) getEditorInput()).getFile().getLocation());
+
+			((IMacroSupport) this).setMacros(result.getMacros(), true);
+
+			// apply markers
 			result.applyMarkersTo(this);
 		} else {
-			createMarker(IMarker.PROBLEM, 0, 0, "Unable to preprocess the file",
-					IMarker.SEVERITY_ERROR);
+			createMarker(IMarker.PROBLEM, 0, 0, "Unable to preprocess the file", IMarker.SEVERITY_ERROR);
 		}
 	}
-	
+
 	/**
-	 * Processes whatever needs to be processed when the ParseTree has changed
-	 * <br>
+	 * Processes whatever needs to be processed when the ParseTree has changed <br>
 	 * Note: You might want to call {@link #applyParseChanges()} after the
 	 * processing
 	 * 
 	 * @param tree
 	 *            The generated tree
-	 * @return Whether this function has called {@link #applyParseChanges()}. If
-	 *         not the default implementation of {@link #parseInput()} will call
-	 *         this function afterwards.
+	 * @return Whether this function has called {@link #applyParseChanges()}. If not
+	 *         the default implementation of {@link #parseInput()} will call this
+	 *         function afterwards.
 	 */
 	protected boolean processParseTree(ParseTree parseTree) {
 		return false;
 	}
-	
+
 	/**
-	 * Parses the input of this editor in order to set the {@link #parseTree}
-	 * for this editor. <br>
-	 * Note: You might want to call {@link #applyParseChanges()} after parsing
-	 * (or rather after {@link #processParseTree(ParseTree)}.<br>
-	 * Note that before this method is called
-	 * {@link #doPreprocessorParsing(String)} gets called. If you don't want to
-	 * use the default preprocessor parsing strategy you have to overwrite that
-	 * method.
+	 * Parses the input of this editor in order to set the {@link #parseTree} for
+	 * this editor. <br>
+	 * Note: You might want to call {@link #applyParseChanges()} after parsing (or
+	 * rather after {@link #processParseTree(ParseTree)}.<br>
+	 * Note that before this method is called {@link #doPreprocessorParsing(String)}
+	 * gets called. If you don't want to use the default preprocessor parsing
+	 * strategy you have to overwrite that method.
 	 * 
 	 * @param input
 	 *            The input to parse
 	 * 
 	 * @return The resulting <code>ParseTree</code> or <code>null</code> if the
-	 *         parsing failed (if not overridden by subclasses this method
-	 *         always returns <code>null</code>
+	 *         parsing failed (if not overridden by subclasses this method always
+	 *         returns <code>null</code>
 	 */
 	protected ParseTree doParse(String input) {
 		// parsing diabled
 		return null;
 	}
-	
+
 	/**
 	 * Creates all managers that should work on this editor
 	 * 
 	 * @param managerList
-	 *            The list of managers. The newly created ones have to be added
-	 *            to this list
+	 *            The list of managers. The newly created ones have to be added to
+	 *            this list
 	 */
 	protected void createManagers(List<IManager> managerList) {
 		// add folding manager
-		managerList.add(
-				new BasicFoldingManager(((ProjectionViewer) getSourceViewer())
-						.getProjectionAnnotationModel()));
+		managerList.add(new BasicFoldingManager(
+				((ProjectionViewer) getSourceViewer()).getProjectionAnnotationModel()));
 		// add marker manager
 		managerList.add(new BasicMarkerManager(this));
 	}
-	
+
 	@Override
-	public void createMarker(String type, int offset, int length,
-			String message, int severity) {
+	public void createMarker(String type, int offset, int length, String message, int severity) {
 		if (getEditorInput() == null) {
 			return;
 		}
-		
+
 		int line;
 		try {
-			line = getBasicProvider().getDocument(getEditorInput())
-					.getLineOfOffset(offset);
+			line = getBasicProvider().getDocument(getEditorInput()).getLineOfOffset(offset);
 		} catch (BadLocationException e) {
 			try {
 				throw new SQDevEditorException("Can't create marker", e);
 			} catch (SQDevEditorException e1) {
 				e1.printStackTrace();
-				
+
 				return;
 			}
 		}
-		
-		((BasicMarkerManager) getManager(BasicMarkerManager.TYPE))
-				.addMarker(type, line, offset, length, severity, message);
+
+		((BasicMarkerManager) getManager(BasicMarkerManager.TYPE)).addMarker(type, line, offset, length,
+				severity, message);
 	}
-	
+
 	@Override
 	public void doSave(IProgressMonitor progressMonitor) {
 		super.doSave(progressMonitor);
-		
+
 		// reparse on save
 		parseInput();
 	}
-	
+
 	/**
 	 * Applies the changes detected by the parsing by notifying the respective
 	 * managers to apply their work
@@ -662,7 +619,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 			manager.apply();
 		}
 	}
-	
+
 	/**
 	 * Gets a manager working on this editor of the given type
 	 * 
@@ -676,22 +633,22 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 				return manager;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
-	 * Adds a foldable area to the editor if a {@link BasicFoldingManager} has
-	 * been installed.<br>
-	 * In order of the changes to take effect {@link #applyParseChanges()} has
-	 * to be called
+	 * Adds a foldable area to the editor if a {@link BasicFoldingManager} has been
+	 * installed.<br>
+	 * In order of the changes to take effect {@link #applyParseChanges()} has to be
+	 * called
 	 * 
 	 * @param position
 	 *            The <code>Position</code> this area should be on
 	 */
 	public void addFoldingArea(Position position) {
 		IDocument doc = getDocumentProvider().getDocument(getEditorInput());
-		
+
 		// don't fold if the code is only one line long
 		try {
 			if (doc == null || doc.getLineOfOffset(position.offset) == doc
@@ -700,37 +657,33 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 			}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
-			
-			SQDevInfobox info = new SQDevInfobox(
-					"Error in code folding framework!", e);
+
+			SQDevInfobox info = new SQDevInfobox("Error in code folding framework!", e);
 			info.open(false);
-			
+
 			return;
 		}
-		
+
 		ProjectionAnnotation annotation = new ProjectionAnnotation();
-		
+
 		BasicFoldingManager foldingManager = (BasicFoldingManager) getManager(
 				BasicFoldingManager.getManagerType());
-		
+
 		if (foldingManager == null) {
 			return;
 		}
-		
+
 		foldingManager.addFoldingArea(
-				new AbstractMap.SimpleEntry<ProjectionAnnotation, Position>(
-						annotation, position));
+				new AbstractMap.SimpleEntry<ProjectionAnnotation, Position>(annotation, position));
 	}
-	
+
 	/**
-	 * Checks whether this editor is in a valid state (no errors in the source
-	 * code)
+	 * Checks whether this editor is in a valid state (no errors in the source code)
 	 */
 	public boolean isValid() {
-		return ((BasicMarkerManager) getManager(BasicMarkerManager.TYPE))
-				.isValidState();
+		return ((BasicMarkerManager) getManager(BasicMarkerManager.TYPE)).isValidState();
 	}
-	
+
 	/**
 	 * Confidures all KeyHandler for this editor
 	 */

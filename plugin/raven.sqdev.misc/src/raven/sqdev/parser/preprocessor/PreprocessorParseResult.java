@@ -7,20 +7,20 @@ import raven.sqdev.misc.Macro;
 import raven.sqdev.parser.misc.ParseResult;
 
 public class PreprocessorParseResult extends ParseResult {
-	
+
 	/**
 	 * The list of defined macros
 	 */
 	private List<Macro> macros;
-	
+
 	/**
 	 * Creates a new instance of this class
 	 */
 	public PreprocessorParseResult() {
 		macros = new ArrayList<Macro>();
 	}
-	
-	
+
+
 	/**
 	 * Merges the given parse result into this one
 	 * 
@@ -29,10 +29,10 @@ public class PreprocessorParseResult extends ParseResult {
 	 */
 	public void mergeWith(PreprocessorParseResult other) {
 		super.mergeWith(other);
-		
+
 		macros.addAll(other.getMacros());
 	}
-	
+
 	/**
 	 * Adds the given Macro
 	 * 
@@ -42,7 +42,7 @@ public class PreprocessorParseResult extends ParseResult {
 	public void addMacro(Macro macro) {
 		macros.add(macro);
 	}
-	
+
 	/**
 	 * Gets all defined macros
 	 */

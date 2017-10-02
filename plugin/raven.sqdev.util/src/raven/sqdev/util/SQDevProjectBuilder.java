@@ -25,6 +25,7 @@ import raven.sqdev.misc.FileUtil;
 import raven.sqdev.misc.Marker;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.parser.misc.ParseResult;
+import raven.sqdev.parser.misc.ParseUtil;
 import raven.sqdev.parser.preprocessor.PreprocessorErrorListener;
 import raven.sqdev.parser.preprocessor.PreprocessorLexer;
 import raven.sqdev.parser.preprocessor.PreprocessorParseListener;
@@ -32,42 +33,42 @@ import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
 import raven.sqdev.parser.preprocessor.PreprocessorParser;
 import raven.sqdev.parser.sqf.SQFLexer;
 import raven.sqdev.parser.sqf.SQFParseInformation;
+import raven.sqdev.parser.sqf.SQFParseResult;
 import raven.sqdev.parser.sqf.SQFParser;
 import raven.sqdev.parser.sqf.SQFValidator;
 
 public class SQDevProjectBuilder extends IncrementalProjectBuilder {
-	
+
 	@Override
-	protected IProject[] build(int kind, Map<String, String> args,
-			IProgressMonitor monitor) throws CoreException {
-		
+	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor)
+			throws CoreException {
+
 		try {
 			switch (kind) {
-				case INCREMENTAL_BUILD:
+			case INCREMENTAL_BUILD:
+				incrementalBuild(monitor);
+				break;
+			case FULL_BUILD:
+				fullBuild(monitor);
+				break;
+			case AUTO_BUILD:
+				if (getDelta(getProject()) != null) {
 					incrementalBuild(monitor);
-					break;
-				case FULL_BUILD:
+				} else {
 					fullBuild(monitor);
-					break;
-				case AUTO_BUILD:
-					if (getDelta(getProject()) != null) {
-						incrementalBuild(monitor);
-					} else {
-						fullBuild(monitor);
-					}
-					break;
+				}
+				break;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			
-			SQDevInfobox info = new SQDevInfobox(
-					"Errors during project building", e);
+
+			SQDevInfobox info = new SQDevInfobox("Errors during project building", e);
 			info.open(false);
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Performs an incremental build of the project. This method relies on
 	 * {@link #getDelta(IProject)}
@@ -80,17 +81,16 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	 */
 	protected void incrementalBuild(IProgressMonitor monitor)
 			throws FileNotFoundException, IOException, CoreException {
-		monitor.beginTask("Building " + getProject().getName(),
-				IProgressMonitor.UNKNOWN);
-		
+		monitor.beginTask("Building " + getProject().getName(), IProgressMonitor.UNKNOWN);
+
 		IResourceDelta delta = getDelta(getProject());
-		
+
 		// parse changed files only
 		parseChangedFiles(delta);
-		
+
 		monitor.done();
 	}
-	
+
 	/**
 	 * Parses the changed files in the given delta
 	 * 
@@ -102,8 +102,8 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	 */
 	private void parseChangedFiles(IResourceDelta delta)
 			throws FileNotFoundException, IOException, CoreException {
-		for (IResourceDelta currentResourceDelta : delta
-				.getAffectedChildren(IResourceDelta.CHANGED, IResource.FILE)) {
+		for (IResourceDelta currentResourceDelta : delta.getAffectedChildren(IResourceDelta.CHANGED,
+				IResource.FILE)) {
 			if (currentResourceDelta.getResource() instanceof IFile) {
 				parseSQFFile((IFile) currentResourceDelta.getResource());
 			} else {
@@ -111,7 +111,7 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 			}
 		}
 	}
-	
+
 	/**
 	 * Performs a full build of the project.
 	 * 
@@ -124,25 +124,24 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	protected void fullBuild(IProgressMonitor monitor)
 			throws CoreException, FileNotFoundException, IOException {
 		List<IResource> files = getProjectChildren(IResource.FILE);
-		
-		monitor.beginTask("Building project " + getProject().getName(),
-				files.size());
-		
+
+		monitor.beginTask("Building project " + getProject().getName(), files.size());
+
 		for (IResource currentResource : files) {
 			if (monitor.isCanceled()) {
 				break;
 			}
-			
+
 			parseSQFFile((IFile) currentResource);
 			monitor.worked(1);
 		}
-		
+
 		monitor.done();
 	}
-	
+
 	/**
-	 * Parses the given SQF file. If the given file is not a SQF file this
-	 * method returns without doing anything
+	 * Parses the given SQF file. If the given file is not a SQF file this method
+	 * returns without doing anything
 	 * 
 	 * @param file
 	 *            The SQF file to parse
@@ -150,64 +149,43 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	 * @throws FileNotFoundException
 	 * @throws CoreException
 	 */
-	protected void parseSQFFile(IFile file)
-			throws FileNotFoundException, IOException, CoreException {
-		if (file.getFileExtension() == null
-				|| !file.getFileExtension().toLowerCase().equals("sqf")) {
+	protected void parseSQFFile(IFile file) throws FileNotFoundException, IOException, CoreException {
+		if (file.getFileExtension() == null || !file.getFileExtension().toLowerCase().equals("sqf")) {
 			// Only parse SQF files
 			return;
 		}
+		
+		if(!file.getName().equals("RealScriptTester.sqf")) {
+			return;
+		}
+		
 		System.out.println("Parsing " + file.getName());
-		
-		final String fileContent = FileUtil
-				.readAll(new FileInputStream(file.getLocation().toFile()));
-		
-		ParseTreeWalker parseWalker = new ParseTreeWalker();
-		// TODO: add parser and lexer error listener
-		// preprocess the file
-		ANTLRInputStream prepInput = new ANTLRInputStream(fileContent);
-		PreprocessorLexer prepLexer = new PreprocessorLexer(prepInput);
-		
-		CommonTokenStream prepTokens = new CommonTokenStream(prepLexer);
-		
-		PreprocessorParser prepParser = new PreprocessorParser(prepTokens);
-		prepParser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		prepParser.removeErrorListeners();
-		PreprocessorErrorListener errorListener = new PreprocessorErrorListener(
-				0);
-		prepParser.addErrorListener(errorListener);
-		
-		PreprocessorParseListener preprocessorListener = new PreprocessorParseListener(
+
+		final String fileContent = FileUtil.readAll(new FileInputStream(file.getLocation().toFile()));
+
+		PreprocessorParseResult prepResult = ParseUtil.parseAndValidatePreprocess(fileContent,
 				file.getLocation());
+
+		System.out.println("\tFinished preprocessing - " + System.currentTimeMillis());
+
+		SQFParseInformation info = new SQFParseInformation(prepResult.getMacros());
 		
-		parseWalker.walk(preprocessorListener, prepParser.start());
-		
-		PreprocessorParseResult preprocessResult = preprocessorListener
-				.getParseResult();
-		
-		
-		// Parse the file
-		SQFParseInformation info = new SQFParseInformation(
-				preprocessResult.getMacros());
-		
-		ANTLRInputStream sqfInput = new ANTLRInputStream(fileContent);
-		SQFLexer sqfLexer = new SQFLexer(sqfInput,
-				info.getBinaryOperatorNames(), info.getUnaryOperatorNames(),
-				info.getMacroNames());
-		CommonTokenStream sqfTokens = new CommonTokenStream(sqfLexer);
-		SQFParser sqfParser = new SQFParser(sqfTokens);
-		sqfParser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		SQFValidator validator = new SQFValidator(info, sqfTokens);
-		
-		parseWalker.walk(validator, sqfParser.start());
-		
-		// merge results
-		ParseResult result = validator.getParseResult();
-		result.mergeWith(preprocessResult);
-		result.mergeWith(errorListener.getParseResult());
-		
+		SQFParseResult sqfResult = ParseUtil.parseSQF(fileContent, info);
+
+		System.out.println("\tFinished parsing - " + System.currentTimeMillis());
+
+		sqfResult
+				.mergeWith(ParseUtil.validateSQF(sqfResult.getParseTree(), sqfResult.getTokenStream(), info));
+
+		sqfResult.mergeWith(prepResult);
+
+		System.out.println("\tFinished validating - " + System.currentTimeMillis());
+
+		// clear old markers
+		file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
+
 		// apply markers
-		for (Marker currentMarker : result.getMarkers()) {
+		for (Marker currentMarker : sqfResult.getMarkers()) {
 			// find line
 			int line = 1;
 			for (int i = 0; i < currentMarker.getOffset(); i++) {
@@ -215,20 +193,16 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 					line++;
 				}
 			}
-			
+
 			IMarker fileMarker = file.createMarker(currentMarker.getType());
 			fileMarker.setAttribute(IMarker.LINE_NUMBER, line);
-			fileMarker.setAttribute(IMarker.MESSAGE,
-					currentMarker.getMessage());
-			fileMarker.setAttribute(IMarker.SEVERITY,
-					currentMarker.getSeverity());
-			fileMarker.setAttribute(IMarker.CHAR_START,
-					currentMarker.getOffset());
-			fileMarker.setAttribute(IMarker.CHAR_END,
-					currentMarker.getOffset() + currentMarker.getLength());
+			fileMarker.setAttribute(IMarker.MESSAGE, currentMarker.getMessage());
+			fileMarker.setAttribute(IMarker.SEVERITY, currentMarker.getSeverity());
+			fileMarker.setAttribute(IMarker.CHAR_START, currentMarker.getOffset());
+			fileMarker.setAttribute(IMarker.CHAR_END, currentMarker.getOffset() + currentMarker.getLength());
 		}
 	}
-	
+
 	/**
 	 * Gets the children of this project of the given type.
 	 * 
@@ -240,28 +214,24 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	 */
 	private List<IResource> getProjectChildren(int type) throws CoreException {
 		List<IResource> resources = new ArrayList<IResource>();
-		
+
 		for (IResource currentResource : getProject().members()) {
-			if (type == IResource.NONE
-					|| (currentResource.getType() & type) == type) {
+			if (type == IResource.NONE || (currentResource.getType() & type) == type) {
 				resources.add(currentResource);
 			}
-			
+
 			if (currentResource instanceof IFolder) {
-				for (IResource currentInnerResource : getAllChildrenOf(
-						(IFolder) currentResource)) {
-					if (type == IResource.NONE
-							|| (currentInnerResource.getType()
-									& type) == type) {
+				for (IResource currentInnerResource : getAllChildrenOf((IFolder) currentResource)) {
+					if (type == IResource.NONE || (currentInnerResource.getType() & type) == type) {
 						resources.add(currentInnerResource);
 					}
 				}
 			}
 		}
-		
+
 		return resources;
 	}
-	
+
 	/**
 	 * Gets all child resource in the given folder
 	 * 
@@ -270,19 +240,18 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	 * @return A list of the respective children
 	 * @throws CoreException
 	 */
-	private List<IResource> getAllChildrenOf(IFolder folder)
-			throws CoreException {
+	private List<IResource> getAllChildrenOf(IFolder folder) throws CoreException {
 		List<IResource> resources = new ArrayList<IResource>();
-		
+
 		for (IResource currentResource : folder.members()) {
 			resources.add(currentResource);
-			
+
 			if (currentResource instanceof IFolder) {
 				resources.addAll(getAllChildrenOf((IFolder) currentResource));
 			}
 		}
-		
+
 		return resources;
 	}
-	
+
 }

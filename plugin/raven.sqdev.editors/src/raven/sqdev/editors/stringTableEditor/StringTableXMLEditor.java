@@ -26,7 +26,7 @@ import raven.sqdev.parser.misc.BasicErrorListener;
  *
  */
 public class StringTableXMLEditor extends BasicCodeEditor {
-	
+
 	public static final String TAG = "__stringTableEditor_Tag";
 	public static final IPredicateRule TAG_RULE = new MultiLineRule("<", ">", new Token(TAG));
 	/**
@@ -37,78 +37,80 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 	 * The package list contained in this editor
 	 */
 	private List<StringTablePackage> packageList;
-	
-	
+
 	public StringTableXMLEditor() {
 		getBasicProvider().getPartitionScanner().setRules(new IPredicateRule[] { TAG_RULE });
 	}
-	
+
 	@Override
 	protected ParseTree doParse(String input) {
 		ANTLRInputStream in = new ANTLRInputStream(input);
-		
-		BasicErrorListener listener = new BasicErrorListener(this);
-		
+
+		BasicErrorListener listener = new BasicErrorListener();
+
 		StringTableLexer lexer = new StringTableLexer(in);
 		lexer.removeErrorListeners();
 		lexer.addErrorListener(listener);
-		
+
 		stream = new CommonTokenStream(lexer);
-		
+
 		StringTableParser parser = new StringTableParser(stream);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
-		
-		return parser.content();
+
+		ParseTree tree = parser.content();
+
+		listener.getParseResult().applyMarkersTo(this);
+
+		return tree;
 	}
-	
+
 	@Override
 	protected boolean processParseTree(ParseTree tree) {
 		ParseTreeWalker walker = new ParseTreeWalker();
-		
+
 		StringTableWalkListener listener = new StringTableWalkListener(stream);
-		
+
 		walker.walk(listener, tree);
-		
+
 		packageList = listener.getPackageList();
-		
+
 		applyParseChanges();
-		
+
 		return false;
 	}
-	
+
 	@Override
 	protected List<CharacterPair> getCharacterPairs() {
 		List<CharacterPair> pairs = new ArrayList<CharacterPair>();
-		
+
 		pairs.add(CharacterPair.DOUBLE_QUOTATION_MARKS);
 		pairs.add(CharacterPair.SINGLE_QUOTATION_MARKS);
 		pairs.add(CharacterPair.TAG);
-		
+
 		return pairs;
 	}
-	
+
 	@Override
 	public BasicSourceViewerConfiguration getBasicConfiguration() {
-		if (configuration == null
-				|| !(configuration instanceof StringTableSourceViewerConfiguration)) {
+		if (configuration == null || !(configuration instanceof StringTableSourceViewerConfiguration)) {
 			configuration = new StringTableSourceViewerConfiguration(getColorManager(), this);
 		}
-		
+
 		return configuration;
 	}
-	
+
 	/**
-	 * Gets the list of <code>StringTablePackages</code> contained in this
-	 * editor. May be <code>null</code> if not yet initialized
+	 * Gets the list of <code>StringTablePackages</code> contained in this editor.
+	 * May be <code>null</code> if not yet initialized
 	 */
 	public List<StringTablePackage> getPackageList() {
 		return packageList;
 	}
-	
+
 	@Override
 	public boolean isDirty() {
 		return super.isDirty();
 	}
-	
+
 }
