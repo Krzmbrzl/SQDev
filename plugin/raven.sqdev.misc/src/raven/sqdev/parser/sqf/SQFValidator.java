@@ -455,12 +455,7 @@ public class SQFValidator extends SQFBaseListener {
 
 		String operatorName = ctx.getText();
 
-		long inTime = System.currentTimeMillis();
-
 		SQFCommand operator = resolveOperator(info.getNularOperators(), operatorName);
-
-		System.out.println("Resolved operator in " + (System.currentTimeMillis() - inTime) + " - list size: "
-				+ info.getNularOperators().size());
 
 		if (operator == null) {
 			if (!isDefinedMacro(operatorName) && !isDefinedLocalVariable(operatorName)) {

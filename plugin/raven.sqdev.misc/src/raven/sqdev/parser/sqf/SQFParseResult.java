@@ -6,7 +6,6 @@ import java.util.List;
 import org.antlr.v4.runtime.BufferedTokenStream;
 import org.eclipse.jface.text.Position;
 
-import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.parser.misc.ParseResult;
 

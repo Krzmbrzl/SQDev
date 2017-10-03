@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -24,18 +20,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import raven.sqdev.misc.FileUtil;
 import raven.sqdev.misc.Marker;
 import raven.sqdev.misc.SQDevInfobox;
-import raven.sqdev.parser.misc.ParseResult;
 import raven.sqdev.parser.misc.ParseUtil;
-import raven.sqdev.parser.preprocessor.PreprocessorErrorListener;
-import raven.sqdev.parser.preprocessor.PreprocessorLexer;
-import raven.sqdev.parser.preprocessor.PreprocessorParseListener;
 import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
-import raven.sqdev.parser.preprocessor.PreprocessorParser;
-import raven.sqdev.parser.sqf.SQFLexer;
 import raven.sqdev.parser.sqf.SQFParseInformation;
 import raven.sqdev.parser.sqf.SQFParseResult;
-import raven.sqdev.parser.sqf.SQFParser;
-import raven.sqdev.parser.sqf.SQFValidator;
 
 public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 
@@ -154,11 +142,7 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 			// Only parse SQF files
 			return;
 		}
-		
-		if(!file.getName().equals("RealScriptTester.sqf")) {
-			return;
-		}
-		
+
 		System.out.println("Parsing " + file.getName());
 
 		final String fileContent = FileUtil.readAll(new FileInputStream(file.getLocation().toFile()));
@@ -166,20 +150,16 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 		PreprocessorParseResult prepResult = ParseUtil.parseAndValidatePreprocess(fileContent,
 				file.getLocation());
 
-		System.out.println("\tFinished preprocessing - " + System.currentTimeMillis());
-
+		// create parse information with default values
 		SQFParseInformation info = new SQFParseInformation(prepResult.getMacros());
-		
-		SQFParseResult sqfResult = ParseUtil.parseSQF(fileContent, info);
 
-		System.out.println("\tFinished parsing - " + System.currentTimeMillis());
+		SQFParseResult sqfResult = ParseUtil.parseSQF(fileContent, info);
 
 		sqfResult
 				.mergeWith(ParseUtil.validateSQF(sqfResult.getParseTree(), sqfResult.getTokenStream(), info));
 
 		sqfResult.mergeWith(prepResult);
 
-		System.out.println("\tFinished validating - " + System.currentTimeMillis());
 
 		// clear old markers
 		file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);

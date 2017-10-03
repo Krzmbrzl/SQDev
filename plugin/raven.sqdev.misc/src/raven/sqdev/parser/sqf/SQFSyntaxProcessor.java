@@ -219,10 +219,6 @@ public class SQFSyntaxProcessor {
 			// store valid types in list
 			validGeneralRightTypes.addAllUnique(validRightTypes);
 
-			if (rightArgumentTypes == null) {
-				String dummy = "";
-			}
-
 			// check provided arguments
 			for (EDataType currentType : rightArgumentTypes) {
 				if (validRightTypes.containsExchangableType(currentType, true)) {
@@ -293,80 +289,6 @@ public class SQFSyntaxProcessor {
 
 		return markerPosition;
 	}
-
-
-	/**
-	 * Tries to apply the given argument types to the syntax on the right side of
-	 * the command
-	 * 
-	 * @param argumentTypes
-	 *            The set of types to test against the syntax
-	 * @param offsets
-	 *            An array containing the start offset of the right argument and
-	 *            it's length in the editor
-	 * @return Whether the types could be applied successfully
-	 */
-	/*
-	 * public boolean applyRightArgument(EDataType[] argumentTypes, int[] offsets) {
-	 * return applyArgument(argumentTypes, RIGHT, offsets); }
-	 */
-
-	/**
-	 * Tries to apply the given argument types to the syntax on the left side of the
-	 * command
-	 * 
-	 * @param argumentTypes
-	 *            The set of types to test against the syntax
-	 * @param offsets
-	 *            An array containing the start offset of the left argument and it's
-	 *            length in the editor
-	 * @return Whether the types could be applied successfully
-	 */
-	/*
-	 * public boolean applyLeftArgument(EDataType[] argumentTypes, int[] offsets) {
-	 * return applyArgument(argumentTypes, LEFT, offsets); }
-	 */
-
-	/**
-	 * Tests the argument at the given index against the given set of types
-	 * 
-	 * @param argumentTypes
-	 *            The set of types to test
-	 * @param leftSide
-	 *            Whether the left side argument should be tested
-	 * @param offsets
-	 *            An array containing the start offset of the respective argument
-	 *            and it's length in the editor
-	 * @return Whether the types could be applied successfully
-	 */
-	/*
-	 * public boolean applyArgument(EDataType[] argumentTypes, boolean leftSide,
-	 * int[] offsets) { List<EDataType> possibleTypes = new ArrayList<EDataType>();
-	 * 
-	 * for (Syntax currentSyntax : syntaxes) { if (leftSide &&
-	 * !currentSyntax.isBinary()) { // non-binary syntaxes can not have left
-	 * arguments continue; }
-	 * 
-	 * List<EDataType> currentlyPossibleTypes = getTypesForSide( currentSyntax,
-	 * leftSide);
-	 * 
-	 * for (EDataType currentType : argumentTypes) { if
-	 * (currentlyPossibleTypes.contains(currentType)) { return true; } else { for
-	 * (EDataType validType : currentlyPossibleTypes) { if
-	 * (validType.canBeReplacedBy(currentType)) { return true; } else { if
-	 * (currentType.canBeReplacedBy(validType)) { // TODO: potential error return
-	 * true; } } } } }
-	 * 
-	 * for (EDataType currentType : currentlyPossibleTypes) { if
-	 * (!possibleTypes.contains(currentType)) { possibleTypes.add(currentType); } }
-	 * }
-	 * 
-	 * // create error marker editor.createMarker(IMarker.PROBLEM, offsets[0],
-	 * offsets[1], ProblemMessages.ExpectedTypeButGot( possibleTypes .toArray(new
-	 * EDataType[possibleTypes.size()]), argumentTypes), IMarker.SEVERITY_ERROR);
-	 * 
-	 * return false; }
-	 */
 
 	/**
 	 * Gets the possible argument types for one side of the given syntax
