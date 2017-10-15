@@ -1,4 +1,4 @@
-// Generated from SQF.g4 by ANTLR 4.5.3
+// Generated from SQF.g4 by ANTLR 4.7
 
 	package raven.sqdev.parser.sqf;
 

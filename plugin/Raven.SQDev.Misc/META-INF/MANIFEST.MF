@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Misc
 Bundle-SymbolicName: raven.sqdev.misc;singleton:=true
-Bundle-Version: 0.5.0
+Bundle-Version: 0.6.1.dev
 Bundle-Activator: raven.sqdev.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
@@ -18,6 +18,8 @@ Export-Package: org.antlr.v4.runtime,
  org.antlr.v4.runtime.dfa,
  org.antlr.v4.runtime.misc,
  org.antlr.v4.runtime.tree,
+ org.antlr.v4.runtime.tree.pattern,
+ org.antlr.v4.runtime.tree.xpath,
  raven.sqdev.constants,
  raven.sqdev.exceptions,
  raven.sqdev.fileSystemListener,
@@ -34,5 +36,5 @@ Export-Package: org.antlr.v4.runtime,
  raven.sqdev.syntax
 Import-Package: raven.sqdev.misc
 Bundle-Vendor: Raven
-Bundle-ClassPath: ANTLR/antlr-runtime-4.5.3.jar,
+Bundle-ClassPath: ANTLR/antlr-runtime-4.7.jar,
   .

@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -372,7 +373,8 @@ public class ProjectUtil {
 								"Failed at building project " + projectName, e);
 						info.open(false);
 					}
-					return null;
+					
+					return Status.OK_STATUS;
 				}
 			};
 			buildJob.schedule();

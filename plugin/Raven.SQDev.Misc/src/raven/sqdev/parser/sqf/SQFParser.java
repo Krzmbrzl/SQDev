@@ -1,4 +1,4 @@
-// Generated from SQF.g4 by ANTLR 4.5.3
+// Generated from SQF.g4 by ANTLR 4.7
 
 	package raven.sqdev.parser.sqf;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class SQFParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.5.3", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -114,11 +114,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitStart(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitStart(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final StartContext start() throws RecognitionException {
@@ -167,11 +162,6 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitCode(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitCode(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -256,11 +246,6 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitMacro(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitMacro(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -347,11 +332,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitMacroArgument(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitMacroArgument(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MacroArgumentContext macroArgument() throws RecognitionException {
@@ -403,7 +383,10 @@ public class SQFParser extends Parser {
 						_la = _input.LA(1);
 						if ( _la <= 0 || (_la==COMMA || _la==R_B_C) ) {
 						_errHandler.recoverInline(this);
-						} else {
+						}
+						else {
+							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+							_errHandler.reportMatch(this);
 							consume();
 						}
 						}
@@ -447,11 +430,6 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitStatement(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -521,11 +499,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitAssignment(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitAssignment(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AssignmentContext assignment() throws RecognitionException {
@@ -536,6 +509,7 @@ public class SQFParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(78);
+			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==PRIVATE) {
 				{
@@ -545,6 +519,7 @@ public class SQFParser extends Parser {
 			}
 
 			setState(82);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case ID:
 				{
@@ -621,11 +596,6 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitBinaryExpression(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitBinaryExpression(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -829,11 +799,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitPrimaryExpression(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitPrimaryExpression(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final PrimaryExpressionContext primaryExpression(boolean allowBinaryAlts) throws RecognitionException {
@@ -910,11 +875,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitArray(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitArray(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ParenthesisContext extends NularExpressionContext {
 		public TerminalNode R_B_O() { return getToken(SQFParser.R_B_O, 0); }
@@ -931,11 +891,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitParenthesis(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitParenthesis(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NularOperatorContext extends NularExpressionContext {
 		public OperatorContext operator() {
@@ -950,11 +905,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitNularOperator(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitNularOperator(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NumberContext extends NularExpressionContext {
 		public TerminalNode NUMBER() { return getToken(SQFParser.NUMBER, 0); }
@@ -966,11 +916,6 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitNumber(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitNumber(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	public static class ErrorContext extends NularExpressionContext {
@@ -986,11 +931,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitError(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitError(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class StringContext extends NularExpressionContext {
 		public TerminalNode STRING() { return getToken(SQFParser.STRING, 0); }
@@ -1002,11 +942,6 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitString(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitString(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	public static class InlineCodeContext extends NularExpressionContext {
@@ -1023,11 +958,6 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitInlineCode(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitInlineCode(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1186,11 +1116,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitCommonError(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitCommonError(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final CommonErrorContext commonError() throws RecognitionException {
@@ -1340,11 +1265,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitUnaryExpression(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitUnaryExpression(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final UnaryExpressionContext unaryExpression(boolean allowBinaryAlts) throws RecognitionException {
@@ -1362,7 +1282,10 @@ public class SQFParser extends Parser {
 				_la = _input.LA(1);
 				if ( !(_la==PUCTUATION_OTHER || _la==UNARY_OPERATOR) ) {
 				_errHandler.recoverInline(this);
-				} else {
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
 					consume();
 				}
 				setState(196);
@@ -1419,11 +1342,6 @@ public class SQFParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitOperator(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitOperator(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final OperatorContext operator() throws RecognitionException {
@@ -1431,6 +1349,7 @@ public class SQFParser extends Parser {
 		enterRule(_localctx, 22, RULE_operator);
 		try {
 			setState(206);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case ID:
 				enterOuterAlt(_localctx, 1);
@@ -1474,11 +1393,6 @@ public class SQFParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SQFListener ) ((SQFListener)listener).exitPunctuation(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SQFVisitor ) return ((SQFVisitor<? extends T>)visitor).visitPunctuation(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1542,7 +1456,7 @@ public class SQFParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\36\u00d5\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\36\u00d5\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\3\2\3\2\3\2\3\3\3\3\5\3\"\n\3\7\3$\n\3"+
 		"\f\3\16\3\'\13\3\3\3\5\3*\n\3\3\4\3\4\3\4\3\4\3\4\7\4\61\n\4\f\4\16\4"+
@@ -1558,8 +1472,8 @@ public class SQFParser extends Parser {
 		"\13\3\13\5\13\u00ba\n\13\3\13\3\13\3\13\5\13\u00bf\n\13\3\13\3\13\3\13"+
 		"\5\13\u00c4\n\13\3\f\3\f\3\f\3\f\3\f\3\f\3\f\5\f\u00cd\n\f\3\r\3\r\5\r"+
 		"\u00d1\n\r\3\16\3\16\3\16\3G\3\16\17\2\4\6\b\n\f\16\20\22\24\26\30\32"+
-		"\2\4\4\2\f\f\33\33\4\2\5\5\36\36\u00f6\2\34\3\2\2\2\4%\3\2\2\2\6+\3\2"+
-		"\2\2\bG\3\2\2\2\nM\3\2\2\2\fP\3\2\2\2\16b\3\2\2\2\20\u0084\3\2\2\2\22"+
+		"\2\4\4\2\f\f\33\33\4\2\5\5\36\36\2\u00f6\2\34\3\2\2\2\4%\3\2\2\2\6+\3"+
+		"\2\2\2\bG\3\2\2\2\nM\3\2\2\2\fP\3\2\2\2\16b\3\2\2\2\20\u0084\3\2\2\2\22"+
 		"\u009f\3\2\2\2\24\u00c3\3\2\2\2\26\u00cc\3\2\2\2\30\u00d0\3\2\2\2\32\u00d2"+
 		"\3\2\2\2\34\35\5\4\3\2\35\36\7\2\2\3\36\3\3\2\2\2\37!\5\n\6\2 \"\7\13"+
 		"\2\2! \3\2\2\2!\"\3\2\2\2\"$\3\2\2\2#\37\3\2\2\2$\'\3\2\2\2%#\3\2\2\2"+
