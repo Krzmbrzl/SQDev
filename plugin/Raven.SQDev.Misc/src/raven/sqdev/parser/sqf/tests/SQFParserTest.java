@@ -333,7 +333,7 @@ public class SQFParserTest {
 	 * @param input
 	 *            The input to process
 	 * @param macros
-	 *            The list of macros that should be existant in the given input
+	 *            The list of macros that should be existent in the given input
 	 * @return The resulting {@link SQFParseResult}
 	 */
 	protected static SQFParseResult process(String input, List<Macro> macros) {

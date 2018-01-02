@@ -7,6 +7,8 @@ import java.util.List;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.atn.DecisionInfo;
+import org.antlr.v4.runtime.atn.ParseInfo;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -69,6 +71,9 @@ public class ParseUtil {
 
 		// parse with SLL(*)
 		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+		
+		// TODO: debug option
+		parser.setProfile(true);
 
 		ParseTree tree = parser.start();
 
@@ -99,7 +104,7 @@ public class ParseUtil {
 									// at the next Token
 									break;
 								} else {
-									// The offedning token is in a relevant
+									// The offending token is in a relevant
 									// part -> must be reported
 									unbalancedPairsToReport.add(currentPair);
 								}
@@ -123,6 +128,11 @@ public class ParseUtil {
 		result.setParseTree(tree);
 		result.setTokenStream(tokenStream);
 		result.mergeWith(listener.getParseResult());
+		
+		// TODO: debug info
+		ParseInfo info = parser.getParseInfo();
+		DecisionInfo[] infos = info.getDecisionInfo();
+		System.out.println(info);
 
 		return result;
 	}
