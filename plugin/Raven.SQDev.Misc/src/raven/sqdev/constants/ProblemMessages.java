@@ -290,7 +290,7 @@ public class ProblemMessages {
 	}
 
 	/**
-	 * The error message stating thath there is an invalid closing character
+	 * The error message stating that there is an invalid closing character
 	 * 
 	 * @param opener
 	 *            The invalid closing character
@@ -305,5 +305,38 @@ public class ProblemMessages {
 		}
 
 		return "Invalid closing character " + openMark + closer + closeMark;
+	}
+
+	/**
+	 * The error message stating that an invalid expression in the given context has
+	 * been found
+	 * 
+	 * @param context
+	 *            The context in which the invalid expression occurred
+	 */
+	public static final String invalidExpression(String context) {
+		return "Invalid expression in context of  \"" + context + "\"";
+	}
+
+	/**
+	 * The error message stating that "private" is the only permitted modifier for
+	 * an assignment
+	 */
+	public static final String privateIsOnlyValidModifierForAssignments() {
+		return "\"private\" is the only permitted modifier for assignments";
+	}
+
+	/**
+	 * Error message stating that private variables have to be local
+	 */
+	public static final String privateVariablesMustBeLocal() {
+		return "Private variables have to be local (starting with \"_\")";
+	}
+
+	/**
+	 * The error message for interal erros
+	 */
+	public static final String internalError() {
+		return "!!! Internal error !!!";
 	}
 }

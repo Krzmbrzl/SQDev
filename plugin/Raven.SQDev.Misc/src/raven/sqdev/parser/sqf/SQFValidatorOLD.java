@@ -52,7 +52,7 @@ import raven.sqdev.parser.sqf.SQFParser.UnaryExpressionContext;
  * @author Raven
  *
  */
-public class SQFValidator extends SQFBaseListener {
+public class SQFValidatorOLD extends SQFBaseListener {
 
 	/**
 	 * The invoking state indicating that this context object has been created by
@@ -72,11 +72,11 @@ public class SQFValidator extends SQFBaseListener {
 	/**
 	 * A list of found localVariables
 	 */
-	private List<Variable> localVariables;
+	private Map<String, Variable> localVariables;
 	/**
 	 * A list of found global variables
 	 */
-	private List<Variable> globalVariables;
+	private Map<String, Variable> globalVariables;
 	/**
 	 * The respective <code>CommonTokenStream</code> associated with the parse tree
 	 * this listener corresponds to
@@ -100,7 +100,7 @@ public class SQFValidator extends SQFBaseListener {
 	 *            The <code>CommonTokenStream</code> associated with the respective
 	 *            parse tree
 	 */
-	public SQFValidator(ISQFParseInformation info, BufferedTokenStream currentStream) {
+	public SQFValidatorOLD(ISQFParseInformation info, BufferedTokenStream currentStream) {
 		this(info, null, currentStream);
 	}
 
@@ -116,7 +116,7 @@ public class SQFValidator extends SQFBaseListener {
 	 *            The <code>CommonTokenStream</code> associated with the respective
 	 *            parse tree
 	 */
-	public SQFValidator(ISQFParseInformation info, SQFParseResult parseResult, BufferedTokenStream currentStream) {
+	public SQFValidatorOLD(ISQFParseInformation info, SQFParseResult parseResult, BufferedTokenStream currentStream) {
 		Assert.isNotNull(info);
 		Assert.isNotNull(currentStream);
 
@@ -129,8 +129,8 @@ public class SQFValidator extends SQFBaseListener {
 			this.parseResult = new SQFParseResult();
 		}
 
-		localVariables = new ArrayList<Variable>();
-		globalVariables = new ArrayList<Variable>();
+		localVariables = new HashMap<String, Variable>();
+		globalVariables = new HashMap<String, Variable>();
 
 		resolvedReturnValues = new HashMap<ParseTree, DataTypeList>();
 	}
@@ -160,13 +160,9 @@ public class SQFValidator extends SQFBaseListener {
 		Variable variable = new Variable(variableName);
 
 		if (variable.isLocal()) {
-			if (!localVariables.contains(variable)) {
-				localVariables.add(variable);
-			}
+			localVariables.put(variableName.toLowerCase(), variable);
 		} else {
-			if (!globalVariables.contains(variable)) {
-				globalVariables.add(variable);
-			}
+			globalVariables.put(variableName.toLowerCase(), variable);
 		}
 	}
 
@@ -340,7 +336,7 @@ public class SQFValidator extends SQFBaseListener {
 
 		String operatorName = ctx.getChild(1).getText();
 
-		SQFCommand operator = resolveOperator(info.getBinaryOperators(), operatorName);
+		SQFCommand operator = info.getBinaryOperators().get(operatorName.toLowerCase());
 
 		if (operator != null) {
 			DataTypeList leftTypes = getReturnValues(ctx.getChild(0));
@@ -435,7 +431,7 @@ public class SQFValidator extends SQFBaseListener {
 			}
 		} else {
 			// check if operator is a macro
-			Macro macro = resolveMacro(info.getMacros(), operatorName);
+			Macro macro = info.getMacros().get(operatorName);
 
 			if (macro != null) {
 				resolvedReturnValues.put(ctx, new DataTypeList(EDataType.ANYTHING));
@@ -451,7 +447,7 @@ public class SQFValidator extends SQFBaseListener {
 
 		String operatorName = ctx.getText();
 
-		SQFCommand operator = resolveOperator(info.getNularOperators(), operatorName);
+		SQFCommand operator = info.getNularOperators().get(operatorName.toLowerCase());
 
 		if (operator == null) {
 			if (!isDefinedMacro(operatorName) && !isDefinedLocalVariable(operatorName)) {
@@ -461,7 +457,7 @@ public class SQFValidator extends SQFBaseListener {
 						msg = ProblemMessages.undefinedLocalVariable(operatorName);
 					} else {
 						// must be a globl variable
-						globalVariables.add(new Variable(operatorName));
+						globalVariables.put(operatorName.toLowerCase(), new Variable(operatorName));
 					}
 				} else {
 					msg = ProblemMessages.operatorIsNotNular(operatorName);
@@ -486,58 +482,26 @@ public class SQFValidator extends SQFBaseListener {
 	 * Retrieves the <code>SQFCommand</code> out of the list that has the given
 	 * name. The search is case-<b>in</b>sensitive!
 	 * 
-	 * @param commandList
-	 *            The list of commands to search through
-	 * @param commandName
-	 *            The command name to search for
-	 * @return The respective <code>SQFCommand</code> or <code>null</code> if none
-	 *         could be found
-	 */
-	protected SQFCommand resolveOperator(List<SQFCommand> commandList, String commandName) {
-		commandName = commandName.toLowerCase();
-
-		for (SQFCommand currentCommand : commandList) {
-			if (currentCommand.getKeyword().toLowerCase().equals(commandName)) {
-				return currentCommand;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Retrieves the <code>SQFCommand</code> out of the list that has the given
-	 * name. The search is case-<b>in</b>sensitive!
-	 * 
 	 * @param operatorName
 	 *            The operator name to search for
 	 * @return The respective <code>SQFCommand</code> or <code>null</code> if none
 	 *         could be found
 	 */
 	protected SQFCommand resolveOperator(String operatorName) {
-		List<SQFCommand> allOperators = info.getNularOperators();
-		allOperators.addAll(info.getUnaryOperators());
-		allOperators.addAll(info.getBinaryOperators());
+		operatorName = operatorName.toLowerCase();
 
-		return resolveOperator(allOperators, operatorName);
-	}
+		SQFCommand command = info.getBinaryOperators().get(operatorName);
+		if (command != null) {
+			return command;
+		}
+		command = info.getUnaryOperators().get(operatorName);
+		if (command != null) {
+			return command;
+		}
 
-	/**
-	 * Finds the <code>Macro</code> in the given list that has the given name. The
-	 * search is case-sensitive!
-	 * 
-	 * @param macroList
-	 *            The list of macros to search through
-	 * @param macroName
-	 *            The name of the <code>Macro</code> to find
-	 * @return The found <code>Macro</code> or <code>null</code> if none could be
-	 *         found
-	 */
-	protected Macro resolveMacro(List<Macro> macroList, String macroName) {
-		for (Macro currentMacro : macroList) {
-			if (currentMacro.getKeyword().equals(macroName)) {
-				return currentMacro;
-			}
+		command = info.getNularOperators().get(operatorName);
+		if (command != null) {
+			return command;
 		}
 
 		return null;
@@ -550,7 +514,7 @@ public class SQFValidator extends SQFBaseListener {
 	 *            The macro name to search for
 	 */
 	protected boolean isDefinedMacro(String macroName) {
-		return resolveMacro(info.getMacros(), macroName) != null;
+		return info.getMacros().get(macroName) != null;
 	}
 
 	/**
@@ -560,9 +524,7 @@ public class SQFValidator extends SQFBaseListener {
 	 *            The name to search for
 	 */
 	protected boolean isOperator(String operatorName) {
-		return resolveOperator(info.getNularOperators(), operatorName) != null
-				|| resolveOperator(info.getUnaryOperators(), operatorName) != null
-				|| resolveOperator(info.getBinaryOperators(), operatorName) != null;
+		return resolveOperator(operatorName) != null;
 	}
 
 	/**
@@ -575,12 +537,10 @@ public class SQFValidator extends SQFBaseListener {
 	protected boolean isDefinedLocalVariable(String varName) {
 		varName = varName.toLowerCase();
 
-		for (Variable currentVariable : info.getMagicVariables()) {
-			if (currentVariable.getKeyword().toLowerCase().equals(varName)) {
-				return true;
-			}
+		if (info.getMagicVariables().get(varName) != null) {
+			return true;
 		}
-		for (Variable currentVariable : localVariables) {
+		for (Variable currentVariable : localVariables.values()) {
 			if (currentVariable.getKeyword().toLowerCase().equals(varName)) {
 				return true;
 			}
@@ -675,7 +635,7 @@ public class SQFValidator extends SQFBaseListener {
 					// is global variable
 					boolean found = false;
 
-					for (Variable currentVariable : globalVariables) {
+					for (Variable currentVariable : globalVariables.values()) {
 						if (currentVariable.getKeyword().toLowerCase().equals(varName)) {
 							found = true;
 							break;
@@ -685,7 +645,7 @@ public class SQFValidator extends SQFBaseListener {
 					if (!found) {
 						// assume it's declared somewhere else
 						// TODO: potential error
-						globalVariables.add(new Variable(varName));
+						globalVariables.put(varName.toLowerCase(), new Variable(varName));
 					}
 				}
 			}
@@ -923,13 +883,15 @@ public class SQFValidator extends SQFBaseListener {
 						parseResult.addMarker(IMarker.PROBLEM, offsets[0], offsets[1],
 								ProblemMessages.canOnlyDeclareLocalVariable(), IMarker.SEVERITY_ERROR);
 					} else {
-						localVariables.add(new Variable(varName));
+						localVariables.put(varName.toLowerCase(), new Variable(varName));
 					}
 				}
 			}
 		}
-
-		localVariables.addAll(declaredVariables);
+		
+		for(Variable currentVar : declaredVariables) {
+			localVariables.put(currentVar.getKeyword().toLowerCase(), currentVar);
+		}
 	}
 
 	/**

@@ -31,7 +31,6 @@ Export-Package: org.antlr.v4.runtime,
  raven.sqdev.parser.preprocessor,
  raven.sqdev.parser.sqf,
  raven.sqdev.pluginManagement,
- raven.sqdev.pluginManager,
  raven.sqdev.styles,
  raven.sqdev.syntax
 Import-Package: raven.sqdev.misc

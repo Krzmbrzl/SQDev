@@ -2,7 +2,9 @@ package raven.sqdev.parser.misc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BufferedTokenStream;
@@ -29,7 +31,7 @@ import raven.sqdev.parser.sqf.SQFLexer;
 import raven.sqdev.parser.sqf.SQFParseInformation;
 import raven.sqdev.parser.sqf.SQFParseResult;
 import raven.sqdev.parser.sqf.SQFParser;
-import raven.sqdev.parser.sqf.SQFValidator;
+import raven.sqdev.parser.sqf.SQFValidatorOLD;
 
 /**
  * A class containing utility methods for parsing processes
@@ -71,7 +73,7 @@ public class ParseUtil {
 
 		// parse with SLL(*)
 		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		
+
 		// TODO: debug option
 		parser.setProfile(true);
 
@@ -128,7 +130,7 @@ public class ParseUtil {
 		result.setParseTree(tree);
 		result.setTokenStream(tokenStream);
 		result.mergeWith(listener.getParseResult());
-		
+
 		// TODO: debug info
 		ParseInfo info = parser.getParseInfo();
 		DecisionInfo[] infos = info.getDecisionInfo();
@@ -156,7 +158,7 @@ public class ParseUtil {
 
 		ParseTreeWalker walker = new ParseTreeWalker();
 
-		SQFValidator validator = new SQFValidator(info, tokenStream);
+		SQFValidatorOLD validator = new SQFValidatorOLD(info, tokenStream);
 
 		walker.walk(validator, tree);
 
@@ -182,21 +184,23 @@ public class ParseUtil {
 	/**
 	 * Gets the default magic variables that are present in SQF code
 	 */
-	public static final List<Variable> getDefaultMagicVars() {
-		List<Variable> magicVars = new ArrayList<Variable>();
-		magicVars.add(new Variable("_this",
+	public static final Map<String, Variable> getDefaultMagicVars() {
+		Map<String, Variable> magicVars = new HashMap<String, Variable>();
+		magicVars.put("_this", new Variable("_this",
 				"This variable is available inside of functions and contains the parameters given to it."));
-		magicVars.add(new Variable("_fnc_scriptName",
-				"A String containing the function's name. Only awaylable when the function has "
-						+ "been compiled via CfgFunctions."));
-		magicVars.add(new Variable("_fnc_scriptNameParent",
-				"A String containing the function's parent's name. Only awaylable when the function has "
-						+ "been compiled via CfgFunctions."));
-		magicVars.add(new Variable("_x",
+		magicVars.put("_fnc_scriptname",
+				new Variable("_fnc_scriptName",
+						"A String containing the function's name. Only awaylable when the function has "
+								+ "been compiled via CfgFunctions."));
+		magicVars.put("_fnc_scriptnameparent",
+				new Variable("_fnc_scriptNameParent",
+						"A String containing the function's parent's name. Only awaylable when the function has "
+								+ "been compiled via CfgFunctions."));
+		magicVars.put("_x", new Variable("_x",
 				"References the current object oin the iteration. Available inside count or forEach loops"));
-		magicVars.add(new Variable("_forEachIndex",
+		magicVars.put("_foreachindex", new Variable("_forEachIndex",
 				"References the index of the current object in the iteration. Only available in a " + "forEach loop."));
-		magicVars.add(new Variable("_thisEventHandler",
+		magicVars.put("_thiseventhandler", new Variable("_thisEventHandler",
 				"References the current event handler. Only available inside an EventHandler"));
 
 		return magicVars;

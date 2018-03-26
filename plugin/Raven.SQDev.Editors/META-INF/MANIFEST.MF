@@ -42,6 +42,5 @@ Import-Package: raven.sqdev.constants,
  raven.sqdev.parser.misc,
  raven.sqdev.parser.preprocessor,
  raven.sqdev.pluginManagement,
- raven.sqdev.pluginManager,
  raven.sqdev.sqdevFile,
  raven.sqdev.util

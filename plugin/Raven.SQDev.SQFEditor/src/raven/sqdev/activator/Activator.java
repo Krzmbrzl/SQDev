@@ -5,7 +5,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import raven.sqdev.misc.SQDevPreferenceUtil;
-import raven.sqdev.pluginManager.SQDevPluginManager;
+import raven.sqdev.pluginManagement.SQDevPluginManager;
 
 /**
  * The activator class controls the plug-in life cycle

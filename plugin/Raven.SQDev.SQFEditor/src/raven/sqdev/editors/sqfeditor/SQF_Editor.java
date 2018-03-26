@@ -2,7 +2,11 @@ package raven.sqdev.editors.sqfeditor;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -60,31 +64,31 @@ public class SQF_Editor extends BasicCodeEditor
 	/**
 	 * A list of all commands that can be used as a binary operator
 	 */
-	private List<SQFCommand> binaryCommands;
+	private Map<String, SQFCommand> binaryCommands;
 	/**
 	 * A list of all commands that can be used as a unary operator
 	 */
-	private List<SQFCommand> unaryCommands;
+	private Map<String, SQFCommand> unaryCommands;
 	/**
 	 * A list of all commands that can be used as a nular operator
 	 */
-	private List<SQFCommand> nularCommands;
+	private Map<String, SQFCommand> nularCommands;
 	/**
 	 * A list of local variables in this editor
 	 */
-	private List<Variable> localVariables;
+	private Map<String, Variable> localVariables;
 	/**
 	 * A list of global variables in this editor
 	 */
-	private List<Variable> globalVariables;
+	private Map<String, Variable> globalVariables;
 	/**
 	 * A list of magic variables available in this editor
 	 */
-	private List<Variable> magicVariables;
+	private Map<String, Variable> magicVariables;
 	/**
 	 * A list of defined macros for this editor
 	 */
-	protected List<Macro> macros;
+	protected Map<String, Macro> macros;
 	/**
 	 * A list of the macro-names defined for this editor
 	 */
@@ -101,16 +105,14 @@ public class SQF_Editor extends BasicCodeEditor
 		BasicSourceViewerConfiguration configuration = getBasicConfiguration();
 
 		// create respective keywordScanners
-		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
-		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY, false);
-		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY, false);
-		configuration.createKeywordScanner(
-				SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY, false);
-		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
-				true);
+		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
+		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				false);
+		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
+				false);
+		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
+				false);
+		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY, true);
 
 		// get keywordScanner
 		KeywordScanner keywordScanner = configuration
@@ -132,17 +134,17 @@ public class SQF_Editor extends BasicCodeEditor
 		partitionScanner.removeRule(BasicPartitionScanner.DOUBLE_QUOTE_STRING_RULE);
 		partitionScanner.addRule(new SQFStringPartitionRule(new Token(BasicPartitionScanner.BASIC_STRING)));
 
-		binaryCommands = new ArrayList<SQFCommand>();
-		unaryCommands = new ArrayList<SQFCommand>();
-		nularCommands = new ArrayList<SQFCommand>();
-		localVariables = new ArrayList<Variable>();
-		globalVariables = new ArrayList<Variable>();
-		magicVariables = new ArrayList<Variable>();
+		binaryCommands = new HashMap<String, SQFCommand>();
+		unaryCommands = new HashMap<String, SQFCommand>();
+		nularCommands = new HashMap<String, SQFCommand>();
+		localVariables = new HashMap<String, Variable>();
+		globalVariables = new HashMap<String, Variable>();
+		magicVariables = new HashMap<String, Variable>();
 
 		// populate the magic vars with the stadard ones
 		setMagicVariables(ParseUtil.getDefaultMagicVars(), false);
 
-		macros = new ArrayList<Macro>();
+		macros = new HashMap<String, Macro>();
 		macroNames = new ArrayList<String>();
 
 		categorizeCommands();
@@ -176,14 +178,11 @@ public class SQF_Editor extends BasicCodeEditor
 
 							@Override
 							protected IStatus run(IProgressMonitor monitor) {
-								monitor.beginTask("Export project \"" + containingProject.getName() + "\"",
-										1);
+								monitor.beginTask("Export project \"" + containingProject.getName() + "\"", 1);
 								try {
-									ProjectUtil.export(containingProject,
-											Util.getExportPathFor(containingProject),
+									ProjectUtil.export(containingProject, Util.getExportPathFor(containingProject),
 											linkFile.parseAnnotation(ESQDevFileAnnotation.IGNORE).getValues(),
-											linkFile.parseAnnotation(ESQDevFileAnnotation.PRESERVE)
-													.getValues());
+											linkFile.parseAnnotation(ESQDevFileAnnotation.PRESERVE).getValues());
 
 									monitor.worked(1);
 								} catch (SQDevFileIsInvalidException e) {
@@ -220,8 +219,7 @@ public class SQF_Editor extends BasicCodeEditor
 	protected ParseTree doParse(String input) {
 		SQFParseResult result = ParseUtil.parseSQF(input, this);
 
-		if (!result.providesParseTree() || !result.providesParserRuleNames()
-				|| !result.providesTokenStream()) {
+		if (!result.providesParseTree() || !result.providesParserRuleNames() || !result.providesTokenStream()) {
 			throw new SQDevCoreException("Expected SQFParseResult to contain tree, names and tokenStream!");
 		}
 
@@ -258,81 +256,67 @@ public class SQF_Editor extends BasicCodeEditor
 	 * binary/unary/nular operator
 	 */
 	private void categorizeCommands() {
-		for (Keyword currentKeyword : provider.getKeywordList().getKeywords()) {
+		Iterator<Entry<String, Keyword>> it = provider.getKeywordList().getKeywords().entrySet().iterator();
+
+		while (it.hasNext()) {
+			Keyword currentKeyword = it.next().getValue();
+
 			if (currentKeyword instanceof SQFCommand) {
 				SQFCommand currentCommand = (SQFCommand) currentKeyword;
 
 				if (currentCommand.isBinaryOperator()) {
-					binaryCommands.add(currentCommand);
+					binaryCommands.put(currentCommand.getKeyword().toLowerCase(), currentCommand);
 				}
 
 				if (currentCommand.isUnaryOperator()) {
-					unaryCommands.add(currentCommand);
+					unaryCommands.put(currentCommand.getKeyword().toLowerCase(), currentCommand);
 				}
 
 				if (currentCommand.isNularOperator()) {
-					nularCommands.add(currentCommand);
+					nularCommands.put(currentCommand.getKeyword().toLowerCase(), currentCommand);
 				}
 			}
 		}
 	}
 
-	/**
-	 * Gets all SQF commands that can be used as a binary operator
-	 */
-	public List<SQFCommand> getBinaryOperators() {
-		return new ArrayList<SQFCommand>(binaryCommands);
+	@Override
+	public Map<String, SQFCommand> getBinaryOperators() {
+		return binaryCommands;
 	}
 
-	/**
-	 * Gets all SQF commands that can be used as a unary operator
-	 */
-	public List<SQFCommand> getUnaryOperators() {
-		return new ArrayList<SQFCommand>(unaryCommands);
+	@Override
+	public Map<String, SQFCommand> getUnaryOperators() {
+		return unaryCommands;
 	}
 
-	/**
-	 * Gets all SQF commands that can be used as a nular operator
-	 */
-	public List<SQFCommand> getNularOperators() {
-		return new ArrayList<SQFCommand>(nularCommands);
+	@Override
+	public Map<String, SQFCommand> getNularOperators() {
+		return nularCommands;
 	}
 
-	/**
-	 * Gets a list of all keywords that can be used as a binary operator
-	 */
+	@Override
 	public List<String> getBinaryKeywords() {
-		ArrayList<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<String>();
 
-		for (SQFCommand currentCommand : getBinaryOperators()) {
-			list.add(currentCommand.getKeyword());
-		}
+		list.addAll(binaryCommands.keySet());
 
 		return list;
 	}
 
-	/**
-	 * Gets a list of all keywords that can be used as a unnary operator
-	 */
+	@Override
 	public List<String> getUnaryKeywords() {
-		ArrayList<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<String>();
 
-		for (SQFCommand currentCommand : getUnaryOperators()) {
-			list.add(currentCommand.getKeyword());
-		}
+		list.addAll(unaryCommands.keySet());
 
 		return list;
 	}
 
-	/**
-	 * Gets a list of all keywords that can be used as a nular operator
-	 */
+	@Override
 	public List<String> getNularKeywords() {
-		ArrayList<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<String>();
 
-		for (SQFCommand currentCommand : getNularOperators()) {
-			list.add(currentCommand.getKeyword());
-		}
+		list.addAll(nularCommands.keySet());
 
 		return list;
 	}
@@ -360,15 +344,14 @@ public class SQF_Editor extends BasicCodeEditor
 	 * 
 	 * @return <code>True</code> when variables were updated
 	 */
-	public boolean setLocalVariables(List<Variable> variables, boolean update) {
+	public boolean setLocalVariables(Map<String, Variable> variables, boolean update) {
 		if (!localVariables.equals(variables)) {
-			localVariables = new ArrayList<Variable>(variables);
+			localVariables = new HashMap<String, Variable>(variables);
 
 			// update respective scanner/provider
 			getBasicConfiguration()
-					.getKeywordScanner(
-							SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(variables));
+					.getKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY)
+					.getKeywordProvider().setKeywordList(new KeywordList(new ArrayList<>(variables.values())));
 
 			if (update) {
 				update(false);
@@ -383,7 +366,7 @@ public class SQF_Editor extends BasicCodeEditor
 	/**
 	 * Gets the list of local variables that are defined in this editor
 	 */
-	public List<Variable> getLocalVariables() {
+	public Map<String, Variable> getLocalVariables() {
 		return localVariables;
 	}
 
@@ -392,8 +375,8 @@ public class SQF_Editor extends BasicCodeEditor
 	 * one list
 	 */
 	public List<Variable> getLocalAndMagicVariables() {
-		List<Variable> variables = (localVariables);
-		variables.addAll(magicVariables);
+		List<Variable> variables = new ArrayList<Variable>(localVariables.values());
+		variables.addAll(magicVariables.values());
 
 		return variables;
 	}
@@ -409,15 +392,14 @@ public class SQF_Editor extends BasicCodeEditor
 	 * 
 	 * @return <code>True</code> when variables were updated
 	 */
-	public boolean setMagicVariables(List<Variable> variables, boolean update) {
+	public boolean setMagicVariables(Map<String, Variable> variables, boolean update) {
 		if (!magicVariables.equals(variables)) {
-			magicVariables = new ArrayList<Variable>(variables);
+			magicVariables = new HashMap<String, Variable>(variables);
 
 			// update respective scanner/provider
 			getBasicConfiguration()
-					.getKeywordScanner(
-							SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(variables));
+					.getKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY)
+					.getKeywordProvider().setKeywordList(new KeywordList(new ArrayList<>(variables.values())));
 
 			if (update) {
 				update(false);
@@ -430,9 +412,9 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Gets the list of available magic variables for this editor
+	 * Gets the set of available magic variables for this editor
 	 */
-	public List<Variable> getMagicVariables() {
+	public Map<String, Variable> getMagicVariables() {
 		return magicVariables;
 	}
 
@@ -447,15 +429,14 @@ public class SQF_Editor extends BasicCodeEditor
 	 * 
 	 * @return <code>True</code> when variables were updated
 	 */
-	public boolean setGlobalVariables(List<Variable> variables, boolean update) {
+	public boolean setGlobalVariables(Map<String, Variable> variables, boolean update) {
 		if (!globalVariables.equals(variables)) {
-			globalVariables = new ArrayList<Variable>(variables);
+			globalVariables = variables;
 
 			// update respective scanner/provider
 			getBasicConfiguration()
-					.getKeywordScanner(
-							SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(variables));
+					.getKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY)
+					.getKeywordProvider().setKeywordList(new KeywordList(new ArrayList<>(variables.values())));
 
 			if (update) {
 				update(false);
@@ -468,9 +449,9 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Gets the list of global variables that are defined in this editor
+	 * Gets the set of global variables that are defined in this editor
 	 */
-	public List<Variable> getGlobalVariables() {
+	public Map<String, Variable> getGlobalVariables() {
 		return globalVariables;
 	}
 
@@ -483,7 +464,7 @@ public class SQF_Editor extends BasicCodeEditor
 	 * @param globalVariables
 	 *            The new set of global variables
 	 */
-	public void setVariables(List<Variable> localVariables, List<Variable> globalVariables) {
+	public void setVariables(Map<String, Variable> localVariables, Map<String, Variable> globalVariables) {
 		boolean localUpdate = setLocalVariables(localVariables, false);
 		boolean globalUpdate = setGlobalVariables(globalVariables, false);
 
@@ -493,19 +474,18 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	@Override
-	public boolean setMacros(List<Macro> macros, boolean update) {
+	public boolean setMacros(Map<String, Macro> macros, boolean update) {
 		macroNames.clear();
-		for (Macro currentMacro : macros) {
+		for (Macro currentMacro : macros.values()) {
 			macroNames.add(currentMacro.getKeyword());
 		}
 
 		if (!this.macros.equals(macros)) {
-			this.macros = new ArrayList<Macro>(macros);
+			this.macros = new HashMap<String, Macro>(macros);
 
 			// update respective scanner/provider
-			getBasicConfiguration()
-					.getKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY)
-					.getKeywordProvider().setKeywordList(new KeywordList(macros));
+			getBasicConfiguration().getKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY)
+					.getKeywordProvider().setKeywordList(new KeywordList(new ArrayList<>(macros.values())));
 
 			if (update) {
 				update(false);
@@ -518,7 +498,7 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	@Override
-	public List<Macro> getMacros() {
+	public Map<String,Macro> getMacros() {
 		return macros;
 	}
 
@@ -533,7 +513,7 @@ public class SQF_Editor extends BasicCodeEditor
 	public List<String> getMagicVariableNames() {
 		List<String> names = new ArrayList<String>();
 
-		for (Variable current : magicVariables) {
+		for (Variable current : magicVariables.values()) {
 			names.add(current.getKeyword());
 		}
 

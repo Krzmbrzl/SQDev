@@ -1,6 +1,7 @@
 package raven.sqdev.pluginManagement;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Platform;
@@ -10,6 +11,7 @@ import org.osgi.framework.BundleException;
 
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
+import raven.sqdev.interfaces.IPluginListener;
 
 /**
  * An manager for all running SQDev plugins
@@ -25,6 +27,11 @@ public class SQDevPluginManager {
 	protected static SQDevPluginManager manager;
 	
 	/**
+	 * All plugin listeners
+	 */
+	private List<IPluginListener> pluginListeners;
+	
+	/**
 	 * The list of all registered plugins
 	 */
 	protected ArrayList<AbstractUIPlugin> pluginList;
@@ -35,6 +42,7 @@ public class SQDevPluginManager {
 	 */
 	private SQDevPluginManager() {
 		pluginList = new ArrayList<AbstractUIPlugin>();
+		pluginListeners = new ArrayList<IPluginListener>(0);
 	}
 	
 	/**
@@ -109,11 +117,11 @@ public class SQDevPluginManager {
 					
 					if (pluginList.size() > prevCount) {
 						// if the count of registered plugins changed try to
-						// fins it again
+						// find it again
 						return get(pluginName);
 					} else {
 						throw new SQDevException("The started plugin \"" + pluginName
-								+ "\" has not registered to the SQDevPluginManage!");
+								+ "\" has not registered to the SQDevPluginManager!");
 					}
 				} catch (BundleException | SQDevException e) {
 					e.printStackTrace();
@@ -137,6 +145,11 @@ public class SQDevPluginManager {
 		if (!pluginList.contains(plugin)) {
 			pluginList.add(plugin);
 		}
+		
+		// notify listeners
+		for (IPluginListener current : pluginListeners) {
+			current.started(ESQDevPlugin.resolve(plugin.getBundle().getSymbolicName()));
+		}
 	}
 	
 	/**
@@ -147,5 +160,32 @@ public class SQDevPluginManager {
 	 */
 	public void unregister(AbstractUIPlugin plugin) {
 		pluginList.remove(plugin);
+		
+		// notify listeners
+		for (IPluginListener current : pluginListeners) {
+			current.stopped(ESQDevPlugin.resolve(plugin.getBundle().getSymbolicName()));
+		}
+	}
+	
+	/**
+	 * Adds a plugin listener if it has not been added before
+	 * 
+	 * @param listener
+	 *            The listener to add
+	 */
+	public void addPluginListener(IPluginListener listener) {
+		if (!pluginListeners.contains(listener)) {
+			pluginListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given plugin listener
+	 * 
+	 * @param listener
+	 *            The listener to remove
+	 */
+	public void removePluginListener(IPluginListener listener) {
+		pluginListeners.remove(listener);
 	}
 }

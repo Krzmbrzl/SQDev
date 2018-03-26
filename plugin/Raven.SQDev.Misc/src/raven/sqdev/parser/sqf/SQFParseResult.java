@@ -1,7 +1,9 @@
 package raven.sqdev.parser.sqf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.BufferedTokenStream;
 import org.eclipse.jface.text.Position;
@@ -20,12 +22,12 @@ public class SQFParseResult extends ParseResult {
 	/**
 	 * A list of local variables declared during the parsing
 	 */
-	private List<Variable> declaredLocalVariables;
+	private Map<String, Variable> declaredLocalVariables;
 
 	/**
 	 * A list of global variables declared during the parsing
 	 */
-	private List<Variable> declaredGlobalVariables;
+	private Map<String, Variable> declaredGlobalVariables;
 	/**
 	 * A list of folding areas
 	 */
@@ -42,8 +44,8 @@ public class SQFParseResult extends ParseResult {
 
 	public SQFParseResult() {
 		foldingAreas = new ArrayList<Position>();
-		declaredLocalVariables = new ArrayList<Variable>();
-		declaredGlobalVariables = new ArrayList<Variable>();
+		declaredLocalVariables = new HashMap<String, Variable>();
+		declaredGlobalVariables = new HashMap<String, Variable>();
 	}
 
 	/**
@@ -54,7 +56,7 @@ public class SQFParseResult extends ParseResult {
 	 * @param globalVariables
 	 *            The list of found global variables
 	 */
-	public void setVariables(List<Variable> localVariables, List<Variable> globalVariables) {
+	public void setVariables(Map<String, Variable> localVariables, Map<String, Variable> globalVariables) {
 
 		declaredLocalVariables = localVariables;
 		declaredGlobalVariables = globalVariables;
@@ -73,14 +75,14 @@ public class SQFParseResult extends ParseResult {
 	/**
 	 * Gets a list of found local variable declarations
 	 */
-	public List<Variable> getDeclaredLocalVariables() {
+	public Map<String, Variable> getDeclaredLocalVariables() {
 		return declaredLocalVariables;
 	}
 
 	/**
 	 * Gets a list of found global variable declarations
 	 */
-	public List<Variable> getDeclaredGlobalVariables() {
+	public Map<String, Variable> getDeclaredGlobalVariables() {
 		return declaredGlobalVariables;
 	}
 
@@ -154,8 +156,8 @@ public class SQFParseResult extends ParseResult {
 		super.mergeWith(other);
 
 		foldingAreas.addAll(other.getFoldingAreas());
-		declaredLocalVariables.addAll(other.getDeclaredLocalVariables());
-		declaredGlobalVariables.addAll(other.getDeclaredGlobalVariables());
+		declaredLocalVariables.putAll(other.getDeclaredLocalVariables());
+		declaredGlobalVariables.putAll(other.getDeclaredGlobalVariables());
 
 		if (parserRuleNames == null) {
 			parserRuleNames = other.getParserRulenames();
