@@ -1,5 +1,7 @@
 package raven.sqdev.parser.misc;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,6 +19,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 
+import dataStructures.CharacterInputStream;
+import lexer.SQFLexer;
 import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.interfaces.ISQFParseInformation;
 import raven.sqdev.misc.CharacterPair;
@@ -27,10 +31,8 @@ import raven.sqdev.parser.preprocessor.PreprocessorLexer;
 import raven.sqdev.parser.preprocessor.PreprocessorParseListener;
 import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
 import raven.sqdev.parser.preprocessor.PreprocessorParser;
-import raven.sqdev.parser.sqf.SQFLexer;
 import raven.sqdev.parser.sqf.SQFParseInformation;
 import raven.sqdev.parser.sqf.SQFParseResult;
-import raven.sqdev.parser.sqf.SQFParser;
 import raven.sqdev.parser.sqf.SQFValidatorOLD;
 
 /**
@@ -40,6 +42,35 @@ import raven.sqdev.parser.sqf.SQFValidatorOLD;
  *
  */
 public class ParseUtil {
+	/**
+	 * The lexer instance used by this class
+	 */
+	protected static SQFLexer sqfLexer;
+	/**
+	 * The error listener instance used by this class
+	 */
+	protected static SQFLexAndParseListener errorListener;
+
+
+	public static final SQFParseResult parseSQF(InputStream input, ISQFParseInformation parseInfo) throws IOException {
+		if (sqfLexer == null) {
+			sqfLexer = new SQFLexer(errorListener);
+		}
+
+		// TODO: set token factory for lexer -> should be retrieved from
+		// parseInformation
+
+		SQFParseResult result = new SQFParseResult();
+
+		sqfLexer.reset(true);
+		sqfLexer.setMacros(parseInfo.getMacros().keySet());
+		errorListener.setResult(result);
+
+		CharacterInputStream inStream = new CharacterInputStream(input);
+		sqfLexer.lex(inStream);
+
+		// TODO: adjust ParseResult to carry tokenBuffer and parseTree
+	}
 
 	/**
 	 * Parses the given input assuming that the input is SQF code
@@ -51,21 +82,21 @@ public class ParseUtil {
 	 * @return The parseResult containing all necessary information about the
 	 *         parsing (including the parseTree)
 	 */
-	public static final SQFParseResult parseSQF(String input, ISQFParseInformation parseInfo) {
+	public static final SQFParseResult parseSQFOld(String input, ISQFParseInformation parseInfo) {
 		SQFParseResult result = new SQFParseResult();
 
 		BasicErrorListener listener = new BasicErrorListener();
 
 		ANTLRInputStream in = new ANTLRInputStream(input);
 
-		SQFLexer lexer = new SQFLexer(in, parseInfo.getBinaryKeywords(), parseInfo.getUnaryKeywords(),
-				parseInfo.getMacroNames());
+		raven.sqdev.parser.sqf.SQFLexer lexer = new raven.sqdev.parser.sqf.SQFLexer(in, parseInfo.getBinaryKeywords(),
+				parseInfo.getUnaryKeywords(), parseInfo.getMacroNames());
 		lexer.removeErrorListeners();
 		lexer.addErrorListener(listener);
 
 		CommonTokenStream tokenStream = new CommonTokenStream(lexer);
 
-		SQFParser parser = new SQFParser(tokenStream);
+		raven.sqdev.parser.sqf.SQFParser parser = new raven.sqdev.parser.sqf.SQFParser(tokenStream);
 		parser.removeErrorListeners();
 		parser.addErrorListener(listener);
 
@@ -95,7 +126,7 @@ public class ParseUtil {
 
 				for (org.antlr.v4.runtime.Token currentToken : tokenStream.getTokens()) {
 					if (currentToken.getChannel() == org.antlr.v4.runtime.Token.HIDDEN_CHANNEL
-							|| currentToken.getType() == SQFParser.STRING) {
+							|| currentToken.getType() == raven.sqdev.parser.sqf.SQFParser.STRING) {
 						// Ignore hidden Tokens
 						continue;
 					} else {
@@ -150,7 +181,7 @@ public class ParseUtil {
 	 *            The necessary ParseInformation
 	 * @return The result of the validation
 	 */
-	public static final SQFParseResult validateSQF(ParseTree tree, BufferedTokenStream tokenStream,
+	public static final SQFParseResult validateSQFOld(ParseTree tree, BufferedTokenStream tokenStream,
 			ISQFParseInformation info) {
 		Assert.isNotNull(tokenStream);
 		Assert.isNotNull(tree);
@@ -174,9 +205,9 @@ public class ParseUtil {
 	 *            The {@link SQFParseInformation}} for this parsing process
 	 * @return The {@link SQFParseResult} of this parsing and validating
 	 */
-	public static final SQFParseResult parseAndValidateSQF(String input, ISQFParseInformation parseInfo) {
-		SQFParseResult result = parseSQF(input, parseInfo);
-		result.mergeWith(validateSQF(result.getParseTree(), result.getTokenStream(), parseInfo));
+	public static final SQFParseResult parseAndValidateSQFOld(String input, ISQFParseInformation parseInfo) {
+		SQFParseResult result = parseSQFOld(input, parseInfo);
+		result.mergeWith(validateSQFOld(result.getParseTree(), result.getTokenStream(), parseInfo));
 
 		return result;
 	}

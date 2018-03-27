@@ -336,7 +336,7 @@ public class SQFParserTest {
 	 * @return The resulting {@link SQFParseResult}
 	 */
 	protected static SQFParseResult process(String input, Map<String, Macro> macros) {
-		return ParseUtil.parseAndValidateSQF(input, getSQFParseInformation(macros));
+		return ParseUtil.parseAndValidateSQFOld(input, getSQFParseInformation(macros));
 	}
 
 	/**

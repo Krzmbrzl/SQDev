@@ -410,7 +410,7 @@ public class SQFValidatorOLD extends SQFBaseListener {
 				String errorMsg = processor.getErrorMessage();
 				int[] offsets;
 
-				if (processor.getErrorMarkerPosition() == ERelativPosition.RIGHT) {
+				if (processor.getErrorMarkerPosition() == ERelativePosition.RIGHT) {
 					// error has to be on the right argument
 					offsets = getStartOffsetAndLength(ctx.getChild(1));
 				} else {

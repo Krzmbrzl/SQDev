@@ -153,10 +153,10 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 		// create parse information with default values
 		SQFParseInformation info = new SQFParseInformation(prepResult.getMacros());
 
-		SQFParseResult sqfResult = ParseUtil.parseSQF(fileContent, info);
+		SQFParseResult sqfResult = ParseUtil.parseSQFOld(fileContent, info);
 
 		sqfResult
-				.mergeWith(ParseUtil.validateSQF(sqfResult.getParseTree(), sqfResult.getTokenStream(), info));
+				.mergeWith(ParseUtil.validateSQFOld(sqfResult.getParseTree(), sqfResult.getTokenStream(), info));
 
 		sqfResult.mergeWith(prepResult);
 

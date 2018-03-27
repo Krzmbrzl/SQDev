@@ -217,7 +217,7 @@ public class SQF_Editor extends BasicCodeEditor
 
 	@Override
 	protected ParseTree doParse(String input) {
-		SQFParseResult result = ParseUtil.parseSQF(input, this);
+		SQFParseResult result = ParseUtil.parseSQFOld(input, this);
 
 		if (!result.providesParseTree() || !result.providesParserRuleNames() || !result.providesTokenStream()) {
 			throw new SQDevCoreException("Expected SQFParseResult to contain tree, names and tokenStream!");
@@ -237,7 +237,7 @@ public class SQF_Editor extends BasicCodeEditor
 	@Override
 	public boolean processParseTree(ParseTree parseTree) {
 		// process parse result
-		SQFParseResult result = ParseUtil.validateSQF(parseTree, currentStream, this);
+		SQFParseResult result = ParseUtil.validateSQFOld(parseTree, currentStream, this);
 
 		setVariables(result.getDeclaredLocalVariables(), result.getDeclaredGlobalVariables());
 		result.applyMarkersTo(this);

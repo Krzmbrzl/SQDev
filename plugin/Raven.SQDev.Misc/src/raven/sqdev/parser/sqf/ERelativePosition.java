@@ -6,7 +6,7 @@ package raven.sqdev.parser.sqf;
  * @author Raven
  *
  */
-public enum ERelativPosition {
+public enum ERelativePosition {
 	/**
 	 * This enum describes a centered postion
 	 */

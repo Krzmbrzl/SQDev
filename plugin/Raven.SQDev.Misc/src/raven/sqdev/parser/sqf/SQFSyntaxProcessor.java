@@ -44,7 +44,7 @@ public class SQFSyntaxProcessor {
 	/**
 	 * The relative position describing where the error marker should be placed
 	 */
-	private ERelativPosition markerPosition;
+	private ERelativePosition markerPosition;
 
 	public SQFSyntaxProcessor(SQFCommand command) {
 		Assert.isNotNull(command);
@@ -120,14 +120,14 @@ public class SQFSyntaxProcessor {
 
 					activeSyntax = null;
 
-					markerPosition = ERelativPosition.CENTER;
+					markerPosition = ERelativePosition.CENTER;
 				} else {
 					// operator is nular but has one argument provided
 					errorMessage = ProblemMessages.operatorIsNular(command.getKeyword());
 
 					activeSyntax = null;
 
-					markerPosition = ERelativPosition.CENTER;
+					markerPosition = ERelativePosition.CENTER;
 				}
 
 				return;
@@ -138,7 +138,7 @@ public class SQFSyntaxProcessor {
 
 			activeSyntax = null;
 
-			markerPosition = ERelativPosition.RIGHT;
+			markerPosition = ERelativePosition.RIGHT;
 
 			return;
 		}
@@ -204,7 +204,7 @@ public class SQFSyntaxProcessor {
 
 			activeSyntax = null;
 
-			markerPosition = ERelativPosition.LEFT;
+			markerPosition = ERelativePosition.LEFT;
 			return;
 		}
 
@@ -253,7 +253,7 @@ public class SQFSyntaxProcessor {
 
 		activeSyntax = null;
 
-		markerPosition = ERelativPosition.RIGHT;
+		markerPosition = ERelativePosition.RIGHT;
 	}
 
 	/**
@@ -282,9 +282,9 @@ public class SQFSyntaxProcessor {
 	 * Gets the relative position the error marker should be drawn at. The command
 	 * itself is used as the center point
 	 */
-	public ERelativPosition getErrorMarkerPosition() {
+	public ERelativePosition getErrorMarkerPosition() {
 		if (isValid()) {
-			return ERelativPosition.NONE;
+			return ERelativePosition.NONE;
 		}
 
 		return markerPosition;

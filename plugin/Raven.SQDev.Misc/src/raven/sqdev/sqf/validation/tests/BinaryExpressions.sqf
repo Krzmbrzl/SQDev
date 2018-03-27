@@ -1,0 +1,1 @@
+player setPos [0,0,0];

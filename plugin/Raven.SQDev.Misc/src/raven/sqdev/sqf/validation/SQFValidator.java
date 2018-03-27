@@ -46,10 +46,6 @@ public class SQFValidator implements ISQFTreeListener {
 	public static final DataTypeList NUMBER = new DataTypeList(EDataType.NUMBER);
 
 	/**
-	 * The character buffer for the input to be processed
-	 */
-	protected ICharacterBuffer charBuffer;
-	/**
 	 * The buffer holding all tokens
 	 */
 	protected TokenBuffer<SQFToken> tokenBuffer;
@@ -71,8 +67,7 @@ public class SQFValidator implements ISQFTreeListener {
 	protected Map<IndexTreeElement, DataTypeList> resolvedReturnValues;
 
 
-	public SQFValidator(ICharacterBuffer charBuffer, ISQFParseInformation info) {
-		this.charBuffer = charBuffer;
+	public SQFValidator(ISQFParseInformation info) {
 		declaredVariables = new HashSet<>();
 		result = new SQFParseResult();
 		resolvedReturnValues = new HashMap<>();
@@ -80,19 +75,19 @@ public class SQFValidator implements ISQFTreeListener {
 
 	@Override
 	public void nularExpression(SQFToken expression) {
-		final String operator = getText(expression);
+		final String operator = expression.getText();
 
 	}
 
 	@Override
 	public void unaryExpression(SQFToken expression, IndexTreeElement node) {
-		final String operator = getText(expression);
+		final String operator = expression.getText();
 
 	}
 
 	@Override
 	public void binaryExpression(SQFToken expression, IndexTreeElement node) {
-		final String operatorName = getText(expression);
+		final String operatorName = expression.getText();
 
 		switch (operatorName) {
 		case "=":
@@ -198,7 +193,7 @@ public class SQFValidator implements ISQFTreeListener {
 				error(variableNode, ProblemMessages.invalidExpression("assignment"));
 			}
 
-			String varOperator = getText(tokenBuffer.get(index));
+			String varOperator = tokenBuffer.get(index).getText();
 			if (!varOperator.toLowerCase().equals("private")) {
 				// only private is allowed as a modifier
 				error(tokenBuffer.get(node.getIndex()), ProblemMessages.privateIsOnlyValidModifierForAssignments());
@@ -214,23 +209,12 @@ public class SQFValidator implements ISQFTreeListener {
 			}
 		}
 
-		String varName = getText(tokenBuffer.get(variableNode.getIndex()));
+		String varName = tokenBuffer.get(variableNode.getIndex()).getText();
 		if (!varName.startsWith("_") && isPrivate) {
 			// trying to declare global variable as private
 			error(variableNode, ProblemMessages.privateVariablesMustBeLocal());
 		}
 		declaredVariables.add(varName.toLowerCase());
-	}
-
-	/**
-	 * Gets the text of the given token
-	 * 
-	 * @param token
-	 *            The token whose corresponding text should be retrieved
-	 * @return The text corresponding to the given token
-	 */
-	protected String getText(SQFToken token) {
-		return charBuffer.getText(token.start(), token.length());
 	}
 
 	/**
@@ -455,8 +439,7 @@ public class SQFValidator implements ISQFTreeListener {
 			case MACRO:
 				return ANYTHING;
 			case BINARY:
-				SQFCommand operator = parseInformation.getBinaryOperators()
-						.get(charBuffer.getText(token.start(), token.length()).toLowerCase());
+				SQFCommand operator = parseInformation.getBinaryOperators().get(token.getText().toLowerCase());
 				if (operator == null) {
 					// If it is not recognized it will be handled elsewhere
 					return ANYTHING;
@@ -464,8 +447,7 @@ public class SQFValidator implements ISQFTreeListener {
 					return operator.getAllReturnTypes();
 				}
 			case NULAR:
-				operator = parseInformation.getNularOperators()
-						.get(charBuffer.getText(token.start(), token.length()).toLowerCase());
+				operator = parseInformation.getNularOperators().get(token.getText().toLowerCase());
 				if (operator == null) {
 					// If it is not recognized it will be handled elsewhere
 					return ANYTHING;
@@ -473,8 +455,7 @@ public class SQFValidator implements ISQFTreeListener {
 					return operator.getAllReturnTypes();
 				}
 			case UNARY:
-				operator = parseInformation.getUnaryOperators()
-						.get(charBuffer.getText(token.start(), token.length()).toLowerCase());
+				operator = parseInformation.getUnaryOperators().get(token.getText().toLowerCase());
 				if (operator == null) {
 					// If it is not recognized it will be handled elsewhere
 					return ANYTHING;
