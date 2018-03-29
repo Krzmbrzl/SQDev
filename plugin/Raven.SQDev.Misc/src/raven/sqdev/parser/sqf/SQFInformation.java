@@ -11,7 +11,7 @@ import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.Variable;
-import raven.sqdev.interfaces.ISQFParseInformation;
+import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.parser.misc.ParseUtil;
@@ -23,7 +23,7 @@ import raven.sqdev.pluginManagement.ResourceManager;
  * @author Raven
  *
  */
-public class SQFParseInformation implements ISQFParseInformation {
+public class SQFInformation implements ISQFInformation {
 	/**
 	 * The SQF keywords to use
 	 */
@@ -44,7 +44,7 @@ public class SQFParseInformation implements ISQFParseInformation {
 	/**
 	 * Creates a new instance of this class
 	 */
-	public SQFParseInformation(Map<String, Macro> macros) {
+	public SQFInformation(Map<String, Macro> macros) {
 		this(false, macros);
 	}
 
@@ -59,7 +59,7 @@ public class SQFParseInformation implements ISQFParseInformation {
 	 * @param macros
 	 *            A map of defined macros the SQF parser should be aware of
 	 */
-	public SQFParseInformation(boolean refresh, Map<String, Macro> macros) {
+	public SQFInformation(boolean refresh, Map<String, Macro> macros) {
 		this.macros = macros;
 		macroNames = new ArrayList<String>();
 

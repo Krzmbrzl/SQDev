@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import raven.sqdev.misc.Macro;
-import raven.sqdev.parser.misc.ParseResult;
+import raven.sqdev.parser.misc.ParseResultOld;
 
-public class PreprocessorParseResult extends ParseResult {
+public class PreprocessorParseResult extends ParseResultOld {
 
 	/**
 	 * The list of defined macros

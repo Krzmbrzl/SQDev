@@ -36,4 +36,5 @@ Export-Package: org.antlr.v4.runtime,
 Import-Package: raven.sqdev.misc
 Bundle-Vendor: Raven
 Bundle-ClassPath: ANTLR/antlr-runtime-4.7.jar,
-  .
+ SQFParser/SQFParser.jar,
+ .

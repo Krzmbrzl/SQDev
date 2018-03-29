@@ -34,11 +34,11 @@ import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.interfaces.IKeywordListChangeListener;
 import raven.sqdev.interfaces.IMacroSupport;
-import raven.sqdev.interfaces.ISQFParseInformation;
+import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.parser.misc.ParseUtil;
-import raven.sqdev.parser.sqf.SQFParseResult;
+import raven.sqdev.parser.sqf.SQFParseResultOld;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
@@ -54,7 +54,7 @@ import raven.sqdev.util.Util;
  * 
  */
 public class SQF_Editor extends BasicCodeEditor
-		implements IKeywordListChangeListener, IMacroSupport, ISQFParseInformation {
+		implements IKeywordListChangeListener, IMacroSupport, ISQFInformation {
 
 	/**
 	 * The KeywordProvider for the SQF keywords
@@ -217,7 +217,7 @@ public class SQF_Editor extends BasicCodeEditor
 
 	@Override
 	protected ParseTree doParse(String input) {
-		SQFParseResult result = ParseUtil.parseSQFOld(input, this);
+		SQFParseResultOld result = ParseUtil.parseSQFOld(input, this);
 
 		if (!result.providesParseTree() || !result.providesParserRuleNames() || !result.providesTokenStream()) {
 			throw new SQDevCoreException("Expected SQFParseResult to contain tree, names and tokenStream!");
@@ -237,7 +237,7 @@ public class SQF_Editor extends BasicCodeEditor
 	@Override
 	public boolean processParseTree(ParseTree parseTree) {
 		// process parse result
-		SQFParseResult result = ParseUtil.validateSQFOld(parseTree, currentStream, this);
+		SQFParseResultOld result = ParseUtil.validateSQFOld(parseTree, currentStream, this);
 
 		setVariables(result.getDeclaredLocalVariables(), result.getDeclaredGlobalVariables());
 		result.applyMarkersTo(this);

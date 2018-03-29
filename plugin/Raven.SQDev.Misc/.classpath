@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="ANTLR/antlr-runtime-4.7.jar"/>
-	<classpathentry kind="lib" path="/Data/home/robert/Documents/Programming/Libraries/SQFParser.jar"/>
+	<classpathentry kind="lib" path="SQFParser/SQFParser.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

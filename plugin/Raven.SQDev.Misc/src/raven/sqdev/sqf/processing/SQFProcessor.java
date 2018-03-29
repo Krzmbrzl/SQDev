@@ -1,4 +1,4 @@
-package raven.sqdev.sqf.validation;
+package raven.sqdev.sqf.processing;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 
-import dataStructures.ICharacterBuffer;
 import dataStructures.ISQFTreeListener;
+import dataStructures.ITokenSource;
 import dataStructures.IndexTreeElement;
 import dataStructures.SQFToken;
 import dataStructures.TokenBuffer;
@@ -16,13 +16,14 @@ import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.exceptions.ValidationException;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.Variable;
-import raven.sqdev.interfaces.ISQFParseInformation;
+import raven.sqdev.interfaces.ISQFInformation;
+import raven.sqdev.interfaces.ITreeProcessingResult;
 import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
-import raven.sqdev.parser.sqf.SQFParseResult;
+import raven.sqdev.parser.misc.TreeProcessingResult;
 import raven.sqdev.parser.sqf.SQFSyntaxProcessor;
 
-public class SQFValidator implements ISQFTreeListener {
+public class SQFProcessor implements ISQFTreeListener {
 
 	/**
 	 * A {@linkplain DataTypeList} containing the datatype ANYTHING
@@ -48,11 +49,11 @@ public class SQFValidator implements ISQFTreeListener {
 	/**
 	 * The buffer holding all tokens
 	 */
-	protected TokenBuffer<SQFToken> tokenBuffer;
+	protected ITokenSource<SQFToken> tokenBuffer;
 	/**
 	 * The object containing all results of parsing and validating
 	 */
-	protected SQFParseResult result;
+	protected TreeProcessingResult result;
 	/**
 	 * The set of so far declared variables. All names are in lowercase
 	 */
@@ -60,16 +61,16 @@ public class SQFValidator implements ISQFTreeListener {
 	/**
 	 * The object holding all necessary meta-information
 	 */
-	protected ISQFParseInformation parseInformation;
+	protected ISQFInformation parseInformation;
 	/**
 	 * A map of all resolved return values
 	 */
 	protected Map<IndexTreeElement, DataTypeList> resolvedReturnValues;
 
 
-	public SQFValidator(ISQFParseInformation info) {
+	public SQFProcessor(ISQFInformation info, TreeProcessingResult result) {
 		declaredVariables = new HashSet<>();
-		result = new SQFParseResult();
+		this.result = result;
 		resolvedReturnValues = new HashMap<>();
 	}
 
@@ -345,7 +346,7 @@ public class SQFValidator implements ISQFTreeListener {
 	 *            The problem message
 	 */
 	protected void addProblemMarker(int severity, int start, int length, String message) {
-		result.addMarker(IMarker.PROBLEM, start, length, message, severity);
+		result.createMarker(IMarker.PROBLEM, start, length, message, severity);
 	}
 
 	/**
@@ -502,7 +503,7 @@ public class SQFValidator implements ISQFTreeListener {
 	/**
 	 * Gets the result of this validation
 	 */
-	public SQFParseResult getResult() {
+	public ITreeProcessingResult getResult() {
 		return result;
 	}
 }

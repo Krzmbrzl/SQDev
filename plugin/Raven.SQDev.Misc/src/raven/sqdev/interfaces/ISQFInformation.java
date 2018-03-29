@@ -14,7 +14,7 @@ import raven.sqdev.misc.Macro;
  * @author Raven
  *
  */
-public interface ISQFParseInformation {
+public interface ISQFInformation {
 
 	/**
 	 * Gets the binary SQF operators

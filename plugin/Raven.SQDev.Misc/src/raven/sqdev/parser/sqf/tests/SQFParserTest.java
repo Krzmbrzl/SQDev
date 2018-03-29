@@ -16,14 +16,14 @@ import org.junit.Test;
 import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.base.Keyword;
-import raven.sqdev.interfaces.ISQFParseInformation;
+import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.misc.EDataType;
 import raven.sqdev.misc.FileUtil;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.Marker;
 import raven.sqdev.parser.misc.ParseUtil;
-import raven.sqdev.parser.sqf.SQFParseInformation;
-import raven.sqdev.parser.sqf.SQFParseResult;
+import raven.sqdev.parser.sqf.SQFInformation;
+import raven.sqdev.parser.sqf.SQFParseResultOld;
 
 public class SQFParserTest {
 
@@ -37,7 +37,7 @@ public class SQFParserTest {
 
 	@Test
 	public void variableDeclarations() {
-		SQFParseResult result = process(getContent(VARIABLE_DECLARATION));
+		SQFParseResultOld result = process(getContent(VARIABLE_DECLARATION));
 
 		// Assert that there are no errors in this file
 		assertTrue("The file \"" + VARIABLE_DECLARATION_PATH + "\" is not expected to contain erros!",
@@ -98,7 +98,7 @@ public class SQFParserTest {
 	@Test
 	public void error_typeMismatch() {
 		String input;
-		SQFParseResult result;
+		SQFParseResultOld result;
 		Marker expectedMarker;
 
 
@@ -160,7 +160,7 @@ public class SQFParserTest {
 	@Test
 	public void error_missingSemicolon() {
 		String input;
-		SQFParseResult result;
+		SQFParseResultOld result;
 		Marker expectedMarker;
 		Map<String, Macro> macros = new HashMap<String, Macro>();
 		macros.put("CHECK_TRUE",new Macro("CHECK_TRUE"));
@@ -193,7 +193,7 @@ public class SQFParserTest {
 	@Test
 	public void error_unbalancedCharacterPair() {
 		String input;
-		SQFParseResult result;
+		SQFParseResultOld result;
 		Marker expectedMarker;
 
 
@@ -280,11 +280,11 @@ public class SQFParserTest {
 	 * Checks whether the given parseResult contains the given amount of markers
 	 * 
 	 * @param result
-	 *            The {@link SQFParseResult} to check
+	 *            The {@link SQFParseResultOld} to check
 	 * @param amount
 	 *            The amount of markers that are expected to be present
 	 */
-	protected static void assertMarkerAmountEquals(SQFParseResult result, int amount) {
+	protected static void assertMarkerAmountEquals(SQFParseResultOld result, int amount) {
 		if (result.getMarkers().size() == amount) {
 			return;
 		}
@@ -333,9 +333,9 @@ public class SQFParserTest {
 	 *            The input to process
 	 * @param macros
 	 *            The list of macros that should be existent in the given input
-	 * @return The resulting {@link SQFParseResult}
+	 * @return The resulting {@link SQFParseResultOld}
 	 */
-	protected static SQFParseResult process(String input, Map<String, Macro> macros) {
+	protected static SQFParseResultOld process(String input, Map<String, Macro> macros) {
 		return ParseUtil.parseAndValidateSQFOld(input, getSQFParseInformation(macros));
 	}
 
@@ -345,9 +345,9 @@ public class SQFParserTest {
 	 * 
 	 * @param input
 	 *            The input to process
-	 * @return The resulting {@link SQFParseResult}
+	 * @return The resulting {@link SQFParseResultOld}
 	 */
-	protected static SQFParseResult process(String input) {
+	protected static SQFParseResultOld process(String input) {
 		return process(input, new HashMap<String, Macro>());
 	}
 
@@ -385,8 +385,8 @@ public class SQFParserTest {
 	 * @param macros
 	 *            The macro-list that should be used
 	 */
-	protected static ISQFParseInformation getSQFParseInformation(Map<String, Macro> macros) {
-		return new SQFParseInformation(macros) {
+	protected static ISQFInformation getSQFParseInformation(Map<String, Macro> macros) {
+		return new SQFInformation(macros) {
 			@Override
 			protected String getKeywordContent() {
 				try {

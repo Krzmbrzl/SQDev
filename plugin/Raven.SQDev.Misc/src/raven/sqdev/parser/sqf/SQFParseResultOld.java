@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.BufferedTokenStream;
 import org.eclipse.jface.text.Position;
 
 import raven.sqdev.infoCollection.base.Variable;
-import raven.sqdev.parser.misc.ParseResult;
+import raven.sqdev.parser.misc.ParseResultOld;
 
 /**
  * A basic implementation of an {@link ISQFParseResult}
@@ -17,7 +17,8 @@ import raven.sqdev.parser.misc.ParseResult;
  * @author Raven
  *
  */
-public class SQFParseResult extends ParseResult {
+@Deprecated
+public class SQFParseResultOld extends ParseResultOld {
 
 	/**
 	 * A list of local variables declared during the parsing
@@ -42,7 +43,7 @@ public class SQFParseResult extends ParseResult {
 	private BufferedTokenStream tokenStream;
 
 
-	public SQFParseResult() {
+	public SQFParseResultOld() {
 		foldingAreas = new ArrayList<Position>();
 		declaredLocalVariables = new HashMap<String, Variable>();
 		declaredGlobalVariables = new HashMap<String, Variable>();
@@ -147,12 +148,12 @@ public class SQFParseResult extends ParseResult {
 	 * during that process (unless they are null).
 	 * 
 	 * If you want to only merge the reported markers then cast the argument to a
-	 * {@link SQFParseResult}}
+	 * {@link SQFParseResultOld}}
 	 * 
 	 * @param other
 	 *            The SQFParseResult to merge into this one
 	 */
-	public void mergeWith(SQFParseResult other) {
+	public void mergeWith(SQFParseResultOld other) {
 		super.mergeWith(other);
 
 		foldingAreas.addAll(other.getFoldingAreas());

@@ -8,7 +8,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import raven.sqdev.interfaces.IMarkerSupport;
 import raven.sqdev.misc.Marker;
 
-public class ParseResult implements IMarkerSupport {
+@Deprecated
+public class ParseResultOld implements IMarkerSupport {
 
 	/**
 	 * The list of reported markers
@@ -20,7 +21,7 @@ public class ParseResult implements IMarkerSupport {
 	private ParseTree tree;
 
 
-	public ParseResult() {
+	public ParseResultOld() {
 		markers = new ArrayList<Marker>();
 	}
 
@@ -71,7 +72,7 @@ public class ParseResult implements IMarkerSupport {
 	 * @param other
 	 *            The other parse result to merge into this one
 	 */
-	public void mergeWith(ParseResult other) {
+	public void mergeWith(ParseResultOld other) {
 		other.merging();
 
 		markers.addAll(other.getMarkers());

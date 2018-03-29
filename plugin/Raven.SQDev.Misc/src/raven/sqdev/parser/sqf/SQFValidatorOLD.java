@@ -23,7 +23,7 @@ import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.Variable;
-import raven.sqdev.interfaces.ISQFParseInformation;
+import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
 import raven.sqdev.misc.Macro;
@@ -52,6 +52,7 @@ import raven.sqdev.parser.sqf.SQFParser.UnaryExpressionContext;
  * @author Raven
  *
  */
+@Deprecated
 public class SQFValidatorOLD extends SQFBaseListener {
 
 	/**
@@ -61,13 +62,13 @@ public class SQFValidatorOLD extends SQFBaseListener {
 	protected static final int CREATED_STATE = -10;
 
 	/**
-	 * The parse reult object that holds information about the parse result
+	 * The parse result object that holds information about the parse result
 	 */
-	private SQFParseResult parseResult;
+	private SQFParseResultOld parseResult;
 	/**
 	 * The information that are needed in order to parse the input properly
 	 */
-	private ISQFParseInformation info;
+	private ISQFInformation info;
 
 	/**
 	 * A list of found localVariables
@@ -95,12 +96,12 @@ public class SQFValidatorOLD extends SQFBaseListener {
 	 * Creates a new instance of this validator.
 	 * 
 	 * @param info
-	 *            The {@link SQFParseInformation} needed to parse the input properly
+	 *            The {@link SQFInformation} needed to parse the input properly
 	 * @param currentStream
 	 *            The <code>CommonTokenStream</code> associated with the respective
 	 *            parse tree
 	 */
-	public SQFValidatorOLD(ISQFParseInformation info, BufferedTokenStream currentStream) {
+	public SQFValidatorOLD(ISQFInformation info, BufferedTokenStream currentStream) {
 		this(info, null, currentStream);
 	}
 
@@ -108,15 +109,15 @@ public class SQFValidatorOLD extends SQFBaseListener {
 	 * Creates a new instance of this validator.
 	 * 
 	 * @param info
-	 *            The {@link SQFParseInformation} needed to parse the input properly
+	 *            The {@link SQFInformation} needed to parse the input properly
 	 * @param parseResult
-	 *            The {@link SQFParseResult} to report any parsing results to. If
+	 *            The {@link SQFParseResultOld} to report any parsing results to. If
 	 *            thi is <code>null</code> a new one will be created
 	 * @param currentStream
 	 *            The <code>CommonTokenStream</code> associated with the respective
 	 *            parse tree
 	 */
-	public SQFValidatorOLD(ISQFParseInformation info, SQFParseResult parseResult, BufferedTokenStream currentStream) {
+	public SQFValidatorOLD(ISQFInformation info, SQFParseResultOld parseResult, BufferedTokenStream currentStream) {
 		Assert.isNotNull(info);
 		Assert.isNotNull(currentStream);
 
@@ -126,7 +127,7 @@ public class SQFValidatorOLD extends SQFBaseListener {
 		if (parseResult != null) {
 			this.parseResult = parseResult;
 		} else {
-			this.parseResult = new SQFParseResult();
+			this.parseResult = new SQFParseResultOld();
 		}
 
 		localVariables = new HashMap<String, Variable>();
@@ -944,9 +945,9 @@ public class SQFValidatorOLD extends SQFBaseListener {
 
 	/**
 	 * Gets the parse result. This implementation always returns an instance of
-	 * {@link SQFParseResult}.
+	 * {@link SQFParseResultOld}.
 	 */
-	public SQFParseResult getParseResult() {
+	public SQFParseResultOld getParseResult() {
 		return parseResult;
 	}
 }

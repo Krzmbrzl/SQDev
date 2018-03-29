@@ -4,43 +4,49 @@ import org.eclipse.core.resources.IMarker;
 
 import dataStructures.IErrorListener;
 import dataStructures.SQFToken;
-import raven.sqdev.parser.sqf.SQFParseResult;
+import raven.sqdev.interfaces.IMarkerSupport;
 
 public class SQFLexAndParseListener implements IErrorListener {
 
 	/**
 	 * The parse result to add the errors to
 	 */
-	protected SQFParseResult result;
+	protected IMarkerSupport markerStorage;
 
-	public SQFLexAndParseListener() {
-		this(new SQFParseResult());
+	public SQFLexAndParseListener(IMarkerSupport markerStorage) {
+		assert (markerStorage != null);
+
+		this.markerStorage = markerStorage;
 	}
 
-	public SQFLexAndParseListener(SQFParseResult result) {
-		this.result = result;
+	public SQFLexAndParseListener() {
+
 	}
 
 	@Override
 	public void error(String msg, SQFToken token) {
-		result.addMarker(IMarker.PROBLEM, token.start(), token.length(), msg, IMarker.SEVERITY_ERROR);
+		if (markerStorage == null) {
+			throw new IllegalStateException(
+					"Marker storage may not be null. Has to be set via setMarkerStorage() before calling this method!");
+		}
+		markerStorage.createMarker(IMarker.PROBLEM, token.start(), token.length(), msg, IMarker.SEVERITY_ERROR);
 	}
 
 	/**
 	 * Gets the parse result
 	 */
-	public SQFParseResult getResult() {
-		return result;
+	public IMarkerSupport getMarkerStorage() {
+		return markerStorage;
 	}
 
 	/**
 	 * Sets the parse result
 	 * 
-	 * @param result
-	 *            The {@linkplain SQFParseResult} object to report to
+	 * @param storage
+	 *            The {@linkplain IMarkerSupport} to report errors to
 	 */
-	public void setResult(SQFParseResult result) {
-		this.result = result;
+	public void setMarkerStorage(IMarkerSupport storage) {
+		this.markerStorage = storage;
 	}
 
 }

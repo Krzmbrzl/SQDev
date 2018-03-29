@@ -19,7 +19,7 @@ public class SQFTokenFactory extends AbstractSQFTokenFactory {
 	}
 
 	@Override
-	public void initialize() {
+	protected void doInitialize() {
 		for (String currentOperator : unaryKeywords) {
 			lookupTable.put(currentOperator.toLowerCase(), UNARY);
 		}

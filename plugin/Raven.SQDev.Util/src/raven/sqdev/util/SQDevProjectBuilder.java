@@ -22,8 +22,8 @@ import raven.sqdev.misc.Marker;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.parser.misc.ParseUtil;
 import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
-import raven.sqdev.parser.sqf.SQFParseInformation;
-import raven.sqdev.parser.sqf.SQFParseResult;
+import raven.sqdev.parser.sqf.SQFInformation;
+import raven.sqdev.parser.sqf.SQFParseResultOld;
 
 public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 
@@ -151,9 +151,9 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 				file.getLocation());
 
 		// create parse information with default values
-		SQFParseInformation info = new SQFParseInformation(prepResult.getMacros());
+		SQFInformation info = new SQFInformation(prepResult.getMacros());
 
-		SQFParseResult sqfResult = ParseUtil.parseSQFOld(fileContent, info);
+		SQFParseResultOld sqfResult = ParseUtil.parseSQFOld(fileContent, info);
 
 		sqfResult
 				.mergeWith(ParseUtil.validateSQFOld(sqfResult.getParseTree(), sqfResult.getTokenStream(), info));

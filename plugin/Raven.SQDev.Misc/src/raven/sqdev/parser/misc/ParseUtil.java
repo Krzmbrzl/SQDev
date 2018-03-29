@@ -20,9 +20,14 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 
 import dataStructures.CharacterInputStream;
+import dataStructures.SQFTreeWalker;
 import lexer.SQFLexer;
+import parser.SQFParser;
 import raven.sqdev.infoCollection.base.Variable;
-import raven.sqdev.interfaces.ISQFParseInformation;
+import raven.sqdev.interfaces.IParseResult;
+import raven.sqdev.interfaces.ISQFInformation;
+import raven.sqdev.interfaces.ISQFParseSupplier;
+import raven.sqdev.interfaces.ITreeProcessingResult;
 import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.misc.Pair;
 import raven.sqdev.misc.TextUtils;
@@ -31,9 +36,10 @@ import raven.sqdev.parser.preprocessor.PreprocessorLexer;
 import raven.sqdev.parser.preprocessor.PreprocessorParseListener;
 import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
 import raven.sqdev.parser.preprocessor.PreprocessorParser;
-import raven.sqdev.parser.sqf.SQFParseInformation;
-import raven.sqdev.parser.sqf.SQFParseResult;
+import raven.sqdev.parser.sqf.SQFInformation;
+import raven.sqdev.parser.sqf.SQFParseResultOld;
 import raven.sqdev.parser.sqf.SQFValidatorOLD;
+import raven.sqdev.sqf.processing.SQFProcessor;
 
 /**
  * A class containing utility methods for parsing processes
@@ -47,29 +53,94 @@ public class ParseUtil {
 	 */
 	protected static SQFLexer sqfLexer;
 	/**
+	 * The parser instance used by this class
+	 */
+	protected static SQFParser sqfParser;
+	/**
 	 * The error listener instance used by this class
 	 */
-	protected static SQFLexAndParseListener errorListener;
+	protected static SQFLexAndParseListener errorListener = new SQFLexAndParseListener();
 
 
-	public static final SQFParseResult parseSQF(InputStream input, ISQFParseInformation parseInfo) throws IOException {
+	/**
+	 * Parses the content represented by the given InputStream
+	 * 
+	 * @param input
+	 *            The InputStream used to retrieve the characters of the content
+	 *            that should be parsed
+	 * @param supplier
+	 *            The {@linkplain ISQFParseSupplier} providing all necessary extras
+	 *            for parsing
+	 * @return The result of parsing the given content.
+	 * @throws IOException
+	 */
+	public static final SQFParseResult parseSQF(InputStream input, ISQFParseSupplier supplier) throws IOException {
 		if (sqfLexer == null) {
 			sqfLexer = new SQFLexer(errorListener);
 		}
 
-		// TODO: set token factory for lexer -> should be retrieved from
-		// parseInformation
-
 		SQFParseResult result = new SQFParseResult();
 
 		sqfLexer.reset(true);
-		sqfLexer.setMacros(parseInfo.getMacros().keySet());
-		errorListener.setResult(result);
+		sqfLexer.setMacros(supplier.getMacros().keySet());
+		sqfLexer.setTokenFactory(supplier.getTokenFactory());
+		errorListener.setMarkerStorage(result);
 
 		CharacterInputStream inStream = new CharacterInputStream(input);
 		sqfLexer.lex(inStream);
 
-		// TODO: adjust ParseResult to carry tokenBuffer and parseTree
+		if (sqfParser == null) {
+			sqfParser = new SQFParser(errorListener);
+			sqfParser.setErrorListener(errorListener);
+		}
+
+		sqfParser.parse(sqfLexer);
+
+		return result;
+	}
+
+	/**
+	 * Processes the SQF tree contained in the given parse result. Part of this
+	 * processing is the SQF validation
+	 * 
+	 * @param parseResult
+	 *            The parse result containing the tree to process
+	 * @param info
+	 *            The {@linkplain ISQFInformation} containing essential information
+	 *            about SQF
+	 * @return The {@linkplain ITreeProcessingResult} containing all results of
+	 *         processing the given tree
+	 */
+	public static final ITreeProcessingResult processSQF(SQFParseResult parseResult, ISQFInformation info) {
+		TreeProcessingResult result = new TreeProcessingResult();
+		result.setMarkers(parseResult.getMarkers());
+
+		SQFProcessor validator = new SQFProcessor(info, result);
+
+		SQFTreeWalker walker = new SQFTreeWalker(parseResult.getTree(), parseResult.getTokenBuffer(), validator);
+		walker.walk();
+
+		return result;
+	}
+
+	/**
+	 * Parses and process the given input as SQF
+	 * 
+	 * @param input
+	 *            The input to process
+	 * @param supplier
+	 *            The {@linkplain ISQFParseSupplier} providing all necessary extras
+	 *            for parsing
+	 * @param info
+	 *            The {@linkplain ISQFInformation} containing essential information
+	 *            about SQF
+	 * @return The {@linkplain ITreeProcessingResult} containing all results of
+	 *         processing the given tree
+	 * @throws IOException
+	 */
+	public static final ITreeProcessingResult parseAndProcessSQF(InputStream input, ISQFParseSupplier supplier,
+			ISQFInformation info) throws IOException {
+		return processSQF(parseSQF(input, supplier), info);
 	}
 
 	/**
@@ -82,8 +153,8 @@ public class ParseUtil {
 	 * @return The parseResult containing all necessary information about the
 	 *         parsing (including the parseTree)
 	 */
-	public static final SQFParseResult parseSQFOld(String input, ISQFParseInformation parseInfo) {
-		SQFParseResult result = new SQFParseResult();
+	public static final SQFParseResultOld parseSQFOld(String input, ISQFInformation parseInfo) {
+		SQFParseResultOld result = new SQFParseResultOld();
 
 		BasicErrorListener listener = new BasicErrorListener();
 
@@ -181,8 +252,8 @@ public class ParseUtil {
 	 *            The necessary ParseInformation
 	 * @return The result of the validation
 	 */
-	public static final SQFParseResult validateSQFOld(ParseTree tree, BufferedTokenStream tokenStream,
-			ISQFParseInformation info) {
+	public static final SQFParseResultOld validateSQFOld(ParseTree tree, BufferedTokenStream tokenStream,
+			ISQFInformation info) {
 		Assert.isNotNull(tokenStream);
 		Assert.isNotNull(tree);
 		Assert.isNotNull(info);
@@ -203,10 +274,10 @@ public class ParseUtil {
 	 *            The input to process
 	 * @param parseInfo
 	 *            The {@link SQFParseInformation}} for this parsing process
-	 * @return The {@link SQFParseResult} of this parsing and validating
+	 * @return The {@link SQFParseResultOld} of this parsing and validating
 	 */
-	public static final SQFParseResult parseAndValidateSQFOld(String input, ISQFParseInformation parseInfo) {
-		SQFParseResult result = parseSQFOld(input, parseInfo);
+	public static final SQFParseResultOld parseAndValidateSQFOld(String input, ISQFInformation parseInfo) {
+		SQFParseResultOld result = parseSQFOld(input, parseInfo);
 		result.mergeWith(validateSQFOld(result.getParseTree(), result.getTokenStream(), parseInfo));
 
 		return result;
