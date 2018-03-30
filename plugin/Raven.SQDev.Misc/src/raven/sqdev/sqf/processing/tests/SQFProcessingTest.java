@@ -14,6 +14,7 @@ import org.junit.Test;
 import dataStructures.AbstractSQFTokenFactory;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.interfaces.ISQFParseSupplier;
+import raven.sqdev.interfaces.ITreeProcessingResult;
 import raven.sqdev.misc.FileUtil;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.parser.misc.ParseUtil;
@@ -51,8 +52,10 @@ public class SQFProcessingTest {
 
 	@Test
 	public void test() throws IOException {
-		ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("player setPos getPos player".getBytes()), supplier,
+		ITreeProcessingResult result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("player setPos getPos player".getBytes()), supplier,
 				info);
+		// TODO: It claims there is a semicolon missing
+		assertTrue(result.getMarkers().size() == 0);
 	}
 
 

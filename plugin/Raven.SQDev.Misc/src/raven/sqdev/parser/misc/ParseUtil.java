@@ -96,6 +96,9 @@ public class ParseUtil {
 
 		sqfParser.parse(sqfLexer);
 
+		result.setTree(sqfParser.tree());
+		result.setTokenBuffer(sqfLexer);
+
 		return result;
 	}
 
