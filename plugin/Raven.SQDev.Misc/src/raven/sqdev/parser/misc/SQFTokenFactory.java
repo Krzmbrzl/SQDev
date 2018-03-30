@@ -30,9 +30,11 @@ public class SQFTokenFactory extends AbstractSQFTokenFactory {
 			if (hasSpecialPrecedence(currentOperator)) {
 				lookupTable.put(currentOperator, specialOperators.get(currentOperator));
 			} else {
-				lookupTable.put(currentOperator, UNARY);
+				lookupTable.put(currentOperator, BINARY);
 			}
 		}
+
+		lookupTable.put("=", specialOperators.get("="));
 	}
 
 }

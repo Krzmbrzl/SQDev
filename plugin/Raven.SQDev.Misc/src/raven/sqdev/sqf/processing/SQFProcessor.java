@@ -61,17 +61,41 @@ public class SQFProcessor implements ISQFTreeListener {
 	/**
 	 * The object holding all necessary meta-information
 	 */
-	protected ISQFInformation parseInformation;
+	protected ISQFInformation sqfInformation;
 	/**
 	 * A map of all resolved return values
 	 */
 	protected Map<IndexTreeElement, DataTypeList> resolvedReturnValues;
+	/**
+	 * The {@linkplain SQFSyntaxProcessor} to use internally
+	 */
+	protected SQFSyntaxProcessor syntaxProcessor;
 
 
-	public SQFProcessor(ISQFInformation info, TreeProcessingResult result) {
+	/**
+	 * Creates a new instance of this processor
+	 * 
+	 * @param info
+	 *            The {@linkplain ISQFInformation} holding all necessary meta
+	 *            information about the available commands
+	 * @param result
+	 *            The {@linkplain TreeProcessingResult} to put all results of this
+	 *            processing to
+	 * @param tokenBuffer
+	 *            The buffer holding all tokens to the tree that is going to be
+	 *            processed
+	 */
+	public SQFProcessor(ISQFInformation info, TreeProcessingResult result, ITokenSource<SQFToken> tokenBuffer) {
+		assert (info != null);
+		assert (result != null);
+		assert (tokenBuffer != null);
+
 		declaredVariables = new HashSet<>();
 		this.result = result;
+		this.sqfInformation = info;
+		this.tokenBuffer = tokenBuffer;
 		resolvedReturnValues = new HashMap<>();
+		syntaxProcessor = new SQFSyntaxProcessor();
 	}
 
 	@Override
@@ -98,22 +122,21 @@ public class SQFProcessor implements ISQFTreeListener {
 
 		default:
 			// "normal" binary operator
-			SQFCommand operator = parseInformation.getBinaryOperators().get(operatorName.toLowerCase());
+			SQFCommand operator = sqfInformation.getBinaryOperators().get(operatorName.toLowerCase());
 
 			if (operator != null) {
 				DataTypeList leftTypes = getReturnValues(node.getChildren().get(0));
 				DataTypeList rightTypes = getReturnValues(node.getChildren().get(1));
 
-				// TODO: consider using static processor for all statements
-				SQFSyntaxProcessor processor = new SQFSyntaxProcessor(operator);
-				processor.setLeftArgumentTypes(leftTypes.toArray());
-				processor.setRightArgumentTypes(rightTypes.toArray());
+				syntaxProcessor.setOperator(operator);
+				syntaxProcessor.setLeftArgumentTypes(leftTypes.toArray());
+				syntaxProcessor.setRightArgumentTypes(rightTypes.toArray());
 
-				if (!processor.isValid()) {
+				if (!syntaxProcessor.isValid()) {
 					int[] positionData;
 
 					try {
-						switch (processor.getErrorMarkerPosition()) {
+						switch (syntaxProcessor.getErrorMarkerPosition()) {
 						case CENTER:
 							positionData = new int[] { expression.start(), expression.length() };
 							break;
@@ -136,11 +159,11 @@ public class SQFProcessor implements ISQFTreeListener {
 						error(node, ProblemMessages.internalError());
 					}
 
-					error(positionData[0], positionData[1], processor.getErrorMessage());
+					error(positionData[0], positionData[1], syntaxProcessor.getErrorMessage());
 				}
 
 				// map the resolved processor to the respective node
-				resolvedReturnValues.put(node, processor.getReturnValues());
+				resolvedReturnValues.put(node, syntaxProcessor.getReturnValues());
 			} else {
 				// apparently it is not a binary operator -> shouldn't even be reachable
 				error(expression, ProblemMessages.operatorIsNotBinary(operatorName));
@@ -433,14 +456,32 @@ public class SQFProcessor implements ISQFTreeListener {
 			return resolvedReturnValues.get(node);
 		}
 
-		if (node.getIndex() > 0) {
+		if (node.getIndex() >= 0) {
 			SQFToken token = tokenBuffer.get(node.getIndex());
+
+			// handle primitives first
+			switch (token.type()) {
+			case CURLY_BRACKET_OPEN:
+				return CODE;
+			case ERROR_TOKEN:
+				return ANYTHING;
+			case NUMBER:
+				return NUMBER;
+			case SQUARE_BRACKET_OPEN:
+				return ARRAY;
+			case STRING:
+				return STRING;
+			case SUBSTRING:
+				return STRING;
+			default:
+				// do nothing -> wil be handled below
+			}
 
 			switch (token.operatorType()) {
 			case MACRO:
 				return ANYTHING;
 			case BINARY:
-				SQFCommand operator = parseInformation.getBinaryOperators().get(token.getText().toLowerCase());
+				SQFCommand operator = sqfInformation.getBinaryOperators().get(token.getText().toLowerCase());
 				if (operator == null) {
 					// If it is not recognized it will be handled elsewhere
 					return ANYTHING;
@@ -448,7 +489,7 @@ public class SQFProcessor implements ISQFTreeListener {
 					return operator.getAllReturnTypes();
 				}
 			case NULAR:
-				operator = parseInformation.getNularOperators().get(token.getText().toLowerCase());
+				operator = sqfInformation.getNularOperators().get(token.getText().toLowerCase());
 				if (operator == null) {
 					// If it is not recognized it will be handled elsewhere
 					return ANYTHING;
@@ -456,33 +497,12 @@ public class SQFProcessor implements ISQFTreeListener {
 					return operator.getAllReturnTypes();
 				}
 			case UNARY:
-				operator = parseInformation.getUnaryOperators().get(token.getText().toLowerCase());
+				operator = sqfInformation.getUnaryOperators().get(token.getText().toLowerCase());
 				if (operator == null) {
 					// If it is not recognized it will be handled elsewhere
 					return ANYTHING;
 				} else {
 					return operator.getAllReturnTypes();
-				}
-			case OTHER:
-				// check token type
-				switch (token.type()) {
-				case CURLY_BRACKET_OPEN:
-					return CODE;
-				case ERROR_TOKEN:
-					return ANYTHING;
-				case NUMBER:
-					return NUMBER;
-				case SQUARE_BRACKET_OPEN:
-					return ARRAY;
-				case STRING:
-					return STRING;
-				case SUBSTRING:
-					return STRING;
-				default:
-					// Shouldn't be reached
-					error(token, ProblemMessages.internalError());
-					return ANYTHING;
-
 				}
 			default:
 				// Shouldn't get reached

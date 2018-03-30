@@ -36,6 +36,7 @@ public class TreeProcessingResult implements ITreeProcessingResult, IMarkerSuppo
 		foldableAreas = new ArrayList<>();
 		localVariables = new HashMap<>();
 		globalVariables = new HashMap<>();
+		markers = new ArrayList<>();
 	}
 
 	@Override
@@ -93,8 +94,7 @@ public class TreeProcessingResult implements ITreeProcessingResult, IMarkerSuppo
 
 	/**
 	 * Sets the markers for this result. This method is intended for marker
-	 * collections that are passed from through the line and is therefore for
-	 * preventing the instantiation of a new collection
+	 * collections that are passed from through the line.
 	 * 
 	 * @param markers
 	 *            The marker collection to contribute to

@@ -118,9 +118,9 @@ public class ParseUtil {
 		TreeProcessingResult result = new TreeProcessingResult();
 		result.setMarkers(parseResult.getMarkers());
 
-		SQFProcessor validator = new SQFProcessor(info, result);
+		SQFProcessor processor = new SQFProcessor(info, result, sqfLexer);
 
-		SQFTreeWalker walker = new SQFTreeWalker(parseResult.getTree(), parseResult.getTokenBuffer(), validator);
+		SQFTreeWalker walker = new SQFTreeWalker(parseResult.getTree(), parseResult.getTokenBuffer(), processor);
 		walker.walk();
 
 		return result;

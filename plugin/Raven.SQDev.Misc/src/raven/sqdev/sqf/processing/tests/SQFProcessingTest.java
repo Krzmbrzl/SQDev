@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import dataStructures.AbstractSQFTokenFactory;
+import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.interfaces.ISQFParseSupplier;
 import raven.sqdev.interfaces.ITreeProcessingResult;
@@ -36,6 +37,8 @@ public class SQFProcessingTest {
 
 		info = getSQFInformation(macros);
 		SQFTokenFactory factory = new SQFTokenFactory(info.getBinaryKeywords(), info.getUnaryKeywords());
+		factory.initialize();
+
 		supplier = new ISQFParseSupplier() {
 
 			@Override
@@ -51,11 +54,81 @@ public class SQFProcessingTest {
 	}
 
 	@Test
-	public void test() throws IOException {
-		ITreeProcessingResult result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("player setPos getPos player".getBytes()), supplier,
-				info);
-		// TODO: It claims there is a semicolon missing
+	public void assignments() throws IOException {
+		ITreeProcessingResult result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("myVar = 3".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("myVar = 3;".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_myVar = 3".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_myVar = 3;".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private _myVar = 3".getBytes()), supplier,
+				info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private _myVar = 3;".getBytes()), supplier,
+				info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_myVar = []".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_myVar = [];".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_myVar = {}".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_myVar = {};".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+	}
+
+	@Test
+	public void assignmentErros() throws IOException {
+		ITreeProcessingResult result = ParseUtil
+				.parseAndProcessSQF(new ByteArrayInputStream("someOperator myVar = 3".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals("Missing ';'",
+				result.getMarkers().iterator().next().getMessage());
+		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("myvar"));
 	}
 
 

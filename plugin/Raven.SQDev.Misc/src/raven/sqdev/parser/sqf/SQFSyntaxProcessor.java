@@ -3,8 +3,6 @@ package raven.sqdev.parser.sqf;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
-
 import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
@@ -19,7 +17,7 @@ public class SQFSyntaxProcessor {
 	/**
 	 * The command whose syntax should be checked
 	 */
-	private SQFCommand command;
+	private SQFCommand operator;
 	/**
 	 * The potential datatypes of the left argument
 	 */
@@ -46,10 +44,13 @@ public class SQFSyntaxProcessor {
 	 */
 	private ERelativePosition markerPosition;
 
-	public SQFSyntaxProcessor(SQFCommand command) {
-		Assert.isNotNull(command);
 
-		this.command = command;
+	public SQFSyntaxProcessor() {
+	}
+
+
+	public SQFSyntaxProcessor(SQFCommand command) {
+		setOperator(command);
 	}
 
 	/**
@@ -81,9 +82,9 @@ public class SQFSyntaxProcessor {
 		validated = true;
 
 		// check possible argument constellations the command accepts
-		boolean canBeBinary = command.isBinaryOperator();
-		boolean canBeUnary = command.isUnaryOperator();
-		boolean canBeNular = command.isNularOperator();
+		boolean canBeBinary = operator.isBinaryOperator();
+		boolean canBeUnary = operator.isUnaryOperator();
+		boolean canBeNular = operator.isNularOperator();
 
 		// check arguments to determine which constellation can be achieved with
 		// given arguments
@@ -106,7 +107,7 @@ public class SQFSyntaxProcessor {
 			// the command can't be used with the given amount of arguments
 			if (leftArgumentTypes != null && rightArgumentTypes != null) {
 				// tried to use as binary operator
-				errorMessage = ProblemMessages.operatorIsNotBinary(command.getKeyword());
+				errorMessage = ProblemMessages.operatorIsNotBinary(operator.getKeyword());
 
 				activeSyntax = null;
 
@@ -114,16 +115,16 @@ public class SQFSyntaxProcessor {
 			}
 
 			if (rightArgumentTypes != null) {
-				if (command.isBinaryOperator()) {
+				if (operator.isBinaryOperator()) {
 					// command is binary but only one arg provided
-					errorMessage = ProblemMessages.missingArgLeft(command.getKeyword());
+					errorMessage = ProblemMessages.missingArgLeft(operator.getKeyword());
 
 					activeSyntax = null;
 
 					markerPosition = ERelativePosition.CENTER;
 				} else {
 					// operator is nular but has one argument provided
-					errorMessage = ProblemMessages.operatorIsNular(command.getKeyword());
+					errorMessage = ProblemMessages.operatorIsNular(operator.getKeyword());
 
 					activeSyntax = null;
 
@@ -134,7 +135,7 @@ public class SQFSyntaxProcessor {
 			}
 
 			// command must be nular but there must be an argument provided
-			errorMessage = ProblemMessages.operatorIsNotNular(command.getKeyword());
+			errorMessage = ProblemMessages.operatorIsNotNular(operator.getKeyword());
 
 			activeSyntax = null;
 
@@ -143,7 +144,7 @@ public class SQFSyntaxProcessor {
 			return;
 		}
 
-		List<Syntax> possibleSyntaxes = new ArrayList<Syntax>(command.getSyntaxes());
+		List<Syntax> possibleSyntaxes = new ArrayList<Syntax>(operator.getSyntaxes());
 
 		DataTypeList validProvidedLeftTypes = new DataTypeList();
 		DataTypeList validGeneralLeftTypes = new DataTypeList();
@@ -199,8 +200,7 @@ public class SQFSyntaxProcessor {
 		if (leftArgumentTypes != null && validProvidedLeftTypes.isEmpty()) {
 			// left argument is invalid
 			errorMessage = ProblemMessages.expectedTypeButGot(
-					validGeneralLeftTypes.toArray(new EDataType[validGeneralLeftTypes.size()]),
-					leftArgumentTypes);
+					validGeneralLeftTypes.toArray(new EDataType[validGeneralLeftTypes.size()]), leftArgumentTypes);
 
 			activeSyntax = null;
 
@@ -248,8 +248,7 @@ public class SQFSyntaxProcessor {
 		// The right argument is invalid as the program reached this part of the
 		// code
 		errorMessage = ProblemMessages.expectedTypeButGot(
-				validGeneralRightTypes.toArray(new EDataType[validGeneralRightTypes.size()]),
-				rightArgumentTypes);
+				validGeneralRightTypes.toArray(new EDataType[validGeneralRightTypes.size()]), rightArgumentTypes);
 
 		activeSyntax = null;
 
@@ -304,8 +303,8 @@ public class SQFSyntaxProcessor {
 				.getElement((leftSide) ? 0 : ((syntax.isBinary()) ? 2 : (syntax.isNular()) ? 0 : 1));
 
 		if (!element.isLeafElement()) {
-			throw new SQDevCoreException("Expected element from the syntax for command \""
-					+ syntax.getCommandName() + "\" to be a leaf element");
+			throw new SQDevCoreException("Expected element from the syntax for command \"" + syntax.getCommandName()
+					+ "\" to be a leaf element");
 		}
 
 		DataTypeList dataTypes = new DataTypeList();
@@ -340,9 +339,33 @@ public class SQFSyntaxProcessor {
 	 */
 	public DataTypeList getReturnValues() {
 		if (activeSyntax == null) {
-			return command.getAllReturnTypes();
+			return operator.getAllReturnTypes();
 		} else {
-			return command.getReturnTypes(activeSyntax);
+			return operator.getReturnTypes(activeSyntax);
 		}
+	}
+
+	/**
+	 * Resets this processor for another usage
+	 */
+	public void reset() {
+		operator = null;
+		leftArgumentTypes = null;
+		rightArgumentTypes = null;
+		validated = false;
+		errorMessage = null;
+		activeSyntax = null;
+		markerPosition = null;
+	}
+
+	/**
+	 * Sets the operator to be processed by this processor
+	 * 
+	 * @param operator
+	 *            The operator to process
+	 */
+	public void setOperator(SQFCommand operator) {
+		assert (operator != null);
+		this.operator = operator;
 	}
 }
