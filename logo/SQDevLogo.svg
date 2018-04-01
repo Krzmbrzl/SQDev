@@ -29,10 +29,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2"
-     inkscape:cx="257.92597"
+     inkscape:cx="182.17597"
      inkscape:cy="217.2498"
      inkscape:document-units="px"
-     inkscape:current-layer="g5192"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
@@ -47,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -124,12 +124,12 @@
        id="text4187"
        y="865.90662"
        x="105.36806"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:semi-expanded;font-size:20.78108978px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'Jamrul, Medium Semi-Expanded';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:semi-expanded;font-size:20.78108978px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'Jamrul, Medium Semi-Expanded';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        xml:space="preserve"><tspan
          y="865.90662"
          x="105.36806"
          id="tspan4189"
-         sodipodi:role="line">ArmA Development made easy</tspan></text>
+         sodipodi:role="line">Arma Development made easy</tspan></text>
     <g
        id="g5192"
        transform="matrix(1.0978224,0,0,1.0978224,-166.60168,297.15281)"
