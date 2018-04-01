@@ -21,11 +21,11 @@ public class SQFSyntaxProcessor {
 	/**
 	 * The potential datatypes of the left argument
 	 */
-	private EDataType[] leftArgumentTypes;
+	private Iterable<EDataType> leftArgumentTypes;
 	/**
 	 * The potential datatypes of the right argument
 	 */
-	private EDataType[] rightArgumentTypes;
+	private Iterable<EDataType> rightArgumentTypes;
 	/**
 	 * Indicates whether the command has been validated with the provided argument
 	 * types
@@ -59,7 +59,7 @@ public class SQFSyntaxProcessor {
 	 * @param types
 	 *            The potential <code>EDataTypes</code>
 	 */
-	public void setLeftArgumentTypes(EDataType[] types) {
+	public void setLeftArgumentTypes(Iterable<EDataType> types) {
 		leftArgumentTypes = types;
 		validated = false;
 	}
@@ -70,7 +70,7 @@ public class SQFSyntaxProcessor {
 	 * @param types
 	 *            The potential <code>EDataTypes</code>
 	 */
-	public void setRightArgumentTypes(EDataType[] types) {
+	public void setRightArgumentTypes(Iterable<EDataType> types) {
 		rightArgumentTypes = types;
 		validated = false;
 	}
@@ -199,8 +199,7 @@ public class SQFSyntaxProcessor {
 
 		if (leftArgumentTypes != null && validProvidedLeftTypes.isEmpty()) {
 			// left argument is invalid
-			errorMessage = ProblemMessages.expectedTypeButGot(
-					validGeneralLeftTypes.toArray(new EDataType[validGeneralLeftTypes.size()]), leftArgumentTypes);
+			errorMessage = ProblemMessages.expectedTypeButGot(validGeneralLeftTypes, leftArgumentTypes);
 
 			activeSyntax = null;
 
@@ -247,8 +246,7 @@ public class SQFSyntaxProcessor {
 		// TODO: note the left arg ctx in the error msg if possible
 		// The right argument is invalid as the program reached this part of the
 		// code
-		errorMessage = ProblemMessages.expectedTypeButGot(
-				validGeneralRightTypes.toArray(new EDataType[validGeneralRightTypes.size()]), rightArgumentTypes);
+		errorMessage = ProblemMessages.expectedTypeButGot(validGeneralRightTypes, rightArgumentTypes);
 
 		activeSyntax = null;
 

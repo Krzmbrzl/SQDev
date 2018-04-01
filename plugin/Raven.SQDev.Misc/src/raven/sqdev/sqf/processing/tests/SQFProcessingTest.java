@@ -16,6 +16,8 @@ import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.interfaces.ISQFParseSupplier;
 import raven.sqdev.interfaces.ITreeProcessingResult;
+import raven.sqdev.misc.DataTypeList;
+import raven.sqdev.misc.EDataType;
 import raven.sqdev.misc.FileUtil;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.parser.misc.ParseUtil;
@@ -117,21 +119,21 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
-		
+
 		macros.put("GVAR", new Macro("GVAR"));
-		
+
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("GVAR(myVar) = {}".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 0);
 		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("GVAR(myVar)"));
-		
+
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("GVAR(myVar) = {}".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 0);
 		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("GVAR(myVar)"));
-		
+
 		macros.clear();
 	}
 
@@ -142,25 +144,139 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals("Missing ';'",
-				result.getMarkers().iterator().next().getMessage());
+		assertEquals("Missing ';'", result.getMarkers().iterator().next().getMessage());
 		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("myvar"));
-		
-		result = ParseUtil
-				.parseAndProcessSQF(new ByteArrayInputStream("= 3".getBytes()), supplier, info);
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("player = 3".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals("Missing ';'",
-				result.getMarkers().iterator().next().getMessage());
-		
-		result = ParseUtil
-				.parseAndProcessSQF(new ByteArrayInputStream("=".getBytes()), supplier, info);
+		assertEquals(ProblemMessages.reservedKeyword("player"), result.getMarkers().iterator().next().getMessage());
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("= 3".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals("Missing ';'",
-				result.getMarkers().iterator().next().getMessage());
+		assertEquals(ProblemMessages.operatorIsNotUnary("="), result.getMarkers().iterator().next().getMessage());
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("=".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.operatorIsNotNular("="), result.getMarkers().iterator().next().getMessage());
+	}
+
+	@Test
+	public void privateTest() throws IOException {
+		ITreeProcessingResult result = ParseUtil
+				.parseAndProcessSQF(new ByteArrayInputStream("private _myVar = 3".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().iterator().next().equals("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private \"_myVar\"".getBytes()), supplier,
+				info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private ['_myVar', \"_yourVar\"]".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 2);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_yourvar"));
+	}
+
+	@Test
+	public void privateErrorTest() throws IOException {
+		ITreeProcessingResult result = ParseUtil
+				.parseAndProcessSQF(new ByteArrayInputStream("private myVar = 3".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.privateVariablesMustBeLocal(), result.getMarkers().iterator().next().getMessage());
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private \"myVar\"".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private ['myVar', \"_yourVar\"]".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_yourvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private ['_myVar', \"yourVar\"]".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private ['myVar', \"yourVar\"]".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 2);
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+	}
+
+	@Test
+	public void unaryExpressions() throws IOException {
+		ITreeProcessingResult result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint 'Test'".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 0);
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint \"Test\"".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 0);
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint format []".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 0);
+	}
+
+	@Test
+	public void unaryExpressionErrors() throws IOException {
+		ITreeProcessingResult result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint 3".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.expectedTypeButGot(
+				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
+				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint []".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.expectedTypeButGot(
+				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
+				new DataTypeList(EDataType.ARRAY)), result.getMarkers().iterator().next().getMessage());
+
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint {}".getBytes()) {
+		}, supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.expectedTypeButGot(
+				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
+				new DataTypeList(EDataType.CODE)), result.getMarkers().iterator().next().getMessage());
 	}
 
 

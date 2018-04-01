@@ -48,6 +48,18 @@ public class ProblemMessages {
 
 	/**
 	 * Creates the error message stating that the operator was wrongly used as a
+	 * unary operator
+	 * 
+	 * @param operatorName
+	 *            The name of the operator
+	 * @return The created error message
+	 */
+	public static final String operatorIsNotUnary(String operatorName) {
+		return "The operator \"" + operatorName + "\" can not be used as a unary operator!";
+	}
+
+	/**
+	 * Creates the error message stating that the operator was wrongly used as a
 	 * binary operator
 	 * 
 	 * @param operatorName
@@ -130,37 +142,41 @@ public class ProblemMessages {
 	 *            The set of given types
 	 * @return the generated error message
 	 */
-	public static final String expectedTypeButGot(EDataType[] expected, EDataType[] got) {
+	public static final String expectedTypeButGot(Iterable<EDataType> expected, Iterable<EDataType> got) {
 		StringBuilder builder = new StringBuilder("Expected type ");
+		boolean multipleTypes = false;
 
-		for (int i = 0; i < expected.length; i++) {
-			EDataType currentType = expected[i];
-
-			if (i == 0) {
+		for (EDataType currentType : expected) {
+			if (!multipleTypes) {
 				builder.append("\"" + currentType + "\"");
+				multipleTypes = true;
 			} else {
-				if (i == expected.length - 1) {
-					builder.append(" or \"" + currentType + "\"");
-				} else {
-					builder.append(", \"" + currentType + "\"");
-				}
+				builder.append(", \"" + currentType + "\"");
 			}
+		}
+
+		// replace last comma by "or"
+		int commaIndex = builder.lastIndexOf(",");
+		if (commaIndex >= 0) {
+			builder.replace(commaIndex, commaIndex + 1, " or");
 		}
 
 		builder.append(" but got ");
 
-		for (int i = 0; i < got.length; i++) {
-			EDataType currentType = got[i];
-
-			if (i == 0) {
+		multipleTypes = false;
+		for (EDataType currentType : got) {
+			if (!multipleTypes) {
 				builder.append("\"" + currentType + "\"");
+				multipleTypes = true;
 			} else {
-				if (i == got.length - 1) {
-					builder.append(" or \"" + currentType + "\"");
-				} else {
-					builder.append(", \"" + currentType + "\"");
-				}
+				builder.append(", \"" + currentType + "\"");
 			}
+		}
+
+		// replace last comma by "or"
+		commaIndex = builder.lastIndexOf(",");
+		if (commaIndex >= 0) {
+			builder.replace(commaIndex, commaIndex + 1, " or");
 		}
 
 		builder.append("!");
@@ -331,6 +347,13 @@ public class ProblemMessages {
 	 */
 	public static final String privateVariablesMustBeLocal() {
 		return "Private variables have to be local (starting with \"_\")";
+	}
+
+	/**
+	 * Error message stating that the given keyword is reserved
+	 */
+	public static final String reservedKeyword(String keyword) {
+		return "\"" + keyword + "\" is a reserved keyword!";
 	}
 
 	/**

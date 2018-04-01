@@ -17,6 +17,7 @@ import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.interfaces.ISQFInformation;
+import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
 import raven.sqdev.misc.FileUtil;
 import raven.sqdev.misc.Macro;
@@ -104,8 +105,10 @@ public class SQFParserTest {
 
 		input = "hint 3";
 		result = process(input);
-		expectedMarker = createErrorMarker(5, 1, ProblemMessages.expectedTypeButGot(
-				new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }, new EDataType[] { EDataType.NUMBER }));
+		expectedMarker = createErrorMarker(5, 1,
+				ProblemMessages.expectedTypeButGot(
+						new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
+						new DataTypeList(new EDataType[] { EDataType.NUMBER })));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
@@ -133,8 +136,8 @@ public class SQFParserTest {
 		result = process(input);
 		expectedMarker = createErrorMarker(1, 7,
 				ProblemMessages.expectedTypeButGot(
-						new EDataType[] { EDataType.NUMBER, EDataType.ARRAY, EDataType.STRING },
-						new EDataType[] { EDataType.OBJECT }));
+						new DataTypeList(new EDataType[] { EDataType.NUMBER, EDataType.ARRAY, EDataType.STRING }),
+						new DataTypeList(new EDataType[] { EDataType.OBJECT })));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
@@ -163,7 +166,7 @@ public class SQFParserTest {
 		SQFParseResultOld result;
 		Marker expectedMarker;
 		Map<String, Macro> macros = new HashMap<String, Macro>();
-		macros.put("CHECK_TRUE",new Macro("CHECK_TRUE"));
+		macros.put("CHECK_TRUE", new Macro("CHECK_TRUE"));
 
 
 		input = "diag_log 3 hint 'hello'";

@@ -344,8 +344,8 @@ public class SQFValidatorOLD extends SQFBaseListener {
 			DataTypeList rightTypes = getReturnValues(ctx.getChild(2));
 
 			SQFSyntaxProcessor processor = new SQFSyntaxProcessor(operator);
-			processor.setLeftArgumentTypes(leftTypes.toArray());
-			processor.setRightArgumentTypes(rightTypes.toArray());
+			processor.setLeftArgumentTypes(leftTypes);
+			processor.setRightArgumentTypes(rightTypes);
 
 			if (!processor.isValid()) {
 				String errorMsg = processor.getErrorMessage();
@@ -405,7 +405,7 @@ public class SQFValidatorOLD extends SQFBaseListener {
 
 			SQFSyntaxProcessor processor = new SQFSyntaxProcessor(operator);
 
-			processor.setRightArgumentTypes(argumentTypes.toArray());
+			processor.setRightArgumentTypes(argumentTypes);
 
 			if (!processor.isValid()) {
 				String errorMsg = processor.getErrorMessage();

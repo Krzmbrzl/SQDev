@@ -10,11 +10,11 @@ import java.util.Map;
 import org.eclipse.core.resources.IMarker;
 
 import dataStructures.ESQFOperatorType;
+import dataStructures.ESQFTokentype;
 import dataStructures.ISQFTreeListener;
 import dataStructures.ITokenSource;
 import dataStructures.IndexTreeElement;
 import dataStructures.SQFToken;
-import dataStructures.TokenBuffer;
 import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.exceptions.ValidationException;
 import raven.sqdev.infoCollection.base.SQFCommand;
@@ -24,6 +24,7 @@ import raven.sqdev.interfaces.ITreeProcessingResult;
 import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
 import raven.sqdev.parser.misc.TreeProcessingResult;
+import raven.sqdev.parser.sqf.ERelativePosition;
 import raven.sqdev.parser.sqf.SQFSyntaxProcessor;
 
 public class SQFProcessor implements ISQFTreeListener {
@@ -102,26 +103,110 @@ public class SQFProcessor implements ISQFTreeListener {
 	}
 
 	@Override
-	public void nularExpression(SQFToken expression) {
-		final String operator = expression.getText();
+	public void nularExpression(SQFToken expression, IndexTreeElement node) {
+		assert (expression.operatorType() != ESQFOperatorType.MACRO);
 
+		final String operatorName = expression.getText();
+		final String operatorNameLower = operatorName.toLowerCase();
+
+		switch (expression.type()) {
+		case OPERATOR:
+			// only operators are going to be processed in this method
+			// variable validation will be handled in doGetReturnValues
+			break;
+		default:
+			// it is most likely a primitive type like Number -> even if not: This won't be
+			// handled here
+			return;
+		}
+
+		SQFCommand operator = sqfInformation.getNularOperators().get(operatorNameLower);
+
+		if (operator == null) {
+			// assume any type for erroneous input
+			error(expression, ProblemMessages.operatorIsNotNular(operatorName));
+
+			resolvedReturnValues.put(node, ANYTHING);
+		} else {
+			resolvedReturnValues.put(node, operator.getAllReturnTypes());
+		}
 	}
 
 	@Override
 	public void unaryExpression(SQFToken expression, IndexTreeElement node) {
-		final String operator = expression.getText();
+		assert (expression.operatorType() != ESQFOperatorType.MACRO);
+		assert (node.getChildrenCount() == 1);
 
+		final String operatorName = expression.getText();
+		final String operatorNameLower = operatorName.toLowerCase();
+		SQFCommand operator = sqfInformation.getUnaryOperators().get(operatorNameLower);
+		if (operator == null) {
+			// might be a binary operator used in unary syntax
+			operator = sqfInformation.getBinaryOperators().get(operatorNameLower);
+		}
+
+		if (operatorNameLower.equals("private")) {
+			// handle private separately
+			handlePrivate(node.getChildren().get(0));
+			return;
+		}
+
+		if (operator == null) {
+			// if it's still null then this is not a unary operator
+			error(expression, ProblemMessages.operatorIsNotUnary(operatorName));
+
+			// assume any type for erroneous input
+			resolvedReturnValues.put(node, ANYTHING);
+
+			return;
+		}
+
+		if (!operator.isUnaryOperator()) {
+			// This operator can't be used in a unary way
+			error(expression, ProblemMessages.operatorIsNotUnary(operator.getKeyword()));
+			return;
+		}
+
+		// check whether the given argument is of a valid type
+		syntaxProcessor.setOperator(operator);
+		syntaxProcessor.setRightArgumentTypes(getReturnValues(node.getChildren().get(0)));
+
+		// buffer return value for this node
+		resolvedReturnValues.put(node, syntaxProcessor.getReturnValues());
+
+		if (!syntaxProcessor.isValid()) {
+			if (syntaxProcessor.getErrorMarkerPosition() == ERelativePosition.RIGHT) {
+				error(node.get(0), syntaxProcessor.getErrorMessage());
+			} else {
+				error(expression, syntaxProcessor.getErrorMessage());
+			}
+		} else {
+			// check for special cases in which a variable-name extraction has to be
+			// performed
+			switch (operatorNameLower) {
+			case "params":
+				handleParams(node.getChildren().get(0));
+				break;
+
+			case "for":
+				handleFor(node.getChildren().get(0));
+				break;
+			}
+		}
 	}
 
 	@Override
 	public void binaryExpression(SQFToken expression, IndexTreeElement node) {
 		final String operatorName = expression.getText();
 
-		switch (operatorName) {
+		switch (operatorName.toLowerCase()) {
 		case "=":
 			// assignment
 			assignment(node);
 			break;
+
+		case "params":
+			handleParams(node.getChildren().get(1));
 
 		default:
 			// "normal" binary operator
@@ -132,8 +217,8 @@ public class SQFProcessor implements ISQFTreeListener {
 				DataTypeList rightTypes = getReturnValues(node.getChildren().get(1));
 
 				syntaxProcessor.setOperator(operator);
-				syntaxProcessor.setLeftArgumentTypes(leftTypes.toArray());
-				syntaxProcessor.setRightArgumentTypes(rightTypes.toArray());
+				syntaxProcessor.setLeftArgumentTypes(leftTypes);
+				syntaxProcessor.setRightArgumentTypes(rightTypes);
 
 				if (!syntaxProcessor.isValid()) {
 					int[] positionData;
@@ -178,8 +263,7 @@ public class SQFProcessor implements ISQFTreeListener {
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-
+		// nothing to set up at start
 	}
 
 	@Override
@@ -206,8 +290,8 @@ public class SQFProcessor implements ISQFTreeListener {
 	 *            considered to be assignment arguments (there have to be two!)
 	 */
 	protected void assignment(IndexTreeElement node) {
-		assert(node.getChildrenCount() == 2);
-		
+		assert (node.getChildrenCount() == 2);
+
 		IndexTreeElement variableNode = node.getChildren().get(0);
 
 		boolean isPrivate = variableNode.hasChildren();
@@ -233,6 +317,9 @@ public class SQFProcessor implements ISQFTreeListener {
 			if (!varOperatorToken.getText().toLowerCase().equals("private")) {
 				// only private is allowed as a modifier
 				error(tokenBuffer.get(node.getIndex()), ProblemMessages.privateIsOnlyValidModifierForAssignments());
+
+				// assume for the moment that the modifier came here by accident
+				isPrivate = false;
 			}
 
 			variableNode = variableNode.getChildren().get(0);
@@ -246,11 +333,16 @@ public class SQFProcessor implements ISQFTreeListener {
 		}
 
 		String varName = tokenBuffer.get(variableNode.getIndex()).getText();
-		if (!varName.startsWith("_") && isPrivate) {
-			// trying to declare global variable as private
-			error(variableNode, ProblemMessages.privateVariablesMustBeLocal());
+		if (isPrivate && !varName.startsWith("_")) {
+			// don't add global, private variables
+			// The error is produced as soon as the unary private keyword is being processed
+			return;
 		}
-		declaredVariables.add(varName.toLowerCase());
+		if (!isOperatorName(varName)) {
+			declaredVariables.add(varName.toLowerCase());
+		} else {
+			error(tokenBuffer.get(variableNode.getIndex()), ProblemMessages.reservedKeyword(varName));
+		}
 	}
 
 	/**
@@ -456,18 +548,34 @@ public class SQFProcessor implements ISQFTreeListener {
 	}
 
 	/**
-	 * Gets the possible return values of the given
+	 * Gets the possible return values of the given node. Calling this method will
+	 * trigger the return-value-buffering which means that it will populate
+	 * {@link #resolvedReturnValues} if there is no entry for the given node yet. If
+	 * there is the previously determined return values will be returned
 	 * 
 	 * @param node
-	 * @return
+	 *            The node whose return values are to be determined
+	 * @return The list of return values
 	 */
 	protected DataTypeList getReturnValues(IndexTreeElement node) {
 		// Check whether the return value for that node has already been determined ->
 		// Especially used for context sensitive return values of operators
-		if (resolvedReturnValues.containsKey(node)) {
-			return resolvedReturnValues.get(node);
+		if (!resolvedReturnValues.containsKey(node)) {
+			resolvedReturnValues.put(node, doGetReturnValues(node));
 		}
 
+		return resolvedReturnValues.get(node);
+	}
+
+	/**
+	 * Gets all the possible return values of the given node. Calling this method
+	 * directly will bypass the return-value-buffering system
+	 * 
+	 * @param node
+	 *            The node whose return values are to be determined
+	 * @return The list of return values
+	 */
+	protected DataTypeList doGetReturnValues(IndexTreeElement node) {
 		if (node.getIndex() >= 0) {
 			SQFToken token = tokenBuffer.get(node.getIndex());
 
@@ -486,7 +594,7 @@ public class SQFProcessor implements ISQFTreeListener {
 			case SUBSTRING:
 				return STRING;
 			default:
-				// do nothing -> wil be handled below
+				// do nothing -> will be handled below
 			}
 
 			switch (token.operatorType()) {
@@ -504,6 +612,20 @@ public class SQFProcessor implements ISQFTreeListener {
 				operator = sqfInformation.getNularOperators().get(token.getText().toLowerCase());
 				if (operator == null) {
 					// If it is not recognized it will be handled elsewhere
+					if (token.type() == ESQFTokentype.ID) {
+						// This might be a variable
+						String id = token.getText();
+						if (!declaredVariables.contains(id.toLowerCase())) {
+							if (id.startsWith("_")) {
+								// it is an unknown local variable -> error
+								error(token, ProblemMessages.undefinedLocalVariable(id));
+							} else {
+								// this is an implicitly declared global variable
+								// TODO: potential error
+								declaredVariables.add(id.toLowerCase());
+							}
+						}
+					}
 					return ANYTHING;
 				} else {
 					return operator.getAllReturnTypes();
@@ -567,6 +689,139 @@ public class SQFProcessor implements ISQFTreeListener {
 		if (node.hasChildren()) {
 			node.getChildren().forEach((e) -> getAllTokenIndices(e, indices));
 		}
+	}
+
+	/**
+	 * Handles the argument of the "private" operator/keyword
+	 * 
+	 * @param node
+	 *            The {@linkplain IndexTreeElement} corresponding to the argument of
+	 *            "private" (or the ID of the variable private was used as a keyword
+	 *            for)
+	 */
+	protected void handlePrivate(IndexTreeElement node) {
+		assert (node.getIndex() != IndexTreeElement.INVALID);
+
+		if (node.getIndex() < 0) {
+			// the argument has to be an array of variable names
+			if (!node.hasChildren()) {
+				error(node, ProblemMessages.invalidExpression("private-array"));
+				return;
+			}
+
+			// iterate through all children and extract declared variables
+			for (IndexTreeElement currentElement : node.getChildren()) {
+				if (currentElement.getIndex() < 0) {
+					error(currentElement, ProblemMessages.invalidExpression("private-array"));
+				} else {
+					SQFToken varToken = tokenBuffer.get(currentElement.getIndex());
+
+					if (varToken.type() != ESQFTokentype.STRING) {
+						if (varToken.type() != ESQFTokentype.COMMA
+								&& varToken.type() != ESQFTokentype.SQUARE_BRACKET_OPEN
+								&& varToken.type() != ESQFTokentype.SQUARE_BRACKET_CLOSE) {
+							// comma and square brackets are obviously allowed in an array
+							error(varToken, ProblemMessages.invalidExpression("private-array-element"));
+						}
+					} else {
+						extractVariableFromString(varToken, varToken.getText(), true);
+					}
+				}
+			}
+		} else {
+			// the argument is either a String containing a variable name or an ID
+			SQFToken argToken = tokenBuffer.get(node.getIndex());
+
+			if (argToken.type() == ESQFTokentype.STRING) {
+				extractVariableFromString(argToken, argToken.getText(), true);
+			} else {
+				if (argToken.type() == ESQFTokentype.ID) {
+					String varName = argToken.getText();
+
+					if (!varName.startsWith("_")) {
+						error(argToken, ProblemMessages.privateVariablesMustBeLocal());
+						return;
+					}
+
+					if (!isOperatorName(varName)) {
+						declaredVariables.add(varName.toLowerCase());
+					} else {
+						error(argToken, ProblemMessages.reservedKeyword(varName));
+					}
+				} else {
+					error(argToken, ProblemMessages.invalidExpression("private"));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Handles the argument of the "for"-keyword
+	 * 
+	 * @param arg
+	 *            The respective {@linkplain IndexTreeElement} corresponding to the
+	 *            argument of a "for" operator
+	 */
+	protected void handleFor(IndexTreeElement arg) {
+		// TODO
+	}
+
+	/**
+	 * Handles the argument of the "params"-keyword
+	 * 
+	 * @param arg
+	 *            The respective {@linkplain IndexTreeElement} corresponding to the
+	 *            argument of a "params" operator
+	 */
+	protected void handleParams(IndexTreeElement arg) {
+		// TODO
+	}
+
+	/**
+	 * Extracts a variable from a String as it occurs with private, params and for
+	 * 
+	 * @param token
+	 *            The token corresponding to said String
+	 * @param varString
+	 *            The string containing the variable name. Its first and last
+	 *            character will be removed in order to "destringify" it
+	 * @param mustBePrivate
+	 *            Whether the extracted variable is expected to be a private
+	 *            variable
+	 */
+	protected void extractVariableFromString(SQFToken token, String varString, boolean mustBePrivate) {
+		// remove quotes
+		varString = varString.substring(1, varString.length() - 1);
+
+		if (varString.contains(" ")) {
+			error(token, ProblemMessages.noWhitespaceAllowed());
+			return;
+		}
+
+		if (mustBePrivate && !varString.startsWith("_")) {
+			error(token, ProblemMessages.canOnlyDeclareLocalVariable());
+			return;
+		}
+
+		if (!isOperatorName(varString)) {
+			declaredVariables.add(varString.toLowerCase());
+		} else {
+			error(token, ProblemMessages.reservedKeyword(varString));
+		}
+	}
+
+	/**
+	 * Checks whether the given name corresponds to an operator-keyword
+	 * 
+	 * @param name
+	 *            The name to check. It will be transformed to lowercase
+	 *            automatically
+	 */
+	protected boolean isOperatorName(String name) {
+		name = name.toLowerCase();
+		return sqfInformation.getBinaryOperators().containsKey(name)
+				|| sqfInformation.getUnaryOperators().containsKey(name)
+				|| sqfInformation.getNularOperators().containsKey(name);
 	}
 
 	/**
