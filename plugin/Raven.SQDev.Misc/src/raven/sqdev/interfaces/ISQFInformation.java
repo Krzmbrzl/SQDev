@@ -1,6 +1,6 @@
 package raven.sqdev.interfaces;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import raven.sqdev.infoCollection.base.SQFCommand;
@@ -24,7 +24,7 @@ public interface ISQFInformation {
 	/**
 	 * Gets the binary SQF operators keywords as string
 	 */
-	public List<String> getBinaryKeywords();
+	public Collection<String> getBinaryKeywords();
 
 	/**
 	 * Gets the unary SQF operators
@@ -34,7 +34,7 @@ public interface ISQFInformation {
 	/**
 	 * Gets the unary SQF operators keywords as string
 	 */
-	public List<String> getUnaryKeywords();
+	public Collection<String> getUnaryKeywords();
 
 	/**
 	 * Gets the nular SQF operators
@@ -44,7 +44,7 @@ public interface ISQFInformation {
 	/**
 	 * Gets the nular SQF operators keywords as string
 	 */
-	public List<String> getNularKeywords();
+	public Collection<String> getNularKeywords();
 
 	/**
 	 * Gets the configured magic variables
@@ -54,7 +54,7 @@ public interface ISQFInformation {
 	/**
 	 * Gets the configured magic variable-keywords as string
 	 */
-	public List<String> getMagicVariableNames();
+	public Collection<String> getMagicVariableNames();
 
 	/**
 	 * Gets the configured macros
@@ -64,5 +64,5 @@ public interface ISQFInformation {
 	/**
 	 * Gets the configured macro-keywords as string
 	 */
-	public List<String> getMacroNames();
+	public Collection<String> getMacroNames();
 }

@@ -334,7 +334,7 @@ public class ProblemMessages {
 	}
 
 	/**
-	 * The error message for interal erros
+	 * The error message for internal errors
 	 */
 	public static final String internalError() {
 		return "!!! Internal error !!!";

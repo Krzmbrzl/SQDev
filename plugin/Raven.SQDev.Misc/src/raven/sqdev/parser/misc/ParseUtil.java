@@ -81,7 +81,7 @@ public class ParseUtil {
 
 		SQFParseResult result = new SQFParseResult();
 
-		sqfLexer.reset(true);
+		sqfLexer.reset(false);
 		sqfLexer.setMacros(supplier.getMacros().keySet());
 		sqfLexer.setTokenFactory(supplier.getTokenFactory());
 		errorListener.setMarkerStorage(result);

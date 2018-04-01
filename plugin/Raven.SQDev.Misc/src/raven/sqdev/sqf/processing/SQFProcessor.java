@@ -1,5 +1,7 @@
 package raven.sqdev.sqf.processing;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -7,6 +9,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 
+import dataStructures.ESQFOperatorType;
 import dataStructures.ISQFTreeListener;
 import dataStructures.ITokenSource;
 import dataStructures.IndexTreeElement;
@@ -188,9 +191,9 @@ public class SQFProcessor implements ISQFTreeListener {
 			Variable var = new Variable(varIterator.next());
 
 			if (var.isLocal()) {
-				result.getDeclaredLocalVariables().put(var.getKeyword().toLowerCase(), var);
+				result.getDeclaredLocalVariables().put(var.getKeyword(), var);
 			} else {
-				result.getDeclaredGlobalVariables().put(var.getKeyword().toLowerCase(), var);
+				result.getDeclaredGlobalVariables().put(var.getKeyword(), var);
 			}
 		}
 	}
@@ -203,8 +206,8 @@ public class SQFProcessor implements ISQFTreeListener {
 	 *            considered to be assignment arguments (there have to be two!)
 	 */
 	protected void assignment(IndexTreeElement node) {
-		assert (node.getChildrenCount() == 2);
-
+		assert(node.getChildrenCount() == 2);
+		
 		IndexTreeElement variableNode = node.getChildren().get(0);
 
 		boolean isPrivate = variableNode.hasChildren();
@@ -217,8 +220,17 @@ public class SQFProcessor implements ISQFTreeListener {
 				error(variableNode, ProblemMessages.invalidExpression("assignment"));
 			}
 
-			String varOperator = tokenBuffer.get(index).getText();
-			if (!varOperator.toLowerCase().equals("private")) {
+			SQFToken varOperatorToken = tokenBuffer.get(index);
+
+			if (varOperatorToken.operatorType() == ESQFOperatorType.MACRO) {
+				// handle macros assembling the variable name -> can't really validate -> assume
+				// it's valid
+				declaredVariables.add(getFullText(variableNode));
+				// abort as other checks and routines don't apply to macros
+				return;
+			}
+
+			if (!varOperatorToken.getText().toLowerCase().equals("private")) {
 				// only private is allowed as a modifier
 				error(tokenBuffer.get(node.getIndex()), ProblemMessages.privateIsOnlyValidModifierForAssignments());
 			}
@@ -517,6 +529,43 @@ public class SQFProcessor implements ISQFTreeListener {
 				error(node, ProblemMessages.internalError());
 				return ANYTHING;
 			}
+		}
+	}
+
+	/**
+	 * Gets the full text of a {@linkplain IndexTreeElement} which is the text of
+	 * all its associated tokens
+	 * 
+	 * @param node
+	 *            The node whose text should be obtained
+	 * @return The text corresponding to the given node
+	 */
+	protected String getFullText(IndexTreeElement node) {
+		StringBuilder builder = new StringBuilder();
+
+		Collection<Integer> indices = new ArrayList<>();
+		getAllTokenIndices(node, indices);
+
+		indices.stream().filter((e) -> {
+			return e.intValue() >= 0;
+		}).sorted().forEach((element) -> builder.append(tokenBuffer.get(element.intValue()).getText()));
+
+		return builder.toString();
+	}
+
+	/**
+	 * Gets all token indices associated with the given node and its sub-nodes
+	 * 
+	 * @param node
+	 *            The node to process
+	 * @param indices
+	 *            An integer collection to store the indices in
+	 */
+	protected void getAllTokenIndices(IndexTreeElement node, Collection<Integer> indices) {
+		indices.add(node.getIndex());
+
+		if (node.hasChildren()) {
+			node.getChildren().forEach((e) -> getAllTokenIndices(e, indices));
 		}
 	}
 

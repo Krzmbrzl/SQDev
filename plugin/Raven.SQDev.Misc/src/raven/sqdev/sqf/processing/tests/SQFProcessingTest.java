@@ -33,7 +33,7 @@ public class SQFProcessingTest {
 
 	@Before
 	public void setUp() throws Exception {
-		macros = new HashMap<>();
+		macros = new HashMap<String, Macro>();
 
 		info = getSQFInformation(macros);
 		SQFTokenFactory factory = new SQFTokenFactory(info.getBinaryKeywords(), info.getUnaryKeywords());
@@ -117,6 +117,22 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
+		
+		macros.put("GVAR", new Macro("GVAR"));
+		
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("GVAR(myVar) = {}".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("GVAR(myVar)"));
+		
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("GVAR(myVar) = {}".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 0);
+		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("GVAR(myVar)"));
+		
+		macros.clear();
 	}
 
 	@Test
@@ -129,6 +145,22 @@ public class SQFProcessingTest {
 		assertEquals("Missing ';'",
 				result.getMarkers().iterator().next().getMessage());
 		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("myvar"));
+		
+		result = ParseUtil
+				.parseAndProcessSQF(new ByteArrayInputStream("= 3".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals("Missing ';'",
+				result.getMarkers().iterator().next().getMessage());
+		
+		result = ParseUtil
+				.parseAndProcessSQF(new ByteArrayInputStream("=".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals("Missing ';'",
+				result.getMarkers().iterator().next().getMessage());
 	}
 
 

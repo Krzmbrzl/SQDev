@@ -1,12 +1,9 @@
 package raven.sqdev.parser.sqf;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
@@ -30,16 +27,11 @@ public class SQFInformation implements ISQFInformation {
 	private static KeywordList keywords;
 
 	private static Map<String, SQFCommand> binaryOperator;
-	private static List<String> binaryKeywords;
 	private static Map<String, SQFCommand> unaryOperator;
-	private static List<String> unaryKeywords;
 	private static Map<String, SQFCommand> nularOperator;
-	private static List<String> nularKeywords;
 	private static Map<String, Variable> magicVars;
-	private static List<String> magicVarNames;
 
 	private Map<String, Macro> macros;
-	private List<String> macroNames;
 
 	/**
 	 * Creates a new instance of this class
@@ -61,18 +53,11 @@ public class SQFInformation implements ISQFInformation {
 	 */
 	public SQFInformation(boolean refresh, Map<String, Macro> macros) {
 		this.macros = macros;
-		macroNames = new ArrayList<String>();
-
-		loadMacronames();
 
 		if (refresh || keywords == null) {
 			binaryOperator = new HashMap<String, SQFCommand>();
-			binaryKeywords = new ArrayList<String>();
 			unaryOperator = new HashMap<String, SQFCommand>();
-			unaryKeywords = new ArrayList<String>();
 			nularOperator = new HashMap<String, SQFCommand>();
-			nularKeywords = new ArrayList<String>();
-			magicVarNames = new ArrayList<String>();
 
 			String savedKeywords = getKeywordContent();
 
@@ -108,8 +93,6 @@ public class SQFInformation implements ISQFInformation {
 			}
 
 			magicVars = ParseUtil.getDefaultMagicVars();
-
-			loadNames();
 		}
 	}
 
@@ -119,47 +102,6 @@ public class SQFInformation implements ISQFInformation {
 	protected String getKeywordContent() {
 		ResourceManager manager = ResourceManager.getManager();
 		return manager.getResourceContent("SQFKeywords.txt");
-	}
-
-	/**
-	 * Initializes all name-lists except the macro-namelist (see
-	 * {@link #loadMacronames()})
-	 */
-	private void loadNames() {
-		Iterator<Entry<String, SQFCommand>> it = binaryOperator.entrySet().iterator();
-
-		while (it.hasNext()) {
-			binaryKeywords.add(it.next().getValue().getKeyword());
-		}
-
-		it = unaryOperator.entrySet().iterator();
-
-		while (it.hasNext()) {
-			unaryKeywords.add(it.next().getValue().getKeyword());
-		}
-
-		it = nularOperator.entrySet().iterator();
-
-		while (it.hasNext()) {
-			nularKeywords.add(it.next().getValue().getKeyword());
-		}
-
-		Iterator<Entry<String, Variable>> varIt = magicVars.entrySet().iterator();
-
-		while (varIt.hasNext()) {
-			magicVarNames.add(varIt.next().getValue().getKeyword());
-		}
-	}
-
-	/**
-	 * Initializes the macro-namelist
-	 */
-	private void loadMacronames() {
-		Iterator<Entry<String, Macro>> it = macros.entrySet().iterator();
-
-		while (it.hasNext()) {
-			macroNames.add(it.next().getValue().getKeyword());
-		}
 	}
 
 	@Override
@@ -188,28 +130,28 @@ public class SQFInformation implements ISQFInformation {
 	}
 
 	@Override
-	public List<String> getBinaryKeywords() {
-		return new ArrayList<String>(binaryKeywords);
+	public Collection<String> getBinaryKeywords() {
+		return new ArrayList<String>(binaryOperator.keySet());
 	}
 
 	@Override
-	public List<String> getUnaryKeywords() {
-		return new ArrayList<String>(unaryKeywords);
+	public Collection<String> getUnaryKeywords() {
+		return new ArrayList<String>(unaryOperator.keySet());
 	}
 
 	@Override
-	public List<String> getNularKeywords() {
-		return new ArrayList<String>(nularKeywords);
+	public Collection<String> getNularKeywords() {
+		return new ArrayList<String>(nularOperator.keySet());
 	}
 
 	@Override
-	public List<String> getMagicVariableNames() {
-		return new ArrayList<String>(macroNames);
+	public Collection<String> getMagicVariableNames() {
+		return new ArrayList<String>(magicVars.keySet());
 	}
 
 	@Override
-	public List<String> getMacroNames() {
-		return new ArrayList<String>(macroNames);
+	public Collection<String> getMacroNames() {
+		return new ArrayList<String>(macros.keySet());
 	}
 
 }
