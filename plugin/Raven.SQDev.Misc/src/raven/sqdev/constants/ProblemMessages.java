@@ -288,10 +288,31 @@ public class ProblemMessages {
 	}
 
 	/**
-	 * The error message stating thath there is an unclosed opening character pair
+	 * The error message stating that there is a missing comma
+	 * 
+	 * @param at
+	 *            The ID after which the semicolon was expected
+	 */
+	public static final String missingComma(String at) {
+		return "Missing ',' at \"" + at + "\"";
+	}
+
+	/**
+	 * The error message stating that the given token is misplaced and that it
+	 * should either be deleted or moved elsewhere.
+	 * 
+	 * @param token
+	 *            The misplaced token
+	 */
+	public static final String misplacedToken(String token) {
+		return "Misplaced token \"" + token + "\". Delete or move it!";
+	}
+
+	/**
+	 * The error message stating that there is an unclosed opening character pair
 	 * 
 	 * @param opener
-	 *            The opening character that doesnt get closed
+	 *            The opening character that doesn't get closed
 	 */
 	public static final String unclosedOpener(char opener) {
 		char openMark, closeMark;
@@ -354,6 +375,32 @@ public class ProblemMessages {
 	 */
 	public static final String reservedKeyword(String keyword) {
 		return "\"" + keyword + "\" is a reserved keyword!";
+	}
+
+	/**
+	 * The error message stating that the expected array size has not been matched
+	 * 
+	 * @param expected
+	 *            The expected array length
+	 * @param got
+	 *            The actual array length
+	 * @return The constructed error message
+	 */
+	public static final String expectedArrayLength(int expected, int got) {
+		return "Expected array with exactly " + expected + " elements but got " + got;
+	}
+
+	/**
+	 * The error message stating that the minimal array size has not been reached
+	 * 
+	 * @param minimum
+	 *            The expected minimal array length
+	 * @param got
+	 *            The actual array length
+	 * @return The constructed error message
+	 */
+	public static final String expectedMinimumArrayLength(int minimum, int got) {
+		return "Expected array with at least " + minimum + " elements but got only " + got;
 	}
 
 	/**

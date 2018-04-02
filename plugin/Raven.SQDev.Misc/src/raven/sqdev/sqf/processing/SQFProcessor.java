@@ -2,15 +2,17 @@ package raven.sqdev.sqf.processing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
-
 import dataStructures.ESQFOperatorType;
 import dataStructures.ESQFTokentype;
+import dataStructures.IBuildableIndexTree;
 import dataStructures.ISQFTreeListener;
 import dataStructures.ITokenSource;
 import dataStructures.IndexTreeElement;
@@ -168,6 +170,7 @@ public class SQFProcessor implements ISQFTreeListener {
 		}
 
 		// check whether the given argument is of a valid type
+		syntaxProcessor.reset();
 		syntaxProcessor.setOperator(operator);
 		syntaxProcessor.setRightArgumentTypes(getReturnValues(node.getChildren().get(0)));
 
@@ -205,9 +208,6 @@ public class SQFProcessor implements ISQFTreeListener {
 			assignment(node);
 			break;
 
-		case "params":
-			handleParams(node.getChildren().get(1));
-
 		default:
 			// "normal" binary operator
 			SQFCommand operator = sqfInformation.getBinaryOperators().get(operatorName.toLowerCase());
@@ -216,6 +216,7 @@ public class SQFProcessor implements ISQFTreeListener {
 				DataTypeList leftTypes = getReturnValues(node.getChildren().get(0));
 				DataTypeList rightTypes = getReturnValues(node.getChildren().get(1));
 
+				syntaxProcessor.reset();
 				syntaxProcessor.setOperator(operator);
 				syntaxProcessor.setLeftArgumentTypes(leftTypes);
 				syntaxProcessor.setRightArgumentTypes(rightTypes);
@@ -252,6 +253,10 @@ public class SQFProcessor implements ISQFTreeListener {
 
 				// map the resolved processor to the respective node
 				resolvedReturnValues.put(node, syntaxProcessor.getReturnValues());
+
+				if (operatorName.toLowerCase().equals("params")) {
+					handleParams(node.getChildren().get(1));
+				}
 			} else {
 				// apparently it is not a binary operator -> shouldn't even be reachable
 				error(expression, ProblemMessages.operatorIsNotBinary(operatorName));
@@ -262,12 +267,58 @@ public class SQFProcessor implements ISQFTreeListener {
 	}
 
 	@Override
-	public void start() {
-		// nothing to set up at start
+	public void array(IndexTreeElement node) {
+		// check whether all array elements are separated by a comma
+
+		boolean wasComma = true;
+		int lastTokenIndex = node.getChildren().get(node.getChildrenCount() - 1).getIndex();
+		// If the last token is the closing bracket, don't iterate over it (if not an
+		// error should occur somewhere else)
+		int length = (lastTokenIndex >= 0
+				&& tokenBuffer.get(lastTokenIndex).type() == ESQFTokentype.SQUARE_BRACKET_CLOSE)
+						? node.getChildrenCount() - 1
+						: node.getChildrenCount();
+
+		for (int i = 1; i < length; i++) {
+			IndexTreeElement element = node.getChildren().get(i);
+
+			if (wasComma) {
+				if (element.getIndex() >= 0 && (tokenBuffer.get(element.getIndex()).type() == ESQFTokentype.COMMA
+						|| tokenBuffer.get(element.getIndex()).type() == ESQFTokentype.SEMICOLON)) {
+					// two commas next to each other or a semicolon -> invalid
+					error(element, ProblemMessages.misplacedToken(","));
+				}
+				wasComma = false;
+			} else {
+				// this element has to be a comma or the closing square bracket
+				if (element.getIndex() < 0 || tokenBuffer.get(element.getIndex()).type() != ESQFTokentype.COMMA) {
+					// missing comma
+					SQFToken lastToken = getLastToken(node.getChildren().get(i - 1));
+					error(lastToken, ProblemMessages.missingComma(lastToken.getText()));
+				} else {
+					wasComma = true;
+				}
+			}
+		}
+
+		if (wasComma && node.getChildrenCount() > 2) {
+			// The last token in the array before the closing bracket was a comma -> error
+			error(node.getChildren().get(node.getChildrenCount() - 2), ProblemMessages.misplacedToken(","));
+		}
 	}
 
 	@Override
-	public void finished() {
+	public void code(IndexTreeElement node) {
+		// TODO: check semicolons
+	}
+
+	@Override
+	public void start(IBuildableIndexTree tree) {
+		// TODO: check for semicolons
+	}
+
+	@Override
+	public void finished(IBuildableIndexTree tree) {
 		// add all found variables to the result
 		Iterator<String> varIterator = declaredVariables.iterator();
 
@@ -756,14 +807,53 @@ public class SQFProcessor implements ISQFTreeListener {
 	}
 
 	/**
-	 * Handles the argument of the "for"-keyword
+	 * Handles the argument of the "for"-keyword. This method assumes that it has
+	 * already been assured that the respective argument is either of type array or
+	 * of type String
 	 * 
 	 * @param arg
 	 *            The respective {@linkplain IndexTreeElement} corresponding to the
 	 *            argument of a "for" operator
 	 */
 	protected void handleFor(IndexTreeElement arg) {
-		// TODO
+		if (arg.getIndex() < 0) {
+			// it's the array syntax (has been validated before to assure that it is the
+			// correct type)
+
+			if (!arg.hasChildren()) {
+				error(arg, ProblemMessages.internalError());
+			}
+
+			boolean wasComma = true;
+			int elements = 0;
+
+			for (int i = 1; i < arg.getChildrenCount() - 1; i++) {
+				IndexTreeElement currentElement = arg.getChildren().get(i);
+
+				if (wasComma) {
+					// validate that all elements are of type code
+					DataTypeList types = getReturnValues(currentElement);
+					if (types != CODE) {
+						error(currentElement, ProblemMessages.expectedTypeButGot(CODE, types));
+					}
+
+					elements++;
+					wasComma = false;
+				} else {
+					wasComma = true;
+				}
+
+			}
+			
+			if(elements != 3) {
+				error(arg, ProblemMessages.expectedArrayLength(3, elements));
+			}
+		} else {
+			// it's the string-syntax (has been validated before to assure that it is the
+			// correct type)
+			SQFToken token = tokenBuffer.get(arg.getIndex());
+			extractVariableFromString(token, token.getText(), true);
+		}
 	}
 
 	/**
@@ -794,7 +884,7 @@ public class SQFProcessor implements ISQFTreeListener {
 		varString = varString.substring(1, varString.length() - 1);
 
 		if (varString.contains(" ")) {
-			error(token, ProblemMessages.noWhitespaceAllowed());
+			error(token, ProblemMessages.variableMayNotContainBlank());
 			return;
 		}
 
@@ -822,6 +912,40 @@ public class SQFProcessor implements ISQFTreeListener {
 		return sqfInformation.getBinaryOperators().containsKey(name)
 				|| sqfInformation.getUnaryOperators().containsKey(name)
 				|| sqfInformation.getNularOperators().containsKey(name);
+	}
+
+	/**
+	 * Gets the token with the lowest index in the given node
+	 * 
+	 * @param node
+	 *            The node to search for the respective token
+	 * @return The leftmost token
+	 */
+	protected SQFToken getFirstToken(IndexTreeElement node) {
+		List<Integer> indices = new ArrayList<>();
+
+		getAllTokenIndices(node, indices);
+
+		Collections.sort(indices);
+
+		return tokenBuffer.get(indices.get(0));
+	}
+
+	/**
+	 * Gets the token with the highest index in the given node
+	 * 
+	 * @param node
+	 *            The node to search for the respective token
+	 * @return The rightmost token
+	 */
+	protected SQFToken getLastToken(IndexTreeElement node) {
+		List<Integer> indices = new ArrayList<>();
+
+		getAllTokenIndices(node, indices);
+
+		Collections.sort(indices);
+
+		return tokenBuffer.get(indices.get(indices.size() - 1));
 	}
 
 	/**

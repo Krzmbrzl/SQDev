@@ -92,6 +92,8 @@ public class ParseUtil {
 		if (sqfParser == null) {
 			sqfParser = new SQFParser(errorListener);
 			sqfParser.setErrorListener(errorListener);
+			// missing terminators are handled in the SQFProcessor
+			sqfParser.suppressMissingTerminatorErrorMessages(true);
 		}
 
 		sqfParser.parse(sqfLexer);
