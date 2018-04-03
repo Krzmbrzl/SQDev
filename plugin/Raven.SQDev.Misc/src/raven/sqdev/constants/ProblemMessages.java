@@ -402,6 +402,19 @@ public class ProblemMessages {
 	public static final String expectedMinimumArrayLength(int minimum, int got) {
 		return "Expected array with at least " + minimum + " elements but got only " + got;
 	}
+	
+	/**
+	 * The error message stating that the maximal array size has been exceeded
+	 * 
+	 * @param maximum
+	 *            The expected maximal array length
+	 * @param got
+	 *            The actual array length
+	 * @return The constructed error message
+	 */
+	public static final String expectedMaximalArrayLength(int maximum, int got) {
+		return "Expected array with at most " + maximum + " elements but got " + got;
+	}
 
 	/**
 	 * The error message for internal errors

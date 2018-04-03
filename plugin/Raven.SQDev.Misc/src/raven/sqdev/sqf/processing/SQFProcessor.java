@@ -309,12 +309,12 @@ public class SQFProcessor implements ISQFTreeListener {
 
 	@Override
 	public void code(IndexTreeElement node) {
-		// TODO: check semicolons
+		checkSemicolons(node.getChildren());
 	}
 
 	@Override
 	public void start(IBuildableIndexTree tree) {
-		// TODO: check for semicolons
+		checkSemicolons(tree.branches());
 	}
 
 	@Override
@@ -329,6 +329,41 @@ public class SQFProcessor implements ISQFTreeListener {
 				result.getDeclaredLocalVariables().put(var.getKeyword(), var);
 			} else {
 				result.getDeclaredGlobalVariables().put(var.getKeyword(), var);
+			}
+		}
+	}
+
+	/**
+	 * Checks whether semicolons are provided where needed and issues errors if this
+	 * is not the case
+	 * 
+	 * @param nodes
+	 *            The collection of nodes representing the code-elements
+	 */
+	protected void checkSemicolons(Collection<? extends IndexTreeElement> nodes) {
+		boolean wasStatement = false;
+		IndexTreeElement prevNode = null;
+
+		for (IndexTreeElement currentNode : nodes) {
+			if (currentNode.getIndex() < 0) {
+				// it's definitely a statement
+				wasStatement = true;
+			} else {
+				SQFToken currentToken = tokenBuffer.get(currentNode.getIndex());
+
+				boolean isStatement = currentToken.operatorType() != ESQFOperatorType.OTHER
+						&& currentToken.type() != ESQFTokentype.SEMICOLON;
+
+				if (wasStatement && isStatement) {
+					// there should have been a semicolon in between
+					assert (prevNode != null);
+					SQFToken lastToken = getLastToken(prevNode);
+					error(lastToken, ProblemMessages.missingSemicolon(lastToken.getText()));
+				}
+
+				wasStatement = isStatement && currentToken.operatorType() != ESQFOperatorType.MACRO;
+
+				prevNode = currentNode;
 			}
 		}
 	}
@@ -844,8 +879,8 @@ public class SQFProcessor implements ISQFTreeListener {
 				}
 
 			}
-			
-			if(elements != 3) {
+
+			if (elements != 3) {
 				error(arg, ProblemMessages.expectedArrayLength(3, elements));
 			}
 		} else {
@@ -857,14 +892,106 @@ public class SQFProcessor implements ISQFTreeListener {
 	}
 
 	/**
-	 * Handles the argument of the "params"-keyword
+	 * Handles the argument of the "params"-operator. This method assumes that it
+	 * has already been assured that the respective argument is of type array.
 	 * 
 	 * @param arg
 	 *            The respective {@linkplain IndexTreeElement} corresponding to the
 	 *            argument of a "params" operator
 	 */
 	protected void handleParams(IndexTreeElement arg) {
-		// TODO
+		assert (arg.hasChildren());
+
+		for (IndexTreeElement currentChild : arg.getChildren()) {
+			if (currentChild.getIndex() >= 0
+					&& tokenBuffer.get(currentChild.getIndex()).operatorType() == ESQFOperatorType.OTHER) {
+				// skip brackets and commas
+				continue;
+			}
+
+			if (currentChild.getIndex() < 0) {
+				// array syntax
+				if (!currentChild.hasChildren()) {
+					error(currentChild, ProblemMessages.internalError());
+					continue;
+				}
+				handleParamsArray(currentChild);
+			} else {
+				// String syntax
+				SQFToken stringToken = tokenBuffer.get(currentChild.getIndex());
+
+				if (stringToken.type() != ESQFTokentype.STRING) {
+					error(stringToken, ProblemMessages.expectedTypeButGot(STRING, getReturnValues(currentChild)));
+				} else {
+					if (stringToken.getText().length() > 2) {
+						// empty strings are allowed in this context but there is no variable to extract
+						// from them
+						extractVariableFromString(stringToken, stringToken.getText(), true);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Processes the sub-array-construct that may appear inside the argument-array
+	 * of the "params"-operator
+	 * 
+	 * @param array
+	 *            The sub-array to process
+	 */
+	protected void handleParamsArray(IndexTreeElement array) {
+		if (array.getChildrenCount() < 5) {
+			error(array, ProblemMessages.expectedMinimumArrayLength(2, (array.getChildrenCount() - 1) / 2));
+			return;
+		}
+
+		if (array.getChildrenCount() > 9) {
+			error(array, ProblemMessages.expectedMaximalArrayLength(4, (array.getChildrenCount() - 1) / 2));
+			return;
+		}
+
+		for (int i = 1; i < array.getChildrenCount() - 1; i++) {
+			IndexTreeElement currentElement = array.getChildren().get(i);
+
+			if (currentElement.getIndex() > 0) {
+				if (tokenBuffer.get(currentElement.getIndex()).operatorType() == ESQFOperatorType.OTHER) {
+					// skip commas
+					continue;
+				}
+			}
+
+			DataTypeList types = getReturnValues(currentElement);
+
+			switch (i) {
+			case 1:
+				// first element has to be a String
+				if (types.findExchangableDataType(EDataType.STRING, true) < 0) {
+					error(currentElement, ProblemMessages.expectedTypeButGot(STRING, types));
+				} else {
+					SQFToken varToken = tokenBuffer.get(currentElement.getIndex());
+					extractVariableFromString(varToken, varToken.getText(), true);
+				}
+				break;
+			case 3:
+				// second element can be anything
+				break;
+			case 5:
+				// third element (if present) has to be an array
+				if (types.findExchangableDataType(EDataType.ARRAY, true) < 0) {
+					error(currentElement, ProblemMessages.expectedTypeButGot(ARRAY, types));
+				}
+				break;
+			case 7:
+				// forth element (if present) can either be an array or a number
+				if (types.findExchangableDataType(EDataType.ARRAY, true) < 0
+						&& types.findExchangableDataType(EDataType.NUMBER, true) < 0) {
+					error(currentElement, ProblemMessages.expectedTypeButGot(
+							new DataTypeList(new EDataType[] { EDataType.NUMBER, EDataType.ARRAY }), types));
+				}
+				break;
+			}
+		}
 	}
 
 	/**
@@ -885,6 +1012,11 @@ public class SQFProcessor implements ISQFTreeListener {
 
 		if (varString.contains(" ")) {
 			error(token, ProblemMessages.variableMayNotContainBlank());
+			return;
+		}
+
+		if (varString.isEmpty()) {
+			error(token, ProblemMessages.stringMayNotBeEmpty());
 			return;
 		}
 
