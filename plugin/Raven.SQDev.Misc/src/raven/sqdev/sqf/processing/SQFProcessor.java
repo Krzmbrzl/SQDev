@@ -108,21 +108,43 @@ public class SQFProcessor implements ISQFTreeListener {
 	public void nularExpression(SQFToken expression, IndexTreeElement node) {
 		assert (expression.operatorType() != ESQFOperatorType.MACRO);
 
-		final String operatorName = expression.getText();
-		final String operatorNameLower = operatorName.toLowerCase();
-
 		switch (expression.type()) {
+		case ID:
 		case OPERATOR:
-			// only operators are going to be processed in this method
-			// variable validation will be handled in doGetReturnValues
+			// process operators or variables only
 			break;
 		default:
-			// it is most likely a primitive type like Number -> even if not: This won't be
-			// handled here
 			return;
 		}
 
-		SQFCommand operator = sqfInformation.getNularOperators().get(operatorNameLower);
+		final String operatorName = expression.getText();
+		final String operatorNameLower = operatorName.toLowerCase();
+		final SQFCommand operator = sqfInformation.getNularOperators().get(operatorNameLower);
+
+		if (!declaredVariables.contains(operatorName.toLowerCase())) {
+			if (operatorName.startsWith("_")) {
+				// it is an unknown local variable -> error
+				error(expression, ProblemMessages.undefinedLocalVariable(operatorName));
+
+				// assume any type for variables
+				resolvedReturnValues.put(node, ANYTHING);
+				return;
+			} else {
+				if (operator == null && expression.type() == ESQFTokentype.ID) {
+					// this is an implicitly declared global variable
+					// TODO: potential error
+					declaredVariables.add(operatorName.toLowerCase());
+
+					// assume any type for variables
+					resolvedReturnValues.put(node, ANYTHING);
+					return;
+				}
+			}
+		} else {
+			// assume any type for variables
+			resolvedReturnValues.put(node, ANYTHING);
+			return;
+		}
 
 		if (operator == null) {
 			// assume any type for erroneous input
@@ -179,7 +201,7 @@ public class SQFProcessor implements ISQFTreeListener {
 
 		if (!syntaxProcessor.isValid()) {
 			if (syntaxProcessor.getErrorMarkerPosition() == ERelativePosition.RIGHT) {
-				error(node.get(0), syntaxProcessor.getErrorMessage());
+				error(node.getChildren().get(0), syntaxProcessor.getErrorMessage());
 			} else {
 				error(expression, syntaxProcessor.getErrorMessage());
 			}
@@ -698,20 +720,6 @@ public class SQFProcessor implements ISQFTreeListener {
 				operator = sqfInformation.getNularOperators().get(token.getText().toLowerCase());
 				if (operator == null) {
 					// If it is not recognized it will be handled elsewhere
-					if (token.type() == ESQFTokentype.ID) {
-						// This might be a variable
-						String id = token.getText();
-						if (!declaredVariables.contains(id.toLowerCase())) {
-							if (id.startsWith("_")) {
-								// it is an unknown local variable -> error
-								error(token, ProblemMessages.undefinedLocalVariable(id));
-							} else {
-								// this is an implicitly declared global variable
-								// TODO: potential error
-								declaredVariables.add(id.toLowerCase());
-							}
-						}
-					}
 					return ANYTHING;
 				} else {
 					return operator.getAllReturnTypes();
