@@ -2,6 +2,8 @@ package raven.sqdev.interfaces;
 
 import java.util.Collection;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import dataStructures.IBuildableIndexTree;
 import dataStructures.IToken;
 import dataStructures.ITokenSource;
@@ -33,5 +35,19 @@ public interface IParseResult {
 	 * Gets the markers that have been produced during parsing
 	 */
 	public Collection<Marker> getMarkers();
+
+	/**
+	 * Gets the ANTLR parse tree (if present)
+	 */
+	public ParseTree getANTRLParseTree();
+
+	/**
+	 * Gets the line in the input at the given offset
+	 * 
+	 * @param offset
+	 *            The offset whose line should be determined
+	 * @return The respective line
+	 */
+	public int getLine(int offset);
 
 }

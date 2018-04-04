@@ -1,8 +1,12 @@
 package raven.sqdev.editors;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.core.resources.IMarker;
@@ -37,6 +41,7 @@ import raven.sqdev.exceptions.SQDevEditorException;
 import raven.sqdev.interfaces.IMacroSupport;
 import raven.sqdev.interfaces.IManager;
 import raven.sqdev.interfaces.IMarkerSupport;
+import raven.sqdev.interfaces.IParseResult;
 import raven.sqdev.misc.CharacterPair;
 import raven.sqdev.misc.MultiPreferenceStore;
 import raven.sqdev.misc.SQDevInfobox;
@@ -80,9 +85,9 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	protected BasicSourceViewerConfiguration configuration;
 
 	/**
-	 * The parse tree representing the input of this editor
+	 * The parse result representing the input of this editor
 	 */
-	protected ParseTree parseTree;
+	protected IParseResult parseResult;
 	/**
 	 * The name of the rules used for parsing this editor's input
 	 */
@@ -142,8 +147,8 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 
 	@Override
 	public ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(),
-				isOverviewRulerVisible(), styles);
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(),
+				styles);
 
 		getSourceViewerDecorationSupport(viewer);
 
@@ -158,8 +163,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 		}
 
 		// add parse listener
-		getBasicProvider().getDocument(getEditorInput())
-				.addDocumentListener(new BasicParseTimeListener(this));
+		getBasicProvider().getDocument(getEditorInput()).addDocumentListener(new BasicParseTimeListener(this));
 
 		return viewer;
 	}
@@ -175,13 +179,11 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 
 		// character pair matching
 		support.setCharacterPairMatcher(matcher);
-		support.setMatchingCharacterPainterPreferenceKeys(
-				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY,
+		support.setMatchingCharacterPainterPreferenceKeys(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY,
 				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY);
 
 		// newLine highlighting
-		support.setCursorLinePainterPreferenceKeys(
-				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY,
+		support.setCursorLinePainterPreferenceKeys(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY,
 				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY);
 
 	}
@@ -253,8 +255,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 		// infrastructure for code folding
 		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
 
-		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(),
-				getSharedColors());
+		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
 
 		projectionSupport.install();
 
@@ -266,8 +267,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 			// combine the SQDev PreferenceStore with the editor's one
 
 			// use the SQDev preferenceStore as the baseStore
-			MultiPreferenceStore multiStore = new MultiPreferenceStore(
-					SQDevPreferenceUtil.getPreferenceStore());
+			MultiPreferenceStore multiStore = new MultiPreferenceStore(SQDevPreferenceUtil.getPreferenceStore());
 
 			// add the editor's preferenceStore if available
 			IPreferenceStore editorStore = this.getPreferenceStore();
@@ -341,13 +341,13 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	}
 
 	/**
-	 * Gets the <code>ParseTree</code> representing the input of this editor
+	 * Gets the {@linkplain IParseResult} representing the input of this editor
 	 * 
-	 * @return The <code>ParseTree</code> or <code>null</code> if none has been set
+	 * @return The result or <code>null</code> if none has been set
 	 *         so far
 	 */
-	public ParseTree getParseTree() {
-		return parseTree;
+	public IParseResult getParseResult() {
+		return parseResult;
 	}
 
 	/**
@@ -360,8 +360,8 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	}
 
 	/**
-	 * This is a helper method that will do the parsing for the given input wihtout
-	 * any checks (whetehr there is an active parsing job) and in the same thread as
+	 * This is a helper method that will do the parsing for the given input without
+	 * any checks (whether there is an active parsing job) and in the same thread as
 	 * it is called
 	 * 
 	 * @param input
@@ -370,7 +370,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 */
 	private IStatus startParsingInput(String input) {
 		// preprocess
-		doPreprocessorParsing(input);
+		doPreprocessorParsing(new ByteArrayInputStream(input.getBytes()));
 
 		// check if this parsing should be cancelled
 		synchronized (parsingIsCancelled) {
@@ -381,7 +381,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 		}
 
 		// parse
-		ParseTree output = doParse(input);
+		IParseResult output = doParse(new ByteArrayInputStream(input.getBytes()));
 
 		// check if this parsing should be cancelled
 		synchronized (parsingIsCancelled) {
@@ -391,14 +391,17 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 			}
 		}
 
-		if (output == null || output.getChildCount() == 0) {
+		if (output == null
+				|| output.getMarkers().stream().filter((element) -> element.getSeverity() == IMarker.SEVERITY_ERROR)
+						.collect(Collectors.toList()).size() > 0) {
+			// don't process the parse tree if errors came up during lexing/parsing
 			applyParseChanges();
 
 			return Status.CANCEL_STATUS;
 		} else {
-			parseTree = output;
+			parseResult = output;
 
-			if (!processParseTree(parseTree)) {
+			if (!processParseTree(parseResult)) {
 				applyParseChanges();
 			}
 
@@ -433,30 +436,29 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 			return false;
 		}
 
-		String input = document.get();
+		String content = document.get();
 
-		if (input == null) {
+		if (content == null) {
 			return false;
 		}
 
 		synchronized (parsingIsCancelled) {
 			if (parsingIsCancelled && (parseJob == null || parseJob.getResult() != null)) {
 				// There is no other parsing in progress that should be
-				// cancelled and cancelling is only possible after having
+				// cancelled and canceling is only possible after having
 				// initialized it
 				parsingIsCancelled = false;
 			}
 		}
 
 		if (parseJob != null && parseJob.getState() != Job.NONE) {
-			// Ther previous Job is still running -> reschedule
+			// The previous Job is still running -> reschedule
 			parseJob.addJobChangeListener(new JobChangeAdapter() {
 
 				@Override
 				public void done(IJobChangeEvent event) {
 					// As there has been a request to parse the input again
-					// do
-					// it now as the old parsing process is finished
+					// do  it now as the old parsing process is finished
 					parseInput();
 				}
 			});
@@ -465,13 +467,13 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 		}
 
 		if (suspend) {
-			startParsingInput(input);
+			startParsingInput(content);
 		} else {
 			parseJob = new Job("Parsing \"" + getEditorInput().getName() + "\"...") {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					return startParsingInput(input);
+					return startParsingInput(content);
 				}
 			};
 
@@ -514,10 +516,17 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 * and sets the found macros if this editor is an instance of
 	 * <code>IMacroSupport</code>.
 	 */
-	protected void doPreprocessorParsing(String input) {
+	protected void doPreprocessorParsing(InputStream input) {
 		if (this instanceof IMacroSupport && getEditorInput() instanceof IFileEditorInput) {
-			PreprocessorParseResult result = ParseUtil.parseAndValidatePreprocess(input,
-					((IFileEditorInput) getEditorInput()).getFile().getLocation());
+			PreprocessorParseResult result;
+			try {
+				result = ParseUtil.parseAndValidatePreprocess(input,
+						((IFileEditorInput) getEditorInput()).getFile().getLocation());
+			} catch (IOException e) {
+				e.printStackTrace();
+				createMarker(IMarker.PROBLEM, 0, 0, "Unable to preprocess the file", IMarker.SEVERITY_ERROR);
+				return;
+			}
 
 			((IMacroSupport) this).setMacros(result.getMacros(), true);
 
@@ -533,18 +542,18 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 * Note: You might want to call {@link #applyParseChanges()} after the
 	 * processing
 	 * 
-	 * @param tree
-	 *            The generated tree
+	 * @param parseResult
+	 *            The generated parse result
 	 * @return Whether this function has called {@link #applyParseChanges()}. If not
 	 *         the default implementation of {@link #parseInput()} will call this
 	 *         function afterwards.
 	 */
-	protected boolean processParseTree(ParseTree parseTree) {
+	protected boolean processParseTree(IParseResult parseResult) {
 		return false;
 	}
 
 	/**
-	 * Parses the input of this editor in order to set the {@link #parseTree} for
+	 * Parses the input of this editor in order to set the {@link #parseResult} for
 	 * this editor. <br>
 	 * Note: You might want to call {@link #applyParseChanges()} after parsing (or
 	 * rather after {@link #processParseTree(ParseTree)}.<br>
@@ -559,7 +568,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 *         parsing failed (if not overridden by subclasses this method always
 	 *         returns <code>null</code>
 	 */
-	protected ParseTree doParse(String input) {
+	protected IParseResult doParse(InputStream input) {
 		// parsing diabled
 		return null;
 	}
@@ -573,8 +582,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 */
 	protected void createManagers(List<IManager> managerList) {
 		// add folding manager
-		managerList.add(new BasicFoldingManager(
-				((ProjectionViewer) getSourceViewer()).getProjectionAnnotationModel()));
+		managerList.add(new BasicFoldingManager(((ProjectionViewer) getSourceViewer()).getProjectionAnnotationModel()));
 		// add marker manager
 		managerList.add(new BasicMarkerManager(this));
 	}
@@ -598,8 +606,8 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 			}
 		}
 
-		((BasicMarkerManager) getManager(BasicMarkerManager.TYPE)).addMarker(type, line, offset, length,
-				severity, message);
+		((BasicMarkerManager) getManager(BasicMarkerManager.TYPE)).addMarker(type, line, offset, length, severity,
+				message);
 	}
 
 	@Override
@@ -651,8 +659,8 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 
 		// don't fold if the code is only one line long
 		try {
-			if (doc == null || doc.getLineOfOffset(position.offset) == doc
-					.getLineOfOffset(position.offset + position.length)) {
+			if (doc == null
+					|| doc.getLineOfOffset(position.offset) == doc.getLineOfOffset(position.offset + position.length)) {
 				return;
 			}
 		} catch (BadLocationException e) {
@@ -666,15 +674,14 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 
 		ProjectionAnnotation annotation = new ProjectionAnnotation();
 
-		BasicFoldingManager foldingManager = (BasicFoldingManager) getManager(
-				BasicFoldingManager.getManagerType());
+		BasicFoldingManager foldingManager = (BasicFoldingManager) getManager(BasicFoldingManager.getManagerType());
 
 		if (foldingManager == null) {
 			return;
 		}
 
-		foldingManager.addFoldingArea(
-				new AbstractMap.SimpleEntry<ProjectionAnnotation, Position>(annotation, position));
+		foldingManager
+				.addFoldingArea(new AbstractMap.SimpleEntry<ProjectionAnnotation, Position>(annotation, position));
 	}
 
 	/**

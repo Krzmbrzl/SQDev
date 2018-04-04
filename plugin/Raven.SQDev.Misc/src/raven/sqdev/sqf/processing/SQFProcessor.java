@@ -121,7 +121,8 @@ public class SQFProcessor implements ISQFTreeListener {
 		final String operatorNameLower = operatorName.toLowerCase();
 		final SQFCommand operator = sqfInformation.getNularOperators().get(operatorNameLower);
 
-		if (!declaredVariables.contains(operatorName.toLowerCase())) {
+		if (!declaredVariables.contains(operatorName.toLowerCase())
+				&& !sqfInformation.getMagicVariables().keySet().contains(operatorNameLower)) {
 			if (operatorName.startsWith("_")) {
 				// it is an unknown local variable -> error
 				error(expression, ProblemMessages.undefinedLocalVariable(operatorName));

@@ -5,11 +5,15 @@ import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import dataStructures.IBuildableIndexTree;
+import dataStructures.IToken;
+import dataStructures.ITokenSource;
 import raven.sqdev.interfaces.IMarkerSupport;
+import raven.sqdev.interfaces.IParseResult;
 import raven.sqdev.misc.Marker;
 
 @Deprecated
-public class ParseResultOld implements IMarkerSupport {
+public class ParseResultOld implements IMarkerSupport, IParseResult {
 
 	/**
 	 * The list of reported markers
@@ -143,5 +147,32 @@ public class ParseResultOld implements IMarkerSupport {
 		}
 
 		return names;
+	}
+
+	@Override
+	@Deprecated
+	public IBuildableIndexTree getTree() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@Deprecated
+	public ITokenSource<? extends IToken> getTokenBuffer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ParseTree getANTRLParseTree() {
+		// TODO Auto-generated method stub
+		return tree;
+	}
+
+	@Override
+	@Deprecated
+	public int getLine(int offset) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

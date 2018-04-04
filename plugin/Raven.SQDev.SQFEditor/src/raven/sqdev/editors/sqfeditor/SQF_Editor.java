@@ -1,6 +1,8 @@
 package raven.sqdev.editors.sqfeditor;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.antlr.v4.runtime.BufferedTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -20,6 +20,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
+import dataStructures.AbstractSQFTokenFactory;
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicPartitionScanner;
@@ -34,11 +35,16 @@ import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.interfaces.IKeywordListChangeListener;
 import raven.sqdev.interfaces.IMacroSupport;
+import raven.sqdev.interfaces.IParseResult;
 import raven.sqdev.interfaces.ISQFInformation;
+import raven.sqdev.interfaces.ISQFParseSupplier;
+import raven.sqdev.interfaces.ITreeProcessingResult;
 import raven.sqdev.misc.Macro;
+import raven.sqdev.misc.Marker;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.parser.misc.ParseUtil;
-import raven.sqdev.parser.sqf.SQFParseResultOld;
+import raven.sqdev.parser.misc.SQFParseResult;
+import raven.sqdev.parser.misc.SQFTokenFactory;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
@@ -54,7 +60,7 @@ import raven.sqdev.util.Util;
  * 
  */
 public class SQF_Editor extends BasicCodeEditor
-		implements IKeywordListChangeListener, IMacroSupport, ISQFInformation {
+		implements IKeywordListChangeListener, IMacroSupport, ISQFInformation, ISQFParseSupplier {
 
 	/**
 	 * The KeywordProvider for the SQF keywords
@@ -94,10 +100,9 @@ public class SQF_Editor extends BasicCodeEditor
 	 */
 	protected List<String> macroNames;
 	/**
-	 * The <code>CommonTokenStream</code> that is associated with the current parse
-	 * tree
+	 * The token factory to use for parsing
 	 */
-	private BufferedTokenStream currentStream;
+	protected AbstractSQFTokenFactory tokenFactory;
 
 	public SQF_Editor() {
 		super();
@@ -216,33 +221,42 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	@Override
-	protected ParseTree doParse(String input) {
-		SQFParseResultOld result = ParseUtil.parseSQFOld(input, this);
+	protected IParseResult doParse(InputStream input) {
+		SQFParseResult result;
+		try {
+			result = ParseUtil.parseSQF(input, this);
+		} catch (IOException e) {
+			e.printStackTrace();
 
-		if (!result.providesParseTree() || !result.providesParserRuleNames() || !result.providesTokenStream()) {
-			throw new SQDevCoreException("Expected SQFParseResult to contain tree, names and tokenStream!");
+			SQDevInfobox info = new SQDevInfobox("Error during SQF-parsing!", e);
+			info.open(false);
+			return null;
 		}
 
-		if (parseRuleNames == null) {
-			parseRuleNames = result.getParserRulenames();
+		for (Marker currentMarker : result.getMarkers()) {
+			this.createMarker(currentMarker.getType(), currentMarker.getOffset(), currentMarker.getLength(),
+					currentMarker.getMessage(), currentMarker.getSeverity());
 		}
 
-		currentStream = result.getTokenStream();
-
-		result.applyMarkersTo(this);
-
-		return result.getParseTree();
+		return result;
 	}
 
 	@Override
-	public boolean processParseTree(ParseTree parseTree) {
+	public boolean processParseTree(IParseResult parseResult) {
+		if (!(parseResult instanceof SQFParseResult)) {
+			throw new IllegalArgumentException("The given parse-result has to be of type SQFParseResult!");
+		}
 		// process parse result
-		SQFParseResultOld result = ParseUtil.validateSQFOld(parseTree, currentStream, this);
+		ITreeProcessingResult result = ParseUtil.processSQF((SQFParseResult) parseResult, this);
 
 		setVariables(result.getDeclaredLocalVariables(), result.getDeclaredGlobalVariables());
-		result.applyMarkersTo(this);
 
-		for (Position currentFoldingPos : result.getFoldingAreas()) {
+		for (Marker currentMarker : result.getMarkers()) {
+			this.createMarker(currentMarker.getType(), currentMarker.getOffset(), currentMarker.getLength(),
+					currentMarker.getMessage(), currentMarker.getSeverity());
+		}
+
+		for (Position currentFoldingPos : result.getFoldableAreas()) {
 			addFoldingArea(currentFoldingPos);
 		}
 
@@ -498,7 +512,7 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	@Override
-	public Map<String,Macro> getMacros() {
+	public Map<String, Macro> getMacros() {
 		return macros;
 	}
 
@@ -518,5 +532,13 @@ public class SQF_Editor extends BasicCodeEditor
 		}
 
 		return names;
+	}
+
+	@Override
+	public AbstractSQFTokenFactory getTokenFactory() {
+		if (tokenFactory == null) {
+			tokenFactory = new SQFTokenFactory(getBinaryKeywords(), getUnaryKeywords());
+		}
+		return tokenFactory;
 	}
 }

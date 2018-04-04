@@ -9,6 +9,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import raven.sqdev.editors.BasicCodeEditor;
+import raven.sqdev.interfaces.IParseResult;
 import raven.sqdev.ui.util.TreeViewer;
 
 public class ShowParseTreeHandler extends AbstractHandler {
@@ -21,12 +22,13 @@ public class ShowParseTreeHandler extends AbstractHandler {
 		if (active != null && active instanceof BasicCodeEditor) {
 			BasicCodeEditor activeEditor = (BasicCodeEditor) active;
 			
-			ParseTree tree = activeEditor.getParseTree();
+			IParseResult tree = activeEditor.getParseResult();
 			List<String> ruleNames = activeEditor.getParseRuleNames();
 			
 			if (tree != null && ruleNames != null) {
-				TreeViewer viewer = new TreeViewer(ruleNames, tree);
-				viewer.open();
+				// TODO: use new TreeDisplayer
+				// TreeViewer viewer = new TreeViewer(ruleNames, tree);
+				// viewer.open();
 			}
 		}
 		return null;

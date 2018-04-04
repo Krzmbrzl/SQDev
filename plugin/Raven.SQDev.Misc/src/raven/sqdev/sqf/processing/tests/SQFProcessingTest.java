@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -886,7 +887,7 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.OBJECT),
 				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
-		
+
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[time setPos [0,0,0]]".getBytes()), supplier,
 				info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
@@ -905,6 +906,23 @@ public class SQFProcessingTest {
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
 				new DataTypeList(EDataType.NOTHING)), it.next().getMessage());
+	}
+
+	@Test
+	public void snippets() throws IOException {
+		macros.put("CHECK_FALSE", new Macro("CHECK_FALSE"));
+		macros.put("DEBUG_EXEC", new Macro("DEBUG_EXEC"));
+		macros.put("EVENT_LOG", new Macro("EVENT_LOG"));
+		
+		ITreeProcessingResult result = ParseUtil.parseAndProcessSQF(
+				new FileInputStream(new File(
+						makeOSCompatible(System.getProperty("user.dir") + "/src/raven/sqdev/sqf/processing/tests/EncounteredFalsePositives.sqf"))),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 0);
+		
+		macros.clear();
 	}
 
 

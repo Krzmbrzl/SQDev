@@ -85,6 +85,7 @@ public class ParseUtil {
 		sqfLexer.setMacros(supplier.getMacros().keySet());
 		sqfLexer.setTokenFactory(supplier.getTokenFactory());
 		errorListener.setMarkerStorage(result);
+		result.setLineIndices(sqfLexer.getNewlineIndices());
 
 		CharacterInputStream inStream = new CharacterInputStream(input);
 		sqfLexer.lex(inStream);
@@ -322,8 +323,10 @@ public class ParseUtil {
 	 *            The origin-path of the given content. This is used in order to
 	 *            resolve relative paths
 	 * @return The result of the preprocessing
+	 * @throws IOException
 	 */
-	public static final PreprocessorParseResult parseAndValidatePreprocess(String input, IPath origin) {
+	public static final PreprocessorParseResult parseAndValidatePreprocess(InputStream input, IPath origin)
+			throws IOException {
 		ANTLRInputStream prepIn = new ANTLRInputStream(input);
 
 		PreprocessorLexer prepLexer = new PreprocessorLexer(prepIn);

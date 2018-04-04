@@ -2,6 +2,9 @@ package raven.sqdev.parser.misc;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import dataStructures.IBuildableIndexTree;
 import dataStructures.ITokenSource;
@@ -24,6 +27,14 @@ public class SQFParseResult implements IParseResult, IMarkerSupport {
 	 * A collection of markers that have been created during parse-tree-creation
 	 */
 	protected Collection<Marker> markers;
+	/**
+	 * The ANTLR parse tree
+	 */
+	protected ParseTree antlrTree;
+	/**
+	 * A list of indices of newlines
+	 */
+	protected List<Integer> linieIndices;
 
 	public SQFParseResult() {
 		markers = new ArrayList<>();
@@ -96,6 +107,40 @@ public class SQFParseResult implements IParseResult, IMarkerSupport {
 		markers = null;
 		tree = null;
 		tokenBuffer = null;
+	}
+
+	@Override
+	public ParseTree getANTRLParseTree() {
+		return antlrTree;
+	}
+
+	public void setANTLRParseTree(ParseTree tree) {
+		antlrTree = tree;
+	}
+
+	@Override
+	public int getLine(int offset) {
+		if (offset < 0) {
+			throw new IllegalArgumentException("Offset may not be negative!");
+		}
+
+		for (int i = 0; i < linieIndices.size(); i++) {
+			if (linieIndices.get(i) > offset) {
+				return linieIndices.get(i - 1);
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Sets the newline indices
+	 * 
+	 * @param lineIndices
+	 *            The respective indices
+	 */
+	public void setLineIndices(List<Integer> lineIndices) {
+		this.linieIndices = lineIndices;
 	}
 
 }
