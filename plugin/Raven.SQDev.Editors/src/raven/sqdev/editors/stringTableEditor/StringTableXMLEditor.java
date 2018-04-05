@@ -76,6 +76,8 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 		ParseTree tree = parser.content();
 
 		listener.getParseResult().applyMarkersTo(this);
+		
+		listener.getParseResult().setParseTree(tree);
 
 		return listener.getParseResult();
 	}

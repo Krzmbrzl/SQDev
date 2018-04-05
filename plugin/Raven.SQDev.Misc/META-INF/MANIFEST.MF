@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Misc
 Bundle-SymbolicName: raven.sqdev.misc;singleton:=true
-Bundle-Version: 0.6.1.stable
+Bundle-Version: 0.7.0.dev
 Bundle-Activator: raven.sqdev.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
