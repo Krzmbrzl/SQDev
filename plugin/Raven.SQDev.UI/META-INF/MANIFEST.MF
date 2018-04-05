@@ -7,8 +7,7 @@ Bundle-Activator: raven.sqdev.ui.Activator
 Bundle-Vendor: Raven
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- Abego/org.abego.treelayout.core-1.0.3.jar
+Bundle-ClassPath: .
 Import-Package: org.antlr.v4.runtime,
  org.antlr.v4.runtime.misc,
  org.antlr.v4.runtime.tree,
