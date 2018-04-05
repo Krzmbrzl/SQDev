@@ -918,8 +918,6 @@ public class SQFProcessingTest {
 				new FileInputStream(new File(
 						makeOSCompatible(System.getProperty("user.dir") + "/src/raven/sqdev/sqf/processing/tests/EncounteredFalsePositives.sqf"))),
 				supplier, info);
-		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
-		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 0);
 		
 		macros.clear();
