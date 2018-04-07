@@ -2,7 +2,7 @@
 <feature
       id="raven.sqdev"
       label="SQDev"
-      version="0.7.5.dev"
+      version="0.7.5.dev2"
       provider-name="Raven">
 
    <description url="http://krzmbrzl.github.io/SQDev/">
@@ -102,7 +102,7 @@ POSSIBILITY OF SUCH DAMAGE.
          id="raven.sqdev.wizards"
          download-size="0"
          install-size="0"
-         version="0.3.4"
+         version="0.3.5.dev"
          unpack="false"/>
 
    <plugin
@@ -116,21 +116,21 @@ POSSIBILITY OF SUCH DAMAGE.
          id="raven.sqdev.misc"
          download-size="0"
          install-size="0"
-         version="0.7.0.dev"
+         version="0.7.0.dev2"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.ui"
          download-size="0"
          install-size="0"
-         version="0.3.2.dev"
+         version="0.3.2.dev2"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.editors"
          download-size="0"
          install-size="0"
-         version="0.7.2.dev"
+         version="0.7.2.dev2"
          unpack="false"/>
 
 </feature>

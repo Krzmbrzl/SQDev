@@ -9,6 +9,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -17,6 +19,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
 
+import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.util.ProjectUtil;
 import raven.sqdev.util.Util;
 
@@ -127,6 +130,14 @@ public class SQDevImportWizardPage extends WizardPage {
 		// make this the default option
 		copyCheckBox.setSelection(true);
 
+		copyCheckBox.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				dialogChanged();
+			}
+		});
+
 
 		setControl(container);
 		dialogChanged();
@@ -176,7 +187,17 @@ public class SQDevImportWizardPage extends WizardPage {
 			return;
 		}
 
+		if (!copyCheckBox.getSelection()
+				&& filePath.matchingFirstSegments(new Path(SQDevPreferenceUtil.getArmaDocumentsDirectory())) > 0) {
+			// if it is disabled and the project to import is in the arma mission directory
+			// -> warning
+			setWarning(
+					"It is intended to copy missions from the Arma directory into the workspace. Proceed at own risk!");
+			return;
+		}
+
 		updateStatus(null);
+		setWarning(null);
 	}
 
 	/**
@@ -191,6 +212,16 @@ public class SQDevImportWizardPage extends WizardPage {
 	protected void updateStatus(String message) {
 		setErrorMessage(message);
 		setPageComplete(message == null);
+	}
+
+	/**
+	 * Displays a warning message
+	 * 
+	 * @param message
+	 *            The warning message or <code>null</code> to clear the message
+	 */
+	protected void setWarning(String message) {
+		setMessage(message, WARNING);
 	}
 
 	/**

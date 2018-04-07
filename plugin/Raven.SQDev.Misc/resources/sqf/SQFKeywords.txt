@@ -1664,7 +1664,8 @@
 	</Keyword>
 	<Description>
 		Returns the object around where the unit finds cover. The minDist, visibilityPosition and ignoreObject parameters are optional. Command is not functional since Arma 2.
-	This command is not implemented
+	This function is no longer available in ArmA 2.
+	This function is no longer available in Arma 3.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/findCover
@@ -1681,20 +1682,8 @@
 		undefined / undefined
 	</Locality>
 	<Note>
-		(17 Oct, 2009)
-	Arma 2: v1.04: Usage creates report log message: " MicroAI: Command findCover not implemented ( unit id ) "
-	</NextNote>
-		(07 Jan, 2011)
-	OA: v1.57: Still non functional.
-	</NextNote>
-		(12 July, 2011)
-	CO: v1.59: Still non functional.
-	</NextNote>
-		(13 February, 2014)
-	Arma 3: Still non functional.
-	</NextNote>
 		(July 4, 2015)
-	An alternative function in ArmA 3 might be BIS_fnc_findSafePos
+	An alternative function in Arma 3 might be BIS_fnc_findSafePos
 	</Note>
 	<ReturnValue>
 		Object
@@ -4011,10 +4000,10 @@
 		https://community.bistudio.com/wiki/ctFindRowHeader
 	</WikiPage>
 	<Syntax>
-		Number ctFindRowHeader Number
+		Control ctFindRowHeader Number
 	</Syntax>
 	<RawSyntax>
-		Control ctFindRowHeader Number
+		ctrl ctFindRowHeader row
 	</RawSyntax>
 	<Example>
 		$Code$_index = _control ctFindRowHeader 0;$/Code$
@@ -4497,6 +4486,8 @@
 	</Keyword>
 	<Description>
 		Register knowledge base database to given person. See Conversations for more details.
+	This function is no longer available in ArmA 2.
+	This function is no longer available in Arma 3.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/kbAddDatabase
@@ -4774,7 +4765,7 @@
 	};
 	};
 	};$/Code$
-	To eliminate possibility of error you can also use setVariable or getVariable with desired Namespace, which is also scheduled environment save.
+	To eliminate possibility of error you can also use setVariable or getVariable with desired Namespace, which is also scheduled environment safe.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/with
@@ -6440,10 +6431,10 @@
 		https://community.bistudio.com/wiki/lnbSize
 	</WikiPage>
 	<Syntax>
-		lnbSize Control
+		lnbSize Control/Number
 	</Syntax>
 	<RawSyntax>
-		lnbSize control
+		lnbSize ctrl
 	</RawSyntax>
 	<Example>
 		$Code$lnbSize _ctrl;//[8,2]$/Code$
@@ -8825,24 +8816,20 @@
 		Object kbTell Array
 	</Syntax>
 	<RawSyntax>
-		person kbTell [receiver, topicName, sentenceClass, [argumentName, argumentValue, argumentText, argumentSpeech], , forceRadio]
+		person kbTell [receiver, topicName, sentenceClass]
 	</RawSyntax>
 	<Example>
-		$Code$// In Config file
-	class CfgIdentities
-	{
-	class SSMHQ
-	{
-	name = $STR_DN_WARFARE_HQ_BASE_UNFOLDED;
-	face = "Face97";
-	glasses = "None";
-	speaker = "MaleA0EN";
-	pitch = 1.0;
-	};
-	};
-	// IN BIKB
-	class Sentences
-	{
+		$Code$player kbTell [BIS_HQ, "myTopic", "playerSentence1"];$/Code$
+	</NextExample>
+		$Code$player kbTell [
+	BIS_HQ, // to
+	"Airstrike", // topic
+	"AirstrikeRequest", // sentence
+	["Team", {}, "Anvil", ["Anvil"]], // argument 1
+	["Location", {}, "Strelka", ["Strelka"]], // argument 2
+	true]; // use radio
+	// bikb reference:
+	/*
 	class AirstrikeRequest
 	{
 	text = "%team requesting close air support at grid %location ";
@@ -8852,19 +8839,7 @@
 	class Team { type = "simple"; };
 	class Location { type = "simple"; };
 	};
-	};
-	};
-	class Arguments {};
-	class Special {};
-	startWithVocal[] = {};
-	startWithConsonant[] = {};
-	// In Script file
-	BIS_SSM_HQWEST = (createGroup west) createUnit ["Logic", [10,10,1000], [], 0, "NONE"];//Game Logic as HQ
-	BIS_SSM_HQWEST setGroupId ["Headquarters", "SIX"];
-	BIS_SSM_HQWEST setIdentity "SSMHQ_EN";
-	player kbAddtopic ["Airstrike", BIKB];
-	BIS_SSM_HQWEST kbAddtopic ["Airstrike", BIKB];
-	player kbTell [BIS_SSM_HQWEST, "Airstrike", "AirstrikeRequest", ["Team", {}, "Anvil", ["Anvil"]], ["Location", {}, "Strelka", ["Strelka"]], true];$/Code$
+	};*/$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -10145,6 +10120,35 @@
 	</Note>
 	<ReturnValue>
 		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getTotalDLCUsageTime
+	</Keyword>
+	<Description>
+		Returns total DLC usage time in this game session
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getTotalDLCUsageTime
+	</WikiPage>
+	<Syntax>
+		getTotalDLCUsageTime
+	</Syntax>
+	<RawSyntax>
+		getTotalDLCUsageTime
+	</RawSyntax>
+	<Example>
+		$Code$_dlcTime = getTotalDLCUsageTime ;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Number
 	</ReturnValue>
 
 </NextListItem>
@@ -15310,13 +15314,10 @@
 		vehicle engineOn state
 	</RawSyntax>
 	<Example>
-		$Code$if (! isEngineOn _jeep) then {_jeep engineOn true };$/Code$
+		$Code$if (! isEngineOn _jeep) then { _jeep engineOn true ; };$/Code$
 	</NextExample>
-		$Code$if ( local vehicle player ) then {
-	vehicle player engineOn true ;
-	} else {
-	hint "Get in the driver seat, soldier!";
-	};$/Code$
+		$Code$waitUntil { player == driver _jeep; };
+	vehicle player engineOn true ;$/Code$
 	</Example>
 	<Locality>
 		local / global
@@ -18141,7 +18142,7 @@
 		Control ctSetData Array
 	</Syntax>
 	<RawSyntax>
-		Control ctSetData [[[Number]], String ]
+		ctrl ctSetData [index, data]
 	</RawSyntax>
 	<Example>
 		$Code$_control ctSetData [0, "Test"];$/Code$
@@ -18836,9 +18837,13 @@
 	</WikiPage>
 	<Syntax>
 		Anything remoteExec Array
+	</NextSyntax>
+		remoteExec Array
 	</Syntax>
 	<RawSyntax>
 		params remoteExec [functionName, targets, JIP]
+	</NextRawSyntax>
+		remoteExec [functionName, targets, JIP]
 	</RawSyntax>
 	<Example>
 		$Code$// runs hint "hello" on each connected client
@@ -18928,7 +18933,7 @@
 	$Code$[["Test Message", "PLAIN", 1]] remoteExec ["titleText"];$/Code$
 	</Note>
 	<ReturnValue>
-		Anything
+		Anything - Anything
 	</ReturnValue>
 
 </NextListItem>
@@ -20321,10 +20326,10 @@
 		https://community.bistudio.com/wiki/ctData
 	</WikiPage>
 	<Syntax>
-		ctData Control
+		Control ctData Number
 	</Syntax>
 	<RawSyntax>
-		ctData Control
+		ctrl ctData row
 	</RawSyntax>
 	<Example>
 		$Code$ctData _control;$/Code$
@@ -30125,7 +30130,7 @@
 		ctCurSel Control
 	</Syntax>
 	<RawSyntax>
-		ctCurSel Control
+		ctCurSel ctrl
 	</RawSyntax>
 	<Example>
 		$Code$_curSel = ctCurSel _control;$/Code$
@@ -31837,7 +31842,7 @@
 		Control ctRemoveHeaders Array
 	</Syntax>
 	<RawSyntax>
-		Control ctRemoveHeaders Array
+		ctrl ctRemoveHeaders indices
 	</RawSyntax>
 	<Example>
 		$Code$_control ctRemoveHeaders [0, 1, 2];$/Code$
@@ -38862,6 +38867,9 @@
 		(February 23, 2018)
 	If you want to round to a specific place past the decimal point, use toFixed and parseNumber together. For example:
 	$Code$ parseNumber (3.16666 toFixed 1); // 3.2$/Code$
+	</NextNote>
+		(April 3, 2018)
+	Before toFixed ( round (( getDir player ) * 100)) / 100
 	</Note>
 	<ReturnValue>
 		Number
@@ -43173,6 +43181,8 @@
 	</Keyword>
 	<Description>
 		Register target list knowledge base database to given person. See Conversations for more details.
+	This function is no longer available in ArmA 2.
+	This function is no longer available in Arma 3.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/kbAddDatabaseTargets
@@ -43515,7 +43525,7 @@
 		ctClear Control
 	</Syntax>
 	<RawSyntax>
-		ctClear Control
+		ctClear ctrl
 	</RawSyntax>
 	<Example>
 		$Code$ctClear _control;$/Code$
@@ -44363,7 +44373,7 @@
 		Control ctHeaderControls Number
 	</Syntax>
 	<RawSyntax>
-		Control ctHeaderControls Number
+		ctrl ctHeaderControls index
 	</RawSyntax>
 	<Example>
 		$Code$_array = _control ctHeaderControls 0;$/Code$
@@ -45430,7 +45440,7 @@
 		diag_mergeConfigFile Array
 	</Syntax>
 	<RawSyntax>
-		diag_mergeConfigFile [PathToConfigOnDrive]
+		diag_mergeConfigFile path
 	</RawSyntax>
 	<Example>
 		$Code$diag_mergeConfigFile ["O:\Arma3\A3\Stuff_F\config.cpp"]$/Code$
@@ -45669,10 +45679,10 @@
 		https://community.bistudio.com/wiki/ctRemoveRows
 	</WikiPage>
 	<Syntax>
-		Control ctRemoveRows Array
+		Control ctRemoveRows Number
 	</Syntax>
 	<RawSyntax>
-		Control ctRemoveRows Array
+		ctrl ctRemoveRows indices
 	</RawSyntax>
 	<Example>
 		$Code$_control ctRemoveRows [0, 1, 2];$/Code$
@@ -45849,7 +45859,7 @@
 		loadFile
 	</Keyword>
 	<Description>
-		Return content of given filename.
+		Return content of given filename as string. If you plan to compile said string, be aware that the file shouldn't contain comments or compile will throw an error. If there are comments, use preprocessFile / preprocessFileLineNumbers instead.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/loadFile
@@ -45858,28 +45868,19 @@
 		loadFile String
 	</Syntax>
 	<RawSyntax>
-		loadFile filename
+		loadFile fileName
 	</RawSyntax>
 	<Example>
-		$Code$_contents = loadFile "myFunction.sqf";$/Code$
+		$Code$_contents = loadFile "wantedString.txt";$/Code$
+	</NextExample>
+		$Code$_contents = compile loadFile "myFunction.sqf"; // will compile string into code$/Code$
 	</Example>
 	<Locality>
-		undefined / local
+		undefined / undefined
 	</Locality>
 	<Note>
-		(28 November 2006)
-	In Armed Assault, the 'loadfile' command must be preceded by the 'compile' command to work.
-	Ex OFP 1.96: _falarmEvent = loadfile ("syswarn\falarmEvent.sqf")
-	Ex ArmA 1.0: _falarmEvent = compile loadfile ("syswarn\falarmEvent.sqf")
-	</NextNote>
-		(11 July 2007)
-	The note by Pennywise is not entirely accurate. loadFile only needs to be preceded with compile when loading code (for example, a function contained in an.sqf file ). Using loadFile without compile will return a string, which, in some cases, is exactly what you want.
-	</NextNote>
-		(02 December 2012)
-	Please note that any comment you have within the file you load will be included, to get around that use preprocessFile instead.
-	</NextNote>
 		(25 January 2016)
-	Notice that you will have to activate file patching via -filePatching [ [1] ]. Otherwise, execVM and loadFile will *not* load any files outside your mission folder (like the global scripts). For more info see CMA:DevelopmentSetup (since Arma 3 1.49+).
+	Notice that you will have to activate file patching via -filePatching. Otherwise, execVM and loadFile will *not* load any files outside your mission folder (like the global scripts).
 	</Note>
 	<ReturnValue>
 		String
@@ -47088,7 +47089,7 @@
 		Control ctFindHeaderRows Number
 	</Syntax>
 	<RawSyntax>
-		Control ctFindHeaderRows Number
+		ctrl ctFindHeaderRows index
 	</RawSyntax>
 	<Example>
 		$Code$_array = _control ctFindHeaderRows 0;$/Code$
@@ -47299,6 +47300,35 @@
 	</Note>
 	<ReturnValue>
 		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getWingsPositionRTD
+	</Keyword>
+	<Description>
+		Returns position of stabilizers.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getWingsPositionRTD
+	</WikiPage>
+	<Syntax>
+		getWingsPositionRTD Object
+	</Syntax>
+	<RawSyntax>
+		getWingsPositionRTD RTD_helicopter
+	</RawSyntax>
+	<Example>
+		$Code$_position = getWingsPositionRTD myHelicopter;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Number
 	</ReturnValue>
 
 </NextListItem>
@@ -52680,7 +52710,7 @@
 		https://community.bistudio.com/wiki/not
 	</WikiPage>
 	<Syntax>
-		not Number
+		not Boolean
 	</Syntax>
 	<RawSyntax>
 		not a
@@ -53329,9 +53359,13 @@
 	</WikiPage>
 	<Syntax>
 		Anything remoteExecCall Array
+	</NextSyntax>
+		remoteExecCall Array
 	</Syntax>
 	<RawSyntax>
 		params remoteExecCall [functionName, targets, JIP]
+	</NextRawSyntax>
+		remoteExecCall [functionName, targets, JIP]
 	</RawSyntax>
 	<Example>
 		$Code$// runs hint "hello" on each connected client
@@ -53388,7 +53422,7 @@
 	$Code$[["Test Message", "PLAIN", 1]] remoteExecCall ["titleText"];$/Code$
 	</Note>
 	<ReturnValue>
-		Anything
+		Anything - Anything
 	</ReturnValue>
 
 </NextListItem>
@@ -55585,6 +55619,35 @@
 </NextListItem>
 
 	<Keyword>
+		getWingsOrientationRTD
+	</Keyword>
+	<Description>
+		Returns orientation of horizontal stabilizers.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getWingsOrientationRTD
+	</WikiPage>
+	<Syntax>
+		getWingsOrientationRTD Object
+	</Syntax>
+	<RawSyntax>
+		getWingsOrientationRTD RTD_helicopter
+	</RawSyntax>
+	<Example>
+		$Code$_orientation = getWingsOrientationRTD myHelicopter;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		clearWeaponPool
 	</Keyword>
 	<Description>
@@ -56791,7 +56854,7 @@
 		isEngineOn vehicle
 	</RawSyntax>
 	<Example>
-		$Code$_OnOff = isEngineOn _carOne$/Code$
+		$Code$_carEngineIsOn = isEngineOn _carOne;$/Code$
 	</Example>
 	<Locality>
 		global / undefined
@@ -71541,7 +71604,7 @@
 		ctHeaderCount Control
 	</Syntax>
 	<RawSyntax>
-		ctHeaderCount Control
+		ctHeaderCount ctrl
 	</RawSyntax>
 	<Example>
 		$Code$ctHeaderCount _control;$/Code$
