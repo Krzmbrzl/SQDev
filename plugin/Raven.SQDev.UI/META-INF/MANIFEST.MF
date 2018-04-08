@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: UI
 Bundle-SymbolicName: raven.sqdev.ui;singleton:=true
-Bundle-Version: 0.3.2.dev3
+Bundle-Version: 0.3.2.dev4
 Bundle-Activator: raven.sqdev.ui.Activator
 Bundle-Vendor: Raven
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -11,10 +11,10 @@ Bundle-ClassPath: .
 Import-Package: org.antlr.v4.runtime,
  org.antlr.v4.runtime.misc,
  org.antlr.v4.runtime.tree,
- org.eclipse.core.runtime;version="3.5.0",
+ org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.ui.texteditor,
- org.osgi.framework;version="1.8.0",
+ org.osgi.framework,
  raven.sqdev.constants,
  raven.sqdev.editors,
  raven.sqdev.exceptions,
