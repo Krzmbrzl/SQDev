@@ -134,10 +134,10 @@ public class SQFProcessor implements ISQFTreeListener {
 				if (operator == null) {
 					// try to see if it is another operator
 					operator = sqfInformation.getUnaryOperators().get(operatorNameLower);
-					if(operator == null) {
+					if (operator == null) {
 						operator = sqfInformation.getBinaryOperators().get(operatorNameLower);
 					}
-					
+
 					if (operator == null && expression.type() == ESQFTokentype.ID) {
 						// this is an implicitly declared global variable
 						// TODO: potential error
@@ -659,9 +659,15 @@ public class SQFProcessor implements ISQFTreeListener {
 			return new int[] { token.start(), token.length() };
 		}
 
-		// use the left- and rightmost child in order to determine the dimension
-		return new int[] { getNodeDimension(node.getChildren().get(0))[0],
-				getNodeDimension(node.getChildren().get(node.getChildrenCount() - 1))[1] };
+		SQFToken first = getFirstToken(node);
+		SQFToken last = getLastToken(node);
+
+		if (first == null || last == null) {
+			throw new ValidationException("Failed at getting node dimension!");
+		}
+
+		// use the left- and rightmost token in order to determine the dimension
+		return new int[] { first.start(), last.stop() - first.start() };
 	}
 
 	/**
@@ -780,6 +786,7 @@ public class SQFProcessor implements ISQFTreeListener {
 
 	/**
 	 * Gets all token indices associated with the given node and its sub-nodes
+	 * except the invalid (< 0) ones
 	 * 
 	 * @param node
 	 *            The node to process
@@ -787,7 +794,9 @@ public class SQFProcessor implements ISQFTreeListener {
 	 *            An integer collection to store the indices in
 	 */
 	protected void getAllTokenIndices(IndexTreeElement node, Collection<Integer> indices) {
-		indices.add(node.getIndex());
+		if (node.getIndex() >= 0) {
+			indices.add(node.getIndex());
+		}
 
 		if (node.hasChildren()) {
 			node.getChildren().forEach((e) -> getAllTokenIndices(e, indices));
