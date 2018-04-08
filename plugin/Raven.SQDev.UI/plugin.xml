@@ -9,8 +9,8 @@
          <toolbar
                id="raven.sqdev.ui.toolbar">
             <command
-                  commandId="raven.sqdev.command.showParseTree"
-                  icon="platform:plugin/raven.sqdev.misc/resources/icons/parseTreeIcon.png"
+                  commandId="raven.sqdev.command.showSyntaxTree"
+                  icon="platform:plugin/raven.sqdev.misc/resources/icons/syntaxTreeIcon.png"
                   label="Show parseTree"
                   style="push"
                   tooltip="Opens the parse tree inspector">
@@ -28,10 +28,10 @@
          point="org.eclipse.ui.commands">
       <command
             categoryId="raven.sqdev.ui.commandCategory"
-            defaultHandler="raven.sqdev.ui.commands.ShowParseTreeHandler"
-            description="Displays the parse tree graphically"
-            id="raven.sqdev.command.showParseTree"
-            name="Show parse tree">
+            defaultHandler="raven.sqdev.ui.commands.ShowSyntaxTreeHandler"
+            description="Displays the syntax tree graphically"
+            id="raven.sqdev.command.showSyntaxTree"
+            name="Show syntax tree">
       </command>
       <command
             categoryId="raven.sqdev.ui.commandCategory"

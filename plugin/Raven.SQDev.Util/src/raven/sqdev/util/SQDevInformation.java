@@ -19,7 +19,7 @@ import raven.sqdev.sqdevFile.SQDevFile;
 public class SQDevInformation {
 	
 	/**
-	 * The default String indocating that the requested value has not been set
+	 * The default String indicating that the requested value has not been set
 	 * and does not have a default value
 	 */
 	public static String NOT_SET = "NotSet";

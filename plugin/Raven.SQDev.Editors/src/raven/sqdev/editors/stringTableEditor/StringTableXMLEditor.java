@@ -1,5 +1,7 @@
 package raven.sqdev.editors.stringTableEditor;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,9 @@ import raven.sqdev.editors.BasicSourceViewerConfiguration;
 import raven.sqdev.editors.stringtableParsing.StringTableLexer;
 import raven.sqdev.editors.stringtableParsing.StringTableParser;
 import raven.sqdev.editors.stringtableParsing.StringTableWalkListener;
+import raven.sqdev.interfaces.IParseResult;
 import raven.sqdev.misc.CharacterPair;
+import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.parser.misc.BasicErrorListener;
 
 /**
@@ -43,8 +47,19 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 	}
 
 	@Override
-	protected ParseTree doParse(String input) {
-		ANTLRInputStream in = new ANTLRInputStream(input);
+	protected IParseResult doParse(InputStream input) {
+		ANTLRInputStream in;
+		try {
+			in = new ANTLRInputStream(input);
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			SQDevInfobox info = new SQDevInfobox("Error while parsing stringtable", e);
+			
+			info.open(false);
+			
+			return null;
+		}
 
 		BasicErrorListener listener = new BasicErrorListener();
 
@@ -61,17 +76,19 @@ public class StringTableXMLEditor extends BasicCodeEditor {
 		ParseTree tree = parser.content();
 
 		listener.getParseResult().applyMarkersTo(this);
+		
+		listener.getParseResult().setParseTree(tree);
 
-		return tree;
+		return listener.getParseResult();
 	}
 
 	@Override
-	protected boolean processParseTree(ParseTree tree) {
+	protected boolean processParseTree(IParseResult result) {
 		ParseTreeWalker walker = new ParseTreeWalker();
 
 		StringTableWalkListener listener = new StringTableWalkListener(stream);
 
-		walker.walk(listener, tree);
+		walker.walk(listener, result.getANTRLParseTree());
 
 		packageList = listener.getPackageList();
 

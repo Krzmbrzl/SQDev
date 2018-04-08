@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preferences
 Bundle-SymbolicName: raven.sqdev.preferences;singleton:=true
-Bundle-Version: 0.5.5
+Bundle-Version: 0.5.6.stable
 Bundle-Activator: raven.sqdev.preferences.activator.Activator
 Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.ui,
@@ -10,8 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.swt,
  org.eclipse.osgi,
  org.eclipse.ui.editors,
- raven.sqdev.util;bundle-version="0.3.0",
- raven.sqdev.misc;bundle-version="0.1.0"
+ raven.sqdev.util,
+ raven.sqdev.misc
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: raven.sqdev.preferences.activator;uses:="org.osgi.framework,org.eclipse.ui.plugin",

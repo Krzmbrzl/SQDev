@@ -1,23 +1,23 @@
 package raven.sqdev.parser.preprocessor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import raven.sqdev.misc.Macro;
-import raven.sqdev.parser.misc.ParseResult;
+import raven.sqdev.parser.misc.ParseResultOld;
 
-public class PreprocessorParseResult extends ParseResult {
+public class PreprocessorParseResult extends ParseResultOld {
 
 	/**
 	 * The list of defined macros
 	 */
-	private List<Macro> macros;
+	private Map<String, Macro> macros;
 
 	/**
 	 * Creates a new instance of this class
 	 */
 	public PreprocessorParseResult() {
-		macros = new ArrayList<Macro>();
+		macros = new HashMap<String, Macro>();
 	}
 
 
@@ -30,7 +30,7 @@ public class PreprocessorParseResult extends ParseResult {
 	public void mergeWith(PreprocessorParseResult other) {
 		super.mergeWith(other);
 
-		macros.addAll(other.getMacros());
+		macros.putAll(other.getMacros());
 	}
 
 	/**
@@ -40,13 +40,13 @@ public class PreprocessorParseResult extends ParseResult {
 	 *            The Macro to add
 	 */
 	public void addMacro(Macro macro) {
-		macros.add(macro);
+		macros.put(macro.getKeyword(), macro);
 	}
 
 	/**
 	 * Gets all defined macros
 	 */
-	public List<Macro> getMacros() {
+	public Map<String, Macro> getMacros() {
 		return macros;
 	}
 }
