@@ -309,16 +309,29 @@ public class ProjectUtil {
 
 		try {
 			// create the project
-			IProject project = createSQDevProject(ResourcesPlugin.getWorkspace().getRoot(), projectName,
-					copyContent ? null : path);
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IProject project = createSQDevProject(root, projectName, copyContent ? null : path);
 
 			project.open(new NullProgressMonitor());
 
 			// gather information
 			SQDevInformation information = new SQDevInformation();
 			information.setProfile(SQDevPreferenceUtil.getDefaultProfile());
-			information.setTerrain(path.lastSegment().substring(path.lastSegment().indexOf(".") + 1));
-			information.autoExport = SQDevPreferenceUtil.getAutoExportDefaultEnabled();
+			if (path.lastSegment() != null && path.lastSegment().contains(".")) {
+				information.setTerrain(path.lastSegment().substring(path.lastSegment().indexOf(".") + 1));
+				if (copyContent) {
+					information.autoExport = SQDevPreferenceUtil.getAutoExportDefaultEnabled();
+				} else {
+					// turn off autoexport for all projects that originate from the Arma-dir and are
+					// not copied
+					IPath armaDirPath = new Path(SQDevPreferenceUtil.getArmaDocumentsDirectory());
+					information.autoExport = !armaDirPath.isPrefixOf(project.getLocation())
+							&& SQDevPreferenceUtil.getAutoExportDefaultEnabled();
+				}
+			} else {
+				information.terrain = SQDevInformation.NOT_SET;
+				information.autoExport = false;
+			}
 			information.name = projectName;
 
 			// create linkFile

@@ -188,7 +188,7 @@ public class SQDevImportWizardPage extends WizardPage {
 		}
 
 		if (!copyCheckBox.getSelection()
-				&& filePath.matchingFirstSegments(new Path(SQDevPreferenceUtil.getArmaDocumentsDirectory())) > 0) {
+				&& new Path(SQDevPreferenceUtil.getArmaDocumentsDirectory()).isPrefixOf(filePath)) {
 			// if it is disabled and the project to import is in the arma mission directory
 			// -> warning
 			setWarning(
