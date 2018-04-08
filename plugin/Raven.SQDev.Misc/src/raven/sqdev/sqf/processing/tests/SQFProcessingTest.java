@@ -762,6 +762,13 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		assertEquals(ProblemMessages.undefinedLocalVariable("_testVar"),
 				result.getMarkers().iterator().next().getMessage());
+		
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("waitUntil".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.operatorIsNotNular("waitUntil"),
+				result.getMarkers().iterator().next().getMessage());
 	}
 
 	@Test
