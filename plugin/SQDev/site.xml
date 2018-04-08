@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/raven.sqdev_0.7.5.stable.jar" id="raven.sqdev" version="0.7.5.stable">
+   <feature url="features/raven.sqdev_0.7.5.stable1.jar" id="raven.sqdev" version="0.7.5.stable1">
       <category name="Raven.SQDev"/>
    </feature>
    <category-def name="Raven.SQDev" label="SQDev"/>
