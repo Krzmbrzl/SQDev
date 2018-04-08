@@ -6,7 +6,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 import org.junit.Test;
@@ -14,14 +16,15 @@ import org.junit.Test;
 import raven.sqdev.constants.ProblemMessages;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.base.Keyword;
-import raven.sqdev.interfaces.ISQFParseInformation;
+import raven.sqdev.interfaces.ISQFInformation;
+import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
 import raven.sqdev.misc.FileUtil;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.Marker;
 import raven.sqdev.parser.misc.ParseUtil;
-import raven.sqdev.parser.sqf.SQFParseInformation;
-import raven.sqdev.parser.sqf.SQFParseResult;
+import raven.sqdev.parser.sqf.SQFInformation;
+import raven.sqdev.parser.sqf.SQFParseResultOld;
 
 public class SQFParserTest {
 
@@ -35,7 +38,7 @@ public class SQFParserTest {
 
 	@Test
 	public void variableDeclarations() {
-		SQFParseResult result = process(getContent(VARIABLE_DECLARATION));
+		SQFParseResultOld result = process(getContent(VARIABLE_DECLARATION));
 
 		// Assert that there are no errors in this file
 		assertTrue("The file \"" + VARIABLE_DECLARATION_PATH + "\" is not expected to contain erros!",
@@ -47,7 +50,7 @@ public class SQFParserTest {
 				"_ifVar" };
 
 		List<String> definedLocalVariables = Arrays.asList(localVariables);
-		List<String> foundLocalVariables = getKeywords(result.getDeclaredLocalVariables());
+		List<String> foundLocalVariables = getKeywords(result.getDeclaredLocalVariables().values());
 
 		if (!collectionContentEqual(definedLocalVariables, foundLocalVariables)) {
 			StringBuilder msg = new StringBuilder("The found declarations don't match with the expected ones");
@@ -71,7 +74,7 @@ public class SQFParserTest {
 		// Check global variable declarations
 		final String[] globalVariables = new String[] { "GlobalTestVar", "Implicit1", "Implicit2", "Implicit3" };
 		List<String> definedGlobalVariables = Arrays.asList(globalVariables);
-		List<String> foundGlobalVariables = getKeywords(result.getDeclaredGlobalVariables());
+		List<String> foundGlobalVariables = getKeywords(result.getDeclaredGlobalVariables().values());
 
 		if (!collectionContentEqual(definedGlobalVariables, foundGlobalVariables)) {
 			StringBuilder msg = new StringBuilder("The found declarations don't match with the expected ones");
@@ -96,14 +99,16 @@ public class SQFParserTest {
 	@Test
 	public void error_typeMismatch() {
 		String input;
-		SQFParseResult result;
+		SQFParseResultOld result;
 		Marker expectedMarker;
 
 
 		input = "hint 3";
 		result = process(input);
-		expectedMarker = createErrorMarker(5, 1, ProblemMessages.expectedTypeButGot(
-				new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }, new EDataType[] { EDataType.NUMBER }));
+		expectedMarker = createErrorMarker(5, 1,
+				ProblemMessages.expectedTypeButGot(
+						new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
+						new DataTypeList(new EDataType[] { EDataType.NUMBER })));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
@@ -131,13 +136,13 @@ public class SQFParserTest {
 		result = process(input);
 		expectedMarker = createErrorMarker(1, 7,
 				ProblemMessages.expectedTypeButGot(
-						new EDataType[] { EDataType.NUMBER, EDataType.ARRAY, EDataType.STRING },
-						new EDataType[] { EDataType.OBJECT }));
+						new DataTypeList(new EDataType[] { EDataType.NUMBER, EDataType.ARRAY, EDataType.STRING }),
+						new DataTypeList(new EDataType[] { EDataType.OBJECT })));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
-		
+
+
 		input = "'hello' + objNull";
 		result = process(input);
 		expectedMarker = createErrorMarker(10, 7,
@@ -145,7 +150,7 @@ public class SQFParserTest {
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
+
 		input = "velocity ''";
 		result = process(input);
 		expectedMarker = createErrorMarker(9, 2,
@@ -154,47 +159,44 @@ public class SQFParserTest {
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
 	}
-	
+
 	@Test
 	public void error_missingSemicolon() {
 		String input;
-		SQFParseResult result;
+		SQFParseResultOld result;
 		Marker expectedMarker;
-		List<Macro> macros = new ArrayList<Macro>();
-		macros.add(new Macro("CHECK_TRUE"));
-		
-		
+		Map<String, Macro> macros = new HashMap<String, Macro>();
+		macros.put("CHECK_TRUE", new Macro("CHECK_TRUE"));
+
+
 		input = "diag_log 3 hint 'hello'";
 		result = process(input);
-		expectedMarker = createErrorMarker(9, 1,
-				ProblemMessages.missingSemicolon("3"));
+		expectedMarker = createErrorMarker(9, 1, ProblemMessages.missingSemicolon("3"));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
-		
+
+
 		input = "CHECK_TRUE(nsdvjJSDNV, SAKFN) diag_log 3 hint 'hello'";
 		result = process(input, macros);
-		expectedMarker = createErrorMarker(39, 1,
-				ProblemMessages.missingSemicolon("3"));
+		expectedMarker = createErrorMarker(39, 1, ProblemMessages.missingSemicolon("3"));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
-		
+
+
 		input = "CHECK_TRUE(nsdvjJSDNV, SAKFN) player setPos [1,2,3] hint 'hello'";
 		result = process(input, macros);
-		expectedMarker = createErrorMarker(50, 1,
-				ProblemMessages.missingSemicolon("]"));
+		expectedMarker = createErrorMarker(50, 1, ProblemMessages.missingSemicolon("]"));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
 	}
-	
+
 	@Test
 	public void error_unbalancedCharacterPair() {
 		String input;
-		SQFParseResult result;
+		SQFParseResultOld result;
 		Marker expectedMarker;
 
 
@@ -204,47 +206,47 @@ public class SQFParserTest {
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
-		
+
+
 		input = "hint '3;";
 		result = process(input);
 		expectedMarker = createErrorMarker(5, 1, ProblemMessages.unclosedOpener('\''));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
-		
+
+
 		input = "hint \"3;";
 		result = process(input);
 		expectedMarker = createErrorMarker(5, 1, ProblemMessages.unclosedOpener('"'));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
+
 		input = "hint [3;";
 		result = process(input);
 		expectedMarker = createErrorMarker(5, 1, ProblemMessages.unclosedOpener('['));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
-		
+
+
 		input = "hint {3;";
 		result = process(input);
 		expectedMarker = createErrorMarker(5, 1, ProblemMessages.unclosedOpener('{'));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
-		
+
+
 		input = "hint '');";
 		result = process(input);
 		expectedMarker = createErrorMarker(7, 1, ProblemMessages.invalidClosingCharacter(')'));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
-		
-		
+
+
 		input = "hint ''];";
 		result = process(input);
 		expectedMarker = createErrorMarker(7, 1, ProblemMessages.invalidClosingCharacter(']'));
@@ -281,11 +283,11 @@ public class SQFParserTest {
 	 * Checks whether the given parseResult contains the given amount of markers
 	 * 
 	 * @param result
-	 *            The {@link SQFParseResult} to check
+	 *            The {@link SQFParseResultOld} to check
 	 * @param amount
 	 *            The amount of markers that are expected to be present
 	 */
-	protected static void assertMarkerAmountEquals(SQFParseResult result, int amount) {
+	protected static void assertMarkerAmountEquals(SQFParseResultOld result, int amount) {
 		if (result.getMarkers().size() == amount) {
 			return;
 		}
@@ -333,11 +335,11 @@ public class SQFParserTest {
 	 * @param input
 	 *            The input to process
 	 * @param macros
-	 *            The list of macros that should be existant in the given input
-	 * @return The resulting {@link SQFParseResult}
+	 *            The list of macros that should be existent in the given input
+	 * @return The resulting {@link SQFParseResultOld}
 	 */
-	protected static SQFParseResult process(String input, List<Macro> macros) {
-		return ParseUtil.parseAndValidateSQF(input, getSQFParseInformation(macros));
+	protected static SQFParseResultOld process(String input, Map<String, Macro> macros) {
+		return ParseUtil.parseAndValidateSQFOld(input, getSQFParseInformation(macros));
 	}
 
 	/**
@@ -346,10 +348,10 @@ public class SQFParserTest {
 	 * 
 	 * @param input
 	 *            The input to process
-	 * @return The resulting {@link SQFParseResult}
+	 * @return The resulting {@link SQFParseResultOld}
 	 */
-	protected static SQFParseResult process(String input) {
-		return process(input, new ArrayList<Macro>());
+	protected static SQFParseResultOld process(String input) {
+		return process(input, new HashMap<String, Macro>());
 	}
 
 	/**
@@ -386,8 +388,8 @@ public class SQFParserTest {
 	 * @param macros
 	 *            The macro-list that should be used
 	 */
-	protected static ISQFParseInformation getSQFParseInformation(List<Macro> macros) {
-		return new SQFParseInformation(macros) {
+	protected static ISQFInformation getSQFParseInformation(Map<String, Macro> macros) {
+		return new SQFInformation(macros) {
 			@Override
 			protected String getKeywordContent() {
 				try {

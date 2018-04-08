@@ -2,12 +2,12 @@
 <feature
       id="raven.sqdev"
       label="SQDev"
-      version="0.7.4.stable"
+      version="0.7.5.stable"
       provider-name="Raven">
 
    <description url="http://krzmbrzl.github.io/SQDev/">
       SQDev provides a set of features to facilitate the development
-of scripts for the ArmA series.
+of scripts for the Arma series.
    </description>
 
    <license url="https://github.com/Krzmbrzl/SQDev/blob/master/licence.md">
@@ -78,59 +78,59 @@ POSSIBILITY OF SUCH DAMAGE.
       <import plugin="org.eclipse.ui.workbench"/>
       <import plugin="org.eclipse.swt"/>
       <import plugin="org.eclipse.core.filesystem" version="1.4.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.navigator"/>
-      <import plugin="org.eclipse.jdt.core"/>
-      <import plugin="org.eclipse.jdt.ui"/>
-      <import plugin="org.eclipse.search"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.core.jobs"/>
+      <import plugin="org.eclipse.equinox.preferences"/>
+      <import plugin="org.eclipse.text"/>
    </requires>
 
    <plugin
          id="raven.sqdev.editors.sqfeditor"
          download-size="0"
          install-size="0"
-         version="0.7.4.stable"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.util"
          download-size="0"
          install-size="0"
-         version="0.7.2.stable"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.wizards"
          download-size="0"
          install-size="0"
-         version="0.3.4"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.preferences"
          download-size="0"
          install-size="0"
-         version="0.5.5"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.misc"
          download-size="0"
          install-size="0"
-         version="0.6.1.stable"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.ui"
          download-size="0"
          install-size="0"
-         version="0.3.1.stable"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="raven.sqdev.editors"
          download-size="0"
          install-size="0"
-         version="0.7.1.stable"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

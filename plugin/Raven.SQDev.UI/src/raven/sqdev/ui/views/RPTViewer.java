@@ -22,7 +22,6 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
@@ -62,7 +61,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.FindReplaceAction;
-
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.fileSystemListener.FileSystemChangeAdapter;

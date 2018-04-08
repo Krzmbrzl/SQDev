@@ -48,6 +48,18 @@ public class ProblemMessages {
 
 	/**
 	 * Creates the error message stating that the operator was wrongly used as a
+	 * unary operator
+	 * 
+	 * @param operatorName
+	 *            The name of the operator
+	 * @return The created error message
+	 */
+	public static final String operatorIsNotUnary(String operatorName) {
+		return "The operator \"" + operatorName + "\" can not be used as a unary operator!";
+	}
+
+	/**
+	 * Creates the error message stating that the operator was wrongly used as a
 	 * binary operator
 	 * 
 	 * @param operatorName
@@ -130,37 +142,41 @@ public class ProblemMessages {
 	 *            The set of given types
 	 * @return the generated error message
 	 */
-	public static final String expectedTypeButGot(EDataType[] expected, EDataType[] got) {
+	public static final String expectedTypeButGot(Iterable<EDataType> expected, Iterable<EDataType> got) {
 		StringBuilder builder = new StringBuilder("Expected type ");
+		boolean multipleTypes = false;
 
-		for (int i = 0; i < expected.length; i++) {
-			EDataType currentType = expected[i];
-
-			if (i == 0) {
+		for (EDataType currentType : expected) {
+			if (!multipleTypes) {
 				builder.append("\"" + currentType + "\"");
+				multipleTypes = true;
 			} else {
-				if (i == expected.length - 1) {
-					builder.append(" or \"" + currentType + "\"");
-				} else {
-					builder.append(", \"" + currentType + "\"");
-				}
+				builder.append(", \"" + currentType + "\"");
 			}
+		}
+
+		// replace last comma by "or"
+		int commaIndex = builder.lastIndexOf(",");
+		if (commaIndex >= 0) {
+			builder.replace(commaIndex, commaIndex + 1, " or");
 		}
 
 		builder.append(" but got ");
 
-		for (int i = 0; i < got.length; i++) {
-			EDataType currentType = got[i];
-
-			if (i == 0) {
+		multipleTypes = false;
+		for (EDataType currentType : got) {
+			if (!multipleTypes) {
 				builder.append("\"" + currentType + "\"");
+				multipleTypes = true;
 			} else {
-				if (i == got.length - 1) {
-					builder.append(" or \"" + currentType + "\"");
-				} else {
-					builder.append(", \"" + currentType + "\"");
-				}
+				builder.append(", \"" + currentType + "\"");
 			}
+		}
+
+		// replace last comma by "or"
+		commaIndex = builder.lastIndexOf(",");
+		if (commaIndex >= 0) {
+			builder.replace(commaIndex, commaIndex + 1, " or");
 		}
 
 		builder.append("!");
@@ -272,10 +288,31 @@ public class ProblemMessages {
 	}
 
 	/**
-	 * The error message stating thath there is an unclosed opening character pair
+	 * The error message stating that there is a missing comma
+	 * 
+	 * @param at
+	 *            The ID after which the semicolon was expected
+	 */
+	public static final String missingComma(String at) {
+		return "Missing ',' at \"" + at + "\"";
+	}
+
+	/**
+	 * The error message stating that the given token is misplaced and that it
+	 * should either be deleted or moved elsewhere.
+	 * 
+	 * @param token
+	 *            The misplaced token
+	 */
+	public static final String misplacedToken(String token) {
+		return "Misplaced token \"" + token + "\". Delete or move it!";
+	}
+
+	/**
+	 * The error message stating that there is an unclosed opening character pair
 	 * 
 	 * @param opener
-	 *            The opening character that doesnt get closed
+	 *            The opening character that doesn't get closed
 	 */
 	public static final String unclosedOpener(char opener) {
 		char openMark, closeMark;
@@ -290,7 +327,7 @@ public class ProblemMessages {
 	}
 
 	/**
-	 * The error message stating thath there is an invalid closing character
+	 * The error message stating that there is an invalid closing character
 	 * 
 	 * @param opener
 	 *            The invalid closing character
@@ -305,5 +342,84 @@ public class ProblemMessages {
 		}
 
 		return "Invalid closing character " + openMark + closer + closeMark;
+	}
+
+	/**
+	 * The error message stating that an invalid expression in the given context has
+	 * been found
+	 * 
+	 * @param context
+	 *            The context in which the invalid expression occurred
+	 */
+	public static final String invalidExpression(String context) {
+		return "Invalid expression in context of  \"" + context + "\"";
+	}
+
+	/**
+	 * The error message stating that "private" is the only permitted modifier for
+	 * an assignment
+	 */
+	public static final String privateIsOnlyValidModifierForAssignments() {
+		return "\"private\" is the only permitted modifier for assignments";
+	}
+
+	/**
+	 * Error message stating that private variables have to be local
+	 */
+	public static final String privateVariablesMustBeLocal() {
+		return "Private variables have to be local (starting with \"_\")";
+	}
+
+	/**
+	 * Error message stating that the given keyword is reserved
+	 */
+	public static final String reservedKeyword(String keyword) {
+		return "\"" + keyword + "\" is a reserved keyword!";
+	}
+
+	/**
+	 * The error message stating that the expected array size has not been matched
+	 * 
+	 * @param expected
+	 *            The expected array length
+	 * @param got
+	 *            The actual array length
+	 * @return The constructed error message
+	 */
+	public static final String expectedArrayLength(int expected, int got) {
+		return "Expected array with exactly " + expected + " elements but got " + got;
+	}
+
+	/**
+	 * The error message stating that the minimal array size has not been reached
+	 * 
+	 * @param minimum
+	 *            The expected minimal array length
+	 * @param got
+	 *            The actual array length
+	 * @return The constructed error message
+	 */
+	public static final String expectedMinimumArrayLength(int minimum, int got) {
+		return "Expected array with at least " + minimum + " elements but got only " + got;
+	}
+	
+	/**
+	 * The error message stating that the maximal array size has been exceeded
+	 * 
+	 * @param maximum
+	 *            The expected maximal array length
+	 * @param got
+	 *            The actual array length
+	 * @return The constructed error message
+	 */
+	public static final String expectedMaximalArrayLength(int maximum, int got) {
+		return "Expected array with at most " + maximum + " elements but got " + got;
+	}
+
+	/**
+	 * The error message for internal errors
+	 */
+	public static final String internalError() {
+		return "!!! Internal error !!!";
 	}
 }

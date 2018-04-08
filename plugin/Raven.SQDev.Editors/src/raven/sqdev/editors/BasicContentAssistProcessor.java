@@ -1,7 +1,10 @@
 package raven.sqdev.editors;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
@@ -33,26 +36,32 @@ public class BasicContentAssistProcessor implements IContentAssistProcessor {
 	
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
-		String prefix = EditorUtil.getWordPartBeforeOffset(viewer.getDocument(), offset);
+		String prefix = EditorUtil.getWordPartBeforeOffset(viewer.getDocument(), offset).toLowerCase();
 		
-		List<Keyword> keywords;
-		// get the respective list of keywords
-		if (prefix.isEmpty()) {
-			keywords = editor.getBasicConfiguration().getAllConfiguredKeywords();
-		} else {
-			keywords = editor.getBasicConfiguration().getConfiguredKeywordsFor(prefix.charAt(0));
-		}
+		Map<String, Keyword> keywords = editor.getBasicConfiguration().getAllConfiguredKeywords();
 		
 		ArrayList<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
 		
 		// create proposals
-		for (Keyword currentKeyword : keywords) {
-			if (currentKeyword.getKeyword().toLowerCase().startsWith(prefix.toLowerCase())) {
+		Stream<Keyword> keywordStream = keywords.values().stream().filter(new Predicate<Keyword>() {
+
+			@Override
+			public boolean test(Keyword keyword) {
+				return keyword.getKeyword().toLowerCase().startsWith(prefix);
+			}
+		});
+		
+		keywordStream = keywordStream.sorted();
+		
+		keywordStream.forEachOrdered(new Consumer<Keyword>() {
+
+			@Override
+			public void accept(Keyword keyword) {
 				// add a proposal
-				proposals.add(new BasicCompletionProposal(currentKeyword, offset - prefix.length(),
+				proposals.add(new BasicCompletionProposal(keyword, offset - prefix.length(),
 						prefix.length()));
 			}
-		}
+		});
 		
 		if (proposals.size() > 0) {
 			return proposals.toArray(new ICompletionProposal[proposals.size()]);

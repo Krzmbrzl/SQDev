@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Util
 Bundle-SymbolicName: raven.sqdev.util;singleton:=true
-Bundle-Version: 0.7.2.stable
+Bundle-Version: 0.7.3.stable
 Bundle-Activator: raven.sqdev.activator.Activator
 Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.core.runtime,
@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench,
  org.eclipse.swt,
- raven.sqdev.misc;bundle-version="0.1.0",
+ raven.sqdev.misc,
  org.eclipse.jface.text,
  org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

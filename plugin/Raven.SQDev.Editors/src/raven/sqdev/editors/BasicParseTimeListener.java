@@ -12,7 +12,7 @@ import org.eclipse.jface.text.IDocumentListener;
 import raven.sqdev.misc.SQDevPreferenceUtil;
 
 /**
- * This listener will cause the editor to reparse it's input when the user
+ * This listener will cause the editor to re-parse its input when the user
  * stopped typing for a longer time
  * 
  * @author Raven

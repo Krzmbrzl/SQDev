@@ -1,8 +1,8 @@
 package raven.sqdev.wizards.importWizard;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -24,7 +24,8 @@ public class SQDevImportWizard extends Wizard implements IImportWizard {
 	
 	@Override
 	public boolean performFinish() {
-		Path selectedPath = page.getDirectory();
+		IPath importDir = page.getDirectory();
+		boolean copyResources = page.copyResources();
 		
 		Job importJob = new Job("Importing folder...") {
 			
@@ -32,7 +33,7 @@ public class SQDevImportWizard extends Wizard implements IImportWizard {
 			protected IStatus run(IProgressMonitor monitor) {
 				monitor.beginTask("Importing folder...", 1);
 				
-				ProjectUtil.importAsProject(selectedPath);
+				ProjectUtil.importAsProject(importDir, copyResources);
 				
 				monitor.worked(1);
 				monitor.done();

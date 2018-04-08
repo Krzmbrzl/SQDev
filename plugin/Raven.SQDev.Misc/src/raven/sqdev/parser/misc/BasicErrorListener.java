@@ -19,13 +19,13 @@ public class BasicErrorListener extends BaseErrorListener {
 	/**
 	 * The result of this parsing
 	 */
-	protected ParseResult result;
+	protected ParseResultOld result;
 
 	/**
 	 * Create an instance of this error listener
 	 */
 	public BasicErrorListener() {
-		result = new ParseResult();
+		result = new ParseResultOld();
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class BasicErrorListener extends BaseErrorListener {
 	/**
 	 * Gets the parse result
 	 */
-	public ParseResult getParseResult() {
+	public ParseResultOld getParseResult() {
 		return result;
 	}
 }

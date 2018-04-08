@@ -17,19 +17,23 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import raven.sqdev.misc.FileUtil;
+import dataStructures.AbstractSQFTokenFactory;
+import raven.sqdev.interfaces.IParseResult;
+import raven.sqdev.interfaces.ISQFParseSupplier;
+import raven.sqdev.interfaces.ITreeProcessingResult;
+import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.Marker;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.parser.misc.ParseUtil;
+import raven.sqdev.parser.misc.SQFParseResult;
+import raven.sqdev.parser.misc.SQFTokenFactory;
 import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
-import raven.sqdev.parser.sqf.SQFParseInformation;
-import raven.sqdev.parser.sqf.SQFParseResult;
+import raven.sqdev.parser.sqf.SQFInformation;
 
 public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 
 	@Override
-	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor)
-			throws CoreException {
+	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
 
 		try {
 			switch (kind) {
@@ -67,8 +71,7 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	 * @throws FileNotFoundException
 	 * @throws CoreException
 	 */
-	protected void incrementalBuild(IProgressMonitor monitor)
-			throws FileNotFoundException, IOException, CoreException {
+	protected void incrementalBuild(IProgressMonitor monitor) throws FileNotFoundException, IOException, CoreException {
 		monitor.beginTask("Building " + getProject().getName(), IProgressMonitor.UNKNOWN);
 
 		IResourceDelta delta = getDelta(getProject());
@@ -88,10 +91,8 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	 * @throws FileNotFoundException
 	 * @throws CoreException
 	 */
-	private void parseChangedFiles(IResourceDelta delta)
-			throws FileNotFoundException, IOException, CoreException {
-		for (IResourceDelta currentResourceDelta : delta.getAffectedChildren(IResourceDelta.CHANGED,
-				IResource.FILE)) {
+	private void parseChangedFiles(IResourceDelta delta) throws FileNotFoundException, IOException, CoreException {
+		for (IResourceDelta currentResourceDelta : delta.getAffectedChildren(IResourceDelta.CHANGED, IResource.FILE)) {
 			if (currentResourceDelta.getResource() instanceof IFile) {
 				parseSQFFile((IFile) currentResourceDelta.getResource());
 			} else {
@@ -109,8 +110,7 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	protected void fullBuild(IProgressMonitor monitor)
-			throws CoreException, FileNotFoundException, IOException {
+	protected void fullBuild(IProgressMonitor monitor) throws CoreException, FileNotFoundException, IOException {
 		List<IResource> files = getProjectChildren(IResource.FILE);
 
 		monitor.beginTask("Building project " + getProject().getName(), files.size());
@@ -145,42 +145,62 @@ public class SQDevProjectBuilder extends IncrementalProjectBuilder {
 
 		System.out.println("Parsing " + file.getName());
 
-		final String fileContent = FileUtil.readAll(new FileInputStream(file.getLocation().toFile()));
+		FileInputStream fileStream = new FileInputStream(file.getLocation().toFile());
 
-		PreprocessorParseResult prepResult = ParseUtil.parseAndValidatePreprocess(fileContent,
-				file.getLocation());
+		PreprocessorParseResult prepResult = ParseUtil.parseAndValidatePreprocess(fileStream, file.getLocation());
+
+		// "reset" InputStream
+		fileStream = new FileInputStream(file.getLocation().toFile());
 
 		// create parse information with default values
-		SQFParseInformation info = new SQFParseInformation(prepResult.getMacros());
+		SQFInformation info = new SQFInformation(prepResult.getMacros());
 
-		SQFParseResult sqfResult = ParseUtil.parseSQF(fileContent, info);
+		IParseResult parseResult = ParseUtil.parseSQF(fileStream, new ISQFParseSupplier() {
 
-		sqfResult
-				.mergeWith(ParseUtil.validateSQF(sqfResult.getParseTree(), sqfResult.getTokenStream(), info));
+			@Override
+			public AbstractSQFTokenFactory getTokenFactory() {
+				return new SQFTokenFactory(info.getBinaryKeywords(), info.getUnaryKeywords());
+			}
 
-		sqfResult.mergeWith(prepResult);
-
+			@Override
+			public Map<String, Macro> getMacros() {
+				return prepResult.getMacros();
+			}
+		});
 
 		// clear old markers
 		file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
 
-		// apply markers
-		for (Marker currentMarker : sqfResult.getMarkers()) {
-			// find line
-			int line = 1;
-			for (int i = 0; i < currentMarker.getOffset(); i++) {
-				if (fileContent.charAt(i) == '\n') {
-					line++;
-				}
-			}
+		boolean foundError = false;
 
-			IMarker fileMarker = file.createMarker(currentMarker.getType());
-			fileMarker.setAttribute(IMarker.LINE_NUMBER, line);
-			fileMarker.setAttribute(IMarker.MESSAGE, currentMarker.getMessage());
-			fileMarker.setAttribute(IMarker.SEVERITY, currentMarker.getSeverity());
-			fileMarker.setAttribute(IMarker.CHAR_START, currentMarker.getOffset());
-			fileMarker.setAttribute(IMarker.CHAR_END, currentMarker.getOffset() + currentMarker.getLength());
+		// apply parse- and lex-markers
+		for (Marker currentMarker : parseResult.getMarkers()) {
+			addMarker(file, currentMarker, parseResult.getLine(currentMarker.getOffset()));
+			if (currentMarker.getSeverity() == IMarker.SEVERITY_ERROR) {
+				foundError = true;
+			}
 		}
+
+		if (foundError) {
+			// don't continue if there have been any errors so far
+			return;
+		}
+
+		ITreeProcessingResult processingResult = ParseUtil.processSQF((SQFParseResult) parseResult, info);
+
+		// apply processing-markers
+		for (Marker currentMarker : processingResult.getMarkers()) {
+			addMarker(file, currentMarker, parseResult.getLine(currentMarker.getOffset()));
+		}
+	}
+
+	private void addMarker(IFile file, Marker marker, int line) throws CoreException {
+		IMarker fileMarker = file.createMarker(marker.getType());
+		fileMarker.setAttribute(IMarker.LINE_NUMBER, line);
+		fileMarker.setAttribute(IMarker.MESSAGE, marker.getMessage());
+		fileMarker.setAttribute(IMarker.SEVERITY, marker.getSeverity());
+		fileMarker.setAttribute(IMarker.CHAR_START, marker.getOffset());
+		fileMarker.setAttribute(IMarker.CHAR_END, marker.getOffset() + marker.getLength());
 	}
 
 	/**

@@ -63,7 +63,7 @@ public enum EProjectType {
 			BackingStoreException {
 		String projectName = info.getName();
 		
-		IProject project = ProjectUtil.createSQDevProject(root, projectName);
+		IProject project = ProjectUtil.createSQDevProject(root, projectName, null);
 		
 		switch (this) {
 			case MOD:
