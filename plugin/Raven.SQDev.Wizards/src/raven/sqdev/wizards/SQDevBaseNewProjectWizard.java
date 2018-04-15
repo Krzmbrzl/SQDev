@@ -9,7 +9,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
-
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.util.EProjectType;
 import raven.sqdev.utilInterfaces.ISQDevInformationProvider;

@@ -3,7 +3,7 @@ package raven.sqdev.parser.preprocessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.antlr.v4.runtime.ANTLRErrorListener;
@@ -329,7 +329,7 @@ public class PreprocessorParseListener extends PreprocessorBaseListener {
 	/**
 	 * Gets the list of macros that have been defined during preprocessing
 	 */
-	public List<Macro> getDefinedMacros() {
+	public Map<String, Macro> getDefinedMacros() {
 		return result.getMacros();
 	}
 	

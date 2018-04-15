@@ -1,5 +1,7 @@
 package raven.sqdev.editors.sqdevEditor;
 
+import java.io.InputStream;
+
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicPartitionScanner;
@@ -73,7 +75,7 @@ public class SQDevFileEditor extends BasicCodeEditor {
 	}
 	
 	@Override
-	protected void doPreprocessorParsing(String input) {
+	protected void doPreprocessorParsing(InputStream input) {
 		// Do nothing
 	}
 	

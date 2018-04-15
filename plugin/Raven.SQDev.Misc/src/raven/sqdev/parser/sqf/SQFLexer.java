@@ -2,7 +2,9 @@
 
 	package raven.sqdev.parser.sqf;
 	
-	import java.util.List;
+	import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -90,21 +92,17 @@ public class SQFLexer extends Lexer {
 
 
 		
-		protected List<String> binaryOperators;
-		protected List<String> unaryOperators;
-		protected List<String> macroNames;
+		protected Collection<String> binaryOperators;
+		protected Collection<String> unaryOperators;
+		protected Collection<String> macroNames;
 		
 		
-		public SQFLexer(CharStream input, List<String> binaryOperators, List<String> unaryOperators, List<String> macroNames) {
+		public SQFLexer(CharStream input, Collection<String> binaryOperators, Collection<String> unaryOperators, Collection<String> macroNames) {
 			this(input);
 			
 			// make operators lowercase
-			for(int i=0; i<binaryOperators.size(); i++) {
-				binaryOperators.set(i, binaryOperators.get(i).toLowerCase());
-			}
-			for(int i=0; i<unaryOperators.size(); i++) {
-				unaryOperators.set(i, unaryOperators.get(i).toLowerCase());
-			}
+			binaryOperators = binaryOperators.stream().map(String::toLowerCase).collect(Collectors.toSet());
+			unaryOperators = unaryOperators.stream().map(String::toLowerCase).collect(Collectors.toSet());
 			
 			this.binaryOperators = binaryOperators;
 			this.unaryOperators = unaryOperators;

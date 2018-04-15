@@ -83,7 +83,7 @@ public class SQFCommandPageProvider {
 		
 		final Pattern continuePattern = Pattern.compile("cmcontinue.*?\\n");
 		
-		String content = SQFCommandCollector.getSite(requestURL);
+		String content = SQFCommandCollector.getSite(requestURL, true);
 		// gather the complete list
 		while (content.contains("cmcontinue")) {
 			siteContent.append(content);
@@ -94,11 +94,11 @@ public class SQFCommandPageProvider {
 			
 			final String cont = content
 					.substring(matcher.start(), matcher.end()).replace("\"", "")
-					.replace(" ", "").replace(":", "=");
+					.replace(" ", "").replace(":", "=").replace(",", "");
 			
 			requestURL = new URL(base + "&" + cont);
 			
-			content = SQFCommandCollector.getSite(requestURL);
+			content = SQFCommandCollector.getSite(requestURL, true);
 		}
 		
 		siteContent.append(content);
@@ -133,18 +133,18 @@ public class SQFCommandPageProvider {
 			urlSearchAdress.setLength(urlSearchAdress.length() - 1);
 			
 			urlPageContent.append(SQFCommandCollector
-					.getSite(new URL(urlSearchAdress.toString())));
+					.getSite(new URL(urlSearchAdress.toString()), true));
 		}
 		
 		// strip out the actual URLs from this page
 		commandURLs = new Stack<URL>();
 		
 		final Matcher urlMatcher = Pattern
-				.compile("\"fullurl\":\\s\"<a\\shref=\".*?\">")
+				.compile("\"fullurl\":\\s*\".*?\",")
 				.matcher(urlPageContent.toString());
 		while (urlMatcher.find()) {
 			commandURLs.add(new URL(urlPageContent
-					.substring(urlMatcher.start() + 21, urlMatcher.end() - 2)));
+					.substring(urlMatcher.start() + 10, urlMatcher.end() - 1).replace("\"", "").trim()));
 		}
 	}
 	

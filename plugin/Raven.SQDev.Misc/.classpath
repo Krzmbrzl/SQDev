@@ -4,5 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="ANTLR/antlr-runtime-4.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="SQFParser/SQFParser.jar"/>
+	<classpathentry exported="true" kind="lib" path="Abego/AbegoSWT.jar"/>
+	<classpathentry exported="true" kind="lib" path="Abego/org.abego.treelayout.core-1.0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

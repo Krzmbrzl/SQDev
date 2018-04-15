@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Editors
 Bundle-SymbolicName: raven.sqdev.editors;singleton:=true
-Bundle-Version: 0.7.1.stable
+Bundle-Version: 0.7.2.stable
 Bundle-Activator: raven.sqdev.editors.activator.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -42,6 +42,5 @@ Import-Package: raven.sqdev.constants,
  raven.sqdev.parser.misc,
  raven.sqdev.parser.preprocessor,
  raven.sqdev.pluginManagement,
- raven.sqdev.pluginManager,
  raven.sqdev.sqdevFile,
  raven.sqdev.util

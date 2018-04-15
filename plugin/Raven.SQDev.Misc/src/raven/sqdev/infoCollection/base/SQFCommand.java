@@ -755,7 +755,7 @@ public class SQFCommand extends SQFElement {
 			format = format.substring(0, format.length() - RETURN_VALUE_SYNTAX_SEPERATOR.length());
 		}
 		
-		format += RETURNVALUE_END_SAVESEQUENCE;
+		format += "\n" + RETURNVALUE_END_SAVESEQUENCE;
 		
 		return format;
 	}

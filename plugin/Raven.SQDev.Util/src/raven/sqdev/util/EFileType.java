@@ -1,6 +1,8 @@
 package raven.sqdev.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -167,7 +169,6 @@ public enum EFileType {
 		
 		@Override
 		public String getInitialContent() {
-			// TODO Auto-generated method stub
 			return "";
 		}
 	},
@@ -183,7 +184,6 @@ public enum EFileType {
 		
 		@Override
 		public String getInitialContent() {
-			// TODO Auto-generated method stub
 			return "";
 		}
 	},
@@ -287,7 +287,7 @@ public enum EFileType {
 	 *            For {@linkplain #SQDEV} it has to be of type
 	 *            {@link ESQDevFileType}
 	 * @param open
-	 *            Indicates whether the file should be dirctly opened in the
+	 *            Indicates whether the file should be directly opened in the
 	 *            respective editor
 	 * @see ESQDevFileType
 	 */
@@ -306,7 +306,8 @@ public enum EFileType {
 					
 					// get the container where the file should be created
 					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-					IResource resource = root.findMember(getPath());
+					IPath path = getPath();
+					IResource resource = root.findMember(path);
 					
 					if (resource instanceof IContainer) {
 						IContainer container = (IContainer) resource;
@@ -337,8 +338,7 @@ public enum EFileType {
 								}
 							}
 						} else {
-							// report that the file does already exist (in UI
-							// thread)
+							// report that the file does already exist (in UI thread)
 							SQDevInfobox info = new SQDevInfobox("Can't create file \""
 									+ getFileName() + "\" because it already exists!",
 									SWT.ICON_ERROR);
@@ -349,6 +349,25 @@ public enum EFileType {
 						// store the file
 						setFile(file);
 					} else {
+						if(resource == null && path.isAbsolute()) {
+							// The file is going to be created outside of eclipse's workspace
+							IPath filePath = path.append(getFileName());
+							File file = filePath.toFile();
+							if (!file.exists()) {
+								// create the file with the respective initial content
+								Files.copy(getInitialContentStream(), file.toPath());
+								
+								// create an IFile that links to the actual file								
+								setFile(root.getFileForLocation(filePath));
+							} else {
+								// report that the file does already exist (in UI thread)
+								SQDevInfobox info = new SQDevInfobox("Can't create file \""
+										+ getFileName() + "\" because it already exists!",
+										SWT.ICON_ERROR);
+								
+								info.open();
+							}
+						} else {
 						try {
 							throw new FailedAtCreatingFileException(
 									"Specified resource is not a container!");
@@ -359,6 +378,7 @@ public enum EFileType {
 									"Failed at creating file \"" + getFileName() + "\"!", e);
 							
 							info.open();
+						}
 						}
 					}
 					
@@ -531,19 +551,6 @@ public enum EFileType {
 					// make path relative to the workspace
 					detectedPath = detectedPath
 							.makeRelativeTo(root.getRawLocation().makeAbsolute());
-				}
-				
-				// check that the container referenced by this path exists
-				if (root.findMember(detectedPath) == null) {
-					try {
-						throw new FailedAtCreatingFileException(
-								"Couldn't find specified container in the workspace!");
-					} catch (FailedAtCreatingFileException e) {
-						e.printStackTrace();
-						
-						// can't procede -> kill process
-						throw new RuntimeException(e);
-					}
 				}
 				
 				// pass value to the respective AtomicReference
