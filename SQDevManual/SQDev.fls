@@ -1,4 +1,4 @@
-PWD /Data/home/robert/Documents/GitHub/SQDev/SQDevManual
+PWD /Data/home/robert/Documents/Git/SQDev/SQDevManual
 INPUT /usr/local/texlive/2017/texmf-var/web2c/luatex/lualatex.fmt
 INPUT ./SQDev.tex
 OUTPUT SQDev.log
@@ -265,6 +265,12 @@ INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/svg/svg.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/svg/svg.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/tools/shellesc.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/tools/shellesc.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/catchfile.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/catchfile.sty
+INPUT ./SQDev.w18
+INPUT ./SQDev.w18
 INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/transparent.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/transparent.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/tools/multicol.sty
@@ -402,6 +408,12 @@ INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/tools/xspace.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/generic/chemfig/chemfig.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/generic/chemfig/chemfig.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/generic/chemfig/chemfig.tex
+INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/booktabs/booktabs.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/booktabs/booktabs.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/makecell/makecell.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/makecell/makecell.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/tools/array.sty
+INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/tools/array.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/menukeys/menukeys.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/latex/menukeys/menukeys.sty
 INPUT /usr/local/texlive/2017/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarycalc.code.tex

@@ -1,5 +1,5 @@
-This is LuaTeX, Version 1.0.4 (TeX Live 2017)  (format=lualatex 2018.4.7)  7 APR 2018 14:27
- restricted system commands enabled.
+This is LuaTeX, Version 1.0.4 (TeX Live 2017)  (format=lualatex 2018.4.29)  22 MAY 2018 16:29
+ system commands enabled.
 **SQDev.tex
 (./SQDev.tex
 LaTeX2e <2017-04-15>
@@ -34,7 +34,7 @@ Inserting `luaotfload.aux.set_capheight' at position 3 in `luaotfload.patch_font
 '.
 Inserting `luaotfload.rewrite_fontname' at position 4 in `luaotfload.patch_font'
 .
-luaotfload | main : initialization completed in 0.101 seconds
+luaotfload | main : initialization completed in 0.132 seconds
 Babel <3.18> and hyphenation patterns for 1 language(s) loaded.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/koma-script/scrbook.cls
 Document Class: scrbook 2017/09/07 v3.24 KOMA-Script document class (book)
@@ -2049,11 +2049,16 @@ Package: cancel 2013/04/12 v2.2 Cancel math terms
 Package: svg 2017/11/29 v2.01 (include SVG pictures)
 (/usr/local/texlive/2017/texmf-dist/tex/latex/tools/shellesc.sty
 Package: shellesc 2016/06/07 v0.02a unified shell escape interface for LaTeX
-Package shellesc Info: Restricted shell escape enabled on input line 69.
+Package shellesc Info: Unrestricted shell escape enabled on input line 67.
 )
 \c@svg@param@lastpage=\count406
 \c@svg@param@currpage=\count407
-) (/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/transparent.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/ifplatform/ifplatform.sty
+Package: ifplatform 2017/10/13 v0.4a Testing for the operating system
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/catchfile.sty
+Package: catchfile 2016/05/16 v1.7 Catch the contents of a file (HO)
+) (./SQDev.w18))) (/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/transp
+arent.sty
 Package: transparent 2016/05/16 v1.1 Transparency via pdfTeX's color stack (HO)
 
 Package transparent Warning: Your pdfTeX version does not support color stacks.
@@ -2913,8 +2918,40 @@ al/texlive/2017/texmf-dist/tex/generic/chemfig/chemfig.tex
 \CF@arrow@size=\dimen330
 )
 Package: chemfig 2017/05/20 v1.2e Draw molecule with an easy syntax
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2016/04/27 v1.618033 publication quality tables
+\heavyrulewidth=\dimen331
+\lightrulewidth=\dimen332
+\cmidrulewidth=\dimen333
+\belowrulesep=\dimen334
+\belowbottomsep=\dimen335
+\aboverulesep=\dimen336
+\abovetopsep=\dimen337
+\cmidrulesep=\dimen338
+\cmidrulekern=\dimen339
+\defaultaddspace=\dimen340
+\@cmidla=\count459
+\@cmidlb=\count460
+\@aboverulesep=\dimen341
+\@belowrulesep=\dimen342
+\@thisruleclass=\count461
+\@lastruleclass=\count462
+\@thisrulewidth=\dimen343
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/makecell/makecell.sty
+Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/array.sty
+Package: array 2016/10/06 v2.4d Tabular extension package (FMi)
+\col@sep=\dimen344
+\extrarowheight=\dimen345
+\NC@list=\toks43
+\extratabsurround=\skip96
+\backup@length=\skip97
 )
-LaTeX Info: Redefining \S on input line 94.
+\rotheadsize=\dimen346
+\c@nlinenum=\count463
+\TeXr@lab=\toks44
+)
+LaTeX Info: Redefining \S on input line 93.
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/menukeys/menukeys.sty
 Package: menukeys 2016/08/08 v1.5 -- A package to format menus, paths and shortc
 uts
@@ -2948,10 +2985,10 @@ Package: adjustbox 2012/05/21 v1.0 Adjusting TeX boxes (trim, clip, ...)
 Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
 (/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkeyval.tex (/usr/local
 /texlive/2017/texmf-dist/tex/generic/xkeyval/xkvutils.tex
-\XKV@toks=\toks43
-\XKV@tempa@toks=\toks44
+\XKV@toks=\toks45
+\XKV@tempa@toks=\toks46
 )
-\XKV@depth=\count459
+\XKV@depth=\count464
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 )) (/usr/local/texlive/2017/texmf-dist/tex/latex/adjustbox/adjcalc.sty
 Package: adjcalc 2012/05/16 v1.1 Provides advanced setlength with multiple back-
@@ -2962,42 +2999,42 @@ Package: trimclip 2012/05/16 v1.0 Trim and clip general TeX material
 Package: collectbox 2012/05/17 v0.4b Collect macro arguments as boxes
 \collectedbox=\box107
 )
-\tc@llx=\dimen331
-\tc@lly=\dimen332
-\tc@urx=\dimen333
-\tc@ury=\dimen334
+\tc@llx=\dimen347
+\tc@lly=\dimen348
+\tc@urx=\dimen349
+\tc@ury=\dimen350
 (/usr/local/texlive/2017/texmf-dist/tex/latex/adjustbox/tc-pgf.def
 File: tc-pgf.def 2012/05/13 v1.0 trimclip fall-back clipping driver using PGF
 )
 Package trimclip Info: No clipping driver 'tc-luatex.def' available.
 (trimclip)             Using fall-back PGF driver.
 )
-\adjbox@Width=\dimen335
-\adjbox@Height=\dimen336
-\adjbox@Depth=\dimen337
-\adjbox@Totalheight=\dimen338
+\adjbox@Width=\dimen351
+\adjbox@Height=\dimen352
+\adjbox@Depth=\dimen353
+\adjbox@Totalheight=\dimen354
 (/usr/local/texlive/2017/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty
 Package: ifoddpage 2016/04/23 v1.1 Conditionals for odd/even page detection
-\c@checkoddpage=\count460
+\c@checkoddpage=\count465
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/varwidth/varwidth.sty
 Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
 \@vwid@box=\box108
-\sift@deathcycles=\count461
-\@vwid@loff=\dimen339
-\@vwid@roff=\dimen340
+\sift@deathcycles=\count466
+\@vwid@loff=\dimen355
+\@vwid@roff=\dimen356
 )) (/usr/local/texlive/2017/texmf-dist/tex/latex/relsize/relsize.sty
 Package: relsize 2013/03/29 ver 4.1
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/catoptions/catoptions.sty
-\m@one=\count462
-\z@pt=\dimen341
+\m@one=\count467
+\z@pt=\dimen357
 Package: catoptions 2014/08/29 v0.2.7h Securing catcodes and parsing options (AM
 )
-\cpt@csvdepth=\count463
-\cpt@optdepth=\count464
-\cpt@cnta=\count465
-\indrisdepth=\count466
-\cpt@foreachdepth=\count467
-\cpt@exprcnt=\count468
+\cpt@csvdepth=\count468
+\cpt@optdepth=\count469
+\cpt@cnta=\count470
+\indrisdepth=\count471
+\cpt@foreachdepth=\count472
+\cpt@exprcnt=\count473
 )
 .................................................
 . LaTeX info: "xparse/define-command"
@@ -3069,7 +3106,7 @@ Package: catoptions 2014/08/29 v0.2.7h Securing catcodes and parsing options (AM
 . 
 . Defining command \changemenuelement with sig. 's m m m' on line 310.
 .................................................
-\c@tw@hyphen@char@num=\count469
+\c@tw@hyphen@char@num=\count474
 .................................................
 . LaTeX info: "xparse/define-command"
 . 
@@ -3124,14 +3161,14 @@ Class scrbook Warning: Usage of package `titlesec' together
 (/usr/local/texlive/2017/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2016/03/21 v2.10.2 Sectioning titles
 \ttl@box=\box109
-\beforetitleunit=\skip96
-\aftertitleunit=\skip97
-\ttl@plus=\dimen342
-\ttl@minus=\dimen343
-\ttl@toksa=\toks45
-\titlewidth=\dimen344
-\titlewidthlast=\dimen345
-\titlewidthfirst=\dimen346
+\beforetitleunit=\skip98
+\aftertitleunit=\skip99
+\ttl@plus=\dimen358
+\ttl@minus=\dimen359
+\ttl@toksa=\toks47
+\titlewidth=\dimen360
+\titlewidthlast=\dimen361
+\titlewidthfirst=\dimen362
 
 Package titlesec Warning: Non standard sectioning command detected
 (titlesec)                Using default spacing and no format.
@@ -3158,22 +3195,22 @@ Class scrbook Warning: Activating an ugly workaround for a missing
 (scrbook)              feature of package `titlesec` on input line 9.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count470
+\lst@mode=\count475
 \lst@gtempboxa=\box110
-\lst@token=\toks46
-\lst@length=\count471
-\lst@currlwidth=\dimen347
-\lst@column=\count472
-\lst@pos=\count473
-\lst@lostspace=\dimen348
-\lst@width=\dimen349
-\lst@newlines=\count474
-\lst@lineno=\count475
-\lst@maxwidth=\dimen350
+\lst@token=\toks48
+\lst@length=\count476
+\lst@currlwidth=\dimen363
+\lst@column=\count477
+\lst@pos=\count478
+\lst@lostspace=\dimen364
+\lst@width=\dimen365
+\lst@newlines=\count479
+\lst@lineno=\count480
+\lst@maxwidth=\dimen366
 (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
-\c@lstnumber=\count476
-\lst@skipnumbers=\count477
+\c@lstnumber=\count481
+\lst@skipnumbers=\count482
 \lst@framebox=\box111
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2015/06/04 1.6 listings configuration
@@ -3181,18 +3218,18 @@ File: listings.cfg 2015/06/04 1.6 listings configuration
 Package: listings 2015/06/04 1.6 (Carsten Heinz)
 (/usr/local/texlive/2017/texmf-dist/tex/latex/soul/soul.sty
 Package: soul 2003/11/17 v2.4 letterspacing/underlining (mf)
-\SOUL@word=\toks47
-\SOUL@lasttoken=\toks48
-\SOUL@cmds=\toks49
-\SOUL@buffer=\toks50
-\SOUL@token=\toks51
-\SOUL@spaceskip=\skip98
-\SOUL@ttwidth=\dimen351
-\SOUL@uldp=\dimen352
-\SOUL@ulht=\dimen353
+\SOUL@word=\toks49
+\SOUL@lasttoken=\toks50
+\SOUL@cmds=\toks51
+\SOUL@buffer=\toks52
+\SOUL@token=\toks53
+\SOUL@spaceskip=\skip100
+\SOUL@ttwidth=\dimen367
+\SOUL@uldp=\dimen368
+\SOUL@ulht=\dimen369
 )
-\myheight=\skip99
-\mydepth=\skip100
+\myheight=\skip101
+\mydepth=\skip102
 Package csquotes Info: Checking for multilingual support...
 Package csquotes Info: ... found 'babel' package.
 Package csquotes Info: Adjusting default style.
@@ -3237,17 +3274,17 @@ File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    ... okay on input line 66.
 (/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count478
-\scratchdimen=\dimen354
+\scratchcounter=\count483
+\scratchdimen=\dimen370
 \scratchbox=\box112
-\nofMPsegments=\count479
-\nofMParguments=\count480
-\everyMPshowfont=\toks52
-\MPscratchCnt=\count481
-\MPscratchDim=\dimen355
-\MPnumerator=\count482
-\makeMPintoPDFobject=\count483
-\everyMPtoPDFconversion=\toks53
+\nofMPsegments=\count484
+\nofMParguments=\count485
+\everyMPshowfont=\toks54
+\MPscratchCnt=\count486
+\MPscratchDim=\dimen371
+\MPnumerator=\count487
+\makeMPintoPDFobject=\count488
+\everyMPtoPDFconversion=\toks55
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
 (/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/grfext.sty
@@ -3270,7 +3307,7 @@ Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 (/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count484
+\c@section@level=\count489
 )
 LaTeX Info: Redefining \ref on input line 66.
 LaTeX Info: Redefining \pageref on input line 66.
@@ -3308,7 +3345,7 @@ ck labels; missing features). Consider writing \pgfplotsset{compat=1.15} into yo
 ur preamble.
  on input line 66.
 
-\c@lstlisting=\count485
+\c@lstlisting=\count490
 (load luc: /home/robert/.texlive2017/texmf-var/luatex-cache/generic/fonts/otl/lm
 sans12-regular.luc)(load luc: /home/robert/.texlive2017/texmf-var/luatex-cache/g
 eneric/fonts/otl/lmsans10-bold.luc)(load luc: /home/robert/.texlive2017/texmf-va
@@ -3487,11 +3524,11 @@ chapter 8.
 
 
 ] [35] [36] [37] [38] [39] [40]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 978.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 978.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 984.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 984.
 (./SQDev.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 978.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 978.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 984.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 984.
 Package rerunfilecheck Info: File `SQDev.out' has not changed.
 (rerunfilecheck)             Checksum: 5887239FD02B8600567119C5B6F02E72;2679.
 Package logreq Info: Writing requests to 'SQDev.run.xml'.
@@ -3500,17 +3537,17 @@ Package logreq Info: Writing requests to 'SQDev.run.xml'.
 )
 
 Here is how much of LuaTeX's memory you used:
- 57436 strings out of 494480
- 244182,2373549 words of node,token memory allocated
- 1084 words of node memory still in use:
-   15 hlist, 2 vlist, 10 rule, 2 glue, 1 kern, 3 glyph, 52 attribute, 83 glue_sp
+ 57796 strings out of 494480
+ 244187,2373549 words of node,token memory allocated
+ 1089 words of node memory still in use:
+   15 hlist, 2 vlist, 10 rule, 2 glue, 1 kern, 3 glyph, 52 attribute, 84 glue_sp
 ec, 52 attribute_list, 1 write, 16 pdf_literal, 2 pdf_action, 16 pdf_colorstack 
 nodes
-   avail lists: 1:18,2:5099,3:879,4:91,5:5572,6:2407,7:7969,8:3130,9:8117,10:30,
-11:596,12:2
- 59624 multiletter control sequences out of 65536+600000
+   avail lists: 1:15,2:5241,3:875,4:87,5:5727,6:2408,7:8019,8:3214,9:8338,10:30,
+11:611,12:2
+ 59940 multiletter control sequences out of 65536+600000
  64 fonts using 9303583 bytes
- 73i,15n,106p,8815b,2196s stack positions out of 5000i,500n,10000p,200000b,100000s
+ 73i,15n,106p,8815b,2194s stack positions out of 5000i,500n,10000p,200000b,100000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}</usr/local
 /texlive/2017/texmf-dist/fonts/opentype/public/lm/lmroman8-regular.otf></usr/loc
 al/texlive/2017/texmf-dist/fonts/opentype/public/lm/lmmonolt10-bold.otf></usr/lo
@@ -3525,10 +3562,10 @@ gular.otf></usr/local/texlive/2017/texmf-dist/fonts/opentype/public/lm/lmroman17
 -regular.otf></usr/local/texlive/2017/texmf-dist/fonts/opentype/public/lm/lmsans
 10-bold.otf></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy10.pfb
 >
-Output written on SQDev.pdf (45 pages, 391222 bytes).
+Output written on SQDev.pdf (45 pages, 390924 bytes).
 
-PDF statistics: 797 PDF objects out of 1000 (max. 8388607)
- 685 compressed objects within 7 object streams
- 275 named destinations out of 1000 (max. 131072)
+PDF statistics: 799 PDF objects out of 1000 (max. 8388607)
+ 687 compressed objects within 7 object streams
+ 277 named destinations out of 1000 (max. 131072)
  496 words of extra memory for PDF output out of 10000 (max. 100000000)
 
