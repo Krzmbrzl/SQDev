@@ -24,8 +24,8 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 	public void init(IWorkbench workbench) {
 		setDescription("Preferences changing the appearance of the editor");
 		
-		// preferences for the behaviour
-		Group behaviour = createGroup("Behaviour");
+		// preferences for the behavior
+		Group behaviour = createGroup("Behavior");
 		
 		createDescription(behaviour,
 				"Here you can change the behaviour of the editor");
@@ -114,6 +114,20 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				"Defines the color in which matching bracket pairs are highlighted",
 				colors);
 		addPreferenceEditor(matchingBracketHighlightingColorEditor);
+		
+		ColorSQDevPreferenceEditor stringHighlightingColorEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_STRINGHIGHLIGHTING_COLOR_KEY,
+				"&String highlighting:",
+				"Defines the color in which Strings are highlighted",
+				colors);
+		addPreferenceEditor(stringHighlightingColorEditor);
+		
+		ColorSQDevPreferenceEditor commentHighlightingColorEditor = new ColorSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_EDITOR_COMMENTHIGHLIGHTING_COLOR_KEY,
+				"&Comment highlighting:",
+				"Defines the color in which comments are highlighted",
+				colors);
+		addPreferenceEditor(commentHighlightingColorEditor);
 	}
 	
 }

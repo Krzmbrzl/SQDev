@@ -23,7 +23,6 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
-import raven.sqdev.constants.ISQDevColorConstants;
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.misc.SQDevPreferenceUtil;
@@ -248,7 +247,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration im
 		if (containsString) {
 			// colorize strings
 			NonRuleBasedDamagerRepairer ndr_String = new NonRuleBasedDamagerRepairer(
-					new TextAttribute(colorManager.getColor(ISQDevColorConstants.STRING)));
+					new TextAttribute(SQDevPreferenceUtil.getStringHighlightingColor()));
 			reconciler.setDamager(ndr_String, BasicPartitionScanner.BASIC_STRING);
 			reconciler.setRepairer(ndr_String, BasicPartitionScanner.BASIC_STRING);
 		}
@@ -256,7 +255,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration im
 		if (containsComment) {
 			// colorize comments
 			NonRuleBasedDamagerRepairer ndr_Comment = new NonRuleBasedDamagerRepairer(
-					new TextAttribute(colorManager.getColor(ISQDevColorConstants.COMMENT)));
+					new TextAttribute(SQDevPreferenceUtil.getCommentHighlightingColor()));
 			reconciler.setDamager(ndr_Comment, BasicPartitionScanner.BASIC_COMMENT);
 			reconciler.setRepairer(ndr_Comment, BasicPartitionScanner.BASIC_COMMENT);
 		}
@@ -300,6 +299,11 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration im
 		switch (event.getProperty()) {
 		case SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY:
 			assistant.enableAutoActivation((boolean) event.getNewValue());
+			break;
+			
+		case SQDevPreferenceConstants.SQDEV_EDITOR_STRINGHIGHLIGHTING_COLOR_KEY:
+		case SQDevPreferenceConstants.SQDEV_EDITOR_COMMENTHIGHLIGHTING_COLOR_KEY:
+			editor.update(false);
 			break;
 
 		default:
