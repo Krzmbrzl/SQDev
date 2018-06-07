@@ -25,13 +25,13 @@ import raven.sqdev.pluginManagement.SQDevPluginManager;
  * 
  */
 public class SQDevPreferenceUtil {
-	
+
 	/**
 	 * The seperator that is placed in between the different Strings in the
 	 * Preferences
 	 */
 	public static final String STRING_SEPERATOR = "_#%NextString%#_";
-	
+
 	/**
 	 * Gets the Bundle of the <code>raven.sqdev.preferences</code> plugin
 	 * 
@@ -40,98 +40,88 @@ public class SQDevPreferenceUtil {
 	public static Bundle getPreferenceBundle() {
 		return Platform.getBundle("raven.sqdev.preferences");
 	}
-	
+
 	/**
 	 * Gets the preferences for the SQDev plugin
 	 * 
 	 * @return
 	 */
 	public static IEclipsePreferences getPreferences() {
-		IEclipsePreferences preferences = InstanceScope.INSTANCE
-				.getNode("raven.sqdev.preferences");
-		
+		IEclipsePreferences preferences = InstanceScope.INSTANCE.getNode("raven.sqdev.preferences");
+
 		// check that preferences have been found
-		Assert.isNotNull(preferences,
-				"The requested preference can not be resolved!");
-		
+		Assert.isNotNull(preferences, "The requested preference can not be resolved!");
+
 		return preferences;
 	}
-	
+
 	/**
 	 * Gets the preference store
 	 * 
 	 * @return
 	 */
 	public static IPreferenceStore getPreferenceStore() {
-		return SQDevPluginManager.getManager().get("raven.sqdev.preferences")
-				.getPreferenceStore();
+		return SQDevPluginManager.getManager().get("raven.sqdev.preferences").getPreferenceStore();
 	}
-	
+
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_ALWAYS_SAVE_ON_EXIT</code>
-	 * preference that indicates whether the preference page shall prompt for
-	 * save when clicking OK
+	 * <code>SQDevPreferenceConstants.SQDEV_ALWAYS_SAVE_ON_EXIT</code> preference
+	 * that indicates whether the preference page shall prompt for save when
+	 * clicking OK
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean alwaysSaveOnExit() {
-		return getPreferenceStore().getBoolean(
-				SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT);
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_PROMPT_ALWAYS_SAVE_ON_EXIT);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION</code>
-	 * preference that indicates whether the user should be prompted to validate
-	 * a deletion he initialized
+	 * preference that indicates whether the user should be prompted to validate a
+	 * deletion he initialized
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean promptUserValidationForDeletion() {
-		return getPreferenceStore().getBoolean(
-				SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION);
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_PROMPT_ASK_FOR_DELETION);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_ARMA_DOCUMENTS_DIRECTORY</code>
-	 * preference that holds the path to the ArmA folder in the documents
-	 * directory
+	 * preference that holds the path to the ArmA folder in the documents directory
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getArmaDocumentsDirectory() {
-		String path = getPreferenceStore().getString(
-				SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY);
-		
+		String path = getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_INFO_ARMA_DOCUMENTS_DIRECTORY);
+
 		if (path.isEmpty()) {
-			SQDevInfobox info = new SQDevInfobox(
-					"Invalid document's directory in preference!",
-					SWT.ICON_ERROR, false);
+			SQDevInfobox info = new SQDevInfobox("Invalid document's directory in preference!", SWT.ICON_ERROR, false);
 			info.open(false);
 		}
-		
+
 		return path;
 	}
-	
+
 	/**
-	 * Get the path to the default directory in the documents coresponding to
-	 * the default user profile
+	 * Get the path to the default directory in the documents coresponding to the
+	 * default user profile
 	 */
 	public static String getDefaultDocumentsDirectory() {
 		IPath path = new Path(getArmaDocumentsDirectory());
-		
+
 		path.append("Arma 3");
-		
+
 		if (path.toFile().exists()) {
 			return path.toOSString();
 		} else {
-			throw new SQDevCoreException(
-					"Can't find the default user directory");
+			throw new SQDevCoreException("Can't find the default user directory");
 		}
 	}
-	
+
 	/**
 	 * Gets the path to the profile's directory in myDocuments<br>
 	 * If {@link #getArmaDocumentsDirectory()} returns an invalid (e.g. empty)
@@ -143,77 +133,70 @@ public class SQDevPreferenceUtil {
 	 */
 	public static String getProfilesDocumentDirectory() {
 		IPath path = new Path(getArmaDocumentsDirectory());
-		
+
 		if (path.segmentCount() == 0) {
 			return "";
 		}
-		
+
 		path = path.append("Arma 3 - Other Profiles");
-		
+
 		if (!path.toFile().exists()) {
 			return "";
 		} else {
 			return path.toOSString();
 		}
 	}
-	
+
 	/**
-	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_RPT_PATH</code> preference that
-	 * holds the path to the folder ArmA stores it's RPTs
+	 * Gets the value of the <code>SQDevPreferenceConstants.SQDEV_RPT_PATH</code>
+	 * preference that holds the path to the folder ArmA stores it's RPTs
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getRPTDirectory() {
-		String path = getPreferenceStore().getString(
-				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_RPT_PATH);
-		
+		String path = getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_RPT_PATH);
+
 		if (path.isEmpty()) {
-			SQDevInfobox info = new SQDevInfobox(
-					"Invalid RPT directory in preference!", SWT.ICON_ERROR,
-					false);
+			SQDevInfobox info = new SQDevInfobox("Invalid RPT directory in preference!", SWT.ICON_ERROR, false);
 			info.open(false);
 		}
-		
+
 		return path;
 	}
-	
+
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT</code>
-	 * preference that indicates whether the RPT content should be formatted
-	 * before being displayed
+	 * <code>SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT</code> preference
+	 * that indicates whether the RPT content should be formatted before being
+	 * displayed
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean doFormatRPTContent() {
-		return getPreferenceStore().getBoolean(
-				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT);
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES</code>
-	 * preference that stores all the prefixes od the lines that should be
-	 * removed during formatting
+	 * preference that stores all the prefixes od the lines that should be removed
+	 * during formatting
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static ArrayList<String> getRPTFormatPrefixes() {
 		ArrayList<String> list = new ArrayList<String>();
-		
+
 		for (String current : getPreferenceStore()
-				.getString(
-						SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES)
-				.split(STRING_SEPERATOR)) {
+				.getString(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_FORMAT_PREFIXES).split(STRING_SEPERATOR)) {
 			if (!current.isEmpty()) {
 				list.add(current);
 			}
 		}
-		
+
 		return list;
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION</code>
@@ -223,36 +206,31 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static int getMaximumBlankLinesInRPT() {
-		return getPreferenceStore().getInt(
-				SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION);
+		return getPreferenceStore().getInt(SQDevPreferenceConstants.SQDEV_VIEWS_RPTVIEWER_MAX_BLANK_REPETITION);
 	}
-	
+
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY</code>
-	 * preference that holds the path to the ArmA folder in the programs
-	 * directory
+	 * <code>SQDevPreferenceConstants.SQDEV_ARMA_MAIN_DIRECTORY</code> preference
+	 * that holds the path to the ArmA folder in the programs directory
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getArmaProgramDirectory() {
-		return getPreferenceStore().getString(
-				SQDevPreferenceConstants.SQDEV_INFO_ARMA_MAIN_DIRECTORY);
+		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_INFO_ARMA_MAIN_DIRECTORY);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY</code>
-	 * preference that indicates whether matching brackets should get
-	 * highlighted
+	 * preference that indicates whether matching brackets should get highlighted
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean areMatchingBracketsShown() {
-		return getPreferenceStore().getBoolean(
-				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY);
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_KEY);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY</code>
@@ -261,23 +239,21 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean isCurrentLineHighlighted() {
-		return getPreferenceStore().getBoolean(
-				SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY);
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_KEY);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY</code>
-	 * preference that indicates whether the content assist will insert the
-	 * proposal automatically when there is only one proposal
+	 * preference that indicates whether the content assist will insert the proposal
+	 * automatically when there is only one proposal
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean isAutoCompleteEnabled() {
-		return getPreferenceStore().getBoolean(
-				SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY);
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY</code>
@@ -286,11 +262,10 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static Color getMatchingBracketHighlightingColor() {
-		return new Color(Display.getCurrent(),
-				ColorUtils.decodeRGB(getPreferenceStore().getString(
-						SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY)));
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(
+				getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY)));
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY</code>
@@ -299,24 +274,46 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static Color getCurrentLineHighlightingColor() {
-		return new Color(Display.getCurrent(),
-				ColorUtils.decodeRGB(getPreferenceStore().getString(
-						SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY)));
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(
+				getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_EDITOR_HIGHLIGHT_CURRENTLINE_COLOR_KEY)));
 	}
-	
+
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_SYNTAXHIGHLIGHTING_COLOR_KEY</code>
-	 * preference that defines the color for the hihlighting of keywords
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY</code>
+	 * preference that defines the color for the highlighting of keywords
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static Color getSyntaxHighlightingColor() {
-		return new Color(Display.getCurrent(),
-				ColorUtils.decodeRGB(getPreferenceStore().getString(
-						SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)));
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(
+				getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY)));
 	}
-	
+
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_COMMENTHIGHLIGHTING_COLOR_KEY</code>
+	 * preference that defines the color for the highlighting of keywords
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static Color getCommentHighlightingColor() {
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(
+				getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_EDITOR_COMMENTHIGHLIGHTING_COLOR_KEY)));
+	}
+
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_STRINGHIGHLIGHTING_COLOR_KEY</code>
+	 * preference that defines the color for the highlighting of Strings
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static Color getStringHighlightingColor() {
+		return new Color(Display.getCurrent(), ColorUtils.decodeRGB(
+				getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_EDITOR_STRINGHIGHLIGHTING_COLOR_KEY)));
+	}
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY</code> preference
@@ -325,23 +322,21 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static int getParseDelay() {
-		return getPreferenceStore()
-				.getInt(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY);
+		return getPreferenceStore().getInt(SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY);
 	}
-	
+
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN</code> preference
-	 * that indicates whether a directory should get cleaned without asking for
+	 * <code>SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN</code> preference that
+	 * indicates whether a directory should get cleaned without asking for
 	 * permission when exporting a project
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean autoClean() {
-		return getPreferenceStore()
-				.getBoolean(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN);
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT</code>
@@ -350,45 +345,42 @@ public class SQDevPreferenceUtil {
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static boolean getAutoExportDefaultEnabled() {
-		return getPreferenceStore().getBoolean(
-				SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT);
+		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT);
 	}
-	
+
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE</code>
-	 * preference that holds the default profile
+	 * <code>SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE</code> preference
+	 * that holds the default profile
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getDefaultProfile() {
-		return getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE);
+		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_PROFILE);
 	}
-	
+
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN</code>
-	 * preference that holds the default terrain
+	 * <code>SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN</code> preference
+	 * that holds the default terrain
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getDefaultTerrain() {
-		return getPreferenceStore()
-				.getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN);
+		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_TERRAIN);
 	}
-	
+
 	/**
 	 * Gets the value of the
-	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_API_ADRESS</code>
-	 * preference that holds the default terrain
+	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_API_ADRESS</code> preference
+	 * that holds the default terrain
 	 * 
 	 * @see {@linkplain SQDevPreferenceConstants}
 	 */
 	public static String getAPIAdress() {
 		return getPreferenceStore().getString(SQDevPreferenceConstants.SQDEV_COLLECTION_API_ADRESS);
 	}
-	
+
 	/**
 	 * Gets the value of the
 	 * <code>SQDevPreferenceConstants.SQDEV_COLLECTION_API_MAINPAGE</code>
