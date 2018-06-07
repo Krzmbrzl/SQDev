@@ -1,4 +1,7 @@
-*
+./*
+!./.
+!./..
 !images/
+!image/*
 !SQDev.tex
 !SQDev.pdf
