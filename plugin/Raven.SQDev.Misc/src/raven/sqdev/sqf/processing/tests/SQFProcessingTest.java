@@ -914,6 +914,17 @@ public class SQFProcessingTest {
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
 				new DataTypeList(EDataType.NOTHING)), it.next().getMessage());
 	}
+	
+	@Test
+	public void preprocessorTest() throws IOException {
+		macros.put("MYMACRO", new Macro("MYMACRO"));
+		ITreeProcessingResult result = ParseUtil
+				.parseAndProcessSQF(new ByteArrayInputStream("private _a = MYMACRO();".getBytes()), supplier, info);
+		
+		assertTrue(result.getMarkers().isEmpty());
+		
+		macros.clear();
+	}
 
 	@Test
 	public void snippets() throws IOException {
