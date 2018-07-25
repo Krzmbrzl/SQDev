@@ -24,7 +24,6 @@ import dataStructures.SQFTreeWalker;
 import lexer.SQFLexer;
 import parser.SQFParser;
 import raven.sqdev.infoCollection.base.Variable;
-import raven.sqdev.interfaces.IParseResult;
 import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.interfaces.ISQFParseSupplier;
 import raven.sqdev.interfaces.ITreeProcessingResult;
@@ -36,7 +35,6 @@ import raven.sqdev.parser.preprocessor.PreprocessorLexer;
 import raven.sqdev.parser.preprocessor.PreprocessorParseListener;
 import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
 import raven.sqdev.parser.preprocessor.PreprocessorParser;
-import raven.sqdev.parser.sqf.SQFInformation;
 import raven.sqdev.parser.sqf.SQFParseResultOld;
 import raven.sqdev.parser.sqf.SQFValidatorOLD;
 import raven.sqdev.sqf.processing.SQFProcessor;
@@ -310,6 +308,8 @@ public class ParseUtil {
 				"References the index of the current object in the iteration. Only available in a " + "forEach loop."));
 		magicVars.put("_thiseventhandler", new Variable("_thisEventHandler",
 				"References the current event handler. Only available inside an EventHandler"));
+		magicVars.put("_exception", new Variable("_exception",
+				"Contains the String passed to the throw-command and is only available inside the catch-block of a try-catch-structure"));
 
 		return magicVars;
 	}

@@ -19,7 +19,7 @@ public class SQFKeywordProvider extends BasicKeywordProvider {
 	 */
 	public SQFKeywordProvider() {
 		ResourceManager manager = ResourceManager.getManager();
-		String savedKeywords = manager.getResourceContent("SQFKeywords.txt");
+		String savedKeywords = manager.getResourceContent(ResourceManager.KEYWORDS_RESOURCE);
 		
 		if (savedKeywords == null) {
 			setKeywordList(new KeywordList());

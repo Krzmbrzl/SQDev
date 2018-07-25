@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +60,11 @@ public class SQFProcessor implements ISQFTreeListener {
 	 */
 	protected TreeProcessingResult result;
 	/**
-	 * The set of so far declared variables. All names are in lowercase
+	 * The set of so far declared variables. The key has to be the name all in
+	 * lowercase whereas the value is the name in the casing as it occurs in the
+	 * code. Exception from that are macros assembling a variable name
 	 */
-	protected HashSet<String> declaredVariables;
+	protected Map<String, String> declaredVariables;
 	/**
 	 * The object holding all necessary meta-information
 	 */
@@ -96,7 +97,7 @@ public class SQFProcessor implements ISQFTreeListener {
 		assert (result != null);
 		assert (tokenBuffer != null);
 
-		declaredVariables = new HashSet<>();
+		declaredVariables = new HashMap<>();
 		this.result = result;
 		this.sqfInformation = info;
 		this.tokenBuffer = tokenBuffer;
@@ -121,7 +122,7 @@ public class SQFProcessor implements ISQFTreeListener {
 		final String operatorNameLower = operatorName.toLowerCase();
 		SQFCommand operator = sqfInformation.getNularOperators().get(operatorNameLower);
 
-		if (!declaredVariables.contains(operatorName.toLowerCase())
+		if (!declaredVariables.keySet().contains(operatorName.toLowerCase())
 				&& !sqfInformation.getMagicVariables().keySet().contains(operatorNameLower)) {
 			if (operator == null && operatorName.startsWith("_")) {
 				// it is an unknown local variable -> error
@@ -141,7 +142,7 @@ public class SQFProcessor implements ISQFTreeListener {
 					if (operator == null && expression.type() == ESQFTokentype.ID) {
 						// this is an implicitly declared global variable
 						// TODO: potential error
-						declaredVariables.add(operatorName.toLowerCase());
+						declaredVariables.put(operatorName.toLowerCase(), operatorName);
 
 						// assume any type for variables
 						resolvedReturnValues.put(node, ANYTHING);
@@ -351,15 +352,17 @@ public class SQFProcessor implements ISQFTreeListener {
 	@Override
 	public void finished(IBuildableIndexTree tree) {
 		// add all found variables to the result
-		Iterator<String> varIterator = declaredVariables.iterator();
+		Iterator<String> varIterator = declaredVariables.keySet().iterator();
 
 		while (varIterator.hasNext()) {
-			Variable var = new Variable(varIterator.next());
+			String key = varIterator.next();
+			
+			Variable var = new Variable(declaredVariables.get(key));
 
 			if (var.isLocal()) {
-				result.getDeclaredLocalVariables().put(var.getKeyword(), var);
+				result.getDeclaredLocalVariables().put(key, var);
 			} else {
-				result.getDeclaredGlobalVariables().put(var.getKeyword(), var);
+				result.getDeclaredGlobalVariables().put(key, var);
 			}
 		}
 	}
@@ -426,7 +429,10 @@ public class SQFProcessor implements ISQFTreeListener {
 			if (varOperatorToken.operatorType() == ESQFOperatorType.MACRO) {
 				// handle macros assembling the variable name -> can't really validate -> assume
 				// it's valid
-				declaredVariables.add(getFullText(variableNode));
+				String varName = getFullText(variableNode);
+
+				// macros are case sensitive -> the casing of the key is also important
+				declaredVariables.put(varName, varName);
 				// abort as other checks and routines don't apply to macros
 				return;
 			}
@@ -456,7 +462,7 @@ public class SQFProcessor implements ISQFTreeListener {
 			return;
 		}
 		if (!isOperatorName(varName)) {
-			declaredVariables.add(varName.toLowerCase());
+			declaredVariables.put(varName.toLowerCase(), varName);
 		} else {
 			error(tokenBuffer.get(variableNode.getIndex()), ProblemMessages.reservedKeyword(varName));
 		}
@@ -856,7 +862,7 @@ public class SQFProcessor implements ISQFTreeListener {
 					}
 
 					if (!isOperatorName(varName)) {
-						declaredVariables.add(varName.toLowerCase());
+						declaredVariables.put(varName.toLowerCase(), varName);
 					} else {
 						error(argToken, ProblemMessages.reservedKeyword(varName));
 					}
@@ -1052,7 +1058,7 @@ public class SQFProcessor implements ISQFTreeListener {
 		}
 
 		if (!isOperatorName(varString)) {
-			declaredVariables.add(varString.toLowerCase());
+			declaredVariables.put(varString.toLowerCase(), varString);
 		} else {
 			error(token, ProblemMessages.reservedKeyword(varString));
 		}

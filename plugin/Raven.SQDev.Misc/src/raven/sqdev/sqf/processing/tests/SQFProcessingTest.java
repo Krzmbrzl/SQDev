@@ -250,6 +250,18 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
 		assertEquals(ProblemMessages.operatorIsNotNular("="), result.getMarkers().iterator().next().getMessage());
+		
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_a = _b".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.undefinedLocalVariable("_b"), result.getMarkers().iterator().next().getMessage());
+		
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_a = hint".getBytes()), supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 1);
+		assertTrue(result.getMarkers().size() == 1);
+		assertEquals(ProblemMessages.operatorIsNotNular("hint"), result.getMarkers().iterator().next().getMessage());
 	}
 
 	@Test
