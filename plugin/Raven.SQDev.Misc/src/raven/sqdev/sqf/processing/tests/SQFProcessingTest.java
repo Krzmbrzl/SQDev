@@ -116,13 +116,19 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.missingSemicolon("player"), result.getMarkers().iterator().next().getMessage());
+		Marker marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingSemicolon("player"), marker.getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("i=1 hint ''".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 1);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.missingSemicolon("1"), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingSemicolon("1"), marker.getMessage());
+		assertEquals(2, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(
 				new ByteArrayInputStream("player setPos getPos player disableSerialization".getBytes()), supplier,
@@ -130,14 +136,40 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.missingSemicolon("player"), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingSemicolon("player"), marker.getMessage());
+		assertEquals(26, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("call {3 disableSerialization}".getBytes()),
 				supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.missingSemicolon("3"), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingSemicolon("3"), marker.getMessage());
+		assertEquals(6, marker.getOffset());
+		assertEquals(1, marker.getLength());
+		
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("disableSerialization {}".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingSemicolon("disableSerialization"), marker.getMessage());
+		assertEquals(19, marker.getOffset());
+		assertEquals(1, marker.getLength());
+		
+		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("(disableSerialization) {}".getBytes()),
+				supplier, info);
+		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
+		assertTrue(result.getDeclaredLocalVariables().size() == 0);
+		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingSemicolon(")"), marker.getMessage());
+		assertEquals(21, marker.getOffset());
+		assertEquals(1, marker.getLength());
 	}
 
 	@Test
@@ -229,39 +261,56 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 2);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.missingSemicolon("someOperator"),
-				result.getMarkers().iterator().next().getMessage());
+		Marker marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingSemicolon("someOperator"), marker.getMessage());
+		assertEquals(11, marker.getOffset());
+		assertEquals(1, marker.getLength());
 		assertTrue(result.getDeclaredGlobalVariables().keySet().contains("myvar"));
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("player = 3".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.reservedKeyword("player"), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.reservedKeyword("player"), marker.getMessage());
+		assertEquals(0, marker.getOffset());
+		assertEquals(6, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("= 3".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.operatorIsNotUnary("="), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.operatorIsNotUnary("="), marker.getMessage());
+		assertEquals(0, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("=".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.operatorIsNotNular("="), result.getMarkers().iterator().next().getMessage());
-		
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.operatorIsNotNular("="), marker.getMessage());
+		assertEquals(0, marker.getOffset());
+		assertEquals(1, marker.getLength());
+
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_a = _b".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.undefinedLocalVariable("_b"), result.getMarkers().iterator().next().getMessage());
-		
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.undefinedLocalVariable("_b"), marker.getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(2, marker.getLength());
+
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("_a = hint".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.operatorIsNotNular("hint"), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.operatorIsNotNular("hint"), marker.getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(4, marker.getLength());
 	}
 
 	@Test
@@ -322,49 +371,73 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.misplacedToken(","), result.getMarkers().iterator().next().getMessage());
+		Marker marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.misplacedToken(","), marker.getMessage());
+		assertEquals(2, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[,]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.misplacedToken(","), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.misplacedToken(","), marker.getMessage());
+		assertEquals(1, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[[,]]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.misplacedToken(","), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.misplacedToken(","), marker.getMessage());
+		assertEquals(2, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[[3,]]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.misplacedToken(","), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.misplacedToken(","), marker.getMessage());
+		assertEquals(3, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[[3],]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.misplacedToken(","), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.misplacedToken(","), marker.getMessage());
+		assertEquals(4, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[3 3]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.missingComma("3"), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingComma("3"), marker.getMessage());
+		assertEquals(1, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[3 []]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.missingComma("3"), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingComma("3"), marker.getMessage());
+		assertEquals(1, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[[] 3]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.missingComma("]"), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.missingComma("]"), marker.getMessage());
+		assertEquals(2, marker.getOffset());
+		assertEquals(1, marker.getLength());
 	}
 
 	@Test
@@ -399,20 +472,29 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.privateVariablesMustBeLocal(), result.getMarkers().iterator().next().getMessage());
+		Marker marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.privateVariablesMustBeLocal(), marker.getMessage());
+		assertEquals(8, marker.getOffset());
+		assertEquals(5, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private \"myVar\"".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(8, marker.getOffset());
+		assertEquals(7, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private ['myVar', \"_yourVar\"]".getBytes()),
 				supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(9, marker.getOffset());
+		assertEquals(7, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_yourvar"));
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private ['_myVar', \"yourVar\"]".getBytes()),
@@ -420,7 +502,10 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(19, marker.getOffset());
+		assertEquals(9, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_myvar"));
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("private ['myVar', \"yourVar\"]".getBytes()),
@@ -428,8 +513,15 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 2);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		Iterator<Marker> it = result.getMarkers().iterator();
+		marker = it.next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(9, marker.getOffset());
+		assertEquals(7, marker.getLength());
+		marker = it.next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(18, marker.getOffset());
+		assertEquals(9, marker.getLength());
 	}
 
 	@Test
@@ -504,26 +596,38 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		Marker marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(4, marker.getOffset());
+		assertEquals(3, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("for 'i'".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(4, marker.getOffset());
+		assertEquals(3, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("for '_ i'".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.variableMayNotContainBlank(), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.variableMayNotContainBlank(), marker.getMessage());
+		assertEquals(4, marker.getOffset());
+		assertEquals(5, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("for [{_i = 0}, {_i < 5}]".getBytes()), supplier,
 				info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.expectedArrayLength(3, 2), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.expectedArrayLength(3, 2), marker.getMessage());
+		assertEquals(4, marker.getOffset());
+		assertEquals(20, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_i"));
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("for [{_i = 0}, {_i < 5}, '']".getBytes()),
@@ -531,8 +635,11 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.CODE),
-				new DataTypeList(EDataType.STRING)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.STRING)), marker.getMessage());
+		assertEquals(25, marker.getOffset());
+		assertEquals(2, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_i"));
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("for [{_i = 0}, {_i < 5}, \"\"]".getBytes()),
@@ -540,8 +647,11 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.CODE),
-				new DataTypeList(EDataType.STRING)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.STRING)), marker.getMessage());
+		assertEquals(25, marker.getOffset());
+		assertEquals(2, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_i"));
 	}
 
@@ -637,45 +747,60 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		Marker marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(8, marker.getOffset());
+		assertEquals(3, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("params [\"i\", \"\", \"_j\"]".getBytes()),
 				supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(8, marker.getOffset());
+		assertEquals(3, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_j"));
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("params [[]]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.expectedMinimumArrayLength(2, 0),
-				result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.expectedMinimumArrayLength(2, 0), marker.getMessage());
+		assertEquals(8, marker.getOffset());
+		assertEquals(2, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("params [['_test']]".getBytes()), supplier,
 				info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.expectedMinimumArrayLength(2, 1),
-				result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.expectedMinimumArrayLength(2, 1), marker.getMessage());
+		assertEquals(8, marker.getOffset());
+		assertEquals(9, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("params [[nil, nil, nil, nil, nil]]".getBytes()),
 				supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.expectedMaximalArrayLength(4, 5),
-				result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.expectedMaximalArrayLength(4, 5), marker.getMessage());
+		assertEquals(8, marker.getOffset());
+		assertEquals(25, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("params [[\"testVar\", nil]]".getBytes()),
 				supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(9, marker.getOffset());
+		assertEquals(9, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(
 				new ByteArrayInputStream("params [[\"_testVar\", nil], ['secondVar', player]]".getBytes()), supplier,
@@ -683,23 +808,32 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.canOnlyDeclareLocalVariable(), marker.getMessage());
+		assertEquals(28, marker.getOffset());
+		assertEquals(11, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_testvar"));
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("params [[3, nil]]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.STRING),
-				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.NUMBER)), marker.getMessage());
+		assertEquals(9, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("params [[\"_testVar\", nil, 3]]".getBytes()),
 				supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.ARRAY),
-				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.NUMBER)), marker.getMessage());
+		assertEquals(26, marker.getOffset());
+		assertEquals(1, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_testvar"));
 
 		result = ParseUtil.parseAndProcessSQF(
@@ -707,9 +841,12 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.NUMBER, EDataType.ARRAY }),
-				new DataTypeList(EDataType.STRING)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.STRING)), marker.getMessage());
+		assertEquals(30, marker.getOffset());
+		assertEquals(2, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_testvar"));
 	}
 
@@ -765,22 +902,28 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.undefinedLocalVariable("_testVar"),
-				result.getMarkers().iterator().next().getMessage());
+		Marker marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.undefinedLocalVariable("_testVar"), marker.getMessage());
+		assertEquals(0, marker.getOffset());
+		assertEquals(8, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[_testVar]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.undefinedLocalVariable("_testVar"),
-				result.getMarkers().iterator().next().getMessage());
-		
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.undefinedLocalVariable("_testVar"), marker.getMessage());
+		assertEquals(1, marker.getOffset());
+		assertEquals(8, marker.getLength());
+
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("waitUntil".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
-		assertEquals(ProblemMessages.operatorIsNotNular("waitUntil"),
-				result.getMarkers().iterator().next().getMessage());
+		marker = result.getMarkers().iterator().next();
+		assertEquals(ProblemMessages.operatorIsNotNular("waitUntil"), marker.getMessage());
+		assertEquals(0, marker.getOffset());
+		assertEquals(9, marker.getLength());
 	}
 
 	@Test
@@ -809,49 +952,67 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		Marker marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.NUMBER)), marker.getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint []".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
 				new DataTypeList(EDataType.ARRAY)), result.getMarkers().iterator().next().getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(2, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint {}".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.CODE)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.CODE)), marker.getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(2, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[hint {}]".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.CODE)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.CODE)), marker.getMessage());
+		assertEquals(6, marker.getOffset());
+		assertEquals(2, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("{hint {}}".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.CODE)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.CODE)), marker.getMessage());
+		assertEquals(6, marker.getOffset());
+		assertEquals(2, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint player".getBytes()), supplier, info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.OBJECT)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.OBJECT)), marker.getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(6, marker.getLength());
 	}
 
 	@Test
@@ -888,32 +1049,44 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		Marker marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.ARRAY),
-				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(EDataType.NUMBER)), marker.getMessage());
+		assertEquals(14, marker.getOffset());
+		assertEquals(1, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("player setPos time".getBytes()), supplier,
 				info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.ARRAY),
 				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+		assertEquals(14, marker.getOffset());
+		assertEquals(4, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("time setPos [0,0,0]".getBytes()), supplier,
 				info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.OBJECT),
 				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+		assertEquals(0, marker.getOffset());
+		assertEquals(4, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("[time setPos [0,0,0]]".getBytes()), supplier,
 				info);
 		assertTrue(result.getDeclaredGlobalVariables().size() == 0);
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
+		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.OBJECT),
 				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+		assertEquals(1, marker.getOffset());
+		assertEquals(4, marker.getLength());
 
 		result = ParseUtil.parseAndProcessSQF(new ByteArrayInputStream("hint setPos [0,0,0]".getBytes()), supplier,
 				info);
@@ -921,20 +1094,26 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 2);
 		Iterator<Marker> it = result.getMarkers().iterator();
-		assertEquals(ProblemMessages.operatorIsNotUnary("setPos"), it.next().getMessage());
+		marker = it.next();
+		assertEquals(ProblemMessages.operatorIsNotUnary("setPos"), marker.getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(6, marker.getLength());
+		marker = it.next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
 				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.NOTHING)), it.next().getMessage());
+				new DataTypeList(EDataType.NOTHING)), marker.getMessage());
+		assertEquals(5, marker.getOffset());
+		assertEquals(14, marker.getLength());
 	}
-	
+
 	@Test
 	public void preprocessorTest() throws IOException {
 		macros.put("MYMACRO", new Macro("MYMACRO"));
 		ITreeProcessingResult result = ParseUtil
 				.parseAndProcessSQF(new ByteArrayInputStream("private _a = MYMACRO();".getBytes()), supplier, info);
-		
+
 		assertTrue(result.getMarkers().isEmpty());
-		
+
 		macros.clear();
 	}
 
@@ -943,13 +1122,14 @@ public class SQFProcessingTest {
 		macros.put("CHECK_FALSE", new Macro("CHECK_FALSE"));
 		macros.put("DEBUG_EXEC", new Macro("DEBUG_EXEC"));
 		macros.put("EVENT_LOG", new Macro("EVENT_LOG"));
-		
-		ITreeProcessingResult result = ParseUtil.parseAndProcessSQF(
-				new FileInputStream(new File(
-						makeOSCompatible(System.getProperty("user.dir") + "/src/raven/sqdev/sqf/processing/tests/EncounteredFalsePositives.sqf"))),
-				supplier, info);
+
+		ITreeProcessingResult result = ParseUtil
+				.parseAndProcessSQF(
+						new FileInputStream(new File(makeOSCompatible(System.getProperty("user.dir")
+								+ "/src/raven/sqdev/sqf/processing/tests/EncounteredFalsePositives.sqf"))),
+						supplier, info);
 		assertTrue(result.getMarkers().size() == 0);
-		
+
 		macros.clear();
 	}
 

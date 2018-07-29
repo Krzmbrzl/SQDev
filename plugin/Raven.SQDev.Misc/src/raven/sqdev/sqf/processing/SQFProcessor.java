@@ -356,7 +356,7 @@ public class SQFProcessor implements ISQFTreeListener {
 
 		while (varIterator.hasNext()) {
 			String key = varIterator.next();
-			
+
 			Variable var = new Variable(declaredVariables.get(key));
 
 			if (var.isLocal()) {
@@ -376,29 +376,34 @@ public class SQFProcessor implements ISQFTreeListener {
 	 */
 	protected void checkSemicolons(Collection<? extends IndexTreeElement> nodes) {
 		boolean wasStatement = false;
-		IndexTreeElement prevNode = null;
+		IndexTreeElement lastNode = null;
 
 		for (IndexTreeElement currentNode : nodes) {
+			SQFToken currentToken = null;
+			boolean isStatement;
+
 			if (currentNode.getIndex() < 0) {
 				// it's definitely a statement
-				wasStatement = true;
+				isStatement = true;
 			} else {
-				SQFToken currentToken = tokenBuffer.get(currentNode.getIndex());
+				currentToken = tokenBuffer.get(currentNode.getIndex());
 
-				boolean isStatement = currentToken.operatorType() != ESQFOperatorType.OTHER
+				isStatement = currentToken.operatorType() != ESQFOperatorType.OTHER
 						&& currentToken.type() != ESQFTokentype.SEMICOLON;
-
-				if (wasStatement && isStatement) {
-					// there should have been a semicolon in between
-					assert (prevNode != null);
-					SQFToken lastToken = getLastToken(prevNode);
-					error(lastToken, ProblemMessages.missingSemicolon(lastToken.getText()));
-				}
-
-				wasStatement = isStatement && currentToken.operatorType() != ESQFOperatorType.MACRO;
-
-				prevNode = currentNode;
 			}
+
+			if (wasStatement && isStatement) {
+				assert (lastNode != null);
+
+				// there should have been a semicolon in between
+				SQFToken lastToken = getPreviousNonWhitespaceToken(currentNode);
+				error(lastToken.stop() - 1, 1, ProblemMessages.missingSemicolon(lastToken.getText()));
+			}
+
+			wasStatement = isStatement
+					&& (currentToken == null || currentToken.operatorType() != ESQFOperatorType.MACRO);
+
+			lastNode = currentNode;
 		}
 	}
 
@@ -1110,6 +1115,67 @@ public class SQFProcessor implements ISQFTreeListener {
 		Collections.sort(indices);
 
 		return tokenBuffer.get(indices.get(indices.size() - 1));
+	}
+
+	/**
+	 * Gets the index of the first token in the hierarchy of the given tree element
+	 * 
+	 * @param element
+	 *            The element to search in
+	 * @return The index of the token in the tokenBuffer
+	 */
+	protected int getFirstTokenIndex(IndexTreeElement element) {
+		if (element.getIndex() >= 0 && element.getChildrenCount() <= 1) {
+			return element.getIndex();
+		}
+
+		// check children
+		assert (element.hasChildren());
+		// first token in row may only be the left child
+		return getFirstTokenIndex(element.getChildren().get(0));
+	}
+
+	/**
+	 * Gets the index of the last token in the hierarchy of the given tree element
+	 * 
+	 * @param element
+	 *            The element to search in
+	 * @return The index of the token in the tokenBuffer
+	 */
+	protected int getLastTokenIndex(IndexTreeElement element) {
+		if (element.getIndex() >= 0 && !element.hasChildren()) {
+			return element.getIndex();
+		}
+
+		// check children
+		assert (element.hasChildren());
+		// last token in row may only be the right child
+		return getFirstTokenIndex(element.getChildren().get(element.getChildrenCount() - 1));
+	}
+
+	/**
+	 * Gets the last non-whitespace token before the provided element
+	 * 
+	 * @param element
+	 *            The element to start the search from
+	 * @return The respective token or <code>null</code> if none could be found
+	 */
+	protected SQFToken getPreviousNonWhitespaceToken(IndexTreeElement element) {
+		int index = getFirstTokenIndex(element) - 1;
+
+		SQFToken token = null;
+
+		while (index >= 0) {
+			token = tokenBuffer.get(index);
+
+			if (token.type() != ESQFTokentype.WHITESPACE) {
+				break;
+			}
+
+			index--;
+		}
+
+		return token;
 	}
 
 	/**

@@ -280,11 +280,11 @@ public class ProblemMessages {
 	/**
 	 * The error message stating that there is a missing semicolon
 	 * 
-	 * @param at
+	 * @param after
 	 *            The ID after which the semicolon was expected
 	 */
-	public static final String missingSemicolon(String at) {
-		return "Missing ';' at \"" + at + "\"";
+	public static final String missingSemicolon(String after) {
+		return "Missing ';' after \"" + after + "\"";
 	}
 
 	/**

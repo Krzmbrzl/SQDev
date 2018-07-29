@@ -137,7 +137,7 @@ public enum EDataType implements IReplaceTester {
 		@Override
 		public String[] getStringRepresentations() {
 			return new String[] { "Namespace", "missionNamespace",
-					"uiNamespace" };
+					"uiNamespace", "profileNamespace" };
 		}
 	},
 	NETOBJECT {
@@ -173,6 +173,19 @@ public enum EDataType implements IReplaceTester {
 			
 			return type.equals(NETOBJECT);
 		}
+	},
+	OBJECT_RTD {
+
+		@Override
+		public String[] getStringRepresentations() {
+			return new String[] {"ObjectRTD", "Object_RTD", "RTD"};
+		}
+		
+		@Override
+		public boolean canBeUsedAs(EDataType type) {
+			return type == OBJECT || super.canBeUsedAs(type);
+		}
+		
 	},
 	ORIENT {
 		@Override
