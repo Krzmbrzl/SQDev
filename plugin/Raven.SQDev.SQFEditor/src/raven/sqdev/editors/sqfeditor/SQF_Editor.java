@@ -110,6 +110,7 @@ public class SQF_Editor extends BasicCodeEditor
 		BasicSourceViewerConfiguration configuration = getBasicConfiguration();
 
 		// create respective keywordScanners
+		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY, true);
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
 				false);
@@ -117,7 +118,6 @@ public class SQF_Editor extends BasicCodeEditor
 				false);
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
 				false);
-		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY, true);
 
 		// get keywordScanner
 		KeywordScanner keywordScanner = configuration
