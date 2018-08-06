@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 import raven.sqdev.exceptions.BadSyntaxException;
 import raven.sqdev.exceptions.SQDevCollectionException;
@@ -41,7 +42,7 @@ public class SQFCommandCollector {
 	 */
 	public static final int CATEGORY_COMMAND_INFO = 0;
 	/**
-	 * The categroy containing th command's description
+	 * The category containing the command's description
 	 */
 	public static final int CATEGORY_DESCRIPTION = 1;
 	/**
@@ -49,7 +50,7 @@ public class SQFCommandCollector {
 	 */
 	public static final int CATEGORY_SYNTAX = 2;
 	/**
-	 * The category containg examples for the usage of the command
+	 * The category containing examples for the usage of the command
 	 */
 	public static final int CATEGORY_EXAMPLES = 3;
 	/**
@@ -61,7 +62,7 @@ public class SQFCommandCollector {
 	 */
 	public static final int SYNTAXPART_SYNTAX = 0;
 	/**
-	 * The syntaxpart conating the parameters
+	 * The syntaxpart containing the parameters
 	 */
 	public static final int SYNTAXPART_PARAMETERS = 1;
 	/**
@@ -455,18 +456,8 @@ public class SQFCommandCollector {
 
 		for (String currentTag : tagsToRemove) {
 			// remove tags
-			boolean proceed = content.contains("<" + currentTag) && content.contains("</" + currentTag + ">");
-
-			while (proceed) {
-				String fragment1 = content.substring(0, content.indexOf("<" + currentTag));
-				String fragment2 = content.substring(content.indexOf("<" + currentTag));
-				String fragment3 = fragment2
-						.substring(fragment2.indexOf("</" + currentTag + ">") + 3 + currentTag.length());
-
-				content = fragment1 + fragment3;
-
-				proceed = content.contains("<" + currentTag) && content.contains("</" + currentTag + ">");
-			}
+			content = content.replaceAll("(?is)<" + currentTag + ".*?/" + currentTag + ">", "");
+			content = content.replaceAll("(?is)<" + currentTag + "[^>]*/>", "");
 		}
 
 		if (content.contains("<dt class=\"note\">")) {
@@ -511,6 +502,25 @@ public class SQFCommandCollector {
 		// mark parameter
 		content = content.replace("<dd class=\"param\">", "\nparam:\n");
 
+		// make sure there is no additional nonsense in the syntax
+		Pattern linePattern = Pattern.compile("<dt>Syntax:</dt>\\n<dd>.*?</dd>", Pattern.DOTALL);
+		Matcher lineMatcher = linePattern.matcher(content);
+
+		while (lineMatcher.find()) {
+			final String NL = "-----nl-----";
+			String sequence = content.substring(lineMatcher.start(), lineMatcher.end()).replaceFirst("\\n", NL);
+
+			if (!sequence.contains("\n")) {
+				// This one already is intact
+				continue;
+			}
+
+			content = content.substring(0, lineMatcher.start()) + sequence.substring(0, sequence.indexOf("\n")).replace(NL, "\n") + "</dd>"
+					+ content.substring(lineMatcher.end());
+
+			lineMatcher = linePattern.matcher(content);
+		}
+
 		// keep code markdown
 		content = content.replace("<code>", " " + SQDev.CODE.getOpener());
 		content = content.replace("</code>", SQDev.CODE.getCloser() + " ");
@@ -520,19 +530,17 @@ public class SQFCommandCollector {
 
 		// remove command info(s) from page as it sometimes appears in inappropriate
 		// positions
-		content = content.replaceAll("<div class=\"gvi\".*?\\n", "");
+		// content = content.replaceAll("<div class=\"gvi\".*?</div>", "");
 
 		// remove tags
-		boolean proceed = content.contains("<") && content.contains(">");
-		while (proceed) {
-			String fragment1 = content.substring(0, content.indexOf("<"));
-			String fragment2 = content.substring(content.indexOf("<"));
-			String fragment3 = fragment2.substring(fragment2.indexOf(">") + 1);
-
-			content = fragment1 + " " + fragment3;
-
-			proceed = content.contains("<") && content.contains(">");
-		}
+		content = content.replaceAll("(?is)<[^>]*?>", " ");
+		// Matcher matcher = Pattern.compile("<[^>]*?>").matcher(content);
+		// while (matcher.find()) {
+		// String fragment1 = content.substring(0, matcher.start());
+		// String fragment2 = content.substring(matcher.end());
+		//
+		// content = fragment1 + " " + fragment2;
+		// }
 
 		// remove tabs
 		while (content.contains("\t")) {
@@ -1501,5 +1509,16 @@ public class SQFCommandCollector {
 		}
 
 		return (isOptionalType) ? newDataType.toString() + OPTIONAL_MARKER : newDataType.toString();
+	}
+
+	public static void main(String[] args) {
+		SQFCommandCollector collector = new SQFCommandCollector("https://community.bistudio.com/wikidata/api.php",
+				"Category:Scripting_Commands_Arma_3");
+
+		try {
+			collector.collect(new NullProgressMonitor(), null);
+		} catch (SQDevCollectionException e) {
+			e.printStackTrace();
+		}
 	}
 }

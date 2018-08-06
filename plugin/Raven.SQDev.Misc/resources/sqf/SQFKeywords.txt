@@ -122,7 +122,8 @@
 		assignedGunner vehicle
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_gunner = assignedGunner vehicle player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -376,6 +377,36 @@
 	</Note>
 	<ReturnValue>
 		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getMusicPlayedTime
+	</Keyword>
+	<Description>
+		Returns elapsed time in seconds for currently playing music track.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getMusicPlayedTime
+	</WikiPage>
+	<Syntax>
+		getMusicPlayedTime
+	</Syntax>
+	<RawSyntax>
+		getMusicPlayedTime
+	</RawSyntax>
+	<Example>
+		$Code$playMusic ["LeadTrack06_F_Tank", 0];
+	onEachFrame { hintSilent str getMusicPlayedTime };$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Number
 	</ReturnValue>
 
 </NextListItem>
@@ -868,6 +899,35 @@
 </NextListItem>
 
 	<Keyword>
+		clear3DENInventory
+	</Keyword>
+	<Description>
+		Deletes inventory from mission.sqm of given units. Effect is not immediately visible, only when previewing the inventory resets to default.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/clear3DENInventory
+	</WikiPage>
+	<Syntax>
+		clear3DENInventory Array
+	</Syntax>
+	<RawSyntax>
+		clear3DENInventory entities
+	</RawSyntax>
+	<Example>
+		$Code$clear3DENInventory get3DENSelected "Object";$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		+
 	</Keyword>
 	<Description>
@@ -1348,7 +1408,8 @@
 		logNetworkTerminate handle
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$logNetworkTerminate _someHandle;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -1455,6 +1516,7 @@
 	</Keyword>
 	<Description>
 		Prepares the camera bank angle.
+	⚠
 	This command is non-functional !
 	</Description>
 	<WikiPage>
@@ -1594,39 +1656,6 @@
 </NextListItem>
 
 	<Keyword>
-		independent
-	</Keyword>
-	<Description>
-		Pre-defined variable for the independent side.
-	Alias for resistance.
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/independent
-	</WikiPage>
-	<Syntax>
-		independent
-	</Syntax>
-	<RawSyntax>
-		independent
-	</RawSyntax>
-	<Example>
-		$Code$// SQF:
-	if (( side _unit) == independent ) then {
-	hint "This is a independent unit!";
-	};$/Code$
-	</Example>
-	<Locality>
-		undefined / undefined
-	</Locality>
-	<Note>
-	</Note>
-	<ReturnValue>
-		Side
-	</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
 		hcSetGroup
 	</Keyword>
 	<Description>
@@ -1660,6 +1689,39 @@
 </NextListItem>
 
 	<Keyword>
+		independent
+	</Keyword>
+	<Description>
+		Pre-defined variable for the independent side.
+	Alias for resistance.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/independent
+	</WikiPage>
+	<Syntax>
+		independent
+	</Syntax>
+	<RawSyntax>
+		independent
+	</RawSyntax>
+	<Example>
+		$Code$// SQF:
+	if (( side _unit) == independent ) then {
+	hint "This is a independent unit!";
+	};$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Side
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		findCover
 	</Keyword>
 	<Description>
@@ -1677,7 +1739,8 @@
 		object findCover [position, hidePosition, maxDist, minDist, visibilityPosition, ignoreObject]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$-$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -1695,7 +1758,9 @@
 		logNetwork
 	</Keyword>
 	<Description>
-		Registers new log file recording a network traffic and returns handle of the log.
+		Registers new log file recording a network traffic and returns handle of the log. The log file is saved inside the Arma 3 root folder.
+	⚠
+	logNetwork can potentially create a large log file.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/logNetwork
@@ -1707,18 +1772,12 @@
 		logNetwork logFile
 	</RawSyntax>
 	<Example>
-		$Code$_handle = logNetwork "myLog.txt";$/Code$
+		$Code$_handle = logNetwork ["myLog.txt",[""]];$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
 	<Note>
-		(March 15, 2016)
-	With his syntax i get an error... - logNetwork "networkLog.txt";
-	$Code$ 5:37:06 Error in expression logNetwork "networkLog.txt";
-	5:37:06 Error position: logNetwork "networkLog.txt";
-	5:37:06 Error lognetwork: Typ Zeichenfolge(STRING), erwartet(except) Array
-	$/Code$
 	</Note>
 	<ReturnValue>
 		Number
@@ -1743,7 +1802,8 @@
 		unit hcGroupParams group
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$player hcGroupParams someGroup;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -1919,6 +1979,35 @@
 	</Note>
 	<ReturnValue>
 		Nothing - Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		airDensityCurveRTD
+	</Keyword>
+	<Description>
+		Returns array with air density data.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/airDensityCurveRTD
+	</WikiPage>
+	<Syntax>
+		airDensityCurveRTD
+	</Syntax>
+	<RawSyntax>
+		airDensityCurveRTD
+	</RawSyntax>
+	<Example>
+		$Code$_array = airDensityCurveRTD ;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
 	</ReturnValue>
 
 </NextListItem>
@@ -2244,7 +2333,7 @@
 		worldSize
 	</Keyword>
 	<Description>
-		Returns config size of the current world.
+		Returns config size of the current world. Equivalent to worldName call BIS_fnc_mapSize $/Code$.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/worldSize
@@ -2256,7 +2345,7 @@
 		worldSize
 	</RawSyntax>
 	<Example>
-		$Code$_size = worldSize ; //8192$/Code$
+		$Code$_size = worldSize ;$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -2310,7 +2399,7 @@
 	</Keyword>
 	<Description>
 		Select an editor object. Does not un-select previously selected objects.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -2648,40 +2737,11 @@
 </NextListItem>
 
 	<Keyword>
-		setAnimAimPrecision
-	</Keyword>
-	<Description>
-		Set aimPrecision value of the current animation state (parameter aimPrecision)
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/setAnimAimPrecision
-	</WikiPage>
-	<Syntax>
-		Object setAnimAimPrecision Number
-	</Syntax>
-	<RawSyntax>
-		unit setAnimAimPrecision value
-	</RawSyntax>
-	<Example>
-		$Code$player setAnimAimPrecision 1$/Code$
-	</Example>
-	<Locality>
-		global / global
-	</Locality>
-	<Note>
-	</Note>
-	<ReturnValue>
-		Nothing
-	</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
 		disableCollisionWith
 	</Keyword>
 	<Description>
 		Disable collision between vehicles. This command doesn't disable collision between PhysX objects.
-	!
+	⚠
 	Command has to be executed where objects are local, and as long as they don't change locality, the effect of this command will be global.
 	If the 2 objects are not local to the same computer, then it has to be executed on both computers to achieve the desired effect.
 	If one or both objects change locality, the command needs to be executed again on the new owner 's machine(s) to maintain the effect.
@@ -2696,7 +2756,8 @@
 		vehicle disableCollisionWith vehicle
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$[_veh1, _veh2] remoteExecCall ["disableCollisionWith", 0, _veh1];$/Code$
+	</Example>
 	<Locality>
 		local / global
 	</Locality>
@@ -2710,6 +2771,9 @@
 	//to make the barrel solid again, do this as vice versa if you know what your doing!
 	barrel1 enableCollisionWith player1 $/Code$
 	On a side note: this can come in handy a lot if you want a unit to sit on the back of a car or on top of a container
+	</NextNote>
+		(May 29, 2018)
+	This command does not disable the roadway LOD.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -3019,14 +3083,7 @@
 	</Keyword>
 	<Description>
 		Gets the current value of a trait of the given unit.
-	Default traits are:
-	audibleCoef (scalar)
-	camouflageCoef (scalar)
-	engineer (bool)
-	explosiveSpecialist (bool)
-	loadCoef (scalar)
-	medic (bool)
-	UAVHacker (bool)
+	For the default values please visit setUnitTrait.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getUnitTrait
@@ -3035,7 +3092,7 @@
 		Object getUnitTrait String
 	</Syntax>
 	<RawSyntax>
-		unit getUnitTrait skill_name
+		unit getUnitTrait skillName
 	</RawSyntax>
 	<Example>
 		$Code$player getUnitTrait "Medic";$/Code$
@@ -3491,6 +3548,7 @@
 	</Keyword>
 	<Description>
 		Prepares the camera heading.
+	⚠
 	This command is non-functional !
 	</Description>
 	<WikiPage>
@@ -3520,7 +3578,7 @@
 		diag_activeSQFScripts
 	</Keyword>
 	<Description>
-		Returns an array with active SQFs.
+		Returns information about active SQF scripts.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/diag_activeSQFScripts
@@ -3532,14 +3590,15 @@
 		diag_activeSQFScripts
 	</RawSyntax>
 	<Example>
-		$Code${ systemChat str _x} forEach diag_activeSQFScripts ;$/Code$
+		$Code$[] spawn { hint str diag_activeSQFScripts ; }; // displays [[" spawn hint str diag_activeSQFScripts;", "", true, 1]]$/Code$
 	</NextExample>
 		$Code$[] spawn {
-	hint str diag_activeSQFScripts ; //[[" spawn ","",true,1]]
-	};
-	[] spawn {
-	scriptName "myScript";
-	hint str diag_activeSQFScripts ; //[["myScript","",true,1]]
+	hint str diag_activeSQFScripts ; // displays [[" spawn hint str diag_activeSQFScripts;", "", true, 2 ]]
+	};$/Code$
+	</NextExample>
+		$Code$[] spawn {
+	scriptName "aScript";
+	hint str diag_activeSQFScripts ; // displays [[ "aScript", "", true, 3]]
 	};$/Code$
 	</Example>
 	<Locality>
@@ -3713,6 +3772,35 @@
 </NextListItem>
 
 	<Keyword>
+		enableAutoTrimRTD
+	</Keyword>
+	<Description>
+		Toggle auto-trim for RTD helicopters.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/enableAutoTrimRTD
+	</WikiPage>
+	<Syntax>
+		ObjectRTD enableAutoTrimRTD Boolean
+	</Syntax>
+	<RawSyntax>
+		helicopterRTD enableAutoTrimRTD enable
+	</RawSyntax>
+	<Example>
+		$Code$myHelicopterRTD enableAutoTrimRTD true;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		musicVolume
 	</Keyword>
 	<Description>
@@ -3728,7 +3816,8 @@
 		musicVolume
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_volume = musicVolume$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -3779,10 +3868,22 @@
 		getDLCs
 	</Keyword>
 	<Description>
-		Returns array of appIDs of DLCs. Use filter param to get specific type of DLCs:
-	0 - all
-	1 - owned
-	2 - not owned
+		Returns array of appIDs of DLCs. A list of all official DLCs:
+	275700 - Zeus
+	249860 - Soundtrack
+	304400 - DLC Bundle 1
+	249861 - Maps
+	249862 - Tactical Guide
+	288520 - Karts
+	304380 - Helicopters
+	332350 - Marksmen
+	395180 - Apex
+	612480 - DLC Bundle 2
+	571710 - Laws of War
+	601670 - Jets
+	744950 - Tac Ops
+	798390 - Tanks
+	Thanks to Sniperwolf572, Armitxes, Midnighters and HazJ
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getDLCs
@@ -3796,39 +3897,17 @@
 	<Example>
 		$Code$_ownedDLCs = getDLCs 1;$/Code$
 	</NextExample>
-		$Code$// Is the Karts DLC owned by this client?
-	hintSilent str (288520 in ( getDLCs 1));$/Code$
+		$Code$_hasKarts = (288520 in ( getDLCs 1));$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
 	<Note>
-		(May 30, 2014)
-	Current list of IDs that correspond to the available DLCs:
-	275700 - Arma 3 Zeus
-	249860 - Arma 3 Soundtrack
-	304400 - Arma 3 DLC Bundle
-	249861 - Arma 3 Maps
-	249862 - Arma 3 Tactical Guide
-	288520 - Arma 3 Karts
-	304380 - Arma 3 Helicopters
-	332350 - Arma 3 Marksmen
-	</NextNote>
 		(April 7, 2015)
 	To add to the note above, app ID can be found in CfgMods. Here is an example path from zeus using the Splendid Config Viewer:
 	$Code$ configFile "CfgMods" "Curator" "appId"$/Code$
 	This method can be used to find app IDs without having to find a list like the one above.
 	I am also pretty sure you are able to define your own app ID for your own mods using this method.
-	</NextNote>
-		(July 1, 2016)
-	The required DLC-IDs equal to the Steam App-IDs of each obtainable DLC.
-	To extend Sniperwolfs list:
-	395180 - Arma 3 Apex
-	</NextNote>
-		(October 30, 2017)
-	More dlc
-	Arma 3 Laws of War 571710
-	Arma 3 Jets 601670
 	</Note>
 	<ReturnValue>
 		Array
@@ -3949,6 +4028,41 @@
 	</Example>
 	<Locality>
 		global / global
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setBrakesRTD
+	</Keyword>
+	<Description>
+		Enable landing gear wheel brakes for a helicopter.
+	value 0: brakes off
+	value 1: brakes on
+	index 1: left wheels
+	index 2: right wheels
+	index 3: both sides
+	Note: this command is implemented, but not fully supported yet. Stay tuned for a future update.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/setBrakesRTD
+	</WikiPage>
+	<Syntax>
+		ObjectRTD setBrakesRTD Array
+	</Syntax>
+	<RawSyntax>
+		helicopterRTD setBrakesRTD [value, wheelIndex]
+	</RawSyntax>
+	<Example>
+		$Code$myHelicopterRTD setBrakesRTD [1, 3];$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
 	</Locality>
 	<Note>
 	</Note>
@@ -4134,7 +4248,7 @@
 	<Example>
 		$Code$_shotParents = getShotParents myProjectile;$/Code$
 	</NextExample>
-		$Code$tank addEventHandler ["Fired", { systemChat str getShotParents (_this select 6)}];$/Code$
+		$Code$batmobile addEventHandler ["Fired", { systemChat str getShotParents (_this select 6)}];$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -4143,6 +4257,34 @@
 	</Note>
 	<ReturnValue>
 		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setWingForceScaleRTD
+	</Keyword>
+	<Description>
+		Set effectivity of wings
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/setWingForceScaleRTD
+	</WikiPage>
+	<Syntax>
+		ObjectRTD setWingForceScaleRTD Array
+	</Syntax>
+	<RawSyntax>
+		helicopterRTD setWingForceScaleRTD [leftHorizontal, rightHorizontal, vertical]
+	</RawSyntax>
+	<Example>
+		</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
 	</ReturnValue>
 
 </NextListItem>
@@ -4380,6 +4522,9 @@
 	<Note>
 		(April 18, 2015)
 	ctrlDelete can only delete controls created with ctrlCreate. Use ctrlShow false and ctrlEnable false to disable existing controls.
+	</NextNote>
+		(June 15, 2018)
+	ctrlDelete can indeed delete already existing controls. Though deletable = 1; has to be defined in the controls class
 	</Note>
 	<ReturnValue>
 		Boolean
@@ -4615,9 +4760,11 @@
 	_emitter setParticleFire [0.3,1.0,0.1];$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		undefined / local
 	</Locality>
 	<Note>
+		(April 9, 2018)
+	Using this command on a dedicated server or headless client seems to have no effect on local AI units, they will walk thru the fire unscathed.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -4722,6 +4869,7 @@
 	</Keyword>
 	<Description>
 		Creates a With Type that is used inside a do construct in order to execute code inside a given namespace.
+	⚠
 	when used in a do-construct in scripts with allowed suspension, an unexpected namespace switch could happen (see note below)
 	NOTE for the reasons unknown, namespace switching might unexpectedly occur inside some scopes ( for, if, try, call ) started in scheduled scripts ( canSuspend true) after small suspension if with was not the main scope. For example:
 	$Code$[] spawn
@@ -4788,6 +4936,35 @@
 	</Note>
 	<ReturnValue>
 		With_Type
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getUserMFDvalue
+	</Keyword>
+	<Description>
+		Returns array of user text variables used in MFD.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getUserMFDvalue
+	</WikiPage>
+	<Syntax>
+		getUserMFDvalue Object
+	</Syntax>
+	<RawSyntax>
+		getUserMFDvalue vehicle
+	</RawSyntax>
+	<Example>
+		$Code$getUserMFDvalue vehicle player ; // user0 in MFD will return 1$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
 	</ReturnValue>
 
 </NextListItem>
@@ -5157,7 +5334,8 @@
 		taskCompleted task
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_done = taskCompleted "someTask";$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -5173,8 +5351,24 @@
 		currentCommand
 	</Keyword>
 	<Description>
-		Return the current command type (empty string when no command) for the commander of given vehicle (or for a given soldier). Value returned can be one of:
-	"WAIT", "ATTACK", "HIDE", "MOVE", "HEAL", "REPAIR", "REFUEL", "REARM", "SUPPORT", "JOIN", "GET IN", "FIRE", "GET OUT", "STOP", "EXPECT", "ACTION", "ATTACKFIRE",
+		Return the current command type (empty string when no command) for the commander of given vehicle (or for a given soldier). Returned value can be one of:
+	"WAIT"
+	"ATTACK"
+	"HIDE"
+	"MOVE"
+	"HEAL"
+	"REPAIR"
+	"REFUEL"
+	"REARM"
+	"SUPPORT"
+	"JOIN"
+	"GET IN"
+	"FIRE"
+	"GET OUT"
+	"STOP"
+	"EXPECT"
+	"ACTION"
+	"ATTACKFIRE"
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/currentCommand
@@ -5186,7 +5380,8 @@
 		currentCommand vehicleName
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_command = currentCommand player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -5433,7 +5628,6 @@
 	<Description>
 		Returns an array with all assigned items, weapons, containers and their stored items.
 	Detailed explanation of the returned array: Talk:getUnitLoadout
-	This command is not final and might be changed in a near future.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getUnitLoadout
@@ -5511,7 +5705,8 @@
 		loadVest unit
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_weight = loadVest player$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -5712,7 +5907,8 @@
 		taskChildren task
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_children = taskChildren "someTask";$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -5873,9 +6069,11 @@
 		$Code$vehicle player setPlateNumber "Custom Plate 99"$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		local / global
 	</Locality>
 	<Note>
+		(April 19, 2018)
+	NOTICE : If this command is performed where argument is global, the plate will change and getPlateNumber will also return the new value, until vehicle owner sync it back to original in ~10 seconds after.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -5887,13 +6085,9 @@
 		setVelocityTransformation
 	</Keyword>
 	<Description>
-		Places an object at an interpolated position between two other objects and sets its vectors in proportion to the relative position.
-	The final position/vector is determined by the "interval" specified in the command.
-	This assumes an imaginary path between the two reference objects, where
-	at the beginning of the path (interval: 0) the position and vector are identical to the first reference object,
-	at the end of the path (interval: 1) they're identical to the second reference object,
-	and at 0.5 they are halfway in-between.
-	See setVelocityTransformation (VBS2) for more details.
+		Places an object at an interpolated position between two other objects and sets its vectors in proportion to the relative position. The final position/vector is determined by the "interval" specified in the command. This assumes an imaginary path between the two reference objects, where at the beginning of the path (interval: 0) the position and vector are identical to the first reference object,
+	at the end of the path (interval: 1) they're identical to the second reference object, and at 0.5 they are halfway in between (See setVelocityTransformation (VBS2) for more details).
+	This command works in multiplayer provided the velocity component is set correctly. It helps the engine to figure out what the next position of the moving object should be on other clients.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setVelocityTransformation
@@ -6308,6 +6502,7 @@
 	</Keyword>
 	<Description>
 		Return all sites in map.
+	⚠
 	This command is considered deprecated and is no longer supported
 	</Description>
 	<WikiPage>
@@ -6625,7 +6820,15 @@
 	</Keyword>
 	<Description>
 		Tests whether the variable defined by the String argument is undefined, or whether an expression result passed as Code is undefined.
-	The command returns true if the variable or the expression result is undefined (i.e. the expression result is Void ), and false in all other cases.
+	The command returns true if the variable or the expression result is undefined (i.e. the expression result is Nothing ), and false in all other cases.
+	🛈
+	1.00 isNil doesn't exist in Operation Flashpoint, you can emulate it:
+	$Code$ // SQS syntax
+	_nil = format ["%1", _undefinedVariable]
+	? ( format ["%1", foo] == _nil) : foo = "Hello World!"$/Code$
+	$Code$ // SQF syntax
+	_nil = format ["%1", _undefinedVariable];
+	if ( format ["%1", foo] == _nil) then { foo = "Hello World!"; };$/Code$
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/isNil
@@ -6641,54 +6844,20 @@
 		isNil code
 	</RawSyntax>
 	<Example>
-		$Code$if ( isNil "_pokus") then {_pokus = 0};$/Code$
+		$Code$if ( isNil "_pokus") then { _pokus = 0; };$/Code$
 	</NextExample>
 		$Code$isNil { player getVariable "someVar"};$/Code$
+	</NextExample>
+		$Code$_myArray = [0,1];
+	isNil { _myArray select 0 }; // returns false
+	isNil { _myArray select 1 }; // returns false
+	isNil { _myArray select 2 }; // returns true
+	isNil { _myArray select 3 }; // throws a script error. only length+1 select is allowed$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
 	<Note>
-		I recently had a strange experience with this command. I forgot to wrap the name of the variable with quotes, and it returned the opposite of the true null status of the variable. Just something to watch out for.
-	</NextNote>
-		^ If you don't wrap the name of the variable in quotes, then it will instead read the value of the variable itself. If that variable is a string or code, then the command will use that string or code held by the variable. Example:
-	_myvar = "_hisvar";
-	isnil _myvar;
-	//will return true if _hisvar is null
-	_myvar = {tank1};
-	sleep (random 50);
-	isnil _myvar;
-	//will return if tank1 is nil, at the time the isnil command is checked (not at the time _myvar is established)
-	-- General Barron 10:37, 30 December 2009 (CET)
-	</NextNote>
-		isNil is also able to check if an expression is undefined. As such, an alternative way to check variables would be:
-	isNil {variable}
-	you can use this method to also check if variables defined using setVariable exist as well:
-	isNil {player getVariable "Something"}
-	As well as testing if a function returns a value
-	func_ChangeVehicleName =
-	{
-	_this setVehicleVarName "newName";
-	};
-	if (isNil {player call func_ChangeVehicleName}) // returns true, because this function does not return anything
-	</NextNote>
-		(September 25, 2014)
-	While isNil isn't available in OFP/CWA you can easily emulate it with something like this:
-	_nil = format["%1",_nilstring];
-	?(format["%1",foo]==_nil): foo = "Hello World!"
-	</NextNote>
-		(October 25, 2014)
-	You can also use isNil to check if an array element exists or if a setVariable variable exists
-	$Code$_array = [0,1,2,3];
-	if (isNil {_array select 4}) then {hint "Element does not exist";};$/Code$
-	$Code$if ( isNil { missionNamespace getVariable "MY_VARIABLE"})$/Code$
-	When trying to test array elements, you can only test elements that are 1 element out of range. Testing elements 2 or more elements out of range will result in a script error.
-	</NextNote>
-		(June 25, 2017)
-	isNil in combination with code will execute that code so be aware.
-	</NextNote>
-		(July 18, 2017)
-	isNil CODE will execute the code in unscheduled environment
 	</Note>
 	<ReturnValue>
 		Boolean - Boolean
@@ -6700,8 +6869,10 @@
 		addWeapon
 	</Keyword>
 	<Description>
-		Add a weapon to a unit. The unit must be local to the computer where command is executed. For a global version of this command see addWeaponGlobal.
+		Add a weapon to a unit. For a global version of this command see addWeaponGlobal.
 	Infantry units can only carry a specific number of weapons, once the weapon slots are filled, any further addWeapon commands are ignored.
+	🛈
+	a magazine must be added first for the added weapon to be loaded.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/addWeapon
@@ -6723,11 +6894,6 @@
 		local / global
 	</Locality>
 	<Note>
-		(August 2, 2006)
-	Notes from before the conversion:
-	To ensure that the weapon is loaded at the start of the mission, add at least one magazine ( addMagazine ) before adding the weapon. To remove weapons use the removeAllWeapons or the removeWeapon commands.
-	</NextNote>
-		When adding a weapon in-game, a bug means that sometimes the weapon can't be fired. Swap to a different weapon and swap back again to enable the newly added weapon to fire; or drop and pick up the weapon again.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -6781,7 +6947,8 @@
 		cheatsEnabled
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_enabled = cheatsEnabled ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -7521,7 +7688,7 @@
 	</Keyword>
 	<Description>
 		Imports all groups into the RTE.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -7608,6 +7775,7 @@
 	</Keyword>
 	<Description>
 		Copy text string to the clipboard.
+	⚠
 	In MP available only on the client that is server
 	</Description>
 	<WikiPage>
@@ -8586,6 +8754,9 @@
 	</NextNote>
 		(Januaary 21, 2017)
 	Does not lower CPU usage of still AI without enemies in range
+	</NextNote>
+		(June 5, 2018)
+	In Ofp/CWA, the disabled units are reset after a saveGame is executed (or the user manually saves the mission), i. e. the units will behave as if the disableAI command was never applied to them.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -8598,7 +8769,7 @@
 	</Keyword>
 	<Description>
 		Defines an action performed when player clicked on group marker (3D or in a map). The code executed once. This EH, unlike onGroupIconOverEnter and onGroupIconOverLeave, has one more param which returns 1 if RMB was pressed, 0 otherwise.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: GroupIconClick
 	</Description>
 	<WikiPage>
@@ -9100,6 +9271,7 @@
 	</Keyword>
 	<Description>
 		Return the content of the (text) clipboard.
+	⚠
 	Disabled in Multiplayer for security reasons
 	</Description>
 	<WikiPage>
@@ -9947,7 +10119,7 @@
 		setCompassOscillation
 	</Keyword>
 	<Description>
-		Sets compass oscillation.
+		This command sets random heading on the player's compass (both, in map and in 3D view) with given frequency, which is also randomised. To reset the compass back to defaults, execute: $Code$ setCompassOscillation [-1, 0, 0];$/Code$.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setCompassOscillation
@@ -9959,7 +10131,14 @@
 		setCompassOscillation [angle, frequencyMin, frequencyMax]
 	</RawSyntax>
 	<Example>
-		$Code$setCompassOscillation [1, 1, 1];$/Code$
+		$Code$// Set compass to oscillate every second within -90/+90 degrees:
+	setCompassOscillation [ rad 90, 1, 1];$/Code$
+	</NextExample>
+		$Code$// Change heading every 60 to 90 seconds:
+	setCompassOscillation [ rad 180, 60, 90];$/Code$
+	</NextExample>
+		$Code$// Make compass go crazy:
+	setCompassOscillation [ rad 360, 0.1, 0.2];$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -10516,7 +10695,6 @@
 	</Keyword>
 	<Description>
 		Creates a loadout from given inventory structure and applies it to a unit.
-	This command is not final and might be changed in a near future.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setUnitLoadout
@@ -10558,7 +10736,8 @@
 		clearAllItemsFromBackpack unit
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$clearAllItemsFromBackpack player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -10616,6 +10795,40 @@
 	</Note>
 	<ReturnValue>
 		Nothing/Display
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		infoPanelComponents
+	</Keyword>
+	<Description>
+		Returns array of all components available to given object info panel.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/infoPanelComponents
+	</WikiPage>
+	<Syntax>
+		Object infoPanelComponents String
+	</NextSyntax>
+		Array infoPanelComponents String
+	</Syntax>
+	<RawSyntax>
+		unit infoPanelComponents panelID
+	</NextRawSyntax>
+		[unit, turretPath] infoPanelComponents panelID
+	</RawSyntax>
+	<Example>
+		$Code$// returns array of all components configured for _helicopter pilot seat
+	_componentsData = [_helicopter, [-1]] infoPanelComponents "VehicleSystemsDisplayManagerComponentLeft";$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array - Array
 	</ReturnValue>
 
 </NextListItem>
@@ -10722,7 +10935,7 @@
 		hasInterface
 	</RawSyntax>
 	<Example>
-		$Code$headless = !( hasInterface || isDedicated );$/Code$
+		$Code$_isHC = !( hasInterface || isDedicated );$/Code$
 	</NextExample>
 		$Code$_isHC = ! hasInterface && ! isDedicated ;$/Code$
 	</Example>
@@ -11119,6 +11332,35 @@
 </NextListItem>
 
 	<Keyword>
+		useAIOperMapObstructionTest
+	</Keyword>
+	<Description>
+		Toggle secondary obstruction test on road paths.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/useAIOperMapObstructionTest
+	</WikiPage>
+	<Syntax>
+		useAIOperMapObstructionTest Boolean
+	</Syntax>
+	<RawSyntax>
+		useAIOperMapObstructionTest state
+	</RawSyntax>
+	<Example>
+		$Code$useAIOperMapObstructionTest true;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		cursorTarget
 	</Keyword>
 	<Description>
@@ -11426,35 +11668,6 @@
 </NextListItem>
 
 	<Keyword>
-		getPosASLW
-	</Keyword>
-	<Description>
-		Returns the object position height above sea surface (waves included).
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/getPosASLW
-	</WikiPage>
-	<Syntax>
-		getPosASLW Object
-	</Syntax>
-	<RawSyntax>
-		getPosASLW obj
-	</RawSyntax>
-	<Example>
-		$Code$_pos = getPosASLW _diver;$/Code$
-	</Example>
-	<Locality>
-		global / undefined
-	</Locality>
-	<Note>
-	</Note>
-	<ReturnValue>
-		Array
-	</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
 		getPosWorld
 	</Keyword>
 	<Description>
@@ -11476,6 +11689,35 @@
 	</NextExample>
 		$Code$// Wave height under a boat:
 	_h = ((boat modelToWorld [0,0,0]) vectorDiff getPosWorld boat) select 2;$/Code$
+	</Example>
+	<Locality>
+		global / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getPosASLW
+	</Keyword>
+	<Description>
+		Returns the object position height above sea surface (waves included).
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getPosASLW
+	</WikiPage>
+	<Syntax>
+		getPosASLW Object
+	</Syntax>
+	<RawSyntax>
+		getPosASLW obj
+	</RawSyntax>
+	<Example>
+		$Code$_pos = getPosASLW _diver;$/Code$
 	</Example>
 	<Locality>
 		global / undefined
@@ -11580,6 +11822,7 @@
 	<Description>
 		Create MP role for the unit. The roles created this way are used for Join In Progress and Team Switch.
 	NOTE: Currently in Arma 3 this command does nothing.
+	⚠
 	Doesn't work as intended
 	</Description>
 	<WikiPage>
@@ -11624,7 +11867,8 @@
 		teamSwitch
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$teamSwitch ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -11775,6 +12019,7 @@
 	...
 	If you don't know much about model config you can use this page createVehicle/vehicles for reference. Some of the AnimationSources are listed with the class names of the available assets in Arma 3. If it says "user", the chances are it could work with animateSource (see example 2).
 	It is recommended that animateSource command is used instead of animate whenever is possible, as it is more efficient and optimized for MP
+	⚠
 	Mixing animateSource command with animate command to animate the same part can lead to unexpected behavior
 	</Description>
 	<WikiPage>
@@ -12198,11 +12443,11 @@
 	</RawSyntax>
 	<Example>
 		$Code$_list = player nearEntities 20;
-	_list = ( position player ) nearEntities 50;
+	_list = ASLToAGL getPosASL player nearEntities 50;
 	_list = player nearEntities ["Man", 1000];
-	_list = ( position player ) nearEntities ["LaserTarget", 3000];
+	_list = ASLToAGL getPosASL player nearEntities ["LaserTarget", 3000];
 	_list = player nearEntities [["Car", "Motorcycle", "Tank"], 50];
-	_list = ( position player ) nearEntities [["Man", "Air", "Car", "Motorcycle", "Tank"], 200];$/Code$
+	_list = ASLToAGL getPosASL player nearEntities [["Man", "Air", "Car", "Motorcycle", "Tank"], 200];$/Code$
 	</Example>
 	<Locality>
 		global / undefined
@@ -12800,7 +13045,7 @@
 	</Keyword>
 	<Description>
 		Returns the editor object scope of the specified editor object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -13057,7 +13302,7 @@
 	"condition" is an executable string that must evaluate to true or false. If true, the scope of the evaluated editor object will be modified. "_x" can be used in the string as reference to the ingame representation of the currently processed array member.
 	"scope" is one of "HIDE", "VIEW", "SELECT", "LINKTO", "LINKFROM", "ALLNODRAG", "ALLNOTREE", "ALLNOCOPY", "ALLNOSELECT" or "ALL".
 	"subordinatesAlso" is a boolean value. If true then subordinates in the editor will be assigned the same scope as the parent.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -13311,6 +13556,7 @@
 	</Keyword>
 	<Description>
 		Dump (something about FSM) to debugging output. This command is (assumed to be) non-functional in the retail version.
+	⚠
 	Non functional in retail
 	</Description>
 	<WikiPage>
@@ -13323,7 +13569,8 @@
 		FSMhandle debugFSM true
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$-$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -13475,7 +13722,8 @@
 		object setVectorDir [x,y,z]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$player setVectorDir [5,6,1];$/Code$
+	</Example>
 	<Locality>
 		local / global
 	</Locality>
@@ -13567,7 +13815,8 @@
 		triggerActivation trigger
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_activation = triggerActivation someTrigger$/Code$
+	</Example>
 	<Locality>
 		global / local
 	</Locality>
@@ -13952,6 +14201,35 @@
 </NextListItem>
 
 	<Keyword>
+		ctrlAnimationPhaseModel
+	</Keyword>
+	<Description>
+		Returns current animation phase of given source. Similar to animationSourcePhase.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/ctrlAnimationPhaseModel
+	</WikiPage>
+	<Syntax>
+		Control ctrlAnimationPhaseModel String
+	</Syntax>
+	<RawSyntax>
+		control ctrlAnimationPhaseModel source
+	</RawSyntax>
+	<Example>
+		$Code$_phase = _control3D ctrlAnimationPhaseModel "Close";$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		canAddItemToVest
 	</Keyword>
 	<Description>
@@ -14025,7 +14303,7 @@
 	</Keyword>
 	<Description>
 		Returns the current mode of the editor.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -14180,6 +14458,7 @@
 	<Description>
 		Add a weapon to a unit. Infantry units can only carry weapons in their respective slots (primary, secondary and handgun), the addWeaponGlobal command will replace the weapon currently in a slot with the added weapon if it shares the same slot.
 	To make sure the added weapon is loaded and ready, add the magazine first.
+	⚠
 	This command is broken when used on dedicated server
 	</Description>
 	<WikiPage>
@@ -14302,6 +14581,7 @@
 	<Description>
 		Set the zoom level ( F ield O f V iew) start and end values for automatical zooming.
 	The default zoom level is 0.7 where 0 is the nearest and 1 is the most far zoom value.
+	⚠
 	This command is non-functional !
 	</Description>
 	<WikiPage>
@@ -14371,7 +14651,8 @@
 		isLaserOn vehicle
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_on = isLaserOn _vehicle;$/Code$
+	</Example>
 	<Locality>
 		local / global
 	</Locality>
@@ -14466,7 +14747,8 @@
 		simulationEnabled entity
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$simulationEnabled player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -14519,7 +14801,7 @@
 	</Keyword>
 	<Description>
 		Return argument in mission editor of a given object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -15098,7 +15380,8 @@
 		object getHideFrom enemy
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_pos = player getHideFrom _enemy;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -15134,7 +15417,7 @@
 	_source01 attachTo [_object,[0,0,0]];$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		global / global
 	</Locality>
 	<Note>
 		(June 28, 2015)
@@ -15150,28 +15433,30 @@
 		waypointAttachVehicle
 	</Keyword>
 	<Description>
-		Attaches a Unit to the given Waypoint.
+		Attach a Waypoint to the given Object.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/waypointAttachVehicle
 	</WikiPage>
 	<Syntax>
-		Array waypointAttachVehicle Object
+		Waypoint waypointAttachVehicle Object
 	</Syntax>
 	<RawSyntax>
 		waypoint waypointAttachVehicle vehicleName
 	</RawSyntax>
 	<Example>
-		$Code$[_grp, 2] waypointAttachVehicle vehicle player$/Code$
+		$Code$[_grp, 2] waypointAttachVehicle vehicle player ;$/Code$
 	</NextExample>
-		$Code$[_grp, 2] waypointAttachVehicle _soldier1$/Code$
+		$Code$(( waypoints player ) select 0) waypointAttachVehicle _soldier1;$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
 	<Note>
 		(June 19, 2010)
-	You can attach waypoint only to vehicle inserted from classic editor. Trying to attach it to dynamically spawned ( createUnit, createVehicle ) won't work. Engine will then try to find suitable target by itself, affecting game performance.
+	You can attach waypoint only to vehicle inserted from classic editor.
+	Trying to attach it to dynamically spawned ( createUnit, createVehicle ) won't work.
+	Engine will then try to find suitable target by itself, affecting game performance.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -15223,7 +15508,8 @@
 		curatorCamera
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_camCurator = curatorCamera$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -15533,6 +15819,7 @@
 	</Keyword>
 	<Description>
 		Prepares the camera field of view range for auto zooming.
+	⚠
 	This command is non-functional !
 	</Description>
 	<WikiPage>
@@ -15563,7 +15850,7 @@
 	</Keyword>
 	<Description>
 		Defines code performed when hc command mode changes either because of (Left Ctrl + Space) shortcut or hcShowBar scripting command. Groups hc mode must contain at least one group for this command to work (see High Command ). Attached code receives _isHighCommand boolean.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: CommandModeChanged
 	</Description>
 	<WikiPage>
@@ -15688,6 +15975,35 @@
 	</NextNote>
 		(December 20, 2014)
 	This command does not operate compared to a full state defined by the vehicle type, but rather relative to a vehicle's current magazine loadout. To get the former behaviour use setVehicleAmmoDef, which utilizes the vehicles default magazine loadout (i.e. its CfgVehicles magazines[] values).
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		ctrlAnimateModel
+	</Keyword>
+	<Description>
+		Process an animation of 3D Dialog Control. Command uses name defined by source property and works similar like animateSource command.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/ctrlAnimateModel
+	</WikiPage>
+	<Syntax>
+		Control ctrlAnimateModel Array
+	</Syntax>
+	<RawSyntax>
+		control ctrlAnimateModel [source, phase]
+	</RawSyntax>
+	<Example>
+		$Code$_control3D ctrlAnimateModel ["Close",1];$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -15969,7 +16285,8 @@
 		isMultiplayerSolo
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_state = isMultiplayerSolo ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -15987,7 +16304,7 @@
 	<Description>
 		Set scenario attribute.
 	An attribute is identified by its property ( data when it's engine-drive attribute) value in config. For the list of all attributes with their properties, see Setting Attributes.
-	!
+	⚠
 	Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!
 	</Description>
 	<WikiPage>
@@ -16030,7 +16347,8 @@
 		unlockAchievement name
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_isUnlocked = unlockAchievement "someAchievement";$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -16117,6 +16435,43 @@
 </NextListItem>
 
 	<Keyword>
+		infoPanelComponentEnabled
+	</Keyword>
+	<Description>
+		Controls availability of component to given object info panel.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/infoPanelComponentEnabled
+	</WikiPage>
+	<Syntax>
+		Object infoPanelComponentEnabled Array
+	</NextSyntax>
+		Array infoPanelComponentEnabled Array
+	</Syntax>
+	<RawSyntax>
+		unit infoPanelComponentEnabled [panelID, componentClassOrType]
+	</NextRawSyntax>
+		[unit, turretPath] infoPanelComponentEnabled [panelID, componentClassOrType]
+	</RawSyntax>
+	<Example>
+		$Code$//returns true if specific component "SensorDisplay" is enabled on player vehicle's left panel
+	_state = [ vehicle player, [-1]] infoPanelComponentEnabled ["VehicleSystemsDisplayManagerComponentLeft", "SensorDisplay"];$/Code$
+	</NextExample>
+		$Code$//returns true if all "SensorsDisplayComponent" components are enabled on player vehicle's left panel, otherwise returns false
+	_state = [ vehicle player, [-1]] infoPanelComponentEnabled ["VehicleSystemsDisplayManagerComponentLeft", "SensorsDisplayComponent"];$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		findNearestEnemy
 	</Keyword>
 	<Description>
@@ -16181,7 +16536,7 @@
 	</Keyword>
 	<Description>
 		Runs given statement every frame.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: EachFrame
 	In order to keep compatibility between official and community content the functions BIS_fnc_addStackedEventHandler and BIS_fnc_removeStackedEventHandler should be used instead.
 	</Description>
@@ -16445,7 +16800,7 @@
 	</Keyword>
 	<Description>
 		Commit the current overlay.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -16467,6 +16822,37 @@
 	</Note>
 	<ReturnValue>
 		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		collectiveRTD
+	</Keyword>
+	<Description>
+		Returns the current position of a helicopter's collective pitch control.
+	0: fully lowered
+	1: fully raised
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/collectiveRTD
+	</WikiPage>
+	<Syntax>
+		collectiveRTD ObjectRTD
+	</Syntax>
+	<RawSyntax>
+		collectiveRTD helicopterRTD
+	</RawSyntax>
+	<Example>
+		$Code$_collective = collectiveRTD (vehicle player);$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Number
 	</ReturnValue>
 
 </NextListItem>
@@ -16564,7 +16950,7 @@
 		kbReact
 	</Keyword>
 	<Description>
-		Pass a non-verbal communication to the receiver. See Conversations for more details.
+		Pass a non-verbal communication to the receiver. This command does as if the sentence was said and triggers the reaction scripts (AI FSM or player's conversation EH). See Conversations for more details.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/kbReact
@@ -16573,12 +16959,15 @@
 		Object kbReact Array
 	</Syntax>
 	<RawSyntax>
-		person kbReact [receiver, topic, sentenceID, [argumentName, argumentValue, argumentText, argumentSpeech], ]
+		person kbReact [receiver, topicName, sentenceID]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$unit1 kbReact [unit2, "topicName", "speech1"];
+	will trigger as if unit1 said the sentence ( via kbTell )
+	// unit2's FSM will react accordingly.$/Code$
+	</Example>
 	<Locality>
-		undefined / undefined
+		global / local
 	</Locality>
 	<Note>
 	</Note>
@@ -16764,7 +17153,7 @@
 	</Keyword>
 	<Description>
 		Set the icon to be shown in 2D editor for the specified editor object. If maintain size is false,icon will not scale depending on the scale,of the map. If maintain size is a number,the icon will maintain size,if map scale is below that number. is3D,show line and priority are,optional.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -17340,7 +17729,8 @@
 		enableEndDialog
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$enableEndDialog ;$/Code$
+	</Example>
 	<Locality>
 		undefined / local
 	</Locality>
@@ -17465,6 +17855,7 @@
 	</Keyword>
 	<Description>
 		Start recording tool for creating turret aiming limits.
+	⚠
 	Command is only available when using Arma 3 Diagnostics Exe on Dev-Branch.
 	</Description>
 	<WikiPage>
@@ -17680,7 +18071,8 @@
 		triggerTimeout trigger
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_timeOut = triggerTimeout someTrigger;$/Code$
+	</Example>
 	<Locality>
 		global / local
 	</Locality>
@@ -17864,25 +18256,26 @@
 		https://community.bistudio.com/wiki/enableGunLights
 	</WikiPage>
 	<Syntax>
-		Object/Group enableGunLights Boolean
+		Object/Group enableGunLights Boolean/String
 	</Syntax>
 	<RawSyntax>
 		thing enableGunLights value
 	</RawSyntax>
 	<Example>
-		$Code$_grp enableGunLights true$/Code$
+		$Code$_group enableGunLights true ; // Arma 2 OA
+	_group enableGunLights "forceOn"; // Arma 3$/Code$
 	</NextExample>
-		$Code$_unit enableGunLights true$/Code$
+		$Code$_unit enableGunLights false ; // Arma 2 OA
+	_unit enableGunLights "AUTO"; // Arma 3$/Code$
+	</NextExample>
+		$Code$_unit enableGunLights "forceOff"; // Arma 3 only$/Code$
 	</Example>
 	<Locality>
 		local / global
 	</Locality>
 	<Note>
 		(27 July, 2011)
-	This command can be used to force lights on, but not to force lights off. ( Source )
-	</NextNote>
-		(17 April, 2013)
-	In order for this command to work in ARMA 3 you should use groupname enableGunLights "AUTO" or soldierOne enableGunLights "AUTO". Other options are "forceOn" or "forceOff". ( Source )
+	This command can be used to force lights on, but not to force lights off.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -17906,7 +18299,8 @@
 		initAmbientLife
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$initAmbientLife ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -17967,7 +18361,7 @@
 	</Keyword>
 	<Description>
 		Show the edit object dialog for the given object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -18203,7 +18597,8 @@
 		rainbow
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_intensity = rainbow ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -18572,15 +18967,7 @@
 		lineIntersectsObjs [begPos, endPos, withObj, ignoreObj, sortByDistance, flags]
 	</RawSyntax>
 	<Example>
-		</Example>
-	<Locality>
-		global / undefined
-	</Locality>
-	<Note>
-		(Mar 27, 2014)
-	Example (in ArmA3 ver 1.14) display objects' array in the middle of the screen sorted by 6 flags:
-	$Code$
-	Sto = [];
+		$Code$Sto = [];
 	Fn = {
 	{
 	Sto set [_foreachindex, lineIntersectsObjs [( eyePos player ),( ATLtoASL screenToWorld [0.5,0.5]), objNull, objNull, false,_x]];
@@ -18595,8 +18982,12 @@
 	Sto select 0,Sto select 1,Sto select 2,Sto select 3,Sto select 4,Sto select 5];
 	};
 	["sample_id","onEachFrame","Fn"] call BIS_fnc_addStackedEventHandler ;
-	$/Code$
-	</NextNote>
+	//Example display objects' array in the middle of the screen sorted by 6 flags$/Code$
+	</Example>
+	<Locality>
+		global / undefined
+	</Locality>
+	<Note>
 		(March 29, 2016)
 	Distance sorting is relative to object model center, and not intersect position.
 	</Note>
@@ -18610,7 +19001,7 @@
 		deleteAt
 	</Keyword>
 	<Description>
-		Removes array element at the given index and returns removed element (modifies the original array, just like resize or set ). Will not issue error when -1 index is passed making it ideal for using with find command (see Example 2)
+		Removes array element at the given index and returns removed element (modifies the original array, just like resize or set ). Will not issue error when -1 index is passed making it ideal for using with find (see Example 2) or findIf (see Example 3) command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/deleteAt
@@ -18630,6 +19021,12 @@
 	_arr deleteAt (_arr find 0); // non existent item
 	hint str _arr; // [1,2,3]
 	_arr deleteAt (_arr find 2); // existent item
+	hint str _arr; // [1,3]$/Code$
+	</NextExample>
+		$Code$_arr = [1,2,3];
+	_arr deleteAt (_arr findIf {(_x % 5) == 0}); // Remove first number that's divisible by 5
+	hint str _arr; // [1,2,3]
+	_arr deleteAt (_arr findIf {(_x % 2) == 0}); // Remove first number that's divisible by 2
 	hint str _arr; // [1,3]$/Code$
 	</Example>
 	<Locality>
@@ -18892,7 +19289,7 @@
 	remoteExec and remoteExecCall are currently filtered by BattlEye's remoteexec.txt, the string analyzed by BE is formatted the same way as the following example's output:
 	$Code$ format ["%1 %2", functionName, str params]$/Code$
 	If CfgRemoteExec class Functions is set to mode = 1;, the following remoteexec.txt exclusion can be used to safely allow all whitelisted *_fnc_* functions taking an array as parameter to go through:
-	$Code$!="\w+?_fnc_\w+? \[.*\]"$/Code$
+	$Code$!="\w+?_fnc_\w+? \[[\S\s]*\]"$/Code$
 	Any attempt to exploit this exclusion using other RE methods like createUnit will run into "Error Missing ;" without any malicious code being executed. Mod makers should refrain from remote-executing raw commands from clients, as they require individual exclusions, and instead use *_fnc_* functions taking an array as parameter, which are covered by the above exclusion.
 	</NextNote>
 		(January 15, 2016)
@@ -18931,6 +19328,11 @@
 	$Code$ titleText ["Test Message", "PLAIN", 1];$/Code$
 	Use
 	$Code$[["Test Message", "PLAIN", 1]] remoteExec ["titleText"];$/Code$
+	</NextNote>
+		(April 22, 2018)
+	It seems that only global functions can be executed, as opposed to local.
+	$Code$ params remoteExec ["fnc_someScriptedFunction", targets, JIP]; //Works$/Code$
+	$Code$ params remoteExec ["_fnc_someScriptedFunction", targets, JIP]; //Does not work$/Code$
 	</Note>
 	<ReturnValue>
 		Anything - Anything
@@ -19008,7 +19410,7 @@
 		getRelDir
 	</Keyword>
 	<Description>
-		Returns direction, which is relative to object's current direction, from given object to another object or position in the range from 0 to 360, the equivalent of BIS_fnc_relativeDirTo.
+		Returns direction, which is relative to object's current direction, from given object to another object or position in the range from 0 to 360, the equivalent of BIS_fnc_relativeDirTo. Taking the current direction of the object into account.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getRelDir
@@ -19288,7 +19690,48 @@
 		setViewDistance
 	</Keyword>
 	<Description>
-		Set rendering distance, in metres. Default is 900m (in OFP) or 1,200m (in ArmA), accepted range is 500m to 5,000m (in OFP) or 10,000m (in ArmA). Setting view distance to = 0 resets the value to the one set in Options- Video- General- Visibility- Overall
+		Set rendering distance. Setting view distance to = 0 resets the value to the client's options (set in Options → Video → General → Visibility → Overall ).
+	🛈
+	Client-side max view distance is limited by the server's view distance.
+	⚠
+	View distance also defines the maximum distance between a unit and any other unit they can know about.
+	Higher view distance will involve more AI simulation cycles for every unit, which causes low performance.
+	Game
+	min. scripted
+	min. UI
+	default
+	max. UI
+	max. scripted
+	Arma 3
+	200
+	500
+	1600
+	12000
+	40000
+	Arma 2: Operation Arrowhead
+	200
+	500
+	2500
+	10000
+	15000
+	Arma 2
+	200
+	500
+	3000
+	10000
+	15000
+	Armed Assault
+	200
+	500
+	1200
+	10000
+	?
+	Operation Flashpoint
+	500
+	500
+	900
+	5000
+	?
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setViewDistance
@@ -19302,31 +19745,49 @@
 	<Example>
 		$Code$setViewDistance 2250;$/Code$
 	</NextExample>
-		$Code$//reset view distance in Arma 3
-	setViewDistance -1;$/Code$
+		$Code$setViewDistance -1; // reset view distance in Arma 3$/Code$
 	</Example>
 	<Locality>
 		undefined / local
 	</Locality>
 	<Note>
-		In OFP v1.96, view distance also defines the maximum distance between a unit and any other unit they can know about. Higher view distance will involve more AI simulation cycles for every unit, which causes low performance.
-	</NextNote>
-		I tested the above and it seems to apply in Arma 2 as well. AI at a bit above 500m would stop engaging when I lowered the view distance down to 500m and re-engaged when I increased it back.
-	</NextNote>
-		In ArmA 2 viewDistance can be set up to 15 km with this command ( while from interface only 10 km )
-	</NextNote>
-		(October 15, 2014)
-	In Arma 3, Values below 200 have no visible effect.
-	</NextNote>
-		(November 20, 2014)
-	To clarify Bernagee's post, values under 200 have no effect. Tested by setViewDistance below 200, then hint viewDistance. It will not go below 200. Also, as object view distance can only be, at a maximum, the view distance, object view distance will also be reset to 200.
-	</NextNote>
-		(June 8, 2015)
-	Client-side max view distance is limited by the server's view distance.
-	Tested in Arma 3.
 	</Note>
 	<ReturnValue>
 		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		enableInfoPanelComponent
+	</Keyword>
+	<Description>
+		Controls availability of component to given object info panel.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/enableInfoPanelComponent
+	</WikiPage>
+	<Syntax>
+		Object enableInfoPanelComponent Array
+	</NextSyntax>
+		Array enableInfoPanelComponent Array
+	</Syntax>
+	<RawSyntax>
+		unit enableInfoPanelComponent [panelID, componentClassOrType, enable]
+	</NextRawSyntax>
+		[unit, turretPath] enableInfoPanelComponent [panelID, componentClassOrType, enable]
+	</RawSyntax>
+	<Example>
+		$Code$// enables slingload assistant on player's vehicle right panel at driver position
+	[ vehicle player, [-1]] enableInfoPanelComponent ["VehicleSystemsDisplayManagerComponentRight", "SlingLoadDisplay", true ];$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
 	</ReturnValue>
 
 </NextListItem>
@@ -19336,6 +19797,7 @@
 	</Keyword>
 	<Description>
 		Create a new site.
+	⚠
 	This command is considered deprecated and is no longer supported
 	</Description>
 	<WikiPage>
@@ -19348,7 +19810,8 @@
 		type createSite pos
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$-$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -19414,6 +19877,8 @@
 		undefined / undefined
 	</Locality>
 	<Note>
+		(July 18, 2018)
+	This command returns "SHOOTING" (intentional behaviour?) when checking a unit's state while they are unconscious. Tested with BIS revive. I recommend just using the lifeState command instead.
 	</Note>
 	<ReturnValue>
 		String
@@ -19425,7 +19890,9 @@
 		velocity
 	</Keyword>
 	<Description>
-		Return velocity (speed vector) of Unit as an array with format [x, y, z]. Units are in metres per second.
+		Return velocity (speed vector) of Unit as an array with format [x, y, z].
+	⚠
+	Units are in metres per second.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/velocity
@@ -19439,7 +19906,7 @@
 	<Example>
 		$Code$_vector = velocity jeep;$/Code$
 	</NextExample>
-		$Code$if ( velocity _plane1 select 2 50) then { hint "Aircraft is climbing up too fast!"};$/Code$
+		$Code$if (( velocity _plane1 select 2) 50) then { hint "Aircraft is climbing up too fast!"; };$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -19488,7 +19955,7 @@
 	</Keyword>
 	<Description>
 		Toggle the drawing of 3D icons.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -19804,7 +20271,7 @@
 	<Description>
 		Set scenario attributes.
 	An attribute is identified by its property ( data when it's engine-drive attribute) value in config. For the list of all attributes with their properties, see Setting Attributes.
-	!
+	⚠
 	Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!
 	</Description>
 	<WikiPage>
@@ -19989,7 +20456,7 @@
 		aircraft flyInHeight altitude
 	</RawSyntax>
 	<Example>
-		$Code$_helicopter flyInHeight 40$/Code$
+		$Code$_helicopter flyInHeight 40;$/Code$
 	</Example>
 	<Locality>
 		local / global
@@ -19997,10 +20464,10 @@
 	<Note>
 		(August 4, 2006)
 	Notes from before the conversion:
-	From version 1.80+ - flyInHeight now affects not only helicopters, but also planes.
+	From 1.80 - flyInHeight now affects not only helicopters, but also planes.
 	</NextNote>
 		(August 4, 2006)
-	A planes flyInHeight, is restricted to a minimum of 20 meters.
+	A plane's flyInHeight is restricted to a minimum of 20 meters.
 	</NextNote>
 		(December 15, 2008)
 	A flyInHeight of 0 will keep the chopper pinned to the ground, even when the engines have been started.
@@ -20149,6 +20616,7 @@
 	</Keyword>
 	<Description>
 		Returns the global namespace attached to user interface.
+	uiNamespace is persistent even when mission is changed on server.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/uiNamespace
@@ -20171,10 +20639,8 @@
 		undefined / undefined
 	</Locality>
 	<Note>
-		variables in uiNamespace are not lost between mission changes, they are carried over. Also take note that the server can make use of uiNamespace.
-	</NextNote>
 		(29 September, 2014)
-	^The same can be said with parsingNamespace.
+	The same can be said with parsingNamespace.
 	</Note>
 	<ReturnValue>
 		Namespace
@@ -20962,6 +21428,8 @@
 		undefined / undefined
 	</Locality>
 	<Note>
+		(May 25, 2018)
+	SITREP 00061: For security reasons we have restricted its use to outside scenarios only (e.g. in the game's UI or a mod's UI). ( https://dev.arma3.com/post/sitrep-00061 )
 	</Note>
 	<ReturnValue>
 		Boolean
@@ -21035,7 +21503,7 @@
 	</Keyword>
 	<Description>
 		Removes a previously added menu item.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -21203,7 +21671,7 @@
 	Only works in SP and on the MP Host/DS. It returns the mission pboprefix if available, otherwise the pboname. For clients it returns '__cur_mp'.
 	</NextNote>
 		(September 25, 2014)
-	In OFP (up to v1.96) it returns the mission filename. In CWA (since v1.99), it returns the briefing name instead when in multiplayer. The string displayed is that set in the Intel section of the mission editor.
+	In OFP (up to v1.96) it returns the mission filename. In CWA (since v1.99), it returns the briefing name instead when in multiplayer. The string displayed is that set in the Intel section of the mission editor.
 	</Note>
 	<ReturnValue>
 		String
@@ -21245,7 +21713,7 @@
 	</Keyword>
 	<Description>
 		Return object that matches the provided reference.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -21547,7 +22015,7 @@
 	</Keyword>
 	<Description>
 		Allow/dissallow file ops (load/save etc).
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -21950,6 +22418,7 @@
 	</Keyword>
 	<Description>
 		Checks if given person is player. Returns true for headless clients as well.
+	⚠
 	In some cases, the identity of certain player units might fail to propagate to other clients and the server, which causes isPlayer and getPlayerUID to incorrectly return false and "", respectively, where the affected units are not local. [1] Therefore, beware of false negatives.
 	</Description>
 	<WikiPage>
@@ -22238,7 +22707,7 @@
 	<Description>
 		Returns value of a given entity's attribute in Eden Editor.
 	An attribute is identified by its property ( data when it's engine-drive attribute) value in config. For the list of all attributes with their properties, see Setting Attributes.
-	!
+	⚠
 	Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!
 	</Description>
 	<WikiPage>
@@ -22681,7 +23150,7 @@
 	</Keyword>
 	<Description>
 		Sets the text and command for the menu item. index is index as returned from addMenuItem command. command is optional.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -22711,7 +23180,9 @@
 	</Keyword>
 	<Description>
 		Returns current weapon mode of unit's weapon. Result can be: "Single", "Burst", "FullAuto", "manual", "player"
+	⚠
 	This command will return 0 Number if given object is a vehicle instead of a person.
+	You can alternatively use $Code$_muzzle = weaponState player select 2;$/Code$
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/currentWeaponMode
@@ -23438,7 +23909,7 @@
 	</Keyword>
 	<Description>
 		Closes the current overlay without committing.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -23616,6 +24087,36 @@
 </NextListItem>
 
 	<Keyword>
+		owner
+	</Keyword>
+	<Description>
+		On server machine, returns the ID of the client where the object is local. Otherwise returns 0. For use on clients clientOwner command is available. To find out the owner of a Group, use groupOwner.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/owner
+	</WikiPage>
+	<Syntax>
+		owner Object
+	</Syntax>
+	<RawSyntax>
+		owner object
+	</RawSyntax>
+	<Example>
+		$Code$_clientID = owner _someobject;$/Code$
+	</Example>
+	<Locality>
+		global / undefined
+	</Locality>
+	<Note>
+		This scripting command must be executed on the server to work properly in multiplayer
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		onPlayerDisconnected
 	</Keyword>
 	<Description>
@@ -23625,7 +24126,7 @@
 	_name : String - is profileName of the leaving player.
 	_jip : ( since Arma 3 v1.49 ) Boolean - is a flag that indicated whether or not the player joined after the mission has started ( J oined I n P rogress). true - if the player was JIP, otherwise false.
 	_owner : ( since Arma 3 v1.49 ) Number - is owner id of the leaving player. Can be used for kick or ban purposes or just for publicVariableClient.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: PlayerDisconnected
 	In order to keep compatibility between official and community content the functions BIS_fnc_addStackedEventHandler and BIS_fnc_removeStackedEventHandler should be used instead.
 	</Description>
@@ -23658,36 +24159,6 @@
 	</Note>
 	<ReturnValue>
 		Nothing
-	</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
-		owner
-	</Keyword>
-	<Description>
-		On server machine, returns the ID of the client where the object is local. Otherwise returns 0. For use on clients clientOwner command is available. To find out the owner of a Group, use groupOwner.
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/owner
-	</WikiPage>
-	<Syntax>
-		owner Object
-	</Syntax>
-	<RawSyntax>
-		owner object
-	</RawSyntax>
-	<Example>
-		$Code$_clientID = owner _someobject;$/Code$
-	</Example>
-	<Locality>
-		global / undefined
-	</Locality>
-	<Note>
-		This scripting command must be executed on the server to work properly in multiplayer
-	</Note>
-	<ReturnValue>
-		Number
 	</ReturnValue>
 
 </NextListItem>
@@ -23954,57 +24425,6 @@
 </NextListItem>
 
 	<Keyword>
-		faction
-	</Keyword>
-	<Description>
-		Gets unit faction. Factions are defined under CfgFactionClasses. If the given faction is not defined, the command returns empty string. Standard Factions include:
-	West: "USMC", "CDF"
-	East: "RU", "INS"
-	Guer: "GUE"
-	Civ: "CIV", "CIV_RU"
-	West: "BIS_US", "BIS_CZ", "BIS_GER"
-	East: "BIS_TK", "BIS_TK_INS"
-	Guer: "BIS_TK_GUE", "BIS_UN"
-	Civ: "BIS_TK_CIV", "BIS_CIV_special"
-	British Armed Forces DLC
-	West: "BIS_BAF"
-	Private Military Company DLC
-	Guer: "PMC_BAF"
-	West: "BLU_F" (NATO), "BLU_G_F" (FIA)
-	East: "OPF_F" (CSAT), "OPF_G_F" (FIA)
-	Guer: "IND_F" (AAF), "IND_G_F" (FIA)
-	Civ: "CIV_F" (Civilians)
-	Arma 3 - APEX
-	West: "BLU_T_F" (Pacific NATO), "BLU_CTRG_F" (Pacific CTRG), "BLU_GEN_F" (Gendarmerie)
-	East: "OPF_T_F"
-	Guer: "IND_C_F" (Syndikat)
-	"CIV_IDAP_F"
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/faction
-	</WikiPage>
-	<Syntax>
-		faction Object
-	</Syntax>
-	<RawSyntax>
-		faction unitName
-	</RawSyntax>
-	<Example>
-		$Code$_playersFaction = faction player ;$/Code$
-	</Example>
-	<Locality>
-		global / undefined
-	</Locality>
-	<Note>
-		Faction behaves slightly differently to side. Side can refer to the pilot or commander of a vehicle, but faction never changes. It always returns the 'country of manufacture'.
-	</Note>
-	<ReturnValue>
-		String
-	</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
 		fogParams
 	</Keyword>
 	<Description>
@@ -24029,6 +24449,61 @@
 	</Note>
 	<ReturnValue>
 		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		faction
+	</Keyword>
+	<Description>
+		Gets unit faction. Factions are defined under CfgFactionClasses. If the given faction is not defined, the command returns empty string. Standard Factions include:
+	1.00 Arma 2
+	West: "USMC", "CDF"
+	East: "RU", "INS"
+	Guer: "GUE"
+	Civ: "CIV", "CIV_RU"
+	1.62 Arma 2 - Operation Arrowhead
+	West: "BIS_US", "BIS_CZ", "BIS_GER"
+	East: "BIS_TK", "BIS_TK_INS"
+	Guer: "BIS_TK_GUE", "BIS_UN"
+	Civ: "BIS_TK_CIV", "BIS_CIV_special"
+	British Armed Forces DLC
+	West: "BIS_BAF"
+	Private Military Company DLC
+	Guer: "PMC_BAF"
+	1.00 Arma 3
+	West: "BLU_F" (NATO), "BLU_G_F" (FIA)
+	East: "OPF_F" (CSAT), "OPF_G_F" (FIA)
+	Guer: "IND_F" (AAF), "IND_G_F" (FIA)
+	Civ: "CIV_F" (Civilians)
+	Arma 3 - APEX
+	West: "BLU_T_F" (Pacific NATO), "BLU_CTRG_F" (Pacific CTRG), "BLU_GEN_F" (Gendarmerie)
+	East: "OPF_T_F"
+	Guer: "IND_C_F" (Syndikat)
+	1.76 Arma 3 - Laws of War DLC
+	"CIV_IDAP_F"
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/faction
+	</WikiPage>
+	<Syntax>
+		faction Object
+	</Syntax>
+	<RawSyntax>
+		faction unitName
+	</RawSyntax>
+	<Example>
+		$Code$_playersFaction = faction player ;$/Code$
+	</Example>
+	<Locality>
+		global / undefined
+	</Locality>
+	<Note>
+		Faction behaves slightly differently to side. Side can refer to the pilot or commander of a vehicle, but faction never changes. It always returns the 'country of manufacture'.
+	</Note>
+	<ReturnValue>
+		String
 	</ReturnValue>
 
 </NextListItem>
@@ -24137,6 +24612,7 @@
 	* EH works only in Multiplayer environment.
 	* EH will not fire on the machine that executed broadcast command, only on the machines that receive the broadcast.
 	* The value of broadcast variable can be exactly the same, it is the actual broadcast that triggers EH not the change in variable.
+	⚠
 	Alt syntax of this command doesn't work as intended
 	</Description>
 	<WikiPage>
@@ -24542,7 +25018,7 @@
 	</Keyword>
 	<Description>
 		Sets given event handler of given editor.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -24564,6 +25040,37 @@
 	</Note>
 	<ReturnValue>
 		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		saveIdentity
+	</Keyword>
+	<Description>
+		Saves person's identity to Objects.sav file in campaign directory as entry name.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/saveIdentity
+	</WikiPage>
+	<Syntax>
+		Object saveIdentity String
+	</Syntax>
+	<RawSyntax>
+		unitName saveIdentity name
+	</RawSyntax>
+	<Example>
+		$Code$player saveIdentity "playerid"$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+		(August 12, 2006)
+	Can be also used in singleplayer missions to save player status before cutscenes and load it to player's double.
+	</Note>
+	<ReturnValue>
+		Boolean
 	</ReturnValue>
 
 </NextListItem>
@@ -24618,37 +25125,6 @@
 	</Note>
 	<ReturnValue>
 		Script_Handle
-	</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
-		saveIdentity
-	</Keyword>
-	<Description>
-		Saves person's identity to Objects.sav file in campaign directory as entry name.
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/saveIdentity
-	</WikiPage>
-	<Syntax>
-		Object saveIdentity String
-	</Syntax>
-	<RawSyntax>
-		unitName saveIdentity name
-	</RawSyntax>
-	<Example>
-		$Code$player saveIdentity "playerid"$/Code$
-	</Example>
-	<Locality>
-		undefined / undefined
-	</Locality>
-	<Note>
-		(August 12, 2006)
-	Can be also used in singleplayer missions to save player status before cutscenes and load it to player's double.
-	</Note>
-	<ReturnValue>
-		Boolean
 	</ReturnValue>
 
 </NextListItem>
@@ -25176,6 +25652,7 @@
 	</Keyword>
 	<Description>
 		Sets camera dive angle. Does not commit changes.
+	⚠
 	This command is non-functional !
 	</Description>
 	<WikiPage>
@@ -25266,6 +25743,9 @@
 	</NextNote>
 		(March 24, 2017)
 	When adding multiple diary records, be aware that they appear in reverse order. ie the first one you add will appear last and the last one you add will be first.
+	</NextNote>
+		(May 21, 2018)
+	To add an entry under the 'Briefing' subject, which is available by default, use "Diary" as the subject.
 	</Note>
 	<ReturnValue>
 		String
@@ -25438,7 +25918,7 @@
 	</Keyword>
 	<Description>
 		Show/hide map legend.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -25551,6 +26031,14 @@
 	</RawSyntax>
 	<Example>
 		$Code$helicopter1 say3D "Fortunateson"$/Code$
+	</NextExample>
+		$Code$// Workaround for dead bodies.
+	private _dummy = "#particlesource" createVehicleLocal ASLToAGL getPosWorld _corpse;
+	_dummy say3D "whatever";
+	_dummy spawn {
+	sleep 5; //Atleast the length of your sound
+	deleteVehicle _this;
+	};$/Code$
 	</Example>
 	<Locality>
 		global / local
@@ -25563,9 +26051,6 @@
 	In Arma 2 1.63, the object this command is assigned to must be alive for the sound to broadcast. If the object is killed while the sound is still playing, the sound will stop immediately.
 	Here is a link to the forum to get around this issue: [1]
 	I have not tested this in Arma 3 yet.
-	</NextNote>
-		(October 13, 2016)
-	This command is local.
 	</NextNote>
 		(March 11, 2017)
 	This command creates sound object "#soundonvehicle" which can be detected with allMissionObjects :
@@ -25700,7 +26185,7 @@
 	<Description>
 		Creates a list of supported operators and type. Each field of array has the format: "x:name" Where x can be:
 	't' - type
-	'n' - null operator
+	'n' - nullar operator
 	'u' - unary operator
 	'b' - binary operator.
 	'name' is the operator or type name (in case operator, type of input operands is included).
@@ -25725,11 +26210,6 @@
 		undefined / undefined
 	</Locality>
 	<Note>
-		(July 22nd, 2012)
-	With CBA one can create a list of all available SQF commands in the RPT
-	[supportInfo ""] call cba_fnc_debug;
-	One can get CBA here.
-	</NextNote>
 		(September 24, 2014)
 	To get the list of all supported commands in Arma 3 one can simply:
 	$Code${ diag_log _x} forEach supportInfo "";$/Code$
@@ -25778,6 +26258,7 @@
 	</Keyword>
 	<Description>
 		Allows loading of lightning config during the gameplay (effectively changing the current scene lightning). Filename path can be either absolute or relative. The file must contain only the class LightningNew, which should contain lightning configuration.
+	⚠
 	Command is only available when using Arma 3 Diagnostics Exe on Dev-Branch.
 	</Description>
 	<WikiPage>
@@ -25945,7 +26426,8 @@
 		enableTeamSwitch enable
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$enableTeamSwitch true ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -26177,7 +26659,8 @@
 		isHidden person
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_bobIsHidden = isHidden bob;$/Code$
+	</Example>
 	<Locality>
 		global / undefined
 	</Locality>
@@ -26195,7 +26678,7 @@
 		magazinesAmmoFull
 	</Keyword>
 	<Description>
-		Returns array of arrays of all vehicle's magazines with extended information about them.
+		Returns array of arrays of all vehicle's magazines with extended information about them. Magazine type is available for loaded magazines only, otherwise it is -1.
 	Output format :
 	[[magazine1],[magazine2],[magazine3]...[magazineN]]
 	Magazine format :
@@ -26836,7 +27319,8 @@
 		unit hcRemoveGroup group
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$player hcRemoveGroup BIS_group;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -26943,7 +27427,7 @@
 		$Code$_PS setParticleRandom [0, [0.1, 0.1, 0.1], [0, 0, 0.5], 0, 0.1, [0, 0, 0, 0], 0, 0];$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		undefined / local
 	</Locality>
 	<Note>
 		(July 03, 2013)
@@ -27033,7 +27517,8 @@
 		simpleTasks person
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_tasks = simpleTasks player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -27078,7 +27563,9 @@
 		find
 	</Keyword>
 	<Description>
-		Searches for an array element within array or a string within a string. Returns the 0 based index on success or -1 if not found. Search is cASe-seNsItiVE
+		Searches for an array element within array or a string within a string. Returns the 0 based index on success or -1 if not found.
+	⚠
+	Search is cASe-seNsItiVE!
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/find
@@ -27202,13 +27689,13 @@
 	<Description>
 		Enables or disables a trait or alters a trait of the given unit. Custom trait can only be a bool.
 	Default traits are:
-	audibleCoef (scalar)
-	camouflageCoef (scalar)
-	engineer (bool) - Ability to repair vehicles and defuse mines using toolkit
-	explosiveSpecialist (bool) - Ability to defuse mines using toolkit
-	loadCoef (scalar) - Equipment weight multiplier affecting fatigue and stamina
-	medic (bool) - Ability to use medikit on self and others
-	UAVHacker (bool)
+	Number audibleCoef - A lower value means the unit is harder to hear
+	Number camouflageCoef - A lower value means the unit is harder to spot
+	Number loadCoef - Equipment weight multiplier affecting fatigue and stamina
+	Boolean engineer - Ability to partially repair vehicles with toolkit, equivalent to engineer = 1; in CfgVehicles
+	Boolean explosiveSpecialist - Ability to defuse mines with toolkit, equivalent to canDeactivateMines = 1; in CfgVehicles
+	Boolean medic - Ability to treat self and others with medikit, equivalent to attendant = 1; in CfgVehicles
+	Boolean UAVHacker - Ability to hack drones, equivalent to uavHacker = 1; in CfgVehicles
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setUnitTrait
@@ -27217,7 +27704,7 @@
 		Object setUnitTrait Array
 	</Syntax>
 	<RawSyntax>
-		unit setUnitTrait [skill_name, value, isCustom]
+		unit setUnitTrait [skillName, value, isCustom]
 	</RawSyntax>
 	<Example>
 		$Code$player setUnitTrait ["Medic", true ];$/Code$
@@ -27230,7 +27717,7 @@
 	The higher the value for the loadCoef the less stamina a unit has. Negative values will dramatically increase the stamina actually to a point where it extends the stamina bar.
 	</NextNote>
 		(October 20, 2017)
-	explosive specialists can defuse mines (ie satchel charges), whilst engineers cannot.
+	explosiveSpecialist trait can defuse mines (i.e. satchel charges), whilst the engineer trait alone cannot.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -27733,7 +28220,7 @@
 		weaponLowered unit
 	</RawSyntax>
 	<Example>
-		$Code$isWeaponLowered = weaponLowered player;$/Code$
+		$Code$isWeaponLowered = weaponLowered player ;$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -27825,7 +28312,7 @@
 		waypointLoiterType Waypoint
 	</Syntax>
 	<RawSyntax>
-		waypointLoiterType Waypoint
+		waypointLoiterType waypoint
 	</RawSyntax>
 	<Example>
 		$Code$_type = waypointLoiterType [groupOne, 1]$/Code$
@@ -28340,7 +28827,8 @@
 		setDriveOnPath
 	</Keyword>
 	<Description>
-		Sets the path to follow for AI driver
+		Sets the path to follow for AI driver. Note that unitReady will return true even if AI is still driving through the points.
+	Using any other move command (e.g vehicleName move getPos vehicleName$/Code$ ) will stop the effect of this command.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setDriveOnPath
@@ -28349,10 +28837,14 @@
 		Object setDriveOnPath Array
 	</Syntax>
 	<RawSyntax>
-		vehicleName setDriveOnPath [points]
+		vehicleName setDriveOnPath points
 	</RawSyntax>
 	<Example>
-		$Code$myVehicle setDriveOnPath [[1000,10,1000],[1100,10,1000]]$/Code$
+		$Code$myVehicle setDriveOnPath [ getMarkerPos "wp1", getMarkerPos "wp2"];$/Code$
+	</NextExample>
+		$Code$_points = allMapMarkers apply { getMarkerPos _x; }; // getting all marker positions
+	{ _x pushBack 15; } forEach _points; // setting speed
+	myVehicle setDriveOnPath _points;$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -28708,7 +29200,7 @@
 		obj modelToWorldWorld modelPos
 	</RawSyntax>
 	<Example>
-		$Code$( getPos player ) modelToWorldWorld [0,1,0]$/Code$
+		$Code$player modelToWorldWorld [0,1,0]$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -28716,7 +29208,7 @@
 	<Note>
 		(May 28, 2017)
 	This command produces identical result to modelToWorld command used in conjunction with AGLToASL
-	$Code$obj modelToWorldWorld [1,2,3] isEqualTo AGLToASL (obj modelToWorld [1,2,3]); // true$/Code$
+	$Code$obj modelToWorldWorld [1,2,3] isEqualTo AGLToASL (obj modelToWorld [1,2,3]); // true $/Code$
 	</Note>
 	<ReturnValue>
 		Array
@@ -29058,7 +29550,7 @@
 		expectedDestination
 	</Keyword>
 	<Description>
-		Return expected destination of unit as an array with format: [ Position, planningMode, forceReplan].
+		Return expected destination of unit as an array.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/expectedDestination
@@ -29070,7 +29562,8 @@
 		expectedDestination person
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_data = expectedDestination player ;$/Code$
+	</Example>
 	<Locality>
 		local / undefined
 	</Locality>
@@ -29088,7 +29581,7 @@
 		drawLine
 	</Keyword>
 	<Description>
-		Draw a line on the map.
+		Draw a line on the map. Can decrease framerate!
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/drawLine
@@ -29100,20 +29593,18 @@
 		map drawLine [position1, position2, color]
 	</RawSyntax>
 	<Example>
-		</Example>
-	<Locality>
-		undefined / undefined
-	</Locality>
-	<Note>
-		(March 22, 2014)
-	Map example: $Code$( findDisplay 12 displayCtrl 51) ctrlAddEventHandler ["Draw","
-	( _this select 0) drawLine [
+		$Code$( findDisplay 12 displayCtrl 51) ctrlAddEventHandler ["Draw","
+	(_this select 0) drawLine [
 	getPos player,
 	[0,0,0],
 	[0,0,1,1]
 	];
 	"];$/Code$
-	Be careful when using this command. Unlike map markers, the draw commands can decrease your framerate.
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -29159,7 +29650,7 @@
 	</Keyword>
 	<Description>
 		The editor will draw a line between the two specified editor objects. Line type can be LINE or ARROW.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -29731,7 +30222,7 @@
 	</Keyword>
 	<Description>
 		Defines an action performed when player moves pointer over group marker (3D or in a map). The code will execute continuously while pointer is over icon.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: GroupIconOverEnter
 	</Description>
 	<WikiPage>
@@ -30039,7 +30530,8 @@
 		clearGroupIcons group
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$clearGroupIcons ( group player );$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -30496,6 +30988,35 @@
 </NextListItem>
 
 	<Keyword>
+		getDLCAssetsUsage
+	</Keyword>
+	<Description>
+		Returns an array of the DLC usage times.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getDLCAssetsUsage
+	</WikiPage>
+	<Syntax>
+		getDLCAssetsUsage
+	</Syntax>
+	<RawSyntax>
+		getDLCAssetsUsage
+	</RawSyntax>
+	<Example>
+		$Code$_dlcAssetsUsageInfo = getDLCAssetsUsage ;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		assignAsCargo
 	</Keyword>
 	<Description>
@@ -30511,8 +31032,8 @@
 		unitName assignAsCargo vehicleName
 	</RawSyntax>
 	<Example>
-		$Code$_soldier1 assignAsCargo _truck
-	[_soldier1] orderGetIn true$/Code$
+		$Code$_soldier1 assignAsCargo _truck;
+	[_soldier1] orderGetIn true ;$/Code$
 	</Example>
 	<Locality>
 		global / global
@@ -31323,6 +31844,7 @@
 	</Keyword>
 	<Description>
 		Returns an array of config entries which meet criteria in condition code. Command iterates through all available config sub classes of the given config class. Current looked at config is stored in _x variable (similar to alternative count command implementation). Condition has to return true in order for the looked at config to be added to the resulting array. Slightly faster than configProperties, but doesn't account for config properties or inherited entries.
+	⚠
 	The condition code passed to configClasses should only be used for simple filter expressions and nothing more
 	</Description>
 	<WikiPage>
@@ -31502,7 +32024,7 @@
 		$Code$_source setDropInterval 0.05;$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		global / local
 	</Locality>
 	<Note>
 	</Note>
@@ -31547,6 +32069,7 @@
 	</Keyword>
 	<Description>
 		Select the subject page in a log.
+	This command seems to be broken in 1.82. Use BIS_fnc_selectDiarySubject instead.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/selectDiarySubject
@@ -31558,7 +32081,8 @@
 		person selectDiarySubject subject
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$player selectDiarySubject "someSubject";$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -31904,7 +32428,8 @@
 		agent teamMember
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_obj = agent teamMember _unit;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -32092,6 +32617,40 @@
 	</Note>
 	<ReturnValue>
 		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getTerrainGrid
+	</Keyword>
+	<Description>
+		Returns the current terrain grid
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getTerrainGrid
+	</WikiPage>
+	<Syntax>
+		getTerrainGrid
+	</Syntax>
+	<RawSyntax>
+		getTerrainGrid
+	</RawSyntax>
+	<Example>
+		$Code$_terrainGrid = getTerrainGrid ;$/Code$
+	</NextExample>
+		$Code$if ( getTerrainGrid 50) then
+	{
+	hint "Grass is enabled";
+	};$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Number
 	</ReturnValue>
 
 </NextListItem>
@@ -32780,7 +33339,7 @@
 	"WHITE" = Hold fire, engage at will
 	"YELLOW" = Fire at will
 	"RED" = Fire at will, engage at will
-	See Arma AI Engagement rules for more informations on combat modes.
+	See Combat Modes for more information on combat modes.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setCombatMode
@@ -32809,68 +33368,71 @@
 		knowsAbout
 	</Keyword>
 	<Description>
-		Checks if a group or a side knows about target. If who is a unit, unit's group is considered, if who is a vehicle, commander's group is considered.
+		Checks if a group or a side knows about target.
+	Enemy knowledge is instantly shared among the group units
+	Units in the same group always perfectly know about each others
+	AI knowledge cannot check beyond current viewDistance and it resets to zero as soon as the target's distance is over it Note: neither fog nor daylight affect this behaviour
+	Losing sight of a target for more than 120 seconds resets its knowsAbout to zero as well
+	Magic number is the value that must be reached for a unit to shoot at an enemy (used by "Detected by" triggers as well):
+	Game
+	1.46
+	1.96
+	1.18
+	1.11
+	1.62
+	1.82
+	Magic value
+	0.7
+	0.105
+	?
+	?
+	?
+	?
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/knowsAbout
 	</WikiPage>
 	<Syntax>
-		Object/Group knowsAbout Object
-	</NextSyntax>
-		Side knowsAbout Object
+		Object/Group/Side knowsAbout Object
 	</Syntax>
 	<RawSyntax>
 		who knowsAbout target
-	</NextRawSyntax>
-		side knowsAbout target
 	</RawSyntax>
 	<Example>
-		$Code$_kv = _soldierOne knowsAbout _jeepOne;$/Code$
+		$Code$_knowledge = player knowsAbout _target;$/Code$
 	</NextExample>
-		$Code$_kv = ( side player ) knowsAbout _target;$/Code$
+		$Code$_knowledge = ( group player ) knowsAbout _target;$/Code$
+	</NextExample>
+		$Code$_knowledge = ( side player ) knowsAbout _target;$/Code$
 	</Example>
 	<Locality>
-		global / undefined
+		local / undefined
 	</Locality>
 	<Note>
 		(August 4, 2006)
-	Notes from before the conversion:
-	With Resistance (1.91) : No matter what class of unit the target is and no matter what the skill/class of the enemy AI, the magic 'knowsAbout' number is 0.105.
-	With CWC (1.46) : No matter what class of unit the target is and no matter what the skill/class of the enemy AI, the magic 'knowsAbout' number is 0.7.
-	What this means is, the AI will not fire on an enemy soldier until his 'knowsAbout' level of that enemy has reached the 'magic number' or higher.
-	This suggests that the knowsabout level must reach the magic threshold before a unit knows if another unit is an enemy or a friendly unit.
-	Triggers and knowsabout level: "Detected by xxx" triggers also follow the above rules. For a detected trigger to be set off, the knowsAbout level must reach the magic number.
-	Also... As soon as An AI unit gets hit with a bullet his knowsAbout level for the unit that shot him will instantly jump to 1.5, even if the shooter is 1000m away. Vice versa is also true. If An AI soldier's knowsAbout level for an enemy is 0.7 and the soldier fires and hits the enemy, his knowsAbout level about the enemy will instantly jump to 1.5. Some editors have found, whilst using this command over the years, that the following characteristics have cropped up:
+	1.91
+	As soon as An AI unit gets hit with a bullet his knowsAbout level for the unit that shot him will instantly jump to 1.5, even if the shooter is 1000m away. Vice versa is also true. If An AI soldier's knowsAbout level for an enemy is 0.7 and the soldier fires and hits the enemy, his knowsAbout level about the enemy will instantly jump to 1.5.
+	Some editors have found, whilst using this command over the years, that the following characteristics have cropped up:
 	AI enemies have a very limited amount of peripheral vision, it's not nearly as good as a human player's. A target must be in front of the unit for him to be noticed, so if you sprint right behind an enemy, this value doesn't increase.
-	Depending on the units skill level, it can take a little time for the unit to notice a target. So if you run right past a unit, this value might not increase.
-	Bushes between the unit and the target seem to have little effect on this value, and trees definitely have no affect. You may be in a forest, and can't see the unit, but he can see you.
-	MP Note knowsAbout returns a viable result only if left-hand parameter unit is local.
+	Depending on the unit's skill level, it can take a little time for the unit to notice a target. So if you run right past a unit, this value might not increase.
+	Bushes between the unit and the target seem to have little effect on this value, and trees definitely have no effect. You may be in a forest and can't see the unit, but he can see you.
 	</NextNote>
-		(January 15, 2007)
-	In OFP v1.96, KnowsAbout return values range from 0 to 4.
-	All units in a group have equal knowsAbout for any given target. All units in a group always return knowsAbout 4 about each other. This suggests groups share a single knowledge base.
-	Without any contact with the target, the knowsAbout value decays at a linear rate so that it halves over 120 seconds. After this time is up knowsAbout drops instantly to 0.
-	If the distance between the all of unit's group and the target exceeds the viewdistance setting, knowsAbout instantly drops to 0. This is not changed by fog or daylight.
-	Note that in OFP unit see all the targets that his group members see. The data is processed between teammembers freely.
-	</NextNote>
-		the magic 'knowsAbout' number is 0.105. It's not that simple.Maybe true for infantry but not all vehicles. "Reveal" command sets knowsAbout to 1, but planes still won't fire at soldiers on the ground. There's only one known way to pass through this - designate target with another fake infantry unit near the target. As soon as this fake unit see the target knowsAbout lifts up to 2.5-4 and even single enemy soldiers are attacked rom the air (of course if plane has suitable munition :))
-	</NextNote>
-		(July 05, 2009)
-	In ArmA (other not tested), KnowsAbout value will stay at its highest value during approximately 2-3 min and then reinitialized.
-	</NextNote>
-		(January 14, 2012)
-	Notes are for OA 1.60 :
-	The KnowsAbout value drops immediately back to zero, if the distance between both units is larger than the local viewDistance value.
-	After 110 seconds without (visible?) contact, the KnowsAbout value drops to zero again. While it seemed to take longer the higher the KnowsAbout value is (at least for a value of 4 it took almost six minutes at one point), I was unable to reproduce/confirm that. It is 110 seconds no matter how high the KnowsAbout value it seems.
+		(January 16, 2007)
+	the magic knowsAbout number is 0.105 It's not that simple. Maybe true for infantry but not all vehicles:
+	Reveal command sets knowsAbout to 1, but planes still won't fire at soldiers on the ground.
+	There's only one known way to pass through this - designate target with another fake infantry unit near the target.
+	As soon as this fake unit see the target knowsAbout lifts up to 2.5-4 and even single enemy soldiers are attacked from the air (of course if plane has suitable munition :))
 	</NextNote>
 		(June 13, 2012)
-	By Suma ( source ):
-	All friendly units within a view distance to each unit [are revealed (to the player? or each friendly?)] on the mission start. The code is half broken, as it does not make the units known, it only sets the "accuracy" value for them. Note: This is not affecting enemy units at all.
+	According to Suma :
+	All friendly units within a view distance to each unit [are revealed (to the player? or each friendly?)] on the mission start.
+	The code is half broken, as it does not make the units known, it only sets the "accuracy" value for them.
+	Note: This is not affecting enemy units at all.
 	</NextNote>
 		(March 27, 2013)
-	Arma-II OA (1.62.101.480 @ACE), tests with infantry:
-	It is still true, that the command returns values between 0 (lowest) and 4 (most). Freshly Spotted units will have at least 1.5, slowly decreasing when the target disappeared.
-	The following Table shows my test results on a clear day at Takistan using the Vector. Please note that the returned values vary considerably depending on weather and time. Moonlight however seems to not have any considerable effect.
+	1.62 infantry tests:
+	It is still true that the command returns values between 0 (lowest) and 4 (most). Freshly Spotted units will have at least 1.5, slowly decreasing when the target disappeared.
+	The following table shows my test results on a clear day in Takistan using the Vector. Please note that the returned values vary considerably depending on weather and time. Moonlight however seems to not have any considerable effect.
 	12:00, sunlight, clear sky
 	Distance
 	knowsAbout
@@ -32929,12 +33491,170 @@
 	278
 	2.4
 	</NextNote>
-		(May 31, 2014)
-	Can also use SIDE in place of UNIT. For example:
-	$Code$EAST knowsAbout player ;$/Code$
+		(June 3, 2018)
+	1.82 knowsAbout tests, player moving towards enemy AI, facing each other:
+	Tests executed in VR, default date (2035-05-28), with AI behaviour "AWARE"
+	Daytime
+	AI equipment
+	AI skill and rank
+	player stance and speed
+	player outfit
+	first detection distance
+	first detection value
+	max detection (4)
+	13:37
+	Katiba + ACO (Green)
+	0.5 - private
+	Standing, running
+	B_Soldier_F
+	245.663
+	0.148076
+	132.863
+	13:37
+	Katiba + ACO (Green)
+	0.5 - private
+	Standing, running
+	underwear only, rifle
+	246.815
+	1.19377
+	132.9
+	13:37
+	Katiba + ACO (Green)
+	0.5 - private
+	Standing, running
+	B_Soldier_F,  no uniform
+	241.885
+	1.24
+	132.56
+	13:37
+	Katiba + ACO (Green)
+	0.5 - private
+	Standing, running
+	B_Sniper_F
+	156.715
+	2.95534
+	133.019
+	13:37
+	Katiba + ACO (Green)
+	0.5 - private
+	Lying down, running
+	B_Soldier_F
+	105.401
+	4
+	105.401
+	13:37
+	Katiba + ACO (Green)
+	0.5 - private
+	Crouching, running
+	B_Soldier_F
+	193.232
+	1.94615
+	134.556
+	13:37
+	Katiba + ACO (Green)
+	0.5 - private
+	Standing, sprinting
+	B_Soldier_F
+	235.001
+	1.3146
+	134.445
+	13:37
+	Katiba + ACO (Green)
+	0.2 - private
+	Standing, running
+	B_Soldier_F
+	214
+	0.166763
+	124.553
+	13:37
+	Katiba + ACO (Green)
+	1.0 - private
+	Standing, running
+	B_Soldier_F
+	293.065
+	1.11004
+	140.088
+	13:37
+	Katiba + ACO (Green)
+	0.5 - colonel
+	Standing, running
+	B_Soldier_F
+	245.641
+	1.20426
+	132.113
+	13:37
+	no weapon
+	0.5 - private
+	Standing, running
+	B_Soldier_F
+	421.959
+	0.283476
+	109.274
+	13:37
+	Katiba + LRPS
+	0.5 - private
+	Standing, running
+	B_Soldier_F
+	244.962
+	4
+	244.962
+	20:00
+	Katiba + ACO (Green)
+	0.5 - private
+	Standing, running
+	B_Soldier_F
+	132.089
+	0.62443
+	49.4895
+	20:00
+	Katiba + ACO (Green), no NVG
+	0.5 - private
+	Standing, running
+	B_Soldier_F
+	10.6837
+	4
+	10.6837
+	Code used:
+	Show text
+	player allowDamage false;
+	player enableFatigue false;
+	player setPosATL [0,0,0];
+	player setDir 0;
+	unit setPosATL [0,500,0];
+	unit setDir 180;
+	waitUntil {speed player 0};
+	[unit, player] spawn {
+	params ["_unit1", "_unit2"];
+	private _time = time;
+	private _knowsAboutData = [
+	format ["world = %1\ndate = %2\nanim = %3\nweapon/scope = %4/%5\nskill/rank = %6/%7\nplayerType = %8",
+	worldName,
+	date,
+	animationState player,
+	primaryWeapon _unit1,
+	(_unit1 weaponAccessories primaryWeapon _unit1) select 2,
+	skill _unit1,
+	rank _unit1,
+	typeOf _unit2
+	]
+	];
+	private "_knowsAbout";
+	private "_entry";
+	while { alive _unit1 && alive _unit2 } do
+	{
+	_knowsAbout = _unit1 knowsAbout _unit2;
+	_entry = [_unit1 distance _unit2, _knowsAbout];
+	_knowsAboutData pushBack _entry;
+	systemChat format ["time: %1 - %2", round (time - _time), _entry];
+	copyToClipboard str _knowsAboutData;
+	sleep 1;
+	};
+	};
+	64.86% 1.613 10 Template:=
+	-->
 	</Note>
 	<ReturnValue>
-		Number - Number
+		Number
 	</ReturnValue>
 
 </NextListItem>
@@ -32973,6 +33693,7 @@
 	</Keyword>
 	<Description>
 		Returns ammo count of given type from given turret
+	⚠
 	Broken when vehicle has multiple magazines of the same type
 	</Description>
 	<WikiPage>
@@ -33205,7 +33926,8 @@
 		teamSwitchEnabled
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_enabled = teamSwitchEnabled ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -33369,6 +34091,35 @@
 </NextListItem>
 
 	<Keyword>
+		enableStressDamage
+	</Keyword>
+	<Description>
+		Toggles stress damage. The same as toggling it in the game settings.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/enableStressDamage
+	</WikiPage>
+	<Syntax>
+		enableStressDamage Boolean
+	</Syntax>
+	<RawSyntax>
+		enableStressDamage state
+	</RawSyntax>
+	<Example>
+		$Code$enableStressDamage true;$/Code$
+	</Example>
+	<Locality>
+		local / local
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		setPosASL
 	</Keyword>
 	<Description>
@@ -33461,7 +34212,7 @@
 	</Locality>
 	<Note>
 		(20 Jun, 2014)
-	(ArmA3 1.22) setVelocity will be affected by setDir and setVectorDirAndUp. So use it after them.
+	(ArmA3 1.22) setVelocity will be affected by setDir and setVectorDirAndUp, so use it after them.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -33673,7 +34424,6 @@
 	</Keyword>
 	<Description>
 		Returns a list of all DLCs objects the unit is currently using. For example if a unit is inside a vehicle from DLC, it will return the code of that DLC.
-	This command is broken and doesnt work on dedicated server
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/getPersonUsedDLCs
@@ -33789,7 +34539,7 @@
 		$Code$player addVest "V_TacVest_blk_POLICE";$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		global / global
 	</Locality>
 	<Note>
 	</Note>
@@ -33949,6 +34699,8 @@
 	<Description>
 		Define a comment.
 	Mainly used in SQF Syntax, as you're able to introduce comment lines with semicolons in a SQS script.
+	⚠
+	This command is evaluated during execution, and as such is infinitely slower than other SQF comment methods (//comment or /*comment*/; which do not exist at runtime). See SQF Syntax for additional documentation on comments.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/comment
@@ -33977,10 +34729,10 @@
 	seconde line";$/Code$
 	</NextNote>
 		(November 4, 2016)
-	If a file is loaded with preprocessFile, execVM or spawn (but not loadFile), you may also define C-like comments using //... and /*...*/.
+	If a file is loaded with preprocessFile, execVM or spawn (but not loadFile ), you may also define C-like comments using //... and /*...*/.
 	</NextNote>
 		(November 4, 2016)
-	comment can also be used to create comments inside trigger activation fields where // or */...*/ does not work.
+	comment can also be used to create comments inside trigger activation fields where // or /*...*/ don't work.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -34192,7 +34944,8 @@
 		setAnimSpeedCoef
 	</Keyword>
 	<Description>
-		Sets a coefficient for animation speed
+		Sets a coefficient for animation speed (0.5 will play animations half the speed, 2 twice the speed).
+	Doesn't affect upper body animations (reloading, etc.)
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setAnimSpeedCoef
@@ -34712,11 +35465,42 @@
 </NextListItem>
 
 	<Keyword>
+		setRotorBrakeRTD
+	</Keyword>
+	<Description>
+		Toggle a helicopter's rotor brake on or off.
+	0: off
+	1: on
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/setRotorBrakeRTD
+	</WikiPage>
+	<Syntax>
+		ObjectRTD setRotorBrakeRTD Number
+	</Syntax>
+	<RawSyntax>
+		helicopterRTD setRotorBrakeRTD enable
+	</RawSyntax>
+	<Example>
+		$Code$myHelicopterRTD setRotorBrakeRTD 1;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		deleteEditorObject
 	</Keyword>
 	<Description>
 		Delete the editor object. Requires all editor object links to be removed prior.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -34866,7 +35650,7 @@
 	</Keyword>
 	<Description>
 		Changes the fog smoothly over the the given TransitionTime (in seconds). A time of zero means there will be an immediate change. A fog intensity of zero is minimum fog and a fog level of one is maximum fog.
-	NOTE : Since Arma 3 this command is MP synchronised, if executed on server, the changes will propagate globally. If executed on client effect is temporary as it will soon change to the server setting.
+	This command is MP synchronised, if executed on server, the changes will propagate globally. If executed on client effect is temporary as it will soon change to the server setting.
 	A little information about how Alt Syntax works. The fogValue is normal fog value that could be set independently with original setFog command. fogBase is the ASL altitude at which the fog will start. 0 is the sea level. fogDecay is how defined the fog start is. The more defined, the denser is the fog. 1 (or -1) are the max values. If it is positive the fog will be generated below fogBase line, if negative, above it. If fogDecay is small, the fog will transition more smoothly from no fog to full fog, and because of that it will cross fogBase line by quite a lot, depending on how small is fogDecay value. Current values of fogDecay and fogBase can be retrieved with fogParams
 	</Description>
 	<WikiPage>
@@ -35040,7 +35824,7 @@
 	</Keyword>
 	<Description>
 		Remove all drawn links for the given editor object for the given editor,object type. Pass an empty string as param type to remove all draw,links for an object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -35137,7 +35921,7 @@
 	</Keyword>
 	<Description>
 		Clear the current overlay.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -35306,7 +36090,9 @@
 	</Keyword>
 	<Description>
 		Returns current muzzle of unit's weapon.
+	⚠
 	This command will return 0 Number if given object is a unit that is in a vehicle.
+	You can alternatively use $Code$_muzzle = weaponState player select 1;$/Code$
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/currentMuzzle
@@ -35378,7 +36164,8 @@
 		clearItemCargoGlobal box
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$clearItemCargoGlobal _ammoBox;$/Code$
+	</Example>
 	<Locality>
 		global / global
 	</Locality>
@@ -35651,7 +36438,7 @@
 		$Code$_uniform = uniform _unit$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		global / undefined
 	</Locality>
 	<Note>
 	</Note>
@@ -36451,7 +37238,9 @@
 		showWarrant
 	</Keyword>
 	<Description>
-		Enable ID card (default false ). Obsolete command.
+		Enable ID card.
+	⚠
+	Obsolete command
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/showWarrant
@@ -36463,7 +37252,8 @@
 		showWarrant show
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$-$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -36488,10 +37278,11 @@
 		className Location
 	</Syntax>
 	<RawSyntax>
-		className loc
+		className location
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_shortName = className myLocation;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -36736,7 +37527,8 @@
 		enableCaustics bool
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$enableCaustics true$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -37221,7 +38013,7 @@
 	</Keyword>
 	<Description>
 		Removes an icon for an editor object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -37504,7 +38296,8 @@
 		taskCustomData task
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_data = taskCustomData "someTask";$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -37952,6 +38745,37 @@
 </NextListItem>
 
 	<Keyword>
+		openSteamApp
+	</Keyword>
+	<Description>
+		Opens a Steam application, returns false if it wasn't possible to run the application.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/openSteamApp
+	</WikiPage>
+	<Syntax>
+		openSteamApp Number
+	</Syntax>
+	<RawSyntax>
+		openSteamApp appID
+	</RawSyntax>
+	<Example>
+		$Code$openSteamApp 553228$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+		(August 2, 2018)
+	It seems like it was limited to bohemia stuff. Like launching 'Arma 3 Community Guide Series: Zeus DLC'
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		sunOrMoon
 	</Keyword>
 	<Description>
@@ -38173,13 +38997,10 @@
 	</Locality>
 	<Note>
 		(September 25, 2014)
-	Returns array with date indicating when the mission has started (after briefing screen). In OFP this command is bugged – it works only in multiplayer on a player‐hosted machine and on a client. In single player it would return [0,0,0,0,0,0] and on a dedicated server – [1970,1,1,0,0,0]. In CWA this command is fixed.
+	Returns array with date indicating when the mission has started (after briefing screen). In OFP this command is bugged – it works only in multiplayer on a player-hosted machine and on a client. In single player it would return [0,0,0,0,0,0] and on a dedicated server – [1970,1,1,0,0,0]. In CWA this command is fixed.
 	</NextNote>
 		(December 30, 2014)
 	In arma 3 this command returns [0,0,0,0,0,0] in SP, [1970,1,1,0,0,0] on dedicated server and [1970,1,1,0,0,0] initially and then server real time on local headless client. On player clients it shows client's local date and time. Since Arma 3 v1.49 the dedicated server also returns correct mission start date.
-	</NextNote>
-		(August 27, 2015)
-	ArmA 3 1.50: This command now returns the correct values on dedicated server.
 	</Note>
 	<ReturnValue>
 		Array
@@ -38366,7 +39187,8 @@
 		shownCuratorCompass
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_isShown = shownCuratorCompass ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -38542,6 +39364,35 @@
 </NextListItem>
 
 	<Keyword>
+		ctrlSetPixelPrecision
+	</Keyword>
+	<Description>
+		Enable or disable pixel precision (rounding) in a given control interface.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/ctrlSetPixelPrecision
+	</WikiPage>
+	<Syntax>
+		Control ctrlSetPixelPrecision Number/String
+	</Syntax>
+	<RawSyntax>
+		controlName ctrlSetPixelPrecision mode
+	</RawSyntax>
+	<Example>
+		$Code$_control ctrlSetPixelPrecision 2; // Enables pixel precision of the given control$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		setFeatureType
 	</Keyword>
 	<Description>
@@ -38602,47 +39453,9 @@
 		global / local
 	</Locality>
 	<Note>
-		(September 19, 2013)
-	For ArmA 3 face can be any of the following:
-	AfricanHead_01
-	AfricanHead_02
-	AfricanHead_03
-	AsianHead_A3_01
-	AsianHead_A3_02
-	AsianHead_A3_03
-	GreekHead_A3_01
-	GreekHead_A3_02
-	GreekHead_A3_03
-	GreekHead_A3_04
-	GreekHead_A3_05
-	GreekHead_A3_06
-	GreekHead_A3_07
-	GreekHead_A3_08
-	GreekHead_A3_09
-	PersianHead_A3_01
-	PersianHead_A3_02
-	PersianHead_A3_03
-	NATOHead_01
-	WhiteHead_02
-	WhiteHead_03
-	WhiteHead_04
-	WhiteHead_05
-	WhiteHead_06
-	WhiteHead_07
-	WhiteHead_08
-	WhiteHead_09
-	WhiteHead_10
-	WhiteHead_11
-	WhiteHead_12
-	WhiteHead_13
-	WhiteHead_14
-	WhiteHead_15
-	</NextNote>
 		(unknown)
 	For ArmA 2 the face value is a string from Face01 to Face107. Camo faces are available as well, 6 per face. For example the full set of class names for face value 77 would be:
 	Face77, Face77_camo1, Face77_camo2, Face77_camo3, Face77_camo4, Face77_camo5 and Face77_camo6
-	All Armed Assault 1.08 faces plus tutorial,
-	Online gallery of 1.08 Armed Assault faces
 	a full list of Arma 2 faces
 	</Note>
 	<ReturnValue>
@@ -38667,7 +39480,8 @@
 		resources member
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$resources teamMember _unit;$/Code$
+	</Example>
 	<Locality>
 		global / local
 	</Locality>
@@ -38869,7 +39683,8 @@
 	$Code$ parseNumber (3.16666 toFixed 1); // 3.2$/Code$
 	</NextNote>
 		(April 3, 2018)
-	Before toFixed ( round (( getDir player ) * 100)) / 100
+	Before toFixed 1.66 and parseNumber 1.00, you could round with decimals with a dirty little "hack":
+	( round (( getDir player ) * 100)) / 100
 	</Note>
 	<ReturnValue>
 		Number
@@ -39256,6 +40071,7 @@
 	</Keyword>
 	<Description>
 		Sets the object position. The pos array uses the PositionASL format. The version of the command does not offset based on object center.
+	⚠
 	Appears to be broken
 	</Description>
 	<WikiPage>
@@ -39662,7 +40478,7 @@
 	</Keyword>
 	<Description>
 		Shifts an editor object to the end of the objects array. This means,that the object will be drawn last (after all other objects).
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -39703,7 +40519,8 @@
 		missionDifficulty
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_number = missionDifficulty ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -39929,7 +40746,8 @@
 		campaignConfigFile
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_config = campaignConfigFile ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -39987,6 +40805,8 @@
 	</RawSyntax>
 	<Example>
 		$Code$_myObject enableSimulationGlobal false;$/Code$
+	</NextExample>
+		$Code$[_object, false ] remoteExec ["enableSimulationGlobal",2];$/Code$
 	</Example>
 	<Locality>
 		global / global
@@ -40209,6 +41029,36 @@
 	</Note>
 	<ReturnValue>
 		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		infoPanel
+	</Keyword>
+	<Description>
+		Returns information about what is currently displayed on given player's info panel.
+	Returns ["EmptyDisplay","EmptyDisplayComponent"] when no panel is open.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/infoPanel
+	</WikiPage>
+	<Syntax>
+		infoPanel String
+	</Syntax>
+	<RawSyntax>
+		infoPanel infoPanelId
+	</RawSyntax>
+	<Example>
+		$Code$infoPanel "left";$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
 	</ReturnValue>
 
 </NextListItem>
@@ -40625,6 +41475,7 @@
 	</Keyword>
 	<Description>
 		Activates specific debug visualization.
+	⚠
 	Command is only available when using Arma 3 Diagnostics Exe on Dev-Branch.
 	</Description>
 	<WikiPage>
@@ -41789,6 +42640,7 @@
 	</Keyword>
 	<Description>
 		Prepares the camera dive angle.
+	⚠
 	This command is non-functional !
 	</Description>
 	<WikiPage>
@@ -41898,6 +42750,35 @@
 	</Note>
 	<ReturnValue>
 		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setUserMFDText
+	</Keyword>
+	<Description>
+		Stored user text value in MFD, limit is 50, user0...user49
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/setUserMFDText
+	</WikiPage>
+	<Syntax>
+		Object setUserMFDText Array
+	</Syntax>
+	<RawSyntax>
+		vehicle setUserMFDText [index, value]
+	</RawSyntax>
+	<Example>
+		$Code$_vehicle setUserMFDText [0, 123];$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
 	</ReturnValue>
 
 </NextListItem>
@@ -42437,7 +43318,7 @@
 	</Keyword>
 	<Description>
 		Return value of scenario attribute.
-	!
+	⚠
 	Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!
 	</Description>
 	<WikiPage>
@@ -42592,6 +43473,7 @@
 	</Keyword>
 	<Description>
 		Dump argument type and value to debugging output.
+	⚠
 	This command is non-functional in the retail version
 	</Description>
 	<WikiPage>
@@ -43113,7 +43995,7 @@
 		vectorAdd
 	</Keyword>
 	<Description>
-		Adds two 3D vectors.
+		Adds two 3D vectors. Replaces BIS_fnc_vectorAdd.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/vectorAdd
@@ -43127,19 +44009,12 @@
 	<Example>
 		$Code$hint str ( velocity unit1 vectorAdd velocity unit2);$/Code$
 	</NextExample>
-		$Code$[5,10,5] vectorAdd [5,5,10]; //returns [10,15,15]$/Code$
+		$Code$[5,10,5] vectorAdd [5,5,10]; // returns [10,15,15]$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
 	<Note>
-		(28 Jun, 2014)
-	(ArmA3 1.22)Algorithm:
-	$Code$
-	Vector1 = [x1,y1,z1]; Vector2 = [x2,y2,z2];
-	Result = [x1 + x2,y1 + y2,z1 + z2;]
-	$/Code$
-	It is recommended to use vectorAdd instead of BIS_fnc_vectorAdd.
 	</Note>
 	<ReturnValue>
 		Array
@@ -43304,7 +44179,7 @@
 	</Keyword>
 	<Description>
 		Save the current overlay.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -43349,7 +44224,7 @@
 		systemOfUnits
 	</RawSyntax>
 	<Example>
-		$Code$_system = systemOfUnits;$/Code$
+		$Code$_system = systemOfUnits ;$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -43576,6 +44451,7 @@
 	</Keyword>
 	<Description>
 		Debugging output.
+	⚠
 	This command is non-functional in the retail version
 	</Description>
 	<WikiPage>
@@ -43588,7 +44464,8 @@
 		textLogFormat [format, arg1, arg2,]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$-$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -43861,6 +44738,7 @@
 	4 = Vehicle
 	5 = Direct
 	6-15 = Custom Radio (Is not supported by channelEnabled )
+	⚠
 	Please note that since Arma 3 v1.59.135661 the output of this command was changed from Boolean to Array in format [ Boolean, Boolean ]
 	</Description>
 	<WikiPage>
@@ -43955,7 +44833,7 @@
 	</Keyword>
 	<Description>
 		Defines an action performed after the preload screen finished. Preload event occurs after briefing screen on mission start.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: PreloadFinished
 	In order to keep compatibility between official and community content the functions BIS_fnc_addStackedEventHandler and BIS_fnc_removeStackedEventHandler should be used instead.
 	</Description>
@@ -44226,6 +45104,35 @@
 </NextListItem>
 
 	<Keyword>
+		getTrimOffsetRTD
+	</Keyword>
+	<Description>
+		Returns controls trim offset.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getTrimOffsetRTD
+	</WikiPage>
+	<Syntax>
+		getTrimOffsetRTD Object
+	</Syntax>
+	<RawSyntax>
+		getTrimOffsetRTD RTD_helicopter
+	</RawSyntax>
+	<Example>
+		$Code$_array = getTrimOffsetRTD vehicle player ;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		saveProfileNamespace
 	</Keyword>
 	<Description>
@@ -44348,6 +45255,35 @@
 	</RawSyntax>
 	<Example>
 		$Code$_playerTasks = currentTasks teamMember player$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getDLCAssetsUsageByName
+	</Keyword>
+	<Description>
+		Returns an array with the session and global time the asset has been used.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getDLCAssetsUsageByName
+	</WikiPage>
+	<Syntax>
+		getDLCAssetsUsageByName String
+	</Syntax>
+	<RawSyntax>
+		getDLCAssetsUsageByName assetName
+	</RawSyntax>
+	<Example>
+		$Code$_dlcAssetUsage = getDLCAssetsUsageByName "C_IDAP_Heli_Transport_02_F";$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -44690,7 +45626,8 @@
 		ctrlIDC control
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$ctrlIDC _ctrl;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -44859,7 +45796,7 @@
 	</Keyword>
 	<Description>
 		Returns true if the mission editor is operating in real time mode.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -45309,7 +46246,7 @@
 	</Keyword>
 	<Description>
 		Show the add editor object dialog,type is editor object type,class is,class definition to automatically select,side filters by a certain,side,pos is position to create the object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -45339,7 +46276,7 @@
 	</Keyword>
 	<Description>
 		Updates the icon to be shown in 2D editor for the specified editor,object. If maintain size is false,icon will not scale depending on the,scale of the map. If maintain size is a number,the icon will maintain,size if map scale is below that number.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -45431,6 +46368,7 @@
 	<Description>
 		Adjust configs on-the-fly without the need of restarting the game (by merging the given config file into the main config in memory). Location is relative to the Userdir (default) or mission directory depending on the the value of UserDir [FileName,UserDir].
 	Doesn't work with cfgAmmo & few other classes. (Since 1.69, cfgAmmo should be mergeable!) Merging config file means also that you can't delete parameters through diag_mergeConfigFile. Changes applied by diag_mergeConfigFile are applied to all new entities so restart of mission is not necessarily required - spawning vehicle again or changing back forth weapon should usually do the trick.
+	⚠
 	Command is only available when using Arma 3 Diagnostics Exe on Dev-Branch.
 	</Description>
 	<WikiPage>
@@ -45566,7 +46504,7 @@
 	</Keyword>
 	<Description>
 		Set the proxy object associated with the given editor object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -45781,6 +46719,35 @@
 	</RawSyntax>
 	<Example>
 		$Code$_camera camPreload 5$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		forceFollowRoad
+	</Keyword>
+	<Description>
+		Forces the vehicle to stay on road.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/forceFollowRoad
+	</WikiPage>
+	<Syntax>
+		Object forceFollowRoad Boolean
+	</Syntax>
+	<RawSyntax>
+		vehicle forceFollowRoad state
+	</RawSyntax>
+	<Example>
+		$Code$car forceFollowRoad true ;$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -46212,7 +47179,7 @@
 		deleteLocation location
 	</RawSyntax>
 	<Example>
-		$Code$deleteLocation myLocation$/Code$
+		$Code$[[deleteLocation]] myLocation$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -46236,7 +47203,7 @@
 	The code is executed on every hc group selection change until it is
 	removed via $Code$ onHCGroupSelectionChanged "";$/Code$ or $Code$ onHCGroupSelectionChanged {};$/Code$
 	or replaced by $Code$ onHCGroupSelectionChanged "SomeOtherCommand(s)";$/Code$ or $Code$ onHCGroupSelectionChanged {SomeOtherCommand(s)};$/Code$
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: HCGroupSelectionChanged
 	</Description>
 	<WikiPage>
@@ -46304,7 +47271,7 @@
 	</Keyword>
 	<Description>
 		Center the map on,and point the camera at,the position.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -46504,7 +47471,8 @@
 		hcAllGroups unit
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$hcAllGroups player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -46711,35 +47679,6 @@
 </NextListItem>
 
 	<Keyword>
-		getPilotCameraDirection
-	</Keyword>
-	<Description>
-		Returns model space vector of the object airplane or helicopter pilotCamera.
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/getPilotCameraDirection
-	</WikiPage>
-	<Syntax>
-		getPilotCameraDirection Object
-	</Syntax>
-	<RawSyntax>
-		getPilotCameraDirection object
-	</RawSyntax>
-	<Example>
-		$Code$_pilotCamVector = getPilotCameraDirection vehicle player$/Code$
-	</Example>
-	<Locality>
-		local / undefined
-	</Locality>
-	<Note>
-	</Note>
-	<ReturnValue>
-		Array
-	</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
 		getMissionDLCs
 	</Keyword>
 	<Description>
@@ -46759,6 +47698,35 @@
 	</Example>
 	<Locality>
 		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getPilotCameraDirection
+	</Keyword>
+	<Description>
+		Returns model space vector of the object airplane or helicopter pilotCamera.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getPilotCameraDirection
+	</WikiPage>
+	<Syntax>
+		getPilotCameraDirection Object
+	</Syntax>
+	<RawSyntax>
+		getPilotCameraDirection object
+	</RawSyntax>
+	<Example>
+		$Code$_pilotCamVector = getPilotCameraDirection vehicle player$/Code$
+	</Example>
+	<Locality>
+		local / undefined
 	</Locality>
 	<Note>
 	</Note>
@@ -46864,6 +47832,7 @@
 	</Keyword>
 	<Description>
 		Dump argument value to debugging output.
+	⚠
 	This command is non-functional in the retail version
 	</Description>
 	<WikiPage>
@@ -46926,7 +47895,7 @@
 	</Keyword>
 	<Description>
 		Returns the next available menu item index.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -47110,7 +48079,7 @@
 	</Keyword>
 	<Description>
 		Creates the new overlay dialog for the specified type of overlay.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -47809,6 +48778,7 @@
 	</Keyword>
 	<Description>
 		Disable debriefing score table.
+	⚠
 	This command is broken.
 	</Description>
 	<WikiPage>
@@ -48238,7 +49208,7 @@
 	</Keyword>
 	<Description>
 		Defines an action performed just before the preload screen started. Preload event occurs after briefing screen on mission start.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: PreloadStarted
 	In order to keep compatibility between official and community content the functions BIS_fnc_addStackedEventHandler and BIS_fnc_removeStackedEventHandler should be used instead.
 	</Description>
@@ -48404,7 +49374,7 @@
 	};$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		global / undefined
 	</Locality>
 	<Note>
 	</Note>
@@ -48683,7 +49653,7 @@
 	</Keyword>
 	<Description>
 		Creates a previously added menu.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -48830,7 +49800,7 @@
 		estimatedTimeLeft
 	</Keyword>
 	<Description>
-		Sets the estimated time left in the game. Using this function the designer can provide a "time left" estimate that is shown in the "Game in progress" screen or in the master browser. This command works in MP only and must be executed on the server only. NOTE that since Arma 3 v1.69 the max value that can be set is 10 hours (36000 seconds)
+		Sets the estimated time left in the game. Using this function the designer can provide a "time left" estimate that is shown in the "Game in progress" screen or in the master browser.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/estimatedTimeLeft
@@ -48951,7 +49921,7 @@
 	</Keyword>
 	<Description>
 		Defines an action performed when the user right clicks on the map and,selects New Object. Set to empty for default behavior. Command receives:,_pos array position,
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -48972,6 +49942,39 @@
 	</Note>
 	<ReturnValue>
 		Any_Value
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setWantedRPMRTD
+	</Keyword>
+	<Description>
+		Tell the helicopter engine RPMs to reach the given value within a period of time. The simulation will try to reach the RPMs, but it does not guarantee it will reach the precise value!
+	engine index 0: engine #1
+	engine index 1: engine #2
+	engine index 2: engine #3
+	engine index -1: all engines
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/setWantedRPMRTD
+	</WikiPage>
+	<Syntax>
+		ObjectRTD setWantedRPMRTD Array
+	</Syntax>
+	<RawSyntax>
+		helicopterRTD setWantedRPMRTD [value, time, engineIndex]
+	</RawSyntax>
+	<Example>
+		$Code$(vehicle player) setWantedRPMRTD [2500, 30, 0];$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
 	</ReturnValue>
 
 </NextListItem>
@@ -49022,28 +50025,18 @@
 	</RawSyntax>
 	<Example>
 		$Code$variableToDestroy = nil ;$/Code$
+	</NextExample>
+		$Code$private _variable = 50;
+	_variable = nil ;
+	hint format ["Variable = %1", _variable]; // will display "Variable = any" (Arma 3)$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
 	<Note>
-		Note that ArrayName = nil destroys the arrayNAME not the array content.
-	Array content is 'destroyed' when no more ArrayName s refer to the content.
-	</NextNote>
-		Never ever assign a value to nil !
-	Doing so creates a global variable with the same name that overrides the "command" nil :
-	foo = "foo";
-	nil = "bar";
-	foo = nil;
-	hint foo; // displays "bar"
-	</NextNote>
-		(September 25, 2014)
-	While isNil isn't available in OFP/CWA you can easily emulate it with something like this:
-	_nil = format["%1",_nilstring];
-	?(format["%1",foo]==_nil): foo = "Hello World!"
 	</Note>
 	<ReturnValue>
-		Void
+		Nothing
 	</ReturnValue>
 
 </NextListItem>
@@ -49568,6 +50561,7 @@
 	</Keyword>
 	<Description>
 		Remove weapon from the vehicle cargo space.
+	⚠
 	This is unoffical documentation. All Information here is as it exists in the Engine. It might not reflect the reality.
 	</Description>
 	<WikiPage>
@@ -49792,7 +50786,8 @@
 		display displayRemoveEventHandler [handler name,id]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$moduleName_keyDownEHId = ( findDisplay 46) displayRemoveEventHandler ["keyDown",5];$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -49841,7 +50836,9 @@
 		createVehicleCrew
 	</Keyword>
 	<Description>
-		Creates crew to given empty vehicle. Crew members are default crew defined in config. Crew side will also correspond to vehicle's faction. This command does not addVehicle to the created crew in the same way this normally happens when crewed vehicle created in the editor.
+		Creates crew to given empty vehicle. Crew members are default crew defined in config. Crew side will also correspond to vehicle's faction.
+	🛈
+	This command does not addVehicle to the created crew in the same way this normally happens when crewed vehicle created in the editor. See BIS_fnc_spawnVehicle for a full vehicle and crew creation and group addition.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/createVehicleCrew
@@ -49853,9 +50850,8 @@
 		createVehicleCrew vehicle
 	</RawSyntax>
 	<Example>
-		$Code$// Spawn a flying UAV with crew.
-	myUAV = [ getPos player, 0, "B_UAV_02_F", west ] call BIS_fnc_spawnVehicle ;
-	createVehicleCrew (myUAV select 0);$/Code$
+		$Code$_veh = createVehicle ["B_MRAP_01_F", getMarkerPos "createVeh", [], 0, "NONE"];
+	createVehicleCrew _veh;$/Code$
 	</NextExample>
 		$Code$_veh = createVehicle ["O_MRAP_02_hmg_F", position player, [], 0, "NONE"];
 	createVehicleCrew _veh;
@@ -50241,6 +51237,7 @@
 	</Keyword>
 	<Description>
 		Returns an array of config entries which meet criteria in condition code. Command iterates through available classes and config properties for given config entry. If 3rd param is true the search also includes inherited properties. Current looked at config is stored in _x variable (similar to alternative count command implementation). Condition has to return true in order for the looked at property to be added to the resulting array. A bit slower than configClasses but allows to access inherited entires.
+	⚠
 	The condition code passed to configProperties should only be used for simple filter expressions and nothing more
 	</Description>
 	<WikiPage>
@@ -50413,7 +51410,7 @@
 	</Keyword>
 	<Description>
 		Returns the captive state of the given unit (set with setCaptive ). A captive unit will not be attacked by its enemies.
-	!
+	⚠
 	While a captive unit won't be attacked, it will still attack its enemies – be sure to setBehaviour "CARELESS" / removeAllWeapons accordingly.
 	</Description>
 	<WikiPage>
@@ -50485,7 +51482,8 @@
 		unit assignAsTurret [vehicle, [turretPath]]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$player assignAsTurret [BIS_vehicle, [0,1] ];$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -50699,7 +51697,7 @@
 	</Keyword>
 	<Description>
 		Returns a list of currently selected editor objects.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -50776,7 +51774,8 @@
 		finishMissionInit
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$finishMissionInit$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -50854,7 +51853,9 @@
 		call
 	</Keyword>
 	<Description>
-		Executes given set of compiled instructions with an option to pass arguments to the executed Code. In OFP this command used to accept String for the code.
+		Executes given set of compiled instructions with an option to pass arguments to the executed Code.
+	⚠
+	In Operation Flashpoint this command used to accept String as well as Code. This does not apply to Armed Assault and later titles (see compile ).
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/call
@@ -50870,24 +51871,24 @@
 		args call code
 	</RawSyntax>
 	<Example>
-		$Code$call { hint str 123};$/Code$
+		$Code$call { hint str 123; };$/Code$
 	</NextExample>
-		$Code$123 call { hint str _this};$/Code$
+		$Code$123 call { hint str _this; };$/Code$
 	</NextExample>
-		$Code$_sum = [1, 2] call {(_this select 0) + (_this select 1)};
-	hint str _sum; //3$/Code$
+		$Code$_sum = [1, 2] call { ( _this select 0) + ( _this select 1); };
+	hint str _sum; // displays 3$/Code$
 	</NextExample>
-		$Code$123 call compile " hint str _this";$/Code$
+		$Code$123 call compile " hint str _this;";$/Code$
 	</NextExample>
-		$Code$_result = 123 call compile preprocessFileLineNumbers "myfile.sqf";$/Code$
+		$Code$_result = 123 call compile preprocessFileLineNumbers "myFile.sqf";$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
 	<Note>
 		(July 5, 2014)
-	A called function may only use suspension ( sleep, uiSleep, waitUntil ) if it originates in a scheduled environment. If the called function originates in a non-scheduled environment it will return a generic error.
-	$Code$// *** non-scheduled origin ***
+	A called function may only use suspension ( sleep, uiSleep, waitUntil ) if it originates in a scheduled environment. If the called function originates in a non-scheduled environment it will return a generic error:
+	$Code$ // *** non-scheduled origin ***
 	[] spawn {
 	// *** scheduled scope ***
 	[] call {
@@ -50895,9 +51896,8 @@
 	sleep 3; // - OK
 	hintSilent "Hello World!";
 	};
-	};
-	$/Code$
-	$Code$// *** non-scheduled origin ***
+	};$/Code$
+	$Code$ // *** non-scheduled origin ***
 	[] call {
 	// *** non-scheduled scope***
 	[] call {
@@ -50905,9 +51905,8 @@
 	sleep 3; // - NOT OK
 	hintSilent "Hello World!";
 	};
-	};
-	$/Code$
-	$Code$// *** scheduled origin ***
+	};$/Code$
+	$Code$ // *** scheduled origin ***
 	[] spawn {
 	// *** scheduled scope ***
 	[] call {
@@ -50915,31 +51914,29 @@
 	sleep 3; // - OK
 	hintSilent "Hello World!";
 	};
-	};
-	$/Code$
-	$Code$// *** scheduled origin ***
+	};$/Code$
+	$Code$ // *** scheduled origin ***
 	[] call {
-	// *** scheduled scope***
+	// *** scheduled scope ***
 	[] call {
 	// *** scheduled scope ***
 	sleep 3; // - OK
 	hintSilent "Hello World!";
 	};
-	};
-	$/Code$
+	};$/Code$
 	</NextNote>
 		(February 17, 2015)
 	If the code is in non-scheduled scope and contains while-do statement, the code runs only 10,000 times at the maximum, even if the statement makes infinite loop. (ARMA3 Ver. 1.38.128937)
-	$Code$// *** non-scheduled origin ***
-	[] call {
-	// *** non-scheduled scope***
+	$Code$ // *** non-scheduled origin ***
 	[] call {
 	// *** non-scheduled scope ***
-	_a=0;
-	while{_a 15000} do{
-	_a=_a+1;
+	[] call {
+	// *** non-scheduled scope ***
+	_a = 0;
+	while { _a 15000 } do {
+	_a = _a + 1;
 	};
-	hint str(_a);//10000
+	hint str _a; // displays 10000
 	};
 	};$/Code$
 	</Note>
@@ -51173,6 +52170,35 @@
 	</Note>
 	<ReturnValue>
 		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		numberOfEnginesRTD
+	</Keyword>
+	<Description>
+		Returns the number of engines a helicopter has.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/numberOfEnginesRTD
+	</WikiPage>
+	<Syntax>
+		numberOfEnginesRTD ObjectRTD
+	</Syntax>
+	<RawSyntax>
+		numberOfEnginesRTD helicopterRTD
+	</RawSyntax>
+	<Example>
+		$Code$_engineCount = numberOfEnginesRTD (vehicle player);$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Number
 	</ReturnValue>
 
 </NextListItem>
@@ -51459,7 +52485,7 @@
 		atg
 	</Keyword>
 	<Description>
-		Equivalent to atan
+		Equivalent to atan.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/atg
@@ -51471,7 +52497,8 @@
 		atg x
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_atanThreeFifth = atg 3/5;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -51705,6 +52732,7 @@
 	<Description>
 		Reload models on-the-fly without the need of restarting the game. Changes applied by diag_resetShapes are applied to all new entities so restart of mission is not necessarily required - spawning vehicle again or changing back forth weapon should usually do the trick. It works only with "-FilePatching" in combination with local data. Command will reload only models present in local data.
 	Limitation - you can't reload cfgSkeletons (Which is inside model.cfg)
+	⚠
 	Command is only available when using Arma 3 Diagnostics Exe on Dev-Branch.
 	</Description>
 	<WikiPage>
@@ -52176,6 +53204,38 @@
 </NextListItem>
 
 	<Keyword>
+		setActualCollectiveRTD
+	</Keyword>
+	<Description>
+		Sets the collective pitch control to a specific position, regardless of input devices (until those are changed).
+	0: collective fully down
+	~0.7: approximate stable hover position
+	1: collective fully up
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/setActualCollectiveRTD
+	</WikiPage>
+	<Syntax>
+		ObjectRTD setActualCollectiveRTD Number
+	</Syntax>
+	<RawSyntax>
+		helicopterRTD setActualCollectiveRTD value
+	</RawSyntax>
+	<Example>
+		$Code$myHelicopterRTD setActualCollectiveRTD 0.7;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		setSpeech
 	</Keyword>
 	<Description>
@@ -52379,7 +53439,7 @@
 	</Keyword>
 	<Description>
 		Return the list of all objects of given type.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -52703,8 +53763,7 @@
 		not
 	</Keyword>
 	<Description>
-		not a.
-	Exactly the same as ! a
+		not a is exactly the same as !a
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/not
@@ -53294,7 +54353,8 @@
 		isAbleToBreathe unit
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_canBreath = isAbleToBreathe player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -53412,7 +54472,7 @@
 	remoteExec and remoteExecCall are currently filtered by BattlEye's remoteexec.txt, the string analyzed by BE is formatted the same way as the following example's output:
 	$Code$ format ["%1 %2", functionName, str params]$/Code$
 	If CfgRemoteExec class Functions is set to mode = 1;, the following remoteexec.txt exclusion can be used to safely allow all whitelisted *_fnc_* functions taking an array as parameter to go through:
-	$Code$!="\w+?_fnc_\w+? \[.*\]"$/Code$
+	$Code$!="\w+?_fnc_\w+? \[[\S\s]*\]"$/Code$
 	Any attempt to exploit this exclusion using other RE methods like createUnit will run into "Error Missing ;" without any malicious code being executed. Mod makers should refrain from remote-executing raw commands from clients, as they require individual exclusions, and instead use *_fnc_* functions taking an array as parameter, which are covered by the above exclusion.
 	</NextNote>
 		(May 10, 2017)
@@ -53493,7 +54553,7 @@
 		enableCollisionWith
 	</Keyword>
 	<Description>
-		Enable collision between vehicles.
+		Cancels the effects of disableCollisionWith.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/enableCollisionWith
@@ -53505,7 +54565,8 @@
 		vehicle enableCollisionWith vehicle
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$[_veh1, _veh2] remoteExecCall ["enableCollisionWith", 0, _veh1];$/Code$
+	</Example>
 	<Locality>
 		local / global
 	</Locality>
@@ -53858,6 +54919,42 @@
 </NextListItem>
 
 	<Keyword>
+		userInputDisabled
+	</Keyword>
+	<Description>
+		Returns true if user input is disabled
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/userInputDisabled
+	</WikiPage>
+	<Syntax>
+		userInputDisabled
+	</Syntax>
+	<RawSyntax>
+		userInputDisabled
+	</RawSyntax>
+	<Example>
+		$Code$if (! userInputDisabled ) then
+	{
+	disableUserInput true ;
+	}
+	else
+	{
+	disableUserInput false ;
+	};$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		handsHit
 	</Keyword>
 	<Description>
@@ -53937,7 +55034,8 @@
 		loadUniform unit
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_weight = loadUniform player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -54213,7 +55311,7 @@
 		setPlayerRespawnTime
 	</Keyword>
 	<Description>
-		Sets the time interval to wait on player respawn. It resets to mission default on mission start. In Single Player or when respawn type is GROUP or SIDE in Multiplayer, setting player respawn time has no effect and is always -1.
+		Sets the time interval (in seconds) that the player must wait before respawn. It resets to mission default on mission start. In Single Player or when respawn type is GROUP or SIDE in Multiplayer, setting player respawn time has no effect, and playerRespawnTime will always return -1.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setPlayerRespawnTime
@@ -54313,7 +55411,8 @@
 		unit hcSelectGroup array
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$player hcSelectGroup [group_1,group_2];$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -54486,7 +55585,7 @@
 	</Keyword>
 	<Description>
 		Restarts the mission editor camera (if it was deleted by a script,for example).
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -54607,6 +55706,7 @@
 	CT_XBUTTON
 	CT_ACTIVETEXT
 	CT_SHORTCUTBUTTON
+	⚠
 	The action code is expected to be in SQS format
 	</Description>
 	<WikiPage>
@@ -54886,7 +55986,7 @@
 		playerRespawnTime
 	</Keyword>
 	<Description>
-		Return the player remaining time to respawn or -1 if it is not available.
+		Return the player's remaining time before respawn, or -1 if it is not available (such as when the player is alive).
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/playerRespawnTime
@@ -54964,7 +56064,7 @@
 		controlName ctrlSetFontH1B fontName
 	</RawSyntax>
 	<Example>
-		$Code$_control ctrlSetFontH1B "TahomaB"$/Code$
+		$Code$_control [[ctrlSetFontH1B]] "TahomaB"$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -55213,7 +56313,7 @@
 	</Keyword>
 	<Description>
 		Set object arguments in mission editor.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -55335,7 +56435,7 @@
 	</Keyword>
 	<Description>
 		Returns true if the editor is set to draw 3D icons.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -55519,7 +56619,7 @@
 		runInitScript
 	</Keyword>
 	<Description>
-		Launch init.sqs or init.sqf scripts.
+		Launch init.sqs or init.sqf scripts. In Eden Editor the code inside the "Init" mission attribute is executed.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/runInitScript
@@ -55531,7 +56631,8 @@
 		runInitScript
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$runInitScript ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -55566,7 +56667,7 @@
 	if ( vehicle player != player ) then { hint "Player is in a vehicle"};$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		global / undefined
 	</Locality>
 	<Note>
 	</Note>
@@ -55663,7 +56764,8 @@
 		clearWeaponPool
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$clearWeaponPool ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -55792,7 +56894,7 @@
 	<Description>
 		Allow or prevent an object being damaged (or injured, or killed). Alias of allowDamage.
 	The command does not prevent object from taking scripted damage such as setDamage or setHit.
-	!
+	⚠
 	Command has to be executed where object is local and as long as object does not change locality the effect of this command will be global.
 	If object changes locality, the command needs to be executed again on the new owner 's machine to maintain the effect.
 	</Description>
@@ -55827,6 +56929,7 @@
 	<Description>
 		Return an uniqueID of the given unit as string if it's player and empty value if it's AI. The unique ID may be up to 100 characters long and may contain numbers, uppercase letters and underscores (the value can be used to construct a valid variable name by appending to another valid variable name).
 	Note: while for ArmA 2 or ArmA 2: Operation Arrowhead until version 1.60 the result always contains a number, it should be always handled as an opaque string. Converting it to a Number can cause precision problems, as Number cannot accurately represent integers above 16777216 (2^24). Moreover, game versions since ArmA 2: Operation Arrowhead 1.61 provide a non-numeric value as a result.
+	⚠
 	In some cases, the identity of certain player units might fail to propagate to other clients and the server, which causes isPlayer and getPlayerUID to incorrectly return false and "", respectively, where the affected units are not local. [1] Therefore, beware of false negatives.
 	</Description>
 	<WikiPage>
@@ -55864,7 +56967,7 @@
 	_name : String - is profileName of the joining player.
 	_jip : ( since Arma 3 v1.49 ) Boolean - is a flag that indicates whether or not the player joined after the mission has started ( J oined I n P rogress). true - when the player is JIP, otherwise false.
 	_owner : ( since Arma 3 v1.49 ) Number - is owner id of the joining player. Can be used for kick or ban purposes or just for publicVariableClient.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: PlayerConnected
 	In order to keep compatibility between official and community content the functions BIS_fnc_addStackedEventHandler and BIS_fnc_removeStackedEventHandler should be used instead.
 	</Description>
@@ -55911,6 +57014,7 @@
 	</Keyword>
 	<Description>
 		Sets ammo count to given amount for given turret.
+	⚠
 	Broken when vehicle has multiple magazines of the same type
 	</Description>
 	<WikiPage>
@@ -56267,7 +57371,7 @@
 		controlName ctrlSetFontH2 fontName
 	</RawSyntax>
 	<Example>
-		$Code$_control ctrlSetFontH2 "TahomaB"$/Code$
+		$Code$_control [[ctrlSetFontH2]] "TahomaB"$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -56826,7 +57930,8 @@
 		isFilePatchingEnabled
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_state = isFilePatchingEnabled ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -56976,6 +58081,7 @@
 	</Keyword>
 	<Description>
 		Returns the state of the score table set with showScoretable command.
+	⚠
 	Since Arma 3 v1.63.137869, the previous functionality of this command (score table visibility check) is moved to visibleScoretable command. Please update your scripts and sorry for any inconvinience.
 	</Description>
 	<WikiPage>
@@ -57039,6 +58145,7 @@
 	GREEN
 	BLUE
 	YELLOW
+	⚠
 	This command will return nil if given unit is objNull, remoteControling another unit or is not local
 	</Description>
 	<WikiPage>
@@ -57227,7 +58334,7 @@
 	</Keyword>
 	<Description>
 		Allow or prevent an object being damaged (or injured, or killed). The command does not prevent object from taking scripted damage such as setHit, setHitIndex, setHitPointDamage or setDamage. To check if damage is allowed at current locality, see isDamageAllowed.
-	!
+	⚠
 	This command has to be executed where object is local and as long as object does not change locality the effect of this command will be global. If object changes locality, the command needs to be executed again on the new owner 's machine to maintain the effect
 	</Description>
 	<WikiPage>
@@ -57274,7 +58381,8 @@
 		person diarySubjectExists name
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_exists = player diarySubjectExists "subjectName"$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -57318,6 +58426,40 @@
 </NextListItem>
 
 	<Keyword>
+		isCopilotEnabled
+	</Keyword>
+	<Description>
+		Returns true if copilots actions are enabled.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/isCopilotEnabled
+	</WikiPage>
+	<Syntax>
+		isCopilotEnabled Object
+	</Syntax>
+	<RawSyntax>
+		isCopilotEnabled vehicle
+	</RawSyntax>
+	<Example>
+		$Code$if (! isCopilotEnabled myHeli) then {
+	myHeli enableCopilot true ;
+	};$/Code$
+	</Example>
+	<Locality>
+		global / undefined
+	</Locality>
+	<Note>
+		(February 17, 2014)
+	Only returns whether or not the actions are enabled and shown to the pilot and co-pilot. This will still return TRUE if the pilot uses the 'Lock Controls' action to disable co-pilot controls.
+	You can use the Arma 3 Event Handler - Controls Shifted to detect 'Take Controls' or 'Release Controls' actions
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
 		hostMission
 	</Keyword>
 	<Description>
@@ -57354,40 +58496,6 @@
 	</Note>
 	<ReturnValue>
 		Nothing
-	</ReturnValue>
-
-</NextListItem>
-
-	<Keyword>
-		isCopilotEnabled
-	</Keyword>
-	<Description>
-		Returns true if copilots actions are enabled.
-	</Description>
-	<WikiPage>
-		https://community.bistudio.com/wiki/isCopilotEnabled
-	</WikiPage>
-	<Syntax>
-		isCopilotEnabled Object
-	</Syntax>
-	<RawSyntax>
-		isCopilotEnabled vehicle
-	</RawSyntax>
-	<Example>
-		$Code$if (! isCopilotEnabled myHeli) then {
-	myHeli enableCopilot true ;
-	};$/Code$
-	</Example>
-	<Locality>
-		global / undefined
-	</Locality>
-	<Note>
-		(February 17, 2014)
-	Only returns whether or not the actions are enabled and shown to the pilot and co-pilot. This will still return TRUE if the pilot uses the 'Lock Controls' action to disable co-pilot controls.
-	You can use the Arma 3 Event Handler - Controls Shifted to detect 'Take Controls' or 'Release Controls' actions
-	</Note>
-	<ReturnValue>
-		Boolean
 	</ReturnValue>
 
 </NextListItem>
@@ -59128,7 +60236,7 @@
 	</Keyword>
 	<Description>
 		Returns the total number of user-added menu items belonging to the given menu.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -59661,6 +60769,7 @@
 	</Keyword>
 	<Description>
 		Overrides currently used scene lightning. The operand is config that is placed as a string (not file). The changes may not be applied immediately, but can be forced by the call of simulWeatherSync.
+	⚠
 	Command is only available when using Arma 3 Diagnostics Exe on Dev-Branch.
 	</Description>
 	<WikiPage>
@@ -59756,14 +60865,12 @@
 		isAgent teamMember
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$isAgent teamMember _unit;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
 	<Note>
-		(May 19, 2017)
-	One can check if a unit is an agent via
-	$Code$ isAgent teamMember _unit$/Code$
 	</Note>
 	<ReturnValue>
 		Boolean
@@ -59834,7 +60941,8 @@
 		taskParent task
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_parent = taskParent "someTask";$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -59850,7 +60958,7 @@
 		landResult
 	</Keyword>
 	<Description>
-		Return the result of helicopter landing position searching (performed, after land command). The value can be "Found" (position found),"NotFound" (position not found), "NotReady" (position searching is,still in progress) or empty string when wrong argument given.
+		Return the result of helicopter landing position searching (performed, after land command).
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/landResult
@@ -59862,7 +60970,8 @@
 		landResult helicopter
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_result = landResult BIS_heli;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -59982,6 +61091,35 @@
 	</Note>
 	<ReturnValue>
 		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		enginesPowerRTD
+	</Keyword>
+	<Description>
+		Returns power produced by engines in Watts.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/enginesPowerRTD
+	</WikiPage>
+	<Syntax>
+		enginesPowerRTD Object
+	</Syntax>
+	<RawSyntax>
+		enginesPowerRTD RTD_helicopter
+	</RawSyntax>
+	<Example>
+		$Code$_array = enginesPowerRTD vehicle player ;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
 	</ReturnValue>
 
 </NextListItem>
@@ -60458,7 +61596,8 @@
 		clearMagazinePool
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$clearMagazinePool ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -60555,13 +61694,13 @@
 	</RawSyntax>
 	<Example>
 		$Code$// Icon and text:
-	onEachFrame {
-	drawIcon3D ["targetIcon.paa", [1,1,1,1], getPos cursorTarget, 1, 1, 45, "Target", 1, 0.05, "TahomaB"];
+	addMissionEventHandler ["Draw3D", {
+	drawIcon3D ["targetIcon.paa", [1,1,1,1], ASLToAGL getPosASL cursorTarget, 1, 1, 45, "Target", 1, 0.05, "TahomaB"];
 	};$/Code$
 	</NextExample>
 		$Code$// Just text:
 	addMissionEventHandler ["Draw3D", {
-	drawIcon3D ["", [1,0,0,1], position cursorTarget, 0, 0, 0, "Target", 1, 0.05, "PuristaMedium"];
+	drawIcon3D ["", [1,0,0,1], ASLToAGL getPosASL cursorTarget, 0, 0, 0, "Target", 1, 0.05, "PuristaMedium"];
 	}];$/Code$
 	</Example>
 	<Locality>
@@ -60569,12 +61708,11 @@
 	</Locality>
 	<Note>
 		(August 31, 2013)
-	As command syntax indicates, this command expects icon position in format PositionAGL meaning that over the land it expects PositionATL and over the sea PositionASLW. Use additional ASLToAGL if needed.
-	To draw smooth moving icon for a moving object use visiblePosition and visiblePositionASL accordingly.
+	As command syntax indicates, this command expects icon position in format PositionAGL meaning that over the land it expects PositionATL and over the sea PositionASLW.
 	This command works well with addon textures, however getting it to display mission textures is a bit tricky. Follow this guide.
 	</NextNote>
 		(April 19, 2014)
-	You should rely exclusively on modelToWorldVisual for a moving object's icon position if you want it to accurately stay at the correct height over the sea.
+	You should rely exclusively on modelToWorldVisual for a moving object's icon position if you want it to accurately stay at the correct height over the sea. It computes faster than ASLtoAGL.
 	Width, height, and textSize are proportional to the user's interface size, which can optionally be compensated against via size / ( getResolution select 5)
 	Additionally, width and height are inversely proportional to the fovLeft and fovTop parameters from the user's ArmaProfile, and AFAIK those parameters are not retrievable via scripting. For example, a fovTop higher than the default value of 0.75 will make all 3D icons smaller vertically. I'm not sure if this is a bug or by design, however it is definitely annoying to take into account.
 	</NextNote>
@@ -61237,7 +62375,8 @@
 		language
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_myLanguage = language ; // will return "English" if game language is set to English$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -61281,6 +62420,35 @@
 	</Note>
 	<ReturnValue>
 		Anything
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		enableAutoStartUpRTD
+	</Keyword>
+	<Description>
+		Toggle availability of the automated helicopter start-up and shutdown sequences.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/enableAutoStartUpRTD
+	</WikiPage>
+	<Syntax>
+		ObjectRTD enableAutoStartUpRTD Boolean
+	</Syntax>
+	<RawSyntax>
+		helicopterRTD enableAutoStartUpRTD enable
+	</RawSyntax>
+	<Example>
+		$Code$myHelicopterRTD enableAutoStartUpRTD true;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Nothing
 	</ReturnValue>
 
 </NextListItem>
@@ -61628,7 +62796,7 @@
 	<Description>
 		Set entity attributes.
 	An attribute is identified by its property ( data when it's engine-drive attribute) value in config. For the list of all attributes with their properties, see Setting Attributes.
-	!
+	⚠
 	Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!
 	</Description>
 	<WikiPage>
@@ -61675,8 +62843,8 @@
 		$Code$[unit1,unit2,unit3] findIf { ! alive _x }; //return index of first dead unit$/Code$
 	</NextExample>
 		$Code$//two ways how to 'wait for all units to be dead':
-	waitUntil {[unit1,unit2,unit3] findIf { alive _x } == -1}; //fast, terminates as soon as it finds alive unit
-	waitUntil {[unit1,unit2,unit3] count { alive _x } == 0}; //slow, always goes through all array elements$/Code$
+	waitUntil { [unit1,unit2,unit3] findIf { alive _x } == -1 }; //fast, terminates as soon as it finds alive unit
+	waitUntil { { alive _x } count [unit1,unit2,unit3] == 0 }; //slow, always goes through all array elements$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -61757,7 +62925,7 @@
 	</Keyword>
 	<Description>
 		Update the editor object tree.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -61979,10 +63147,12 @@
 	</Keyword>
 	<Description>
 		Return root of mission Description.ext entries hierarchy.
-	!
+	⚠
 	Since introduction of the Eden Editor, scenario attributes can be configured in the editor itself, not only in the external Description.ext file. To access desired value independently on where it's stored, use the following commands instead:
 	getMissionConfigValue
 	getMissionConfig
+	⚠
+	If your Description.ext file is empty, str missionConfigFile may report an empty string instead of the path to the file. You have to put at least one entry into your config.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/missionConfigFile
@@ -62013,9 +63183,6 @@
 	_myText = getText ( missionConfigFile "myMissionConfig" "mySetup" "myText");$/Code$
 	</NextExample>
 		$Code$// To get file path with description.ext to play sound via playSound3D :
-	_filePath = [( str missionConfigFile ), 0, -15] call BIS_fnc_trimString ;$/Code$
-	</NextExample>
-		$Code$// Obtaining mission root using A3 substring functionality
 	MISSION_ROOT = str missionConfigFile select [0, count str missionConfigFile - 15];$/Code$
 	</Example>
 	<Locality>
@@ -62655,6 +63822,7 @@
 	<Description>
 		Adds a magazine to the unit.
 	Note: You may create invalid combinations by adding more magazines than the free space in unit's inventory allows. When doing so, application behaviour is undefined.
+	⚠
 	This command is broken in MP as it dupes inventory items. Use addMagazine array for now, it takes global argument and has global effect too.
 	</Description>
 	<WikiPage>
@@ -62707,6 +63875,35 @@
 	</Note>
 	<ReturnValue>
 		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		isStressDamageEnabled
+	</Keyword>
+	<Description>
+		Returns true if stress damage is enabled in the game settings.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/isStressDamageEnabled
+	</WikiPage>
+	<Syntax>
+		isStressDamageEnabled
+	</Syntax>
+	<RawSyntax>
+		isStressDamageEnabled
+	</RawSyntax>
+	<Example>
+		$Code$_isEnabled= isStressDamageEnabled ;$/Code$
+	</Example>
+	<Locality>
+		local / local
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Boolean
 	</ReturnValue>
 
 </NextListItem>
@@ -62787,7 +63984,8 @@
 		cameraOn
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_object = cameraOn ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -62812,9 +64010,10 @@
 	</Keyword>
 	<Description>
 		Random real (floating point) value from 0 (inclusive) to x (not inclusive).
-	Since Arma 3 v1.55.133393 alternative syntax is added, allowing to define Gaussian Distribution params. Uses the same method as setTriggerTimeout command. Quite useful for spawning loot for example, making more valuable items more rare.
-	Since Arma 3 v1.67.139663 an alternative syntax is available, allowing to generate semi-random number based on provided seed.
-	Since Arma 3 v1.67.139663 an alternative syntax is available, generating pseudo-random noise texture based on provided seed and returning a single number between 0 (included) and 1 (excluded) at supplied x and y coordinates.
+	Since Arma 3 v1.55.133393 alternative syntax is added, allowing to define Gaussian Distribution params. Uses the same method as setTriggerTimeout command. Quite useful for spawning loot for example, making more valuable items more rare ( Alternative Syntax 1 )
+	Since Arma 3 v1.67.139663 two alternative syntaxes are available:
+	allowing to generate semi-random number based on provided seed ( Alternative Syntax 2 )
+	generating pseudo-random noise texture based on provided seed and returning a single number between 0 (included) and 1 (excluded) at supplied x and y coordinates ( Alternative Syntax 3 )
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/random
@@ -62835,7 +64034,7 @@
 	</NextRawSyntax>
 		seed random x
 	</NextRawSyntax>
-		seed random [x,y]
+		seed random [x, y]
 	</RawSyntax>
 	<Example>
 		$Code$_rNumber = random 1;$/Code$
@@ -62845,51 +64044,11 @@
 		$Code$// Generate random position inside a circle
 	_center getPos [_radius * sqrt random 1, random 360];$/Code$
 	</NextExample>
-		$Code$// Compare (each command was executed 100000 times to gather statistics):
-	floor random 10;
-	// 0 - 10099 (10%)
-	// 1 - 10040 (10%)
-	// 2 - 10154 (10%)
-	// 3 - 9910 (10%)
-	// 4 - 10023 (10%)
-	// 5 - 9937 (10%)
-	// 6 - 10118 (10%)
-	// 7 - 9716 (10%)
-	// 8 - 9986 (10%)
-	// 9 - 10017 (10%)
-	floor random [0,5,10];
-	// 0 - 109 (0%)
-	// 1 - 1604 (2%)
-	// 2 - 6839 (7%)
-	// 3 - 16671 (17%)
-	// 4 - 24706 (25%)
-	// 5 - 24702 (25%)
-	// 6 - 16626 (17%)
-	// 7 - 6925 (7%)
-	// 8 - 1702 (2%)
-	// 9 - 116 (0%)
-	floor random [0,10,0];
-	// 0 - 19 (0%)
-	// 1 - 209 (0%)
-	// 2 - 817 (1%)
-	// 3 - 2384 (2%)
-	// 4 - 4841 (5%)
-	// 5 - 8976 (9%)
-	// 6 - 14067 (14%)
-	// 7 - 18955 (19%)
-	// 8 - 23605 (24%)
-	// 9 - 26127 (26%)
-	floor random [0,10,5];
-	// 0 - 11 (0%)
-	// 1 - 98 (0%)
-	// 2 - 430 (0%)
-	// 3 - 1149 (1%)
-	// 4 - 2384 (2%)
-	// 5 - 4546 (5%)
-	// 6 - 8612 (9%)
-	// 7 - 16283 (16%)
-	// 8 - 28393 (28%)
-	// 9 - 38094 (38%)$/Code$
+		$Code$// To select random value from an array:
+	_array = ["apples", "pears", "bananas", "M16"];
+	_random = _array select floor random count _array;
+	// since Arma 3 v1.55.133393
+	_random = selectRandom _array;$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -62900,10 +64059,69 @@
 	$Code$_Xrnd = round(random 200) -100;$/Code$
 	This will yield numbers between -100 and 100.
 	Be careful using random numbers in multiplayer, each client will come up with a different result. See multiplayer tutorials for more general information about locality.
-	The number returned is unlikely to be a whole number. To return a whole number use either round, ceil or floor together with random :
-	x=round(random 5) will return 0,1,2,3,4 or 5. (non-uniform distribution, 0 and 5 are half as likely to be selected than any of the other numbers)
-	x=floor(random 5) will return 0,1,2,3 or 4. (uniform distribution, all numbers have the same probability of being selected)
-	x=ceil(random 5) will return 0,1,2,3,4 or 5. (0 is very unlikely, but possible, as ceil 0 is 0)
+	The number returned is unlikely to be a whole number.
+	To return a whole number use either round, ceil or floor together with random :
+	$Code$x = round(random 5) will return 0,1,2,3,4 or 5. (non-uniform distribution, 0 and 5 are half as likely to be selected than any of the other numbers)
+	x = floor(random 5) will return 0,1,2,3 or 4. (uniform distribution, all numbers have the same probability of being selected)
+	x = ceil(random 5) will return 0,1,2,3,4 or 5. (0 is very unlikely, but possible, as ceil 0 is 0)$/Code$
+	</NextNote>
+		(July 22, 2018)
+	Repartition comparison
+	Formula
+	0
+	1
+	2
+	3
+	4
+	5
+	6
+	7
+	8
+	9
+	floor random 10;
+	10%
+	10%
+	10%
+	10%
+	10%
+	10%
+	10%
+	10%
+	10%
+	10%
+	floor random [0, 5, 10]
+	0%
+	2%
+	7%
+	17%
+	25%
+	25%
+	17%
+	7%
+	2%
+	0%
+	floor random [0, 10, 0]
+	0%
+	0%
+	1%
+	2%
+	5%
+	9%
+	14%
+	19%
+	24%
+	26%
+	floor random [0, 10, 5]
+	0%
+	0%
+	0%
+	1%
+	2%
+	5%
+	9%
+	16%
+	28%
+	38%
 	</Note>
 	<ReturnValue>
 		Number - Number - Number - Number
@@ -62916,7 +64134,7 @@
 	</Keyword>
 	<Description>
 		Return a list of all the children of the specified object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -63012,7 +64230,7 @@
 	</Keyword>
 	<Description>
 		Allow/dissallow 3D mode.,
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -63239,7 +64457,7 @@
 	</Keyword>
 	<Description>
 		Insert an object to the editor and assign arguments. Create script is,not called. Returns the ID of the new EditorObject. Subtype class is,optional.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -64044,6 +65262,9 @@
 	returns "Player is alive" because ( alive player ) returned true. If ( alive player ) returned false, the first element (0)
 	would have been returned.
 	That is a great way of reporting about something without having to write a complicated it then else statement.
+	</NextNote>
+		(April 14, 2018)
+	Since 1.82 "#" symbol can be used to select from an array. It's shorter to write and has higher priority than math functions.
 	</Note>
 	<ReturnValue>
 		Anything - Anything - Config - String - Array - Array
@@ -64356,11 +65577,15 @@
 	</Keyword>
 	<Description>
 		This command syntax is for Arma 3 only. For TKOH and older versions see addAction TKOH
-	Adds an entry to the action menu of an object (scroll wheel menu). The action can only be activated when in proximity to the object (eg: building). Adding an action to the player obviously makes that action available to the player at all times. The appearance of onscreen text could be further tweaked with setUserActionText. For event handling of user interaction see inGameUISetEventHandler
-	This command has local effect. Created action is only available on the computer where command was executed. To make action available to all players, command must be executed on all connected clients (see remoteExec ). addAction is also ignored on dedicated server, because of no user interface. In Arma 3 addAction does not work on animals. This is intended behavior.
-	Since Arma 3 v1.63.136787, two new params are available: radius and unconscious.
-	Since Arma 3 v1.69.140846, new param is available: selection.
-	Since Arma 3 v1.81.144102, new param is available: memoryPoint & radius param is now always referencing distance between player eye position ( eyePos ) and object selection, memory point or [0,0,0]; in this order, depending on what params are supplied to the command.
+	Adds an entry to the action menu of an object (scroll wheel menu). The action can only be activated when in proximity to the object (default 50m ). Adding an action to the player obviously makes that action available to the player at all times. The appearance of onscreen text could be further tweaked with setUserActionText. For event handling of user interaction see inGameUISetEventHandler.
+	🛈
+	In Arma 3 addAction does not work on animals, this is intended behavior.
+	1.63
+	Two new params are available: radius and unconscious
+	1.69
+	New param is available: selection
+	1.81
+	New param is available: memoryPoint & radius param is now always referencing distance between player eye position ( eyePos ) and object selection, memory point or [0,0,0]; in this order, depending on what params are supplied to the command.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/addAction
@@ -64372,104 +65597,50 @@
 		object addAction [title, script, arguments, priority, showWindow, hideOnUse, shortcut, condition, radius, unconscious, selection, memoryPoint]
 	</RawSyntax>
 	<Example>
-		$Code$// Short and sweet:
-	player addAction ["A Useless Action That Does Nothing", {}];
+		$Code$// short and sweet
+	player addAction ["a useless action that does nothing", {}];
 	player addAction [" t color='#FF0000' This Useless Action Is RED /t ", { hint "RED"}];
-	player addAction ["Hint Hello!", { hint format ["Hello %1!", _this select 3]}, name player ];
+	player addAction ["Hint Hello!", { hint format ["Hello %1!", name player ] }];
 	player addAction ["String Exec", " hint 'this is also compiled'"];$/Code$
 	</NextExample>
-		$Code$// SQF file example:
-	_act = player addAction ["Exec the file", "somescript.sqf"]
-	// somescript.sqf: hint str _this;$/Code$
+		$Code$_actionID = player addAction ["Exec the file", "scriptFile.sqf"]
+	// scriptFile.sqf: hint str _this ;$/Code$
 	</NextExample>
-		$Code$// SQS file example:
-	_genAct = generator addAction ["Switch on generator", "activate_generator.sqs"]
-	// activate_generator.sqs:_gen = _this select 0
-	_caller = _this select 1
-	_id = _this select 2
-	; remove the action once it is activated
-	_gen removeAction _id
-	// This example shows an action called "Switch on generator" added to an object with the name 'generator'. As soon as the player gets close to this object, he can execute the given action via the action menu. Then the script 'activate_generator.sqs' is executed, which in our example only removes the action from the generator.$/Code$
-	</NextExample>
-		$Code$// Create object on dedicated server and add action to the object on every client:
-	if ( isDedicated ) then
+		$Code$// create object on the server and add action to the object on every client
+	if ( isServer ) then
 	{
-	_obj = "some_obj_class" createVehicle [1234, 1234, 0];
-	[_obj, ["Greetings!", { hint "Hello!"}]] remoteExec ["addAction", -2, _obj];
+	_object = "some_obj_class" createVehicle [1234, 1234, 0];
+	[_object, ["Greetings!", { hint "Hello!"}]] remoteExec ["addAction"];
 	};$/Code$
+	</NextExample>
+		$Code$// Default parameters:
+	this addAction
+	[
+	" title ",
+	{
+	params ["_target", "_caller", "_actionId", "_arguments"];
+	},
+	[],
+	1.5,
+	true,
+	true,
+	"",
+	" true ", // _target _this
+	50,
+	false,
+	"",
+	""
+	];$/Code$
 	</Example>
 	<Locality>
 		global / local
 	</Locality>
 	<Note>
-		(August 2, 2006)
-	An easy way to keep track of and remove actions is to store the IDs of the actions in variables.
-	This can be accomplished by doing the following:
-	$Code$_myaction = player addAction ["Hello", "hello.sqs"];$/Code$
-	This stores the action's ID in the local variable "_myaction" and assists in keeping track of the action ID.
-	To remove the above action, you would use the following line:
-	$Code$ player removeAction _myaction;$/Code$
-	</NextNote>
-		(17:35, 24 August 2013 (CEST))
-	In Arma 3 addAction does not work on animals. This is intended behavior.
-	</NextNote>
-		(June 19, 2014)
-	If executing actual script code like this:
-	$Code$_unit addAction [ "yourAction", { hint "A line of code" } ];$/Code$
-	you can have a user action that uses and/or affects variables used elsewhere in the script that adds the action.
-	But beware!
-	The variable(s) must be global otherwise it won't work! i.e.
-	Fail
-	$Code$_variable = false ; _unit addAction [ "action", { _variable = true } ];$/Code$
-	Succeed
-	$Code$variable = false ; _unit addAction [ "action", { variable = true } ];$/Code$
-	</NextNote>
-		(March 10, 2015)
-	Actionception: $Code$actions = [];
-	actions set [0, player addAction ["Actionception", {
-	if ( count actions == 1) then {
-	actions set [1, player addAction [" Actionception ", {
-	if ( count actions == 2) then {
-	actions set [2, player addAction [" Actionception ", {
-	if ( count actions == 3) then {
-	actions set [3, player addAction [" Actionception ", {
-	{
-	player removeAction _x ;
-	} forEach actions;
-	}, [], 10, false, true ]];
-	};
-	}, [], 10, false, false ]];
-	};
-	}, [], 10, false, false ]];
-	};
-	}, [], 10, false, false ]];$/Code$
-	Function to remove user actions with unknown ids:
-	$Code$KK_fnc_removeUnknownUserActions = {
-	for "_i" from 0 to ( player addAction ["",""]) do {
-	if !(_i in _this ) then {
-	player removeAction _i;
-	};
-	};
-	};$/Code$
-	To test:
-	$Code$ for "_i" from 0 to 9 do {
-	player addAction ["Action #" + str _i, {
-	[0,5,6] call KK_fnc_removeUnknownUserActions;
-	}];
-	};
+		(May 02, 2018)
+	If you want to replicate vanilla Actions like "Treat yourself" where the scroll menu only shows text and it displays the icon mid-screen you can use
+	$Code$ private _action = player addAction ["Heal", {}];
+	player setUserActionText [_action, "Heal", " img size='2' image='\a3\ui_f\data\IGUI\Cfg\Actions\heal_ca'/ "];
 	$/Code$
-	Removes all user actions but 0, 5 and 6.
-	</NextNote>
-		(July 18, 2016)
-	A3 v1.62.137494 : Condition is not evaluated when map is opened (and probably also true for other displays or opened dialog)
-	</NextNote>
-		(October 28, 2017)
-	addAction with all the default parameters:
-	$Code$
-	addAction["Cookies",{},nil,1.5,true,true,"","true",15,false,""];
-	$/Code$
-	/dd
-	/dl
 	</Note>
 	<ReturnValue>
 		Number
@@ -65494,7 +66665,8 @@
 		mapAnimClear
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$mapAnimClear ;$/Code$
+	</Example>
 	<Locality>
 		local / local
 	</Locality>
@@ -65798,7 +66970,8 @@
 		simulWeatherSync
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$simulWeatherSync ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -65930,7 +67103,7 @@
 		setDate
 	</Keyword>
 	<Description>
-		Sets the actual mission date and time.
+		Sets the actual mission date and time. This command is JIP compatible. Players joining after mission start will get current server date set up.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setDate
@@ -65957,23 +67130,16 @@
 	<Note>
 		This scripting command must be executed on the server to work properly in multiplayer
 	</NextNote>
-		This command is special in that it is "smart". If you add 120 minutes, for example, it will actually advance hours by 2, and so on.
-	10:00, 7/12/2010 (BST)
-	</NextNote>
 		This command sets the date for the southern hemisphere only, i.e. when the map is in northern hemisphere a date [2010,12,7,17,0] is in day light and and date [2010,6,7,17,0] is in darkness.
 	21:35, 31 October 2011 (EET)
 	</NextNote>
 		In multiplayer, the effect of this command is local, not global. The date from the server is synchronized with clients when they join the game (including start of the mission and joining in progress). E.g. if this command is executed on server in the init.sqf before the mission starts, every client will be synchronized with server as mission is started. However, if you run this command in the middle of the mission, effect is local.
-	10 September 2013 (EET)
-	</NextNote>
-		This command is JIP compatible. Players joining after mission start will get current server date set up.
 	</NextNote>
 		(October 4, 2014)
 	Since an unknown version of ARMA 3, this command now has global effect when executed on the server.
 	</NextNote>
 		(February 5, 2015)
 	Arma 3 1.38.128937- Leapyear BUG - setdate [2016,12,31,23,59] yields an ingame date of the 1st of January 2017. If left to tick over from the 30th of December it ticks to 1st January skipping the 31st of December entirely.
-	Feedback_Link
 	</NextNote>
 		(April 23, 2017)
 	Regarding execution in the middle of a session, the post of MulleDK13 is not entirely true. If you don't change the year, you are perfectly fine when executing the command on the server only. However, the server does not sync the year. Hence, if you do change the year, you have to execute the command on the server, clients and JIP to account for the missing sync. e.g.
@@ -66181,7 +67347,7 @@
 		$Code$player moveInAny tank;$/Code$
 	</Example>
 	<Locality>
-		local / global
+		global / global
 	</Locality>
 	<Note>
 	</Note>
@@ -66237,6 +67403,35 @@
 	</RawSyntax>
 	<Example>
 		$Code$getPlayerScores BIS_player1;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getUserMFDText
+	</Keyword>
+	<Description>
+		Returns array of user text variables used in MFD.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/getUserMFDText
+	</WikiPage>
+	<Syntax>
+		getUserMFDText Object
+	</Syntax>
+	<RawSyntax>
+		getUserMFDText vehicle
+	</RawSyntax>
+	<Example>
+		$Code$getUserMFDText _vehicle;$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -66504,6 +67699,7 @@
 	</Keyword>
 	<Description>
 		Sets camera bank angle. Does not commit changes.
+	⚠
 	This command is non-functional !
 	</Description>
 	<WikiPage>
@@ -66579,7 +67775,8 @@
 		overcastForecast
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_forecast = overcastForecast ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -66659,7 +67856,7 @@
 		$Code$_myVest = vest player;$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		global / undefined
 	</Locality>
 	<Note>
 	</Note>
@@ -66747,6 +67944,7 @@
 	</Keyword>
 	<Description>
 		Sets debriefing text for endType defined in CfgDebriefing.
+	⚠
 	This command is broken. https://feedback.bistudio.com/T85682
 	</Description>
 	<WikiPage>
@@ -66793,6 +67991,36 @@
 		$Code$_visible = waypointVisible [groupOne, 1];$/Code$
 	</NextExample>
 		$Code$_visible = waypointVisible [group player, currentWayPoint (group player)];$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setInfoPanel
+	</Keyword>
+	<Description>
+		Opens given component or first component of given component type on specified info panel.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/setInfoPanel
+	</WikiPage>
+	<Syntax>
+		setInfoPanel Array
+	</Syntax>
+	<RawSyntax>
+		setInfoPanel [infopanelId, componentClassOrType]
+	</RawSyntax>
+	<Example>
+		$Code$//opens slingload assistant on right panel
+	_result = setInfoPanel ["VehicleSystemsDisplayManagerComponentRight", "SlingLoadDisplayComponent"];$/Code$
 	</Example>
 	<Locality>
 		undefined / undefined
@@ -67004,7 +68232,7 @@
 	</Keyword>
 	<Description>
 		Creates the load overlay dialog for the specified type of overlay.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -67310,7 +68538,8 @@
 		currentTask person
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_currTask = currentTask player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -67433,6 +68662,7 @@
 	</Keyword>
 	<Description>
 		Sets the data for hiding. objectWhereHide can be taken using findCover. hidePosition can be taken using getHideFrom. Command is not functional in ArmA 2.
+	⚠
 	This command is not implemented
 	</Description>
 	<WikiPage>
@@ -67809,6 +69039,7 @@
 	</Keyword>
 	<Description>
 		Remove attachment linked to a weapon from the vehicle cargo space.
+	⚠
 	This is unoffical documentation. All Information here is as it exists in the Engine. It might not reflect the reality.
 	</Description>
 	<WikiPage>
@@ -68096,7 +69327,7 @@
 	</Keyword>
 	<Description>
 		Return name of object argument in mission editor.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -69089,7 +70320,7 @@
 	</Keyword>
 	<Description>
 		Defines an action performed when the user double clicks on the map. Command receives:,_pos array position,_units array selected units,_shift,_alt bool key state
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -69685,6 +70916,7 @@
 	};
 	Since model.cfg is not always available for reference, most animation names could also be obtained from animationNames command. Class names listed in CfgVehicles AnimationSources bound to "Proxy" controller can also be animated with animate command (see createVehicle/vehicles ): offroad animate ["HideBackpacks", 0];
 	It is recommended that animateSource command is used instead of animate whenever is possible, as it is more efficient and optimised for MP
+	⚠
 	Mixing animateSource command with animate command to animate the same part may produce some undefined behaviour
 	</Description>
 	<WikiPage>
@@ -69864,7 +71096,7 @@
 	</Keyword>
 	<Description>
 		Adds a new menu button. Priority is optional.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -70685,6 +71917,10 @@
 	_time24 = text format ["%1:%2:%3",_hour,_minute,_second];
 	//_time24 = 1:39:37$/Code$
 	Note: Not perfect method, "12:03:06" will display as "12:3:6", more script needed to remove this. Other methods might exist for basic functionality.
+	</NextNote>
+		(April 11, 2018)
+	Easiest way to convert time is to use a BIS_fnc_timeToString :
+	$Code$ daytime call BIS_fnc_timeToString // "07:57:11"$/Code$
 	</Note>
 	<ReturnValue>
 		Number
@@ -70756,7 +71992,7 @@
 	</Keyword>
 	<Description>
 		Return the proxy object associated with the given editor object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -70825,7 +72061,7 @@
 	</Keyword>
 	<Description>
 		Sets whether or not the object is visible even if the tree is collapsed.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -70856,6 +72092,7 @@
 	</Keyword>
 	<Description>
 		Removes the site.
+	⚠
 	This command is considered deprecated and is no longer supported
 	</Description>
 	<WikiPage>
@@ -70868,7 +72105,8 @@
 		deleteSite site
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$-$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -70925,7 +72163,8 @@
 		lockedDriver vehicle
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_driverLocked = lockedDriver vehicle player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -71098,6 +72337,7 @@
 	</Keyword>
 	<Description>
 		Sets ability level of person (commander unit). Value of skill may vary from 0 to 1.
+	1.00 The alternative syntax allows fine-tuning AI Sub-skills.
 	Available sub-skills are:
 	aimingShake
 	aimingSpeed
@@ -71179,6 +72419,9 @@
 	</Locality>
 	<Note>
 		In OFP v1.96, empty vehicles, objects and dead soldiers are on side civilian.
+	</NextNote>
+		(May 1, 2018)
+	In Arma 3 v1.82, units where setCaptive and/or setUnconscious are set to true are on side civilian, regardless of low rating (Renegade status).
 	</Note>
 	<ReturnValue>
 		Side
@@ -71741,7 +72984,7 @@
 	</Keyword>
 	<Description>
 		Defines an action performed when pointer, previously positioned over icon, is moved away from it (3D or in a map). The code is executed once.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: GroupIconOverLeave
 	</Description>
 	<WikiPage>
@@ -71797,7 +73040,8 @@
 		camTarget camera
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_someObject = camTarget _camera;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -71872,6 +73116,7 @@
 	</Keyword>
 	<Description>
 		Returns an array of all diag modes available in the game.
+	⚠
 	Command is only available when using Arma 3 Diagnostics Exe on Dev-Branch.
 	</Description>
 	<WikiPage>
@@ -71991,7 +73236,9 @@
 		tg x
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_tangent = tg 45 
+	// Result is 1$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -72530,10 +73777,43 @@
 	</Locality>
 	<Note>
 		(May 12, 2017)
-	The indexes of the returned array's elements are relative to the pylon IDs, such that element 0 is pylon 1, element 1 is pylon 2, etc.
+	The indexes of the returned array's elements are relative to the pylon indexes, such that element 0 is pylon 1, element 1 is pylon 2, etc.
 	</Note>
 	<ReturnValue>
 		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		infoPanels
+	</Keyword>
+	<Description>
+		Returns array all info panels configured for given object or object and turret path.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/infoPanels
+	</WikiPage>
+	<Syntax>
+		infoPanels Object
+	</NextSyntax>
+		infoPanels Array
+	</Syntax>
+	<RawSyntax>
+		infoPanels unit
+	</NextRawSyntax>
+		infoPanels [unit, turretPath]
+	</RawSyntax>
+	<Example>
+		$Code$infoPanels [ vehicle player, [0]];$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+	</Note>
+	<ReturnValue>
+		Array - Array
 	</ReturnValue>
 
 </NextListItem>
@@ -72572,7 +73852,7 @@
 	</Keyword>
 	<Description>
 		Execute an editor script for the specified object.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -72665,7 +73945,7 @@
 	</Keyword>
 	<Description>
 		Sets map mode to MAP,3D or PREVIEW.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -72755,7 +74035,7 @@
 	</Keyword>
 	<Description>
 		Creates a new menu item. Menu can be "file" or "view",index is index,as returned from addMenu command. priority is optional and determines,where in the menu the item will reside (higher priority items first).
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -72768,7 +74048,8 @@
 		map addMenuItem [menu or index,text,command,priority]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$-$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -72889,13 +74170,6 @@
 		(16 Feb, 2007)
 	getPos obj select 2
 	might return the vertical position above ground level, but for a stacked object, it returns the vertical position above the object beneath it. The same problem exists for getPosASL. There was a discussion thread in the BIS forums which suggested the use of the command modelToWorld instead to get around this issue where an absolute vertical position is required. ArmA Ver 1.02.
-	</NextNote>
-		(6 Feb, 2011)
-	The z height returned changes dynamically with the height of waves beneath the object, if the object is located over sea. The z height returned by getPosATL and getPosASL does not change like this. This was tested by continuously retrieving the position of a static object, like the cross in the empty/corpses category, placed over sea or land.
-	getPos behaves similar to
-	_obj modelToWorld [0.0, 0.0, 0.0]
-	but it does not give the same result, therefore
-	(_obj modelToWorld [0.0, 0.0, 0.0]) is not the same as (getPos _obj).
 	</NextNote>
 		(23 Nov, 2011)
 	You can use getPos and setPos on triggers.
@@ -73188,7 +74462,7 @@
 	In Armed Assault you're able to define the callsignletter by yourself. This can be for example "Fireteam", or "Specialforces".
 	this setgroupId ["Attackteam"]
 	</NextNote>
-		In OFP v1.96, the radio callsign strings for a mission can be redefined by creating a stringtable.csv in the mission folder. All string names except FOX can be found within the main stringtable.csv. Note "SIX" has a string suggesting it is a groupname, although the engine uses it as a colour. Some examples of the string names : STR_CFG_GRPNAMES_ALPHA, STR_CFG_GRPNAMES_FOX, STR_CFG_GRPCOL_BLACK, STR_CFG_GRPNAMES_SIX, STR_CFG_FIREFLYBASE, STR_CFG_PAPABEAR, STR_CFG_HQ_BASE, STR_CFG_HQ_BASE.
+		In OFP v1.96, the radio callsign strings for a mission can be redefined by creating a Stringtable.csv in the mission folder. All string names except FOX can be found within the main stringtable.csv. Note "SIX" has a string suggesting it is a groupname, although the engine uses it as a colour. Some examples of the string names : STR_CFG_GRPNAMES_ALPHA, STR_CFG_GRPNAMES_FOX, STR_CFG_GRPCOL_BLACK, STR_CFG_GRPNAMES_SIX, STR_CFG_FIREFLYBASE, STR_CFG_PAPABEAR, STR_CFG_HQ_BASE, STR_CFG_HQ_BASE.
 	</NextNote>
 		(April 21, 2015)
 	List of available keywords from config: $Code$"if ((configName _x) select [0, 5] == 'group') then {
@@ -73458,6 +74732,35 @@
 		(07:20, 23 April 2018 (UTC))
 	This command seems to have evolved. Returns "true" (on Hunter, Ifrit) even if Gun's damage is set to 1 and turret also, as far there is a gunner. The only way to obtain a canFire "false" is to make the crew disembark (2 burned tires for example). Then no matter the gun state, if the gunner disembarks without order, the vehicle can't fire. In this case: can't move can't fire.
 	NB: if you jump into a hunter HMG after having setHitPointDamage(d) "hitTurret" and "hitGun" to 1, the turret can't rotate any more, the gun is pitched down but you can fire (trigger) to the ground. Difficult to check the behavior for each vehicles.
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		isAimPrecisionEnabled
+	</Keyword>
+	<Description>
+		Returns true if procedural aiming precision affects weapon sway.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/isAimPrecisionEnabled
+	</WikiPage>
+	<Syntax>
+		isAimPrecisionEnabled Object
+	</Syntax>
+	<RawSyntax>
+		isAimPrecisionEnabled unit
+	</RawSyntax>
+	<Example>
+		$Code$_isAffected = isAimPrecisionEnabled player ;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
 	</Note>
 	<ReturnValue>
 		Boolean
@@ -73915,13 +75218,14 @@
 	</RawSyntax>
 	<Example>
 		$Code$_soldier2 assignTeam "RED";$/Code$
+	</NextExample>
+		$Code$// In a unit's init script in the editor you should use the following. Or else you might experience race conditions.
+	0 = this spawn {_this assignTeam "RED"};$/Code$
 	</Example>
 	<Locality>
 		global / global
 	</Locality>
 	<Note>
-		(July 12, 2016)
-	Since Arma 3 v1.62 this command has global effects and is persistent even on machines that join in progress.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -74122,6 +75426,10 @@
 	$Code$_markerstr = createMarker ["markername", player];
 	_markerstr setMarkerShape "RECTANGLE";
 	_markerstr setMarkerSize [100,100];$/Code$
+	</NextNote>
+		(May 28, 2018)
+	In Arma 3, one can create markers which are deletable by the user by prefixing the name with `_USER_DEFINED`.
+	Example: $Code$createMarker "_USER_DEFINED somemarkername"$/Code$
 	</Note>
 	<ReturnValue>
 		String
@@ -74478,7 +75786,8 @@
 		Sets string representation of an object to a custom string. For example it is possible to return "MyFerrari" instead of default "ce06b00# 164274: offroad_01_unarmed_f.p3d" when querying object as string:
 	$Code$ hint str _offroad; //MyFerrari$/Code$
 	When a vehicle is created and named in the editor, the name becomes both the variable containing the vehicle object and the string representation of the vehicle object. vehicleVarName on the other hand is only string representation of the object. So if you want to refer to the actual object by its vehicleVarName, an extra step needed to assign the object to a variable of the same name. For example to see and refer to offroad as myFerrari:
-	$Code$_offroad setVehicleVarName "MyFerrari"; MyFerrari = _offroad;$/Code$
+	$Code$_offroad setVehicleVarName "MyFerrari";
+	MyFerrari = _offroad;$/Code$
 	In multiplayer environment setVehicleVarName has to be executed on every PC if you want the custom name to be known everywhere. If vehicle is created and named in the editor, the vehicle name will be known globally automatically.
 	To reset vehicleVarName and str representation of the object to original form set vehicleVarName to an empty string:
 	$Code$_offroad setVehicleVarName "";$/Code$
@@ -74493,7 +75802,8 @@
 		object setVehicleVarName name
 	</RawSyntax>
 	<Example>
-		$Code$player setVehicleVarName "aP";$/Code$
+		$Code$player setVehicleVarName "aP";
+	aP = player ;$/Code$
 	</Example>
 	<Locality>
 		global / local
@@ -74770,9 +76080,11 @@
 		$Code$_actions = actionIDs player ;$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		global / local
 	</Locality>
 	<Note>
+		(April 22, 2018)
+	The argument for this command can be global (ie, not local to the executing machine), however the returned array will only contain action IDs for locally executed addAction.
 	</Note>
 	<ReturnValue>
 		Array
@@ -74784,7 +76096,9 @@
 		setSystemOfUnits
 	</Keyword>
 	<Description>
-		Set system of units.
+		Set system of units. This will only impact gauges from advanced flight model.
+	⚠
+	This command is buggy: any value other than 0 (metric) will display both units at the same time.
 	</Description>
 	<WikiPage>
 		https://community.bistudio.com/wiki/setSystemOfUnits
@@ -74796,11 +76110,10 @@
 		setSystemOfUnits value
 	</RawSyntax>
 	<Example>
-		$Code$myNum = 5;
-	myNumNew = setSystemOfUnits myNum;$/Code$
+		$Code$if ( player in _myHelicopter) then { setSystemOfUnits 2; };$/Code$
 	</Example>
 	<Locality>
-		undefined / undefined
+		undefined / local
 	</Locality>
 	<Note>
 	</Note>
@@ -74853,7 +76166,7 @@
 	</Keyword>
 	<Description>
 		Defines an action performed when the team switch is finished. Commandset receives the following special variables: _from object previous unit, _to object current unit. Consecutive use of onTeamSwitch command will overwrite previously set commandset.
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: TeamSwitch
 	NOTE: When player switches and leaves behind AI unit, you need to enable "TeamSwitch" AI on it onTeamSwitch {_from enableAI "TeamSwitch"}; so that the unit continues with waypoints
 	</Description>
@@ -76529,7 +77842,7 @@
 	The code is executed on every click, until the Command is
 	removed via onMapSingleClick "", or
 	replaced by onMapSingleClick "SomeOtherCommand(s)"
-	i
+	🛈
 	Since Arma 3 v1.57 a stackable version of this EH is available: MapSingleClick
 	In order to keep compatibility between official and community content the functions BIS_fnc_addStackedEventHandler and BIS_fnc_removeStackedEventHandler should be used instead.
 	</Description>
@@ -76746,6 +78059,9 @@
 		(27 Mar, 2014)
 	According to Code Optimisation, this function is the fastest (2x) and should be used instead of getPos, getPosATL and position.
 	Conversion keep this speed ratio and is structured like: $Code$ ASLtoATL getPosASL Object ;$/Code$
+	</NextNote>
+		(June 1, 2018)
+	Further to Florians post, getPosASL is indeed faster than position and getpos, but is no faster that getposATL
 	</Note>
 	<ReturnValue>
 		Array
@@ -76888,7 +78204,7 @@
 	</Keyword>
 	<Description>
 		Set one of entity attributes.
-	!
+	⚠
 	Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!
 	</Description>
 	<WikiPage>
@@ -76932,7 +78248,8 @@
 		triggerStatements trigger
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$_statements = triggerStatements someTrigger;$/Code$
+	</Example>
 	<Locality>
 		global / local
 	</Locality>
@@ -77217,7 +78534,8 @@
 		hcRemoveAllGroups unit
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$hcRemoveAllGroups player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -77324,6 +78642,7 @@
 	</Keyword>
 	<Description>
 		Shows loading screen with the given text, using the given resource. While loading screen is shown, simulation and scene drawing is disabled, user control is disabled, mouse cursor is hidden, scripts run at full speed. The loading screen does not end by itself and needs endLoadingScreen command, so make sure there is one at the end of loading operation.
+	⚠
 	NOTE: The game simulation is disabled during Loading Screen operation (at least in SP), therefore any use of sleep command will pause the game indefinitely. If you have to "sleep", use uiSleep
 	By default (if custom resource is not provided) startLoadingScreen will use "RscDisplayNotFreeze" resource. If you are using custom resource (could be also defined in description.ext ), the following resource's controls are supported by the engine:
 	idc = 101; - text (type = 0;) or picture (type = 48;). The text will be set to the text provided by the command param.
@@ -77538,7 +78857,7 @@
 	</Keyword>
 	<Description>
 		Fetches a reference to the mission editor camera.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -78088,7 +79407,8 @@
 		object hideSelection [selection, hidden]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$BIS_vehicle hideSelection [ "someSelection", true ];$/Code$
+	</Example>
 	<Locality>
 		local / global
 	</Locality>
@@ -78172,6 +79492,37 @@
 	2. Unit pos scripted (from setUnitPos scripting command, medium priority).
 	3. Unit pos FSM / setUnitPosWeak (used in the formation FSM, lowest priority).
 	Command most likely only works if run before join into group after createUnit array.
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setCustomWeightRTD
+	</Keyword>
+	<Description>
+		Add virtual custom weight to a helicopter's center of gravity. This can be used to simulate added internal payload for specific scenarios, and affects the flight model.
+	</Description>
+	<WikiPage>
+		https://community.bistudio.com/wiki/setCustomWeightRTD
+	</WikiPage>
+	<Syntax>
+		ObjectRTD setCustomWeightRTD Number
+	</Syntax>
+	<RawSyntax>
+		helicopterRTD setCustomWeightRTD weight
+	</RawSyntax>
+	<Example>
+		$Code$myHelicopterRTD setCustomWeightRTD 120;$/Code$
+	</Example>
+	<Locality>
+		undefined / undefined
+	</Locality>
+	<Note>
+		(November 4, 2014)
+	Value can be negative. Do not set negative value lower than helicopter's total weight.
 	</Note>
 	<ReturnValue>
 		Nothing
@@ -78285,7 +79636,8 @@
 		getConnectedUAV unit
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$getConnectedUAV player ;$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -78497,7 +79849,7 @@
 	</Keyword>
 	<Description>
 		Add an object to the editor and assign arguments. Create script is,called with _new equal to true. Returns the ID of the new EditorObject.,Subtype class is optional.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
@@ -78510,7 +79862,8 @@
 		map addEditorObject [type,[name1,value1,],subtype class]
 	</RawSyntax>
 	<Example>
-		</Example>
+		$Code$-$/Code$
+	</Example>
 	<Locality>
 		undefined / undefined
 	</Locality>
@@ -79026,7 +80379,7 @@
 		(April 13, 2015)
 	playersNumber returns playable AI as well as human players. It does not include non playable AI. [NOTE: This was observed in ArmA 1.05]
 	To get the amount of players that are on the same side as the person executing the script:
-	$Code$playersNumber playerSide;$/Code$
+	$Code$ playersNumber playerSide ;$/Code$
 	</Note>
 	<ReturnValue>
 		Number
@@ -79362,7 +80715,7 @@
 	</Keyword>
 	<Description>
 		Collapse the object tree.
-	i
+	🛈
 	Some Old Editor Command
 	</Description>
 	<WikiPage>
