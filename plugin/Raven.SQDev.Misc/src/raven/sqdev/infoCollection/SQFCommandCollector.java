@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -198,11 +199,23 @@ public class SQFCommandCollector {
 	 * 
 	 * @param monitor
 	 *            The <code>IProgressMonitor</code> used to watch this collection
+	 * @return The <code>KeywordList</code> containing the gathered keywords
+	 * @throws SQDevCollectionException
+	 */
+	public KeywordList collect(IProgressMonitor monitor) throws SQDevCollectionException {
+		return collect(monitor, null);
+	}
+
+	/**
+	 * Starts the collection of the SQF commands
+	 * 
+	 * @param monitor
+	 *            The <code>IProgressMonitor</code> used to watch this collection
 	 * @param repeat
 	 *            The URL to repeat. This is only if one command has failed and
 	 *            should be repeated. If there is no such command this argument
 	 *            should be <code>null</code>
-	 * @return The <code>KeywordList</code> conatining the gathered keywords
+	 * @return The <code>KeywordList</code> containing the gathered keywords
 	 * @throws SQDevCollectionException
 	 */
 	public KeywordList collect(IProgressMonitor monitor, URL repeat) throws SQDevCollectionException {
@@ -224,8 +237,12 @@ public class SQFCommandCollector {
 
 		// create keywordList
 		list = new KeywordList();
+		
+		monitor.worked(1);
+		monitor.done();
 
-		monitor.beginTask("Gathering SQF commands", provider.size() + MANUAL_COMMANDS.length);
+		monitor.beginTask("Gathering SQF commands", provider.getTotalPageAmount() + MANUAL_COMMANDS.length);
+		monitor.worked(provider.getTotalPageAmount() - provider.size());
 
 		// Add a few operators manually
 		for (int i = 0; i < MANUAL_COMMANDS.length; i++) {
@@ -311,7 +328,11 @@ public class SQFCommandCollector {
 	 */
 	public static String getSite(URL url, boolean removeHTMLTags) throws IOException {
 		// read the site's content
-		InputStream in = url.openStream();
+		URLConnection connection = url.openConnection();
+		connection.setConnectTimeout(1000);
+		connection.setReadTimeout(10000);
+		InputStream in = connection.getInputStream();
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		byte[] bArray = new byte[in.available()];
@@ -515,7 +536,8 @@ public class SQFCommandCollector {
 				continue;
 			}
 
-			content = content.substring(0, lineMatcher.start()) + sequence.substring(0, sequence.indexOf("\n")).replace(NL, "\n") + "</dd>"
+			content = content.substring(0, lineMatcher.start())
+					+ sequence.substring(0, sequence.indexOf("\n")).replace(NL, "\n") + "</dd>"
 					+ content.substring(lineMatcher.end());
 
 			lineMatcher = linePattern.matcher(content);

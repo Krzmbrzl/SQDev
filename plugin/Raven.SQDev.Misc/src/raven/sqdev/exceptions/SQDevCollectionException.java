@@ -48,7 +48,7 @@ public class SQDevCollectionException extends SQDevException {
 	}
 	
 	/**
-	 * Gets the list of keyowrds that were processed before this exception has
+	 * Gets the list of keywords that were processed before this exception has
 	 * occured
 	 */
 	public KeywordList getPreviouslyProcessedKeywords() {
