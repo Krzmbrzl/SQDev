@@ -2,6 +2,7 @@ package raven.sqdev.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.ICommand;
@@ -32,6 +33,7 @@ import raven.sqdev.exceptions.FailedAtCreatingFileException;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
+import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
 import raven.sqdev.misc.FileUtil;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
@@ -39,6 +41,7 @@ import raven.sqdev.misc.SQDevProjectNature;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
+import raven.sqdev.sqdevFile.SQDevFileOld;
 
 public class ProjectUtil {
 
@@ -206,14 +209,15 @@ public class ProjectUtil {
 		SQDevFile linkFile = getLinkFile(project);
 
 		try {
-			String profile = linkFile.parseAttribute(ESQDevFileAttribute.PROFILE).getValue().toString();
+			linkFile.processAttribute(ESQDevFileAttribute.PROFILE);
+			String profile = ESQDevFileAttribute.PROFILE.getValue();
 
 			return profile;
-		} catch (SQDevFileIsInvalidException e) {
+		} catch (SQDevFileIsInvalidException | SQDevFileNoSuchAttributeException | IOException e) {
 			// inform the user
 			SQDevInfobox info = new SQDevInfobox(
-					"The linkFile in the project \"" + project.getName() + "\" is invalid!", SWT.ICON_ERROR);
-
+					"Errors while retrieving the profile name for the project " + project.getName() + "!",
+					SWT.ICON_ERROR);
 			info.open();
 
 			// rethrow
@@ -239,7 +243,7 @@ public class ProjectUtil {
 				SQDevFile linkFile = new SQDevFile((IFile) linkMember);
 
 				return linkFile;
-			} catch (FileNotFoundException | IllegalAccessStateException e) {
+			} catch (IllegalAccessStateException | IOException e) {
 				// rethrow
 				throw new SQDevCoreException(e);
 			}

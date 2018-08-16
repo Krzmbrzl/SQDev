@@ -174,8 +174,8 @@ public class FileSystemUtil {
 	 * the directories content first and afterwards the directory itself
 	 * 
 	 * @param file
-	 *            The file/directroy to be deleted
-	 * @return <code>True</code> if successfull
+	 *            The file/directory to be deleted
+	 * @return <code>True</code> if successful
 	 */
 	public static boolean deleteFiles(File file) {
 		return deleteFilesWithException(file, new ArrayList<String>());

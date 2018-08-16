@@ -49,6 +49,7 @@ import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
+import raven.sqdev.sqdevFile.SQDevFileOld;
 import raven.sqdev.util.EFileType;
 import raven.sqdev.util.ProjectUtil;
 import raven.sqdev.util.Util;
@@ -174,10 +175,9 @@ public class SQF_Editor extends BasicCodeEditor
 							containingProject.getFile(ESQDevFileType.LINK + EFileType.SQDEV.getExtension()));
 
 					// check if autoExport is enabled for this project
-					boolean autoExport = linkFile.parseAttribute(ESQDevFileAttribute.AUTOEXPORT).getValue()
-							.equals("true");
+					linkFile.processAttribute(ESQDevFileAttribute.AUTOEXPORT);
 
-					if (autoExport) {
+					if (Boolean.parseBoolean(ESQDevFileAttribute.AUTOEXPORT.getValue())) {
 						// outsource the export process to another thread
 						Job exportJob = new Job("Export") {
 
@@ -185,13 +185,20 @@ public class SQF_Editor extends BasicCodeEditor
 							protected IStatus run(IProgressMonitor monitor) {
 								monitor.beginTask("Export project \"" + containingProject.getName() + "\"", 1);
 								try {
+									linkFile.processAnnotation(ESQDevFileAnnotation.IGNORE);
+									linkFile.processAnnotation(ESQDevFileAnnotation.PRESERVE);
+
 									ProjectUtil.export(containingProject, Util.getExportPathFor(containingProject),
-											linkFile.parseAnnotation(ESQDevFileAnnotation.IGNORE).getValues(),
-											linkFile.parseAnnotation(ESQDevFileAnnotation.PRESERVE).getValues());
+											ESQDevFileAnnotation.IGNORE.getValues(),
+											ESQDevFileAnnotation.PRESERVE.getValues());
 
 									monitor.worked(1);
-								} catch (SQDevFileIsInvalidException e) {
+								} catch (SQDevFileIsInvalidException | IOException e) {
 									e.printStackTrace();
+
+									SQDevInfobox info = new SQDevInfobox("Errors ocured during the export of project "
+											+ containingProject.getName() + "!", e);
+									info.open();
 								}
 
 								monitor.done();
@@ -203,7 +210,7 @@ public class SQF_Editor extends BasicCodeEditor
 						exportJob.schedule();
 					}
 
-				} catch (FileNotFoundException | IllegalAccessStateException e) {
+				} catch (IOException | IllegalAccessStateException e) {
 					e.printStackTrace();
 
 					SQDevInfobox info = new SQDevInfobox("Couldn't perform linking process!", e);

@@ -28,10 +28,9 @@ public enum ESQDevFileType {
 		@Override
 		public String getInitialInput() {
 			// clear the initial content before recreating it
-			initialContent = "";
-
-			// add attributes
-			addAttribute(ESQDevFileAttribute.PROFILE, info.getProfile());
+			initialContent = ESQDevFileVersion.newest().makeInsertable(
+					"This link file contains the information needed to perform the workspace-Arma-linking") + "\n"
+					+ ESQDevFileVersion.newest().getPreamble();
 
 			IPath exportPath = Util.getMissionsDirectory(info.getProfile());
 
@@ -40,21 +39,20 @@ public enum ESQDevFileType {
 				exportPath = exportPath.append("mpMissions");
 			}
 
-			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY, exportPath.toOSString());
-
-			addAttribute(ESQDevFileAttribute.AUTOEXPORT, String.valueOf(info.getAutoExport()));
-
-			addAttribute(ESQDevFileAttribute.TERRAIN, info.getTerrain());
+			// add attributes
+			addAttribute(ESQDevFileAttribute.PROFILE, info.getProfile(), ESQDevFileVersion.newest());
+			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY, exportPath.toOSString(), ESQDevFileVersion.newest());
+			addAttribute(ESQDevFileAttribute.AUTOEXPORT, String.valueOf(info.getAutoExport()),
+					ESQDevFileVersion.newest());
+			addAttribute(ESQDevFileAttribute.TERRAIN, info.getTerrain(), ESQDevFileVersion.newest());
 
 			// add annotations
-			initialContent += "\n\n";
-			addAnnotation(ESQDevFileAnnotation.IGNORE, filesToIgnore.toArray(new String[filesToIgnore.size()]));
+			addAnnotation(ESQDevFileAnnotation.IGNORE, filesToIgnore.toArray(new String[filesToIgnore.size()]),
+					ESQDevFileVersion.newest());
+			addAnnotation(ESQDevFileAnnotation.PRESERVE, filesToPreserve.toArray(new String[filesToPreserve.size()]),
+					ESQDevFileVersion.newest());
 
-			initialContent += "\n";
-
-			addAnnotation(ESQDevFileAnnotation.PRESERVE, filesToPreserve.toArray(new String[filesToPreserve.size()]));
-
-			return initialContent.trim() + "\n";
+			return initialContent.toString();
 		}
 	};
 
@@ -70,9 +68,9 @@ public enum ESQDevFileType {
 	protected SQDevInformation info;
 
 	/**
-	 * A String containing the initial content od this fileType
+	 * A String containing the initial content of this fileType
 	 */
-	protected String initialContent;
+	protected CharSequence initialContent;
 
 	/**
 	 * A list of files/folders that should be ignored during project export
@@ -80,7 +78,7 @@ public enum ESQDevFileType {
 	protected ArrayList<String> filesToIgnore;
 
 	/**
-	 * A list of files/foldersy that should not get deleted during cleanup for
+	 * A list of files/folders that should not get deleted during cleanup for
 	 * exporting a project
 	 */
 	protected ArrayList<String> filesToPreserve;
@@ -128,14 +126,18 @@ public enum ESQDevFileType {
 	 *            The attribute
 	 * @param value
 	 *            The value of this attribute
+	 * @param version
+	 *            The file format version to use
 	 */
-	protected void addAttribute(ESQDevFileAttribute attr, String value) {
+	protected void addAttribute(ESQDevFileAttribute attr, String value, ESQDevFileVersion version) {
 		if (value == null || value.equals(SQDevInformation.NOT_SET)) {
 			// the respective attribute is not set
 			return;
 		}
 
-		initialContent += ((initialContent.endsWith("\n")) ? "" : "\n") + attr + " = " + value + ";\n";
+		attr.setValue(value);
+
+		initialContent = version.addAttribute(attr, initialContent);
 	}
 
 	/**
@@ -145,16 +147,18 @@ public enum ESQDevFileType {
 	 *            The annotation
 	 * @param value
 	 *            The values of this annotation
+	 * @param version
+	 *            The file format version to use
 	 */
-	protected void addAnnotation(ESQDevFileAnnotation annotation, String[] values) {
+	protected void addAnnotation(ESQDevFileAnnotation annotation, String[] values, ESQDevFileVersion version) {
 		if (values == null) {
 			// the respective annotation is not set
 			return;
 		}
-		for (String currentValue : values) {
-			initialContent += ((initialContent.endsWith("\n")) ? "" : "\n") + "@" + annotation + " \"" + currentValue
-					+ "\"\n";
-		}
+
+		annotation.setValues(values);
+
+		initialContent = version.addAnnotation(annotation, initialContent);
 	}
 
 	/**
