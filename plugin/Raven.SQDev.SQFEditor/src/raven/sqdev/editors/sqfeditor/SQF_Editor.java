@@ -1,6 +1,5 @@
 package raven.sqdev.editors.sqfeditor;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -49,7 +48,6 @@ import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
-import raven.sqdev.sqdevFile.SQDevFileOld;
 import raven.sqdev.util.EFileType;
 import raven.sqdev.util.ProjectUtil;
 import raven.sqdev.util.Util;

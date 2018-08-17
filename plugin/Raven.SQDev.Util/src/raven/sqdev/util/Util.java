@@ -20,6 +20,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import raven.sqdev.constants.SQDevFileConstants;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
@@ -78,10 +79,15 @@ public class Util {
 
 			// get the mission directory
 			linkFile.processAttribute(ESQDevFileAttribute.EXPORTDIRECTORY);
-			String expPath = ESQDevFileAttribute.EXPORTDIRECTORY.getValue();
+			String expPath = ESQDevFileAttribute.EXPORTDIRECTORY.getValue().trim();
+
+			// replace placeholders
+			linkFile.processAttribute(ESQDevFileAttribute.PROFILE);
+			expPath = expPath.replace(SQDevFileConstants.HOME_FOLDER_PLACEHOLDER, System.getProperty("user.home"));
+			expPath = expPath.replace(SQDevFileConstants.PROFILE_PLACEHOLDER, ESQDevFileAttribute.PROFILE.getValue());
 
 			// create the path according to the gathered path and name
-			exportPath = new Path(expPath + "/" + projectFolderName);
+			exportPath = new Path(expPath + File.separator + projectFolderName);
 		} catch (SQDevFileIsInvalidException | SQDevFileNoSuchAttributeException | IOException e) {
 			throw new SQDevCoreException(e);
 		}

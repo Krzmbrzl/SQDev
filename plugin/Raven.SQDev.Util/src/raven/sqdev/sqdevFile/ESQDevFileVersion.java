@@ -32,14 +32,13 @@ public enum ESQDevFileVersion {
 		public String getFormatDescription(boolean insertable) {
 			StringBuilder builder = new StringBuilder();
 
-			builder.append("Each statement has to be terminated by a linefeed\n");
+			builder.append("Each statement has to be on its own line\n");
 			builder.append(
 					"Attributes assign a value via \"=\" (WS gets removed automatically) and may only be specified once\n");
 			builder.append(
 					"Annotations start with a \"@\", assign their value by encapsulating them in quotation marks and may be used multiple times\n");
 			builder.append("Attributes and Annotations are case-insensitive");
-			builder.append(
-					"Singleline comments are supported. The usage of \"//\" causes the rest of the line to get discarded.");
+			builder.append("Singleline comments (starting with '//') are supported.");
 
 			return insertable ? "// " + builder.toString().replace("\n", "\n// ") : builder.toString();
 		}
@@ -143,13 +142,13 @@ public enum ESQDevFileVersion {
 		@Override
 		public Matcher getAttributeMatcher(ESQDevFileAttribute attribute, CharSequence input) {
 			return Pattern.compile(
-					"((\\n|^)\\s*" + Pattern.quote(attribute.toString()) + "\\h*=\\h*)((?:\\S+\\h*)+?(?://.*)?)",
+					"(?:(?:\\n|^)\\s*" + Pattern.quote(attribute.toString()) + "\\h*=\\h*)((?:[^/\\n]|/[^/\\n])+)(?://.*)?",
 					Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(input);
 		}
 
 		@Override
 		public Matcher getAnnotationMatcher(ESQDevFileAnnotation annotation, CharSequence input) {
-			return Pattern.compile("(?:(\\n|^)\\h*@" + Pattern.quote(annotation.toString()) + ")\\h*\"(.*?)\".*?",
+			return Pattern.compile("(?:(?:\\n|^)\\h*@" + Pattern.quote(annotation.toString()) + ")\\h*\"([^\"]*)\".*?",
 					Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(input);
 		}
 

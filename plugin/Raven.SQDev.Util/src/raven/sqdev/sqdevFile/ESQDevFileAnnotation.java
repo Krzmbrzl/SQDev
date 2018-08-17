@@ -1,6 +1,5 @@
 package raven.sqdev.sqdevFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +30,6 @@ public enum ESQDevFileAnnotation {
 				if (currentValue == null || currentValue.trim().isEmpty()) {
 					return "A value has to be specified!";
 				}
-
-				File file = new File(currentValue);
-
-				if (!file.exists()) {
-					return "The specified file doesn't exist!";
-				}
 			}
 
 			return null;
@@ -61,12 +54,6 @@ public enum ESQDevFileAnnotation {
 			for (String currentValue : getValues()) {
 				if (currentValue == null || currentValue.trim().isEmpty()) {
 					return "A value has to be specified!";
-				}
-
-				File file = new File(currentValue);
-
-				if (!file.exists()) {
-					return "The specified file doesn't exist!";
 				}
 			}
 
@@ -115,7 +102,7 @@ public enum ESQDevFileAnnotation {
 	 * Gets the list of values of this annotation
 	 */
 	public ArrayList<String> getValues() {
-		return new ArrayList<String>(values);
+		return (values == null ? new ArrayList<>() : new ArrayList<String>(values));
 	}
 
 	/**
@@ -130,7 +117,7 @@ public enum ESQDevFileAnnotation {
 			this.values.add(current);
 		}
 	}
-	
+
 	/**
 	 * Sets the list of values of this annotation
 	 * 

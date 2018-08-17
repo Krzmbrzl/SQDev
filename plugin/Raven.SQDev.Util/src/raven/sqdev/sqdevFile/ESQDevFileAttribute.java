@@ -1,7 +1,5 @@
 package raven.sqdev.sqdevFile;
 
-import java.io.File;
-
 /**
  * Contains all valid attributes that can be used in a {@linkplain #SDevFile}
  * 
@@ -70,15 +68,7 @@ public enum ESQDevFileAttribute {
 			if (getValue() == null || getValue().trim().isEmpty()) {
 				return "Missing value!";
 			}
-			
-			File file = new File(getValue());
-			if(!file.exists()) {
-				return "The specified file does not exist!";
-			}
-			if(!file.isFile()) {
-				return "The specified path is not a file!";
-			}
-			
+
 			return null;
 		}
 	},
@@ -107,7 +97,7 @@ public enum ESQDevFileAttribute {
 			if (getValue() == null || getValue().trim().isEmpty()) {
 				return "Missing value!";
 			}
-			
+
 			return null;
 		}
 
@@ -140,7 +130,7 @@ public enum ESQDevFileAttribute {
 			if (getValue() == null || getValue().trim().isEmpty()) {
 				return "Missing value!";
 			}
-			
+
 			return null;
 		}
 	};

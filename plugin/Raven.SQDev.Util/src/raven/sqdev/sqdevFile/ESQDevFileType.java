@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IPath;
 
+import raven.sqdev.constants.SQDevFileConstants;
 import raven.sqdev.util.EFileType;
 import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.util.Util;
@@ -28,9 +29,10 @@ public enum ESQDevFileType {
 		@Override
 		public String getInitialInput() {
 			// clear the initial content before recreating it
-			initialContent = ESQDevFileVersion.newest().makeInsertable(
-					"This link file contains the information needed to perform the workspace-Arma-linking") + "\n"
-					+ ESQDevFileVersion.newest().getPreamble();
+			initialContent = ESQDevFileVersion.newest().getHeader() + "\n"
+					+ ESQDevFileVersion.newest().makeInsertable(
+							"This link file contains the information needed to perform the workspace-Arma-linking")
+					+ "\n" + ESQDevFileVersion.newest().getFormatDescription(true);
 
 			IPath exportPath = Util.getMissionsDirectory(info.getProfile());
 
@@ -39,9 +41,14 @@ public enum ESQDevFileType {
 				exportPath = exportPath.append("mpMissions");
 			}
 
+			// use placeholders in path
+			String strPath = exportPath.toString()
+					.replace(System.getProperty("user.home"), SQDevFileConstants.HOME_FOLDER_PLACEHOLDER)
+					.replace(info.getProfile(), SQDevFileConstants.PROFILE_PLACEHOLDER);
+
 			// add attributes
 			addAttribute(ESQDevFileAttribute.PROFILE, info.getProfile(), ESQDevFileVersion.newest());
-			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY, exportPath.toOSString(), ESQDevFileVersion.newest());
+			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY, strPath, ESQDevFileVersion.newest());
 			addAttribute(ESQDevFileAttribute.AUTOEXPORT, String.valueOf(info.getAutoExport()),
 					ESQDevFileVersion.newest());
 			addAttribute(ESQDevFileAttribute.TERRAIN, info.getTerrain(), ESQDevFileVersion.newest());

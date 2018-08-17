@@ -1,7 +1,6 @@
 package raven.sqdev.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -41,7 +40,6 @@ import raven.sqdev.misc.SQDevProjectNature;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
-import raven.sqdev.sqdevFile.SQDevFileOld;
 
 public class ProjectUtil {
 
