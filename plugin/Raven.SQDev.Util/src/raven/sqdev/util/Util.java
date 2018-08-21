@@ -20,7 +20,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import raven.sqdev.constants.SQDevFileConstants;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
@@ -55,7 +54,7 @@ public class Util {
 	 *            The project the export path should be returned for
 	 * @return
 	 */
-	public static Path getExportPathFor(IProject project) {
+	public static IPath getExportPathFor(IProject project) {
 		// it has to be an SQDevProject
 		Assert.isTrue(ProjectUtil.isSQDevProject(project));
 
@@ -71,23 +70,19 @@ public class Util {
 			throw new SQDevCoreException(e);
 		}
 
-		Path exportPath;
+		IPath exportPath;
 		try {
 			// create the folder name including the map name
 			linkFile.processAttribute(ESQDevFileAttribute.TERRAIN);
 			String projectFolderName = project.getName() + "." + ESQDevFileAttribute.TERRAIN.getValue();
 
 			// get the mission directory
+			linkFile.processAttribute(ESQDevFileAttribute.PROFILE);
 			linkFile.processAttribute(ESQDevFileAttribute.EXPORTDIRECTORY);
 			String expPath = ESQDevFileAttribute.EXPORTDIRECTORY.getValue().trim();
 
-			// replace placeholders
-			linkFile.processAttribute(ESQDevFileAttribute.PROFILE);
-			expPath = expPath.replace(SQDevFileConstants.HOME_FOLDER_PLACEHOLDER, System.getProperty("user.home"));
-			expPath = expPath.replace(SQDevFileConstants.PROFILE_PLACEHOLDER, ESQDevFileAttribute.PROFILE.getValue());
-
-			// create the path according to the gathered path and name
-			exportPath = new Path(expPath + File.separator + projectFolderName);
+			// create the path according to the gathered path and name; Use SQDevPath in order to handle placeholders
+			exportPath = new SQDevPath(expPath, ESQDevFileAttribute.PROFILE.getValue()).toPath().append(projectFolderName);
 		} catch (SQDevFileIsInvalidException | SQDevFileNoSuchAttributeException | IOException e) {
 			throw new SQDevCoreException(e);
 		}
@@ -126,7 +121,7 @@ public class Util {
 	 *            exist!</b>
 	 * @return The path to the respective missions directory
 	 */
-	public static Path getMissionsDirectory(String profile) {
+	public static IPath getMissionsDirectory(String profile) {
 		// make sure the profile exists
 		if (!getProfiles().contains(profile)) {
 			String message = "The requested profile \"" + profile + "\" does not exist!";
@@ -188,9 +183,23 @@ public class Util {
 
 		return requestedPath;
 	}
+	
+	/**
+	 * Gets the path to the mpMission directory for the given profile
+	 * 
+	 * @param profile
+	 *            The profile whose missions directory should be obtained. <b>Has to
+	 *            exist!</b>
+	 * @return The path to the respective missions directory
+	 */
+	public static IPath getMpMissionsDirectory(String profile) {
+		IPath missionsPath = getMissionsDirectory(profile);
+		
+		return missionsPath.removeLastSegments(1).append("mpMissions");
+	}
 
 	/**
-	 * Finds out whether the given profile is the default profile ArmA has created
+	 * Finds out whether the given profile is the default profile Arma has created
 	 * with the system's user name
 	 * 
 	 * @param profile

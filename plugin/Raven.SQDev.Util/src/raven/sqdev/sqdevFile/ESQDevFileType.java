@@ -2,12 +2,9 @@ package raven.sqdev.sqdevFile;
 
 import java.util.ArrayList;
 
-import org.eclipse.core.runtime.IPath;
-
-import raven.sqdev.constants.SQDevFileConstants;
 import raven.sqdev.util.EFileType;
 import raven.sqdev.util.SQDevInformation;
-import raven.sqdev.util.Util;
+import raven.sqdev.util.SQDevPath;
 
 /**
  * An enum representing all possible names for a .sqdev file
@@ -34,21 +31,13 @@ public enum ESQDevFileType {
 							"This link file contains the information needed to perform the workspace-Arma-linking")
 					+ "\n" + ESQDevFileVersion.newest().getFormatDescription(true);
 
-			IPath exportPath = Util.getMissionsDirectory(info.getProfile());
-
-			if (info.isMp()) {
-				exportPath = exportPath.removeLastSegments(1);
-				exportPath = exportPath.append("mpMissions");
-			}
-
-			// use placeholders in path
-			String strPath = exportPath.toString()
-					.replace(System.getProperty("user.home"), SQDevFileConstants.HOME_FOLDER_PLACEHOLDER)
-					.replace(info.getProfile(), SQDevFileConstants.PROFILE_PLACEHOLDER);
+			SQDevPath exportPath = new SQDevPath(
+					info.isMp() ? SQDevPath.MPMISSIONS_FOLDER_PLACEHOLDER : SQDevPath.MISSIONS_FOLDER_PLACEHOLDER,
+					info.getProfile());
 
 			// add attributes
 			addAttribute(ESQDevFileAttribute.PROFILE, info.getProfile(), ESQDevFileVersion.newest());
-			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY, strPath, ESQDevFileVersion.newest());
+			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY, exportPath.toPlaceholderString(), ESQDevFileVersion.newest());
 			addAttribute(ESQDevFileAttribute.AUTOEXPORT, String.valueOf(info.getAutoExport()),
 					ESQDevFileVersion.newest());
 			addAttribute(ESQDevFileAttribute.TERRAIN, info.getTerrain(), ESQDevFileVersion.newest());
