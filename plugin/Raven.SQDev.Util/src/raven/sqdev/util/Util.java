@@ -24,7 +24,7 @@ import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
-import raven.sqdev.misc.FileUtil;
+import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.pluginManagement.ESQDevPlugin;
@@ -292,7 +292,7 @@ public class Util {
 
 		out.putNextEntry(new ZipEntry("EclipseLog.txt"));
 		FileInputStream in = new FileInputStream(errorFilePath.toFile());
-		String logContent = FileUtil.readAll(in);
+		String logContent = FileSystemUtil.readAll(in);
 		in.close();
 		out.write(logContent.getBytes());
 		out.closeEntry();

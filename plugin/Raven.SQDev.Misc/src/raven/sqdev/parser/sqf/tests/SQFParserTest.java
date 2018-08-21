@@ -19,13 +19,14 @@ import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
-import raven.sqdev.misc.FileUtil;
+import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.Marker;
 import raven.sqdev.parser.misc.ParseUtil;
 import raven.sqdev.parser.sqf.SQFInformation;
 import raven.sqdev.parser.sqf.SQFParseResultOld;
 
+@SuppressWarnings("deprecation")
 public class SQFParserTest {
 
 	public static final File KEYWORD_FILE = new File(
@@ -375,7 +376,7 @@ public class SQFParserTest {
 	 */
 	protected static String getContent(File file) {
 		try {
-			return FileUtil.getContent(file);
+			return FileSystemUtil.getContent(file);
 		} catch (SQDevException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -393,7 +394,7 @@ public class SQFParserTest {
 			@Override
 			protected String getKeywordContent() {
 				try {
-					return FileUtil.getContent(KEYWORD_FILE);
+					return FileSystemUtil.getContent(KEYWORD_FILE);
 				} catch (SQDevException e) {
 					e.printStackTrace();
 					throw new RuntimeException(e);

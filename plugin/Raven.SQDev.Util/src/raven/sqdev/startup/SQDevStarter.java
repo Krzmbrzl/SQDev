@@ -20,7 +20,7 @@ import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.interfaces.IVersionListener;
-import raven.sqdev.misc.FileUtil;
+import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.misc.SQDevProjectNature;
@@ -147,7 +147,7 @@ public class SQDevStarter implements IStartup, IVersionListener {
 			
 			try {
 				manager.updateResource(ResourceManager.KEYWORDS_RESOURCE,
-						FileUtil.readAll(manager.getInternalResourceStream(
+						FileSystemUtil.readAll(manager.getInternalResourceStream(
 								ResourceManager.INTERNAL_KEYWORDS)));
 			} catch (IOException | SQDevException e) {
 				throw new SQDevCoreException(

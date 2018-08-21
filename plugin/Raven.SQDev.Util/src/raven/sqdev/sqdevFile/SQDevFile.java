@@ -16,7 +16,7 @@ import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
-import raven.sqdev.misc.FileUtil;
+import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.util.EFileType;
 
 /**
@@ -228,7 +228,7 @@ public class SQDevFile extends File {
 	 * @throws IOException
 	 */
 	public String getContent() throws FileNotFoundException, IOException {
-		return FileUtil.readAll(new FileInputStream(this));
+		return FileSystemUtil.readAll(new FileInputStream(this));
 	}
 
 	/**

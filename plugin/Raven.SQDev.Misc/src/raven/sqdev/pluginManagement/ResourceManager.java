@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.Platform;
 
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
-import raven.sqdev.misc.FileUtil;
+import raven.sqdev.misc.FileSystemUtil;
 
 /**
  * This <code>ResourceManager</code> is responsible for managing the resources
@@ -269,7 +269,7 @@ public class ResourceManager {
 		}
 		
 		try {
-			return FileUtil.getContent(getResource(name).toFile());
+			return FileSystemUtil.getContent(getResource(name).toFile());
 		} catch (SQDevException e) {
 			e.printStackTrace();
 			
@@ -292,7 +292,7 @@ public class ResourceManager {
 		}
 		
 		try {
-			return FileUtil.getContent(getBackupResource(name).toFile());
+			return FileSystemUtil.getContent(getBackupResource(name).toFile());
 		} catch (SQDevException e) {
 			e.printStackTrace();
 			
@@ -346,7 +346,7 @@ public class ResourceManager {
 			try {
 				createResource("SQFKeywords.txt");
 				
-				String content = FileUtil
+				String content = FileSystemUtil
 						.readAll(getInternalResourceStream(INTERNAL_KEYWORDS));
 				
 				// put content in respective resource files
@@ -479,7 +479,7 @@ public class ResourceManager {
 			}
 			
 			// get the content of current resource
-			String content = FileUtil.getContent(getResource(name).toFile());
+			String content = FileSystemUtil.getContent(getResource(name).toFile());
 			
 			// write the content into the backup
 			FileWriter writer = new FileWriter(getBackupResource(name).toFile());
@@ -514,8 +514,8 @@ public class ResourceManager {
 	 */
 	public boolean isOnBackup(String name) {
 		try {
-			String content = FileUtil.getContent(getResource(name).toFile());
-			String backup = FileUtil.getContent(getBackupResource(name).toFile());
+			String content = FileSystemUtil.getContent(getResource(name).toFile());
+			String backup = FileSystemUtil.getContent(getBackupResource(name).toFile());
 			
 			// compare the two
 			return content.equals(backup);
@@ -541,7 +541,7 @@ public class ResourceManager {
 		
 		try {
 			// get backup content
-			String content = FileUtil.getContent(getBackupResource(name).toFile());
+			String content = FileSystemUtil.getContent(getBackupResource(name).toFile());
 			
 			// write the content into the current resource
 			FileWriter writer = new FileWriter(getResource(name).toFile());

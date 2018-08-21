@@ -69,7 +69,7 @@ import raven.sqdev.fileSystemListener.FileSystemWatcher;
 import raven.sqdev.interfaces.IFileSystemChangeListener;
 import raven.sqdev.misc.LineBuffer;
 import raven.sqdev.misc.AdvancedLineReader;
-import raven.sqdev.misc.FileUtil;
+import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.Pair;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
@@ -510,7 +510,7 @@ public class RPTViewer extends ViewPart implements IPropertyChangeListener,
 				
 				FileInputStream in = new FileInputStream(rptFile);
 				
-				String content = FileUtil.readAll(in);
+				String content = FileSystemUtil.readAll(in);
 				
 				in.close();
 				

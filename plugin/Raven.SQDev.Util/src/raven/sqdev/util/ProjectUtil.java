@@ -33,7 +33,7 @@ import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
-import raven.sqdev.misc.FileUtil;
+import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.misc.SQDevProjectNature;
@@ -346,9 +346,9 @@ public class ProjectUtil {
 				// copy files and folders
 				for (File currentFile : path.toFile().listFiles()) {
 					if (currentFile.isDirectory()) {
-						FileUtil.copyFolder(currentFile, (Path) project.getLocation());
+						FileSystemUtil.copyFolder(currentFile, (Path) project.getLocation(), true);
 					} else {
-						FileUtil.copyFile(currentFile, (Path) project.getLocation());
+						FileSystemUtil.copyFile(currentFile, (Path) project.getLocation());
 					}
 				}
 			}

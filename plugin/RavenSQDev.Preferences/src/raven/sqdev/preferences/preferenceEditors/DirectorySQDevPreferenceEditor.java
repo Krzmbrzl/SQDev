@@ -20,10 +20,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
+import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.preferences.pages.ISQDevPreferencePage;
 import raven.sqdev.preferences.util.EStatus;
 import raven.sqdev.preferences.util.SQDevChangeEvent;
-import raven.sqdev.util.FileSystemUtil;
 
 /**
  * A preference editor letting the user select a directory and that can be set

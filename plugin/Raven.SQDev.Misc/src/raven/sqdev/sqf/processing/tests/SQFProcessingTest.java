@@ -20,7 +20,7 @@ import raven.sqdev.interfaces.ISQFParseSupplier;
 import raven.sqdev.interfaces.ITreeProcessingResult;
 import raven.sqdev.misc.DataTypeList;
 import raven.sqdev.misc.EDataType;
-import raven.sqdev.misc.FileUtil;
+import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.Marker;
 import raven.sqdev.parser.misc.ParseUtil;
@@ -1157,7 +1157,7 @@ public class SQFProcessingTest {
 			@Override
 			protected String getKeywordContent() {
 				try {
-					return FileUtil.getContent(KEYWORD_FILE);
+					return FileSystemUtil.getContent(KEYWORD_FILE);
 				} catch (SQDevException e) {
 					e.printStackTrace();
 					throw new RuntimeException(e);
