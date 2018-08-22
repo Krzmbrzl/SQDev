@@ -2,7 +2,7 @@ package raven.sqdev.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IContainer;
@@ -57,6 +57,50 @@ public class ProjectUtil {
 	 * Indicating that the export has failed
 	 */
 	public static final String FAILED = "failed";
+	
+	/**
+	 * Gets the export location for the given project assuming that the given
+	 * project is a valid SQDev project
+	 * 
+	 * @param project
+	 *            The project the export path should be returned for
+	 * @return
+	 */
+	public static IPath getExportPathFor(IProject project) {
+		// it has to be an SQDevProject
+		Assert.isTrue(ProjectUtil.isSQDevProject(project));
+
+		IFile file = project.getFile(ESQDevFileType.LINK.toString() + EFileType.SQDEV.getExtension());
+
+		IPath path = file.getRawLocation().makeAbsolute();
+
+		SQDevFile linkFile = null;
+		try {
+			// create the respective SQDev file
+			linkFile = new SQDevFile(path);
+		} catch (IllegalAccessStateException | IOException e) {
+			throw new SQDevCoreException(e);
+		}
+
+		IPath exportPath;
+		try {
+			// create the folder name including the map name
+			linkFile.processAttribute(ESQDevFileAttribute.TERRAIN);
+			String projectFolderName = project.getName() + "." + ESQDevFileAttribute.TERRAIN.getValue();
+
+			// get the mission directory
+			linkFile.processAttribute(ESQDevFileAttribute.PROFILE);
+			linkFile.processAttribute(ESQDevFileAttribute.EXPORTDIRECTORY);
+			String expPath = ESQDevFileAttribute.EXPORTDIRECTORY.getValue().trim();
+
+			// create the path according to the gathered path and name; Use SQDevPath in order to handle placeholders
+			exportPath = new SQDevPath(expPath, ESQDevFileAttribute.PROFILE.getValue()).toPath().append(projectFolderName);
+		} catch (SQDevFileIsInvalidException | SQDevFileNoSuchAttributeException | IOException e) {
+			throw new SQDevCoreException(e);
+		}
+
+		return exportPath;
+	}
 
 	/**
 	 * Exports the given project to the given location. Hidden files and folders
@@ -77,8 +121,8 @@ public class ProjectUtil {
 	 *         <li>ProjectUtil.CANCELED</li>
 	 *         <li>ProjectUtil.FAILED</li>
 	 */
-	public static String export(IProject project, IPath destination, ArrayList<String> filesToIgnore,
-			ArrayList<String> filesToPreserve) {
+	public static String export(IProject project, IPath destination, Pattern ignorePattern,
+			Pattern preservePattern) {
 		if (!new File(destination.toOSString()).exists()) {
 			// check how many folders have to be created
 			IPath copy = new Path(destination.toOSString());
@@ -132,7 +176,7 @@ public class ProjectUtil {
 			// clean the directory
 			for (File currentFile : missionFolder.listFiles()) {
 				// delete the respective files
-				if (!FileSystemUtil.deleteFilesWithException(currentFile, filesToPreserve)) {
+				if (!FileSystemUtil.deleteFilesWithException(currentFile, preservePattern)) {
 					// report that the cleaning couldn't be performed
 					SQDevInfobox info = new SQDevInfobox("Failed to delete file \"" + currentFile.getAbsolutePath()
 							+ "\"\nMake sure the files are not opened somewhere and try again"
@@ -150,18 +194,12 @@ public class ProjectUtil {
 			for (IResource currentResource : project.members()) {
 				File currentFile = new File(currentResource.getRawLocationURI());
 
-				if (filesToIgnore.contains(currentFile.getName()) || currentFile.getName().startsWith(".")) {
-					// skip if this resource is specified to be ignored or if it
-					// is hidden
-					continue;
-				}
-
 				if (!currentFile.exists()) {
-					// skip non-existant files
+					// skip non-existent files
 					continue;
 				}
-
-				FileSystemUtil.copyFilesWithExceptions(currentFile, destination, filesToIgnore, true);
+				
+				FileSystemUtil.copyFilesWithExceptions(currentFile, destination, ignorePattern, true);
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();

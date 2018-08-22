@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -37,7 +38,7 @@ public enum ESQDevFileVersion {
 					"Attributes assign a value via \"=\" (WS gets removed automatically) and may only be specified once\n");
 			builder.append(
 					"Annotations start with a \"@\", assign their value by encapsulating them in quotation marks and may be used multiple times\n");
-			builder.append("Attributes and Annotations are case-insensitive");
+			builder.append("Attributes and Annotations are case-insensitive\n");
 			builder.append("Singleline comments (starting with '//') are supported.");
 
 			return insertable ? "// " + builder.toString().replace("\n", "\n// ") : builder.toString();
@@ -75,6 +76,12 @@ public enum ESQDevFileVersion {
 							return;
 						}
 					} else {
+						// save current value of the annotation
+						List<String> prevValues = null;
+						if (annotation.hasValues()) {
+							prevValues = annotation.getValues();
+						}
+
 						annotation.clear();
 						annotation.addValue(value);
 						String errorMsg = annotation.validate();
@@ -83,9 +90,16 @@ public enum ESQDevFileVersion {
 							if (!listener.error(offset + matcher.start(2), value.length(),
 									"Invalid value for " + annotation + ": " + errorMsg)) {
 								// listener indicated to stop validating
+
+								// restore annotation's value
+								annotation.setValues(prevValues);
+
 								return;
 							}
 						}
+
+						// restore annotation's value
+						annotation.setValues(prevValues);
 					}
 
 					offset += lineLength + 1;
@@ -107,6 +121,9 @@ public enum ESQDevFileVersion {
 							return;
 						}
 					} else {
+						// store attribute's current value
+						String prevValue = attribute.getValue();
+
 						attribute.setValue(value);
 						String errorMsg = attribute.validate();
 
@@ -114,9 +131,16 @@ public enum ESQDevFileVersion {
 							if (!listener.error(offset + matcher.start(2), value.length(),
 									"Invalid value for " + attribute + ": " + errorMsg)) {
 								// listener indicated to stop validating
+
+								// restore attribute's value
+								attribute.setValue(prevValue);
+
 								return;
 							}
 						}
+
+						// restore attribute's value
+						attribute.setValue(prevValue);
 					}
 
 					offset += lineLength + 1;
@@ -142,7 +166,8 @@ public enum ESQDevFileVersion {
 		@Override
 		public Matcher getAttributeMatcher(ESQDevFileAttribute attribute, CharSequence input) {
 			return Pattern.compile(
-					"(?:(?:\\n|^)\\s*" + Pattern.quote(attribute.toString()) + "\\h*=\\h*)((?:[^/\\n]|/[^/\\n])+)(?://.*)?",
+					"(?:(?:\\n|^)\\s*" + Pattern.quote(attribute.toString())
+							+ "\\h*=\\h*)((?:[^/\\n]|/[^/\\n])+)(?://.*)?",
 					Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(input);
 		}
 

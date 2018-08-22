@@ -2,6 +2,7 @@ package raven.sqdev.sqdevFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Contains all valid annotations that can be used in a {@linkplain #SDevFile}
@@ -106,11 +107,24 @@ public enum ESQDevFileAnnotation {
 	}
 
 	/**
+	 * Checks whether this annotation has any set values
+	 */
+	public boolean hasValues() {
+		return values != null && values.size() > 0;
+	}
+
+	/**
 	 * Sets the list of values of this annotation
 	 * 
 	 * @param values
+	 *            The values to set - May be <code>null</code>
 	 */
 	public void setValues(Iterable<String> values) {
+		if (values == null) {
+			this.values = null;
+			return;
+		}
+
 		this.values = new ArrayList<>();
 
 		for (String current : values) {
@@ -142,6 +156,108 @@ public enum ESQDevFileAnnotation {
 			values = new ArrayList<String>();
 		}
 		values.add(value);
+	}
+
+	/**
+	 * Gets a pattern that can be used in order to match some input against all the
+	 * values of this annotation. If this annotation contains the values "one" and
+	 * "two" the resulting pattern will be "one|two". If a value is not prefixed by
+	 * {@link #REGEX_PREFIX}, it is quoted via {@linkplain Pattern#quote(String)}
+	 * before compilation and if it is, the prefix will be removed but the rest of
+	 * the value will not be quoted.
+	 * 
+	 * @param flags
+	 *            Flags that are passed to {@linkplain Pattern#compile(String, int)}
+	 *            in order to influence the compiled pattern.
+	 * @param prefix
+	 *            A prefix that will be pre-appended to each value
+	 * @see Pattern
+	 */
+	public Pattern getMatchPattern(int flags, String prefix) {
+		StringBuilder pattern = new StringBuilder();
+
+		if (prefix.length() > 0) {
+			pattern.append(prefix + "(");
+		}
+
+		for (int i = 0; i < getValues().size(); i++) {
+			String currentValue = values.get(i);
+
+			if (currentValue == null || currentValue.trim().isEmpty() || currentValue.equals(REGEX_PREFIX)) {
+				// non-existing or empty values (or an expression that would lead to an empty
+				// RegEx
+				continue;
+			}
+
+			if (currentValue.startsWith(REGEX_PREFIX)) {
+				// the value is to be interpreted as a regular expression
+				// remove the prefix though
+				currentValue = currentValue.substring(REGEX_PREFIX.length());
+			} else {
+				// quote the input as it must not be interpreted as a regular expression
+				currentValue = Pattern.quote(currentValue);
+			}
+
+			if (i + 1 == values.size()) {
+				// no '|' for the last element
+				pattern.append(currentValue);
+			} else {
+				pattern.append(currentValue + "|");
+			}
+		}
+
+		if (prefix.length() > 0) {
+			pattern.append(")");
+		}
+
+		return Pattern.compile(pattern.toString(), flags);
+	}
+
+	/**
+	 * Gets a pattern that can be used in order to match some input against all the
+	 * values of this annotation. If this annotation contains the values "one" and
+	 * "two" the resulting pattern will be "one|two". If a value is not prefixed by
+	 * {@link #REGEX_PREFIX}, it is quoted via {@linkplain Pattern#quote(String)}
+	 * before compilation and if it is, the prefix will be removed but the rest of
+	 * the value will not be quoted.
+	 * 
+	 * @param flags
+	 *            Flags that are passed to {@linkplain Pattern#compile(String, int)}
+	 *            in order to influence the compiled pattern.
+	 * @see Pattern
+	 */
+	public Pattern getMatchPattern(int flags) {
+		return getMatchPattern(flags, "");
+	}
+
+	/**
+	 * Gets a pattern that can be used in order to match some input against all the
+	 * values of this annotation. If this annotation contains the values "one" and
+	 * "two" the resulting pattern will be "one|two". If a value is not prefixed by
+	 * {@link #REGEX_PREFIX}, it is quoted via {@linkplain Pattern#quote(String)}
+	 * before compilation and if it is, the prefix will be removed but the rest of
+	 * the value will not be quoted.
+	 * 
+	 * in order to influence the compiled pattern.
+	 * 
+	 * @param prefix
+	 *            A prefix that will be pre-appended to each value
+	 * @see Pattern
+	 */
+	public Pattern getMatchPattern(String prefix) {
+		return getMatchPattern(0, prefix);
+	}
+
+	/**
+	 * Gets a pattern that can be used in order to match some input against all the
+	 * values of this annotation. If this annotation contains the values "one" and
+	 * "two" the resulting pattern will be "one|two". If a value is not prefixed by
+	 * {@link #REGEX_PREFIX}, it is quoted via {@linkplain Pattern#quote(String)}
+	 * before compilation and if it is, the prefix will be removed but the rest of
+	 * the value will not be quoted.
+	 */
+	public Pattern getMatchPattern() {
+		return getMatchPattern(0, "");
 	}
 
 	/**
@@ -185,4 +301,10 @@ public enum ESQDevFileAnnotation {
 			values.clear();
 		}
 	}
+
+	/**
+	 * The prefix indicating that the given value (after the prefix) should be
+	 * interpreted as a regular expression
+	 */
+	public static final String REGEX_PREFIX = "<RegEx>";
 }

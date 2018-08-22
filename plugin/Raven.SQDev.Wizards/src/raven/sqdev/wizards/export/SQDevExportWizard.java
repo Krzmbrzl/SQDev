@@ -1,7 +1,6 @@
 package raven.sqdev.wizards.export;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -14,7 +13,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-
+import raven.sqdev.constants.Constants;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
 import raven.sqdev.misc.SQDevInfobox;
@@ -69,10 +68,7 @@ public class SQDevExportWizard extends Wizard implements IExportWizard {
 					.append(project.getName() + "." + ESQDevFileAttribute.TERRAIN.getValue());
 
 			linkFile.processAnnotation(ESQDevFileAnnotation.IGNORE);
-			ArrayList<String> ignore = ESQDevFileAnnotation.IGNORE.getValues();
-
 			linkFile.processAnnotation(ESQDevFileAnnotation.PRESERVE);
-			ArrayList<String> preserve = ESQDevFileAnnotation.PRESERVE.getValues();
 
 			Job exportJob = new Job("Export Project") {
 
@@ -81,7 +77,9 @@ public class SQDevExportWizard extends Wizard implements IExportWizard {
 					monitor.beginTask("Exporting project " + project.getName() + "...", 1);
 
 					// export the project
-					ProjectUtil.export(project, exportPath, ignore, preserve);
+					ProjectUtil.export(project, exportPath,
+							ESQDevFileAnnotation.IGNORE.getMatchPattern(Constants.FILEPATH_REGEX_PREFIX),
+							ESQDevFileAnnotation.PRESERVE.getMatchPattern(Constants.FILEPATH_REGEX_PREFIX));
 
 					monitor.worked(1);
 					monitor.done();

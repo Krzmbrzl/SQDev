@@ -2,7 +2,6 @@ package raven.sqdev.sqdevFile;
 
 import java.util.ArrayList;
 
-import raven.sqdev.util.EFileType;
 import raven.sqdev.util.SQDevInformation;
 import raven.sqdev.util.SQDevPath;
 
@@ -57,8 +56,10 @@ public enum ESQDevFileType {
 		filesToIgnore = new ArrayList<String>();
 		filesToPreserve = new ArrayList<String>();
 
-		addFileToIgnore(this.toString() + EFileType.SQDEV.getExtension());
-		addFileToIgnore(".project");
+		// ignore SQDev-files
+		addFileToIgnore(ESQDevFileAnnotation.REGEX_PREFIX + ".*\\.sqdev");
+		// ignore hidden files and folders
+		addFileToIgnore(ESQDevFileAnnotation.REGEX_PREFIX + "\\..*");
 	}
 
 	protected SQDevInformation info;

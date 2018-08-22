@@ -25,4 +25,5 @@ Import-Package: org.eclipse.core.resources,
  raven.sqdev.util,
  raven.sqdev.utilInterfaces
 Require-Bundle: org.eclipse.swt,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ raven.sqdev.misc

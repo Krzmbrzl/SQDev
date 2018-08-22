@@ -20,6 +20,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
 import dataStructures.AbstractSQFTokenFactory;
+import raven.sqdev.constants.Constants;
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.editors.BasicCodeEditor;
 import raven.sqdev.editors.BasicPartitionScanner;
@@ -50,7 +51,6 @@ import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
 import raven.sqdev.util.EFileType;
 import raven.sqdev.util.ProjectUtil;
-import raven.sqdev.util.Util;
 
 /**
  * The editor for working with SQF files
@@ -186,9 +186,9 @@ public class SQF_Editor extends BasicCodeEditor
 									linkFile.processAnnotation(ESQDevFileAnnotation.IGNORE);
 									linkFile.processAnnotation(ESQDevFileAnnotation.PRESERVE);
 
-									ProjectUtil.export(containingProject, Util.getExportPathFor(containingProject),
-											ESQDevFileAnnotation.IGNORE.getValues(),
-											ESQDevFileAnnotation.PRESERVE.getValues());
+									ProjectUtil.export(containingProject, ProjectUtil.getExportPathFor(containingProject),
+											ESQDevFileAnnotation.IGNORE.getMatchPattern(Constants.FILEPATH_REGEX_PREFIX),
+											ESQDevFileAnnotation.PRESERVE.getMatchPattern(Constants.FILEPATH_REGEX_PREFIX));
 
 									monitor.worked(1);
 								} catch (SQDevFileIsInvalidException | IOException e) {

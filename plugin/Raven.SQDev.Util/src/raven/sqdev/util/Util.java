@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
@@ -20,18 +18,12 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
-import raven.sqdev.exceptions.SQDevFileIsInvalidException;
-import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
 import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.pluginManagement.ESQDevPlugin;
 import raven.sqdev.pluginManagement.ResourceManager;
-import raven.sqdev.sqdevFile.ESQDevFileAttribute;
-import raven.sqdev.sqdevFile.ESQDevFileType;
-import raven.sqdev.sqdevFile.SQDevFile;
 
 /**
  * A class containing general util methods
@@ -45,50 +37,6 @@ public class Util {
 	 * The name for the plugin info file
 	 */
 	public static final String PLUGIN_INFO_FILE_NAME = "SQDevPluginInfo.zip";
-
-	/**
-	 * Gets the export location for the given project assuming that the given
-	 * project is a valid SQDev project
-	 * 
-	 * @param project
-	 *            The project the export path should be returned for
-	 * @return
-	 */
-	public static IPath getExportPathFor(IProject project) {
-		// it has to be an SQDevProject
-		Assert.isTrue(ProjectUtil.isSQDevProject(project));
-
-		IFile file = project.getFile(ESQDevFileType.LINK.toString() + EFileType.SQDEV.getExtension());
-
-		IPath path = file.getRawLocation().makeAbsolute();
-
-		SQDevFile linkFile = null;
-		try {
-			// create the respective SQDev file
-			linkFile = new SQDevFile(path);
-		} catch (IllegalAccessStateException | IOException e) {
-			throw new SQDevCoreException(e);
-		}
-
-		IPath exportPath;
-		try {
-			// create the folder name including the map name
-			linkFile.processAttribute(ESQDevFileAttribute.TERRAIN);
-			String projectFolderName = project.getName() + "." + ESQDevFileAttribute.TERRAIN.getValue();
-
-			// get the mission directory
-			linkFile.processAttribute(ESQDevFileAttribute.PROFILE);
-			linkFile.processAttribute(ESQDevFileAttribute.EXPORTDIRECTORY);
-			String expPath = ESQDevFileAttribute.EXPORTDIRECTORY.getValue().trim();
-
-			// create the path according to the gathered path and name; Use SQDevPath in order to handle placeholders
-			exportPath = new SQDevPath(expPath, ESQDevFileAttribute.PROFILE.getValue()).toPath().append(projectFolderName);
-		} catch (SQDevFileIsInvalidException | SQDevFileNoSuchAttributeException | IOException e) {
-			throw new SQDevCoreException(e);
-		}
-
-		return exportPath;
-	}
 
 	/**
 	 * Gets all available user profiles
@@ -332,5 +280,4 @@ public class Util {
 			}
 		});
 	}
-
 }

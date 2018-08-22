@@ -148,6 +148,13 @@ public enum ESQDevFileAttribute {
 	public String getValue() {
 		return value;
 	}
+	
+	/**
+	 * Checks if this attribute has any value set to it
+	 */
+	public boolean hasValue() {
+		return value != null;
+	}
 
 	/**
 	 * Sets the value of this object

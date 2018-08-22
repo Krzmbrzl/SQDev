@@ -11,12 +11,15 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 
+import raven.sqdev.constants.Constants;
 import raven.sqdev.exceptions.SQDevException;
 
 /**
@@ -133,13 +136,16 @@ public class FileSystemUtil {
 	 * <code>filesToPreserve</code>
 	 * 
 	 * @param file
-	 *            The file/directroy to be deleted
-	 * @param filesToPreserve
-	 *            A list of fileNames/directoryNames that should not get deleted
-	 * @return <code>True</code> if successfull
+	 *            The file/directory to be deleted
+	 * @param preservePattern
+	 *            A {@linkplain Predicate} that will be used in order to match
+	 *            <b>file-paths</b> that should be ignored. The path to match
+	 *            against is obtained via {@linkplain Path#toString()} therefore all
+	 *            separators are slashes.
+	 * @return <code>True</code> if successful
 	 */
-	public static boolean deleteFilesWithException(File file, ArrayList<String> filesToPreserve) {
-		if (filesToPreserve.contains(file.getName())) {
+	public static boolean deleteFilesWithException(File file, Pattern preservePattern) {
+		if (preservePattern.matcher(new Path(file.getAbsolutePath()).toString()).matches()) {
 			// don't delete this file but return true as this behavior is
 			// wanted
 			return true;
@@ -150,26 +156,60 @@ public class FileSystemUtil {
 			String[] children = file.list();
 			for (int i = 0; i < children.length; i++) {
 				// delete every single file/directory in here
-				boolean success = deleteFilesWithException(new File(file, children[i]), filesToPreserve);
+				boolean success = deleteFilesWithException(new File(file, children[i]), preservePattern);
+
 				if (!success) {
-					return false;
+					return success;
 				}
 			}
 		}
 
 		if (file.isFile() || file.listFiles().length == 0) {
+			// if it's a file delete it
+			// if it's an empty directory delete it as well but directories containing
+			// preserved files have to be preserved themselves
 			return file.delete();
-		} else {
-			// directories that contains preserved files have to be preserved as
-			// well
-			for (File currentFile : file.listFiles()) {
-				if (!filesToPreserve.contains(currentFile.getName())) {
-					return false;
-				}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Deletes the given file. If the given file is a directory it will delete the
+	 * directories content first and afterwards the directory itself.<br>
+	 * This method will not delete files with a name specified in
+	 * <code>filesToPreserve</code>
+	 * 
+	 * @param file
+	 *            The file/directory to be deleted
+	 * @param filesToPreserve
+	 *            A list of fileNames/directoryNames that should not get deleted
+	 * @return <code>True</code> if successful
+	 */
+	public static boolean deleteFilesWithException(File file, ArrayList<String> filesToPreserve) {
+		StringBuilder pattern = new StringBuilder();
+
+		// match the leading path segments
+		pattern.append(Constants.FILEPATH_REGEX_PREFIX + "(");
+
+		for (int i = 0; i < filesToPreserve.size(); i++) {
+			String currentValue = filesToPreserve.get(i);
+
+			if (currentValue == null || currentValue.trim().isEmpty()) {
+				continue;
 			}
 
-			return true;
+			if (i + 1 == filesToPreserve.size()) {
+				// no '|' for the last element
+				pattern.append(Pattern.quote(currentValue));
+			} else {
+				pattern.append(Pattern.quote(currentValue) + "|");
+			}
 		}
+
+		pattern.append(")");
+
+		return deleteFilesWithException(file, Pattern.compile(pattern.toString()));
 	}
 
 	/**
@@ -185,11 +225,55 @@ public class FileSystemUtil {
 	}
 
 	/**
+	 * This method will copy the given file to the specified path.
+	 * 
+	 * @param file
+	 *            The file/directory that should get copied
+	 * @param targetDir
+	 *            The path to the directory the file(s) should get copied to
+	 * @param ignorePattern
+	 *            A {@linkplain Predicate} that will be used in order to match
+	 *            <b>file-paths</b> that should be ignored. The path to match
+	 *            against is obtained via {@linkplain Path#toString()} therefore all
+	 *            separators are slashes.
+	 * @param recursive
+	 *            If the given file is a directory and this flag is
+	 *            <code>true</code>, all of the directory's content is going to be
+	 *            copied as well (taking the ignorePattern into account).
+	 */
+	public static void copyFilesWithExceptions(File file, IPath targetDir, Pattern ignorePattern, boolean recursive) {
+		if (ignorePattern.matcher(new Path(file.getAbsolutePath()).toString()).matches()) {
+			// this file should be ignored
+			return;
+		}
+
+		if (file.isFile()) {
+			// copy the file if it shouldn't be ignored
+			copyFile(file, targetDir);
+		} else {
+			if (file.isDirectory()) {
+				// copy the directory itself
+				copyFolder(file, targetDir, false);
+
+				if (recursive) {
+					// all contained files have to be contained in the copied
+					// directory -> adjust destination
+					targetDir = targetDir.append(file.getName());
+
+					for (File currentFile : file.listFiles()) {
+						copyFilesWithExceptions(currentFile, targetDir, ignorePattern, recursive);
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * This method will copy the given file to the specified path. If the file is a
 	 * directory it will recursively copy all sub-directories and files. <br>
 	 * Files or directories specified in the ignore list won't get copied
 	 * 
-	 * @param directory
+	 * @param file
 	 *            The file/directory that should get copied
 	 * @param targetDir
 	 *            The path to the directory the file(s) should get copied to
@@ -201,27 +285,38 @@ public class FileSystemUtil {
 	 *            If this is set to <code>true</code> hidden resources (prefixed by
 	 *            a dot) will be ignored during copying
 	 */
-	public static void copyFilesWithExceptions(File directory, IPath targetDir, ArrayList<String> filesToIgnore,
+	public static void copyFilesWithExceptions(File file, IPath targetDir, ArrayList<String> filesToIgnore,
 			boolean respectHiddenFiles) {
-		if (directory.isFile() && !filesToIgnore.contains(directory.getName())
-				&& !(respectHiddenFiles && directory.getName().startsWith("."))) {
-			// copy the file if it shouldn't be ignored
-			copyFile(directory, targetDir);
-		} else {
-			if (directory.isDirectory() && !filesToIgnore.contains(directory.getName())) {
-				// copy the directory itself
-				copyFolder(directory, targetDir, false);
+		StringBuilder pattern = new StringBuilder();
 
-				// all contained files have to be contained in the copied
-				// directory -> adjust destination
-				targetDir = targetDir.append(directory.getName());
+		// match the leading path segments
+		pattern.append(Constants.FILEPATH_REGEX_PREFIX + "(");
 
-				for (File currentFile : directory.listFiles()) {
-					copyFilesWithExceptions(currentFile, targetDir, filesToIgnore, respectHiddenFiles);
-				}
+		for (int i = 0; i < filesToIgnore.size(); i++) {
+			String currentValue = filesToIgnore.get(i);
+
+			if (currentValue == null || currentValue.trim().isEmpty()) {
+				continue;
+			}
+
+			if (i + 1 == filesToIgnore.size()) {
+				// no '|' for the last element
+				pattern.append(Pattern.quote(currentValue));
+			} else {
+				pattern.append(Pattern.quote(currentValue) + "|");
 			}
 		}
+
+		if (respectHiddenFiles) {
+			// add all files starting with a dot to the list
+			pattern.append((pattern.length() > 0 ? "|" : "") + "\\..*");
+		}
+
+		pattern.append(")");
+
+		copyFilesWithExceptions(file, targetDir, Pattern.compile(pattern.toString()), true);
 	}
+
 
 	/**
 	 * Copies the given file into the given destination
