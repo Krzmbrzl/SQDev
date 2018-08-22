@@ -516,6 +516,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 * and sets the found macros if this editor is an instance of
 	 * <code>IMacroSupport</code>.
 	 */
+	@SuppressWarnings("deprecation")
 	protected void doPreprocessorParsing(InputStream input) {
 		if (this instanceof IMacroSupport && getEditorInput() instanceof IFileEditorInput) {
 			PreprocessorParseResult result;

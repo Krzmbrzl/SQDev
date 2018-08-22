@@ -268,7 +268,29 @@ public enum ESQDevFileVersion {
 	};
 
 	/**
-	 * Gets the proper version object for the given file (according to its header
+	 * Gets the proper version object for the header line
+	 * 
+	 * @param headerLine
+	 *            The first line of the content
+	 * @return The respective version object or <code>null</code> if none could be
+	 *         found
+	 */
+	public static ESQDevFileVersion getVersion(String headerLine) {
+		if (headerLine == null) {
+			return null;
+		}
+
+		for (ESQDevFileVersion currentVersion : ESQDevFileVersion.values()) {
+			if (currentVersion.getHeader().equals(headerLine)) {
+				return currentVersion;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets the proper version object for the given file (according to its header)
 	 * 
 	 * @param input
 	 *            The input file to determine the version for
@@ -285,14 +307,9 @@ public enum ESQDevFileVersion {
 			return null;
 		}
 
-		for (ESQDevFileVersion currentVersion : ESQDevFileVersion.values()) {
-			if (currentVersion.getHeader().equals(header)) {
-				return currentVersion;
-			}
-		}
-
-		return null;
+		return getVersion(header);
 	}
+
 
 	/**
 	 * Gets the most recent version
