@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Wizards
 Bundle-SymbolicName: raven.sqdev.wizards;singleton:=true
-Bundle-Version: 0.3.5.stable
+Bundle-Version: 0.4.0.dev1
 Bundle-Activator: raven.sqdev.wizards.activator.Activator
 Bundle-Vendor: Raven
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

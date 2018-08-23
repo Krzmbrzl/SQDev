@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQFEditor
 Bundle-SymbolicName: raven.sqdev.editors.sqfeditor;singleton:=true
-Bundle-Version: 0.7.5.stable1
+Bundle-Version: 0.8.0.dev1
 Bundle-Activator: raven.sqdev.activator.Activator
 Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.ui,

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: UI
 Bundle-SymbolicName: raven.sqdev.ui;singleton:=true
-Bundle-Version: 0.3.2.stable
+Bundle-Version: 0.4.0.dev1
 Bundle-Activator: raven.sqdev.ui.Activator
 Bundle-Vendor: Raven
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

@@ -2,7 +2,7 @@
 <feature
       id="raven.sqdev"
       label="SQDev"
-      version="0.7.7.stable"
+      version="0.8.0.dev1"
       provider-name="Raven">
 
    <description url="http://krzmbrzl.github.io/SQDev/">
