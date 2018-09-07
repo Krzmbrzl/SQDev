@@ -1,6 +1,7 @@
 # Current Changelog
 
 | Added: ObjectRTD data type
+| Added: Framework for reading PBOs
 | Improved: Command update now times out and won't wait forever for URL requests
 | Improved: Paths in SQDevFiles are now anonymized and abstracted -> can be shared on mutliple systems
 | Improved: Annotations in SQDevFiles can now make use of regular expressions
@@ -16,3 +17,4 @@
 | Fixed: Command update having had troubles with certain commands
 | Fixed: Progress bar for command update is now persistent after error-recovery
 | Fixed: Some files getting corrupted during export
+| Fixed: Inaccessible preference-page in certain situations
