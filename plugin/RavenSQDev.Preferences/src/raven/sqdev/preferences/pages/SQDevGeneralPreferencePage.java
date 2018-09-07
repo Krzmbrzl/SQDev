@@ -140,6 +140,23 @@ public class SQDevGeneralPreferencePage extends SQDevPreferencePage {
 
 				if (!documents.exists()) {
 					documents.mkdirs();
+
+					// add sub-folders
+					File defaultProfile = new File(documents, "Arma 3");
+					File otherProfiles = new File(documents, "Arma 3 - Other Profiles");
+
+					defaultProfile.mkdir();
+					otherProfiles.mkdir();
+
+					// create dummy profile
+					File dummyProfile = new File(otherProfiles, "DummyProfile");
+					dummyProfile.mkdir();
+
+					// create missions + mpMissions folder
+					new File(defaultProfile, "missions").mkdir();
+					new File(defaultProfile, "mpMissions").mkdir();
+					new File(dummyProfile, "missions").mkdir();
+					new File(dummyProfile, "mpMissions").mkdir();
 				}
 				if (!armaDir.exists()) {
 					armaDir.mkdir();
@@ -149,9 +166,9 @@ public class SQDevGeneralPreferencePage extends SQDevPreferencePage {
 					rpt.mkdirs();
 				}
 
-				IPreferenceStore prefStore = SQDevPreferenceUtil.getPreferenceStore(); // TODO: is Null
+				IPreferenceStore prefStore = SQDevPreferenceUtil.getPreferenceStore();
 
-				// disbale auto-export
+				// disable auto-export
 				prefStore.setValue(SQDevPreferenceConstants.SQDEV_INFO_DEFAULT_AUTOEXPORT, false);
 
 				// load the dummy-dirs into the preferences

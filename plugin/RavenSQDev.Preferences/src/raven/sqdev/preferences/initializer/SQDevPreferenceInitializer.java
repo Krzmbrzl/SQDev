@@ -71,6 +71,10 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.MAGIC_VARIABLE));
 
+		// set function highlighting
+		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_FUNCTIONHIGHLIGHTING_COLOR_KEY,
+				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.FUNCTION));
+
 		// set macro highlighting
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY,
 				ColorUtils.getRGBValuesAsString(ISQDevColorConstants.MACRO));

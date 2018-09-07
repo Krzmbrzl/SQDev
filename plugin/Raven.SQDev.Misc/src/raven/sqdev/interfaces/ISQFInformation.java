@@ -3,6 +3,7 @@ package raven.sqdev.interfaces;
 import java.util.Collection;
 import java.util.Map;
 
+import raven.sqdev.infoCollection.base.Function;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.misc.Macro;
@@ -65,4 +66,9 @@ public interface ISQFInformation {
 	 * Gets the configured macro-keywords as string
 	 */
 	public Collection<String> getMacroNames();
+
+	/**
+	 * Gets the configured functions
+	 */
+	public Map<String, Function> getFunctions();
 }

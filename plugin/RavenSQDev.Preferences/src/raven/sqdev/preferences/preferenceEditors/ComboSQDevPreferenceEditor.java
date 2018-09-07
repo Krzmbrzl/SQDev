@@ -193,7 +193,7 @@ public class ComboSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor {
 			// check that value is one of the specified alternatives
 			boolean matched = false;
 			
-			if (alternatives == null) {
+			if (alternatives == null || alternatives.length == 0) {
 				matched = true;
 			} else {
 				for (String currentAlternative : alternatives) {
@@ -204,7 +204,10 @@ public class ComboSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor {
 				}
 			}
 			
-			Assert.isTrue(matched);
+			if(!matched) {
+				// load first alternative as fallback
+				value = alternatives[0];
+			}
 		}
 		
 		Assert.isNotNull(value);
@@ -240,7 +243,7 @@ public class ComboSQDevPreferenceEditor extends AbstractSQDevPreferenceEditor {
 		label.setToolTipText(getTooltip());
 		
 		if (isWritable) {
-			// allow custominput in the ComboBox
+			// allow custom input in the ComboBox
 			alternativesComboBox = new Combo(container, SWT.DROP_DOWN);
 			
 			alternativesComboBox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

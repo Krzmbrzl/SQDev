@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import raven.sqdev.infoCollection.base.Function;
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
@@ -152,6 +154,11 @@ public class SQFInformation implements ISQFInformation {
 	@Override
 	public Collection<String> getMacroNames() {
 		return new ArrayList<String>(macros.keySet());
+	}
+
+	@Override
+	public Map<String, Function> getFunctions() {
+		return new HashMap<>();
 	}
 
 }

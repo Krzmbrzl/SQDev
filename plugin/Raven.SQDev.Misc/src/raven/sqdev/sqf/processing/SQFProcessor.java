@@ -140,11 +140,13 @@ public class SQFProcessor implements ISQFTreeListener {
 					}
 
 					if (operator == null && expression.type() == ESQFTokentype.ID) {
-						// this is an implicitly declared global variable
-						// TODO: potential error
-						declaredVariables.put(operatorName.toLowerCase(), operatorName);
+						if (!sqfInformation.getFunctions().containsKey(operatorNameLower)) {
+							// this is an implicitly declared global variable
+							// TODO: potential error
+							declaredVariables.put(operatorName.toLowerCase(), operatorName);
+						}
 
-						// assume any type for variables
+						// assume any type for variables + functions
 						resolvedReturnValues.put(node, ANYTHING);
 						return;
 					}

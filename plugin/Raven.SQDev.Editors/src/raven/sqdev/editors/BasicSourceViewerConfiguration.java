@@ -146,8 +146,10 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration im
 	 *            The key the scanner should be configured for
 	 * @param caseSensitive
 	 *            Whether or not the created scanner should be case sensitive
+	 * @return The created {@linkplain KeywordScanner} or <code>null</code> if none
+	 *         was created
 	 */
-	public void createKeywordScanner(String colorPreferenceKey, boolean caseSensitive) {
+	public KeywordScanner createKeywordScanner(String colorPreferenceKey, boolean caseSensitive) {
 		if (!configuredKeywordScanners.containsKey(colorPreferenceKey)) {
 			// create new scanner
 			KeywordScanner scanner = new KeywordScanner(new BasicKeywordProvider(), colorPreferenceKey, this.editor);
@@ -160,7 +162,11 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration im
 
 			// add to multiScanner
 			multiScanner.addScanner(scanner);
+
+			return scanner;
 		}
+
+		return null;
 	}
 
 	/**
@@ -300,7 +306,7 @@ public class BasicSourceViewerConfiguration extends SourceViewerConfiguration im
 		case SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY:
 			assistant.enableAutoActivation((boolean) event.getNewValue());
 			break;
-			
+
 		case SQDevPreferenceConstants.SQDEV_EDITOR_STRINGHIGHLIGHTING_COLOR_KEY:
 		case SQDevPreferenceConstants.SQDEV_EDITOR_COMMENTHIGHLIGHTING_COLOR_KEY:
 			editor.update(false);

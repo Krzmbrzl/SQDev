@@ -94,6 +94,11 @@ public class SQDevPreferenceConstants {
 	 * The preference indicating the color of the magic variable highlighting
 	 */
 	public static final String SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY = "raven.sqdev.magicVariableHighlightingColor";
+	
+	/**
+	 * The preference indicating the color of the functionhighlighting
+	 */
+	public static final String SQDEV_EDITOR_FUNCTIONHIGHLIGHTING_COLOR_KEY = "raven.sqdev.functionHighlightingColor";
 
 	/**
 	 * The preference indicating the color of the macro highlighting

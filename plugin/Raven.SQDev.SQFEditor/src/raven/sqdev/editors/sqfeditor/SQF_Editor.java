@@ -29,6 +29,7 @@ import raven.sqdev.editors.KeywordScanner;
 import raven.sqdev.exceptions.IllegalAccessStateException;
 import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
+import raven.sqdev.infoCollection.base.Function;
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
@@ -64,8 +65,11 @@ public class SQF_Editor extends BasicCodeEditor
 	/**
 	 * The KeywordProvider for the SQF keywords
 	 */
-	private SQFKeywordProvider provider;
-
+	private SQFKeywordProvider commandProvider;
+	/**
+	 * The KeywordProvider for the functions
+	 */
+	private SQFFunctionProvider functionProvider;
 	/**
 	 * A list of all commands that can be used as a binary operator
 	 */
@@ -91,6 +95,10 @@ public class SQF_Editor extends BasicCodeEditor
 	 */
 	private Map<String, Variable> magicVariables;
 	/**
+	 * A map of all defined functions in this editor
+	 */
+	private Map<String, Function> functions;
+	/**
 	 * A list of defined macros for this editor
 	 */
 	protected Map<String, Macro> macros;
@@ -110,7 +118,16 @@ public class SQF_Editor extends BasicCodeEditor
 
 		// create respective keywordScanners
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY, true);
-		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
+
+		KeywordScanner keywordScanner = configuration
+				.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
+		commandProvider = new SQFKeywordProvider();
+		keywordScanner.setKeywordProvider(commandProvider);
+
+		// configure this editor as a keyword list listener
+		commandProvider.addKeywordListChangeListener(this);
+		keywordScanner.addKeywordListChangeListener(this);
+
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
 				false);
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_GLOBALVARIABLEHIGHLIGHTING_COLOR_KEY,
@@ -118,18 +135,11 @@ public class SQF_Editor extends BasicCodeEditor
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY,
 				false);
 
-		// get keywordScanner
-		KeywordScanner keywordScanner = configuration
-				.getKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY);
-
-		provider = new SQFKeywordProvider();
-
-		// set KeywordProvider
-		keywordScanner.setKeywordProvider(provider);
-
-		// configure this editor as a keyword list listener
-		provider.addKeywordListChangeListener(this);
-		keywordScanner.addKeywordListChangeListener(this);
+		// configure function-support
+		KeywordScanner functionScanner = configuration
+				.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_FUNCTIONHIGHLIGHTING_COLOR_KEY, false);
+		functionProvider = new SQFFunctionProvider();
+		functionScanner.setKeywordProvider(functionProvider);
 
 		// get PartitionScanner
 		BasicPartitionScanner partitionScanner = getBasicProvider().getPartitionScanner();
@@ -145,7 +155,7 @@ public class SQF_Editor extends BasicCodeEditor
 		globalVariables = new HashMap<String, Variable>();
 		magicVariables = new HashMap<String, Variable>();
 
-		// populate the magic vars with the stadard ones
+		// populate the magic vars with the standard ones
 		setMagicVariables(ParseUtil.getDefaultMagicVars(), false);
 
 		macros = new HashMap<String, Macro>();
@@ -186,9 +196,12 @@ public class SQF_Editor extends BasicCodeEditor
 									linkFile.processAnnotation(ESQDevFileAnnotation.IGNORE);
 									linkFile.processAnnotation(ESQDevFileAnnotation.PRESERVE);
 
-									ProjectUtil.export(containingProject, ProjectUtil.getExportPathFor(containingProject),
-											ESQDevFileAnnotation.IGNORE.getMatchPattern(Constants.FILEPATH_REGEX_PREFIX),
-											ESQDevFileAnnotation.PRESERVE.getMatchPattern(Constants.FILEPATH_REGEX_PREFIX));
+									ProjectUtil.export(containingProject,
+											ProjectUtil.getExportPathFor(containingProject),
+											ESQDevFileAnnotation.IGNORE
+													.getMatchPattern(Constants.FILEPATH_REGEX_PREFIX),
+											ESQDevFileAnnotation.PRESERVE
+													.getMatchPattern(Constants.FILEPATH_REGEX_PREFIX));
 
 									monitor.worked(1);
 								} catch (SQDevFileIsInvalidException | IOException e) {
@@ -275,7 +288,7 @@ public class SQF_Editor extends BasicCodeEditor
 	 * binary/unary/nular operator
 	 */
 	private void categorizeCommands() {
-		Iterator<Entry<String, Keyword>> it = provider.getKeywordList().getKeywords().entrySet().iterator();
+		Iterator<Entry<String, Keyword>> it = commandProvider.getKeywordList().getKeywords().entrySet().iterator();
 
 		while (it.hasNext()) {
 			Keyword currentKeyword = it.next().getValue();
@@ -545,5 +558,19 @@ public class SQF_Editor extends BasicCodeEditor
 			tokenFactory = new SQFTokenFactory(getBinaryKeywords(), getUnaryKeywords());
 		}
 		return tokenFactory;
+	}
+
+	@Override
+	public Map<String, Function> getFunctions() {
+		if (functions == null) {
+			Map<String, Keyword> functionMap = functionProvider.getKeywordList().getKeywords();
+			functions = new HashMap<>(functionMap.size());
+
+			for (Keyword current : functionMap.values()) {
+				functions.put(current.getKeyword().toLowerCase(), (Function) current);
+			}
+		}
+
+		return functions;
 	}
 }
