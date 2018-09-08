@@ -2,6 +2,8 @@
 
 | Added: ObjectRTD data type
 | Added: Framework for reading PBOs
+| Added: Function highlighting for functions defined via CfgFunctions
+| Added: Preference defining the function-highlighting color
 | Improved: Command update now times out and won't wait forever for URL requests
 | Improved: Paths in SQDevFiles are now anonymized and abstracted -> can be shared on mutliple systems
 | Improved: Annotations in SQDevFiles can now make use of regular expressions
