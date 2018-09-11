@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.MatchResult;
@@ -45,7 +46,7 @@ public enum ESQDevFileVersion {
 		}
 
 		@Override
-		public void validate(CharSequence input, ISQDevFileErrorListener listener) {
+		public void validate(CharSequence input, ISQDevFileErrorListener listener, ESQDevFileType type) {
 			String[] lines = input.toString().split("\n");
 
 			int offset = 0;
@@ -84,10 +85,10 @@ public enum ESQDevFileVersion {
 
 						annotation.clear();
 						annotation.addValue(value);
-						String errorMsg = annotation.validate();
+						String errorMsg = annotation.validate(type);
 
 						if (errorMsg != null) {
-							if (!listener.error(offset + matcher.start(2), value.length(),
+							if (!listener.error(offset + matcher.start(2), value.length() + 2,
 									"Invalid value for " + annotation + ": " + errorMsg)) {
 								// listener indicated to stop validating
 
@@ -125,7 +126,7 @@ public enum ESQDevFileVersion {
 						String prevValue = attribute.getValue();
 
 						attribute.setValue(value);
-						String errorMsg = attribute.validate();
+						String errorMsg = attribute.validate(type);
 
 						if (errorMsg != null) {
 							if (!listener.error(offset + matcher.start(2), value.length(),
@@ -341,8 +342,17 @@ public enum ESQDevFileVersion {
 
 	/**
 	 * Checks whether the given input is valid in context of this version
+	 * 
+	 * @param input
+	 *            The {@linkplain CharSequence} to validate
+	 * @param The
+	 *            {@linkplain ESQDevFileType} to validate the input as
 	 */
-	public boolean isValid(CharSequence input) {
+	public boolean isValid(CharSequence input, ESQDevFileType type) {
+		if (validatedInput.containsKey(input)) {
+			return validatedInput.get(input);
+		}
+
 		AtomicBoolean valid = new AtomicBoolean(true);
 
 		validate(input, new ISQDevFileErrorListener() {
@@ -353,7 +363,9 @@ public enum ESQDevFileVersion {
 
 				return false;
 			}
-		});
+		}, type);
+
+		validatedInput.put(input, valid.get());
 
 		return valid.get();
 	}
@@ -474,7 +486,7 @@ public enum ESQDevFileVersion {
 	 *             If the given input is not valid
 	 */
 	protected void ensureValidity(CharSequence input) throws SQDevFileIsInvalidException {
-		if (!isValid(input)) {
+		if (!isValid(input, ESQDevFileType.NULLTYPE)) {
 			throw new SQDevFileIsInvalidException("The given input is invalid!");
 		}
 	}
@@ -516,8 +528,11 @@ public enum ESQDevFileVersion {
 	 * @param listener
 	 *            The {@linkplain ISQDevFileErrorListener} to report all encountered
 	 *            errors to
+	 * 
+	 * @param type
+	 *            The {@linkplain ESQDevFileType} to validate the given input as
 	 */
-	public abstract void validate(CharSequence input, ISQDevFileErrorListener listener);
+	public abstract void validate(CharSequence input, ISQDevFileErrorListener listener, ESQDevFileType type);
 
 	/**
 	 * Gets a matcher for that will detect all comments in the given input
@@ -585,4 +600,11 @@ public enum ESQDevFileVersion {
 	 * @throws SQDevException
 	 */
 	public abstract CharSequence addAttribute(ESQDevFileAttribute attribute, CharSequence content);
+
+	/**
+	 * A static {@linkplain HashMap} containing the input-sequences that have
+	 * already been validated before and their validation-state. This is intended to
+	 * use in order to remove redundant validations of the same input sequence.
+	 */
+	static HashMap<CharSequence, Boolean> validatedInput = new HashMap<>();
 }

@@ -16,7 +16,7 @@ public enum ESQDevFileAnnotation {
 	 */
 	IGNORE {
 		@Override
-		public String toString() {
+		public String getName() {
 			return "ignore";
 		}
 
@@ -26,7 +26,11 @@ public enum ESQDevFileAnnotation {
 		}
 
 		@Override
-		public String validate() {
+		public String validate(ESQDevFileType type) {
+			if (!canBeUsedIn(type)) {
+				return "This annotation may not be used in the " + type + "-sqdev file!";
+			}
+
 			for (String currentValue : getValues()) {
 				if (currentValue == null || currentValue.trim().isEmpty()) {
 					return "A value has to be specified!";
@@ -35,13 +39,18 @@ public enum ESQDevFileAnnotation {
 
 			return null;
 		}
+
+		@Override
+		public boolean canBeUsedIn(ESQDevFileType type) {
+			return type.isEquals(ESQDevFileType.LINK);
+		}
 	},
 	/**
 	 * Defines a file that should not get deleted during the clean of an export
 	 */
 	PRESERVE {
 		@Override
-		public String toString() {
+		public String getName() {
 			return "preserve";
 		}
 
@@ -51,7 +60,11 @@ public enum ESQDevFileAnnotation {
 		}
 
 		@Override
-		public String validate() {
+		public String validate(ESQDevFileType type) {
+			if (!canBeUsedIn(type)) {
+				return "This annotation may not be used in the " + type + "-sqdev file!";
+			}
+
 			for (String currentValue : getValues()) {
 				if (currentValue == null || currentValue.trim().isEmpty()) {
 					return "A value has to be specified!";
@@ -60,6 +73,38 @@ public enum ESQDevFileAnnotation {
 
 			return null;
 		}
+
+		@Override
+		public boolean canBeUsedIn(ESQDevFileType type) {
+			return type.isEquals(ESQDevFileType.LINK);
+		}
+	},
+	MOD {
+
+		@Override
+		public String getDescription() {
+			return "Indicates that the specified mod is used in this project";
+		}
+
+		@Override
+		public String validate(ESQDevFileType type) {
+			if (!canBeUsedIn(type)) {
+				return "This annotation may not be used in the " + type + "-sqdev file!";
+			}
+
+			return null;
+		}
+
+		@Override
+		public boolean canBeUsedIn(ESQDevFileType type) {
+			return type.isEquals(ESQDevFileType.PROJECT);
+		}
+
+		@Override
+		public String getName() {
+			return "mod";
+		}
+
 	};
 
 	/**
@@ -288,10 +333,13 @@ public enum ESQDevFileAnnotation {
 	/**
 	 * Validates the currently set value
 	 * 
+	 * @param type
+	 *            The {@linkplain ESQDevFileType} this annotation is being used in
+	 * 
 	 * @return The error message describing what's wrong or <code>null</code> if
 	 *         everything's alright
 	 */
-	public abstract String validate();
+	public abstract String validate(ESQDevFileType type);
 
 	/**
 	 * Clears all set values
@@ -300,6 +348,26 @@ public enum ESQDevFileAnnotation {
 		if (values != null) {
 			values.clear();
 		}
+	}
+
+	/**
+	 * Checks whether this annotation can be used inside a sqdev-file of the given
+	 * type
+	 * 
+	 * @param type
+	 *            The {@linkplain ESQDevFileType} to check
+	 * @return Whether this annotation can be used in it or not
+	 */
+	public abstract boolean canBeUsedIn(ESQDevFileType type);
+	
+	/**
+	 * Gets the name of this annotation
+	 */
+	public abstract String getName();
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 	/**

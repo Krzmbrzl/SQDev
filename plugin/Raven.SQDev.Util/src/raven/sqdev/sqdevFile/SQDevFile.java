@@ -17,7 +17,6 @@ import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.exceptions.SQDevFileIsInvalidException;
 import raven.sqdev.exceptions.SQDevFileNoSuchAttributeException;
 import raven.sqdev.misc.FileSystemUtil;
-import raven.sqdev.util.EFileType;
 
 /**
  * A <code>SQDevFile</code> contains some project specific information for the
@@ -240,7 +239,7 @@ public class SQDevFile extends File {
 	@SuppressWarnings("deprecation")
 	public boolean isValid() throws FileNotFoundException, IOException {
 		if (getVersion() != null) {
-			return getVersion().isValid(getContent());
+			return getVersion().isValid(getContent(), ESQDevFileType.NULLTYPE);
 		} else {
 			return fallback.isValid();
 		}
@@ -255,10 +254,13 @@ public class SQDevFile extends File {
 	 * @param listener
 	 *            The {@linkplain ISQDevFileErrorListener} to report all encountered
 	 *            errors to
+	 * @param type
+	 *            The {@linkplain ESQDevFileType} to validate this file as
 	 */
-	public void validate(ISQDevFileErrorListener listener) throws FileNotFoundException, IOException {
+	public void validate(ISQDevFileErrorListener listener, ESQDevFileType type)
+			throws FileNotFoundException, IOException {
 		if (getVersion() != null) {
-			getVersion().validate(getContent(), listener);
+			getVersion().validate(getContent(), listener, type);
 		}
 	}
 
@@ -353,41 +355,5 @@ public class SQDevFile extends File {
 				fallback.addAnnotation(annotation, currentValue);
 			}
 		}
-	}
-
-	public static void main(String[] args) throws IOException, SQDevException {
-		SQDevFile sqdevFile = null;
-		File targetFile = new File(System.getProperty("user.home") + File.separator + "Tester." + EFileType.SQDEV);
-
-		if (targetFile.exists()) {
-			sqdevFile = new SQDevFile(targetFile.getAbsolutePath());
-		} else {
-			sqdevFile = create(targetFile);
-		}
-
-		ESQDevFileAttribute.PROFILE.setValue("Miau");
-		ESQDevFileAttribute.TERRAIN.setValue("myTerrain");
-		ESQDevFileAnnotation.IGNORE.addValue("me");
-		ESQDevFileAnnotation.IGNORE.addValue("myself");
-		ESQDevFileAnnotation.PRESERVE.addValue("you");
-		ESQDevFileAttribute.AUTOEXPORT.setValue(String.valueOf(true));
-
-		sqdevFile.addAttribute(ESQDevFileAttribute.PROFILE);
-		sqdevFile.addAnnotation(ESQDevFileAnnotation.IGNORE);
-		sqdevFile.addAttribute(ESQDevFileAttribute.TERRAIN);
-		sqdevFile.addAnnotation(ESQDevFileAnnotation.PRESERVE);
-		sqdevFile.addAttribute(ESQDevFileAttribute.AUTOEXPORT);
-
-		final String content = sqdevFile.getContent();
-
-		sqdevFile.validate(new ISQDevFileErrorListener() {
-
-			@Override
-			public boolean error(int start, int length, String errorMsg) {
-				System.out.println("Encountered error: " + errorMsg + " - " + content.substring(start, start + length));
-
-				return true;
-			}
-		});
 	}
 }

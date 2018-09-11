@@ -36,7 +36,8 @@ public enum ESQDevFileType {
 
 			// add attributes
 			addAttribute(ESQDevFileAttribute.PROFILE, info.getProfile(), ESQDevFileVersion.newest());
-			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY, exportPath.toPlaceholderString(), ESQDevFileVersion.newest());
+			addAttribute(ESQDevFileAttribute.EXPORTDIRECTORY, exportPath.toPlaceholderString(),
+					ESQDevFileVersion.newest());
 			addAttribute(ESQDevFileAttribute.AUTOEXPORT, String.valueOf(info.getAutoExport()),
 					ESQDevFileVersion.newest());
 			addAttribute(ESQDevFileAttribute.TERRAIN, info.getTerrain(), ESQDevFileVersion.newest());
@@ -49,6 +50,39 @@ public enum ESQDevFileType {
 
 			return initialContent.toString();
 		}
+	},
+	/**
+	 * The sqdev-file that contains project-specific information
+	 */
+	PROJECT {
+		@Override
+		public String toString() {
+			return "project";
+		}
+
+		@Override
+		public String getInitialInput() {
+			// clear the initial content before recreating it
+			initialContent = ESQDevFileVersion.newest().getHeader() + "\n"
+					+ ESQDevFileVersion.newest()
+							.makeInsertable("This sqdev-file contains the project specific information")
+					+ "\n" + ESQDevFileVersion.newest().getFormatDescription(true);
+
+			return initialContent.toString();
+		}
+
+	},
+	/**
+	 * A type that can be used as a "null-entry". It will be equal to all other
+	 * types
+	 */
+	NULLTYPE {
+
+		@Override
+		public String getInitialInput() {
+			return "";
+		}
+
 	};
 
 	private ESQDevFileType() {
@@ -180,5 +214,27 @@ public enum ESQDevFileType {
 	 */
 	public void setInformation(SQDevInformation info) {
 		this.info = info;
+	}
+
+	/**
+	 * Checks if the given entry is equal to this one. Note that if either this or
+	 * the given entry is the {@link #NULLTYPE} then this method will return true.
+	 * 
+	 * @param o
+	 *            The object to check
+	 * @return Whether the given object is equal to this one
+	 */
+	public boolean isEquals(Object o) {
+		if (!(o instanceof ESQDevFileType)) {
+			return false;
+		}
+
+		ESQDevFileType other = (ESQDevFileType) o;
+
+		if (this == ESQDevFileType.NULLTYPE || other == ESQDevFileType.NULLTYPE) {
+			return true;
+		} else {
+			return super.equals(other);
+		}
 	}
 }

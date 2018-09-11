@@ -29,7 +29,11 @@ public enum ESQDevFileAttribute {
 		}
 
 		@Override
-		public String validate() {
+		public String validate(ESQDevFileType type) {
+			if(!canBeUsedIn(type)) {
+				return "This attribute may not be used in the " + type + "-sqdev file!";
+			}
+			
 			if (getValue() == null || getValue().trim().isEmpty()) {
 				return "Missing value!";
 			}
@@ -41,6 +45,11 @@ public enum ESQDevFileAttribute {
 
 			return "The assigned value may only be \"" + String.valueOf(true) + "\" or \"" + String.valueOf(false)
 					+ "\"!";
+		}
+
+		@Override
+		public boolean canBeUsedIn(ESQDevFileType type) {
+			return type.isEquals(ESQDevFileType.LINK);
 		}
 	},
 	/**
@@ -64,12 +73,21 @@ public enum ESQDevFileAttribute {
 		}
 
 		@Override
-		public String validate() {
+		public String validate(ESQDevFileType type) {
+			if(!canBeUsedIn(type)) {
+				return "This attribute may not be used in the " + type + "-sqdev file!";
+			}
+			
 			if (getValue() == null || getValue().trim().isEmpty()) {
 				return "Missing value!";
 			}
 
 			return null;
+		}
+
+		@Override
+		public boolean canBeUsedIn(ESQDevFileType type) {
+			return type.isEquals(ESQDevFileType.LINK);
 		}
 	},
 	/**
@@ -93,12 +111,21 @@ public enum ESQDevFileAttribute {
 		}
 
 		@Override
-		public String validate() {
+		public String validate(ESQDevFileType type) {
+			if(!canBeUsedIn(type)) {
+				return "This attribute may not be used in the " + type + "-sqdev file!";
+			}
+			
 			if (getValue() == null || getValue().trim().isEmpty()) {
 				return "Missing value!";
 			}
 
 			return null;
+		}
+
+		@Override
+		public boolean canBeUsedIn(ESQDevFileType type) {
+			return type.isEquals(ESQDevFileType.LINK);
 		}
 
 	},
@@ -126,12 +153,21 @@ public enum ESQDevFileAttribute {
 		}
 
 		@Override
-		public String validate() {
+		public String validate(ESQDevFileType type) {
+			if(!canBeUsedIn(type)) {
+				return "This attribute may not be used in the " + type + "-sqdev file!";
+			}
+			
 			if (getValue() == null || getValue().trim().isEmpty()) {
 				return "Missing value!";
 			}
 
 			return null;
+		}
+
+		@Override
+		public boolean canBeUsedIn(ESQDevFileType type) {
+			return type.isEquals(ESQDevFileType.LINK);
 		}
 	};
 
@@ -148,7 +184,7 @@ public enum ESQDevFileAttribute {
 	public String getValue() {
 		return value;
 	}
-	
+
 	/**
 	 * Checks if this attribute has any value set to it
 	 */
@@ -251,10 +287,13 @@ public enum ESQDevFileAttribute {
 	/**
 	 * Validates the currently set value
 	 * 
+	 * @param type
+	 *            The {@linkplain ESQDevFileType} this annotation is being used in
+	 * 
 	 * @return The error message describing what's wrong or <code>null</code> if
 	 *         everything's alright
 	 */
-	public abstract String validate();
+	public abstract String validate(ESQDevFileType type);
 
 	/**
 	 * Clears the set value
@@ -262,4 +301,14 @@ public enum ESQDevFileAttribute {
 	public void clear() {
 		value = null;
 	}
+
+	/**
+	 * Checks whether this attribute can be used inside a sqdev-file of the given
+	 * type
+	 * 
+	 * @param type
+	 *            The {@linkplain ESQDevFileType} to check
+	 * @return Whether this attribute can be used in it or not
+	 */
+	public abstract boolean canBeUsedIn(ESQDevFileType type);
 }

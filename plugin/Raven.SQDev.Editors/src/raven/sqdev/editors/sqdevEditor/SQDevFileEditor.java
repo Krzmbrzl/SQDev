@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.ui.IEditorInput;
 
 import raven.sqdev.constants.SQDevPreferenceConstants;
 import raven.sqdev.editors.BasicCodeEditor;
@@ -12,8 +13,10 @@ import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
+import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.ESQDevFileVersion;
 import raven.sqdev.sqdevFile.ISQDevFileErrorListener;
+import raven.sqdev.util.EFileType;
 
 /**
  * An editor for the SQDev file type
@@ -83,7 +86,9 @@ public class SQDevFileEditor extends BasicCodeEditor {
 	 */
 	@Override
 	public boolean parseInput(boolean suspend) {
-		IDocument document = getBasicProvider().getDocument(getEditorInput());
+		IEditorInput editorIn = getEditorInput();
+
+		IDocument document = getBasicProvider().getDocument(editorIn);
 
 		if (document == null) {
 			return false;
@@ -104,6 +109,21 @@ public class SQDevFileEditor extends BasicCodeEditor {
 			return false;
 		}
 
+		ESQDevFileType type = ESQDevFileType.NULLTYPE;
+
+		String name = editorIn.getName();
+		if (name.toLowerCase().endsWith(EFileType.SQDEV.getExtension().toLowerCase())) {
+			name = name.substring(0, name.lastIndexOf("."));
+
+			if (name.equalsIgnoreCase(ESQDevFileType.LINK.toString())) {
+				type = ESQDevFileType.LINK;
+			} else {
+				if (name.equalsIgnoreCase(ESQDevFileType.PROJECT.toString())) {
+					type = ESQDevFileType.PROJECT;
+				}
+			}
+		}
+
 		version.validate(content, new ISQDevFileErrorListener() {
 
 			@Override
@@ -111,8 +131,8 @@ public class SQDevFileEditor extends BasicCodeEditor {
 				SQDevFileEditor.this.createMarker(IMarker.PROBLEM, start, length, errorMsg, IMarker.SEVERITY_ERROR);
 				return false;
 			}
-		});
-		
+		}, type);
+
 		applyParseChanges();
 
 		return false;

@@ -159,7 +159,7 @@ public enum EFileType {
 	},
 	
 	/**
-	 * Config files with the ectension ".cpp"
+	 * Config files with the extension ".cpp"
 	 */
 	CPP {
 		@Override
