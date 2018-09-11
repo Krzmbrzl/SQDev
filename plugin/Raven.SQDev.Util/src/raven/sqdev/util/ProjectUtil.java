@@ -2,6 +2,8 @@ package raven.sqdev.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.ICommand;
@@ -37,6 +39,7 @@ import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.misc.SQDevProjectNature;
+import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
 import raven.sqdev.sqdevFile.ESQDevFileAttribute;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
@@ -57,7 +60,7 @@ public class ProjectUtil {
 	 * Indicating that the export has failed
 	 */
 	public static final String FAILED = "failed";
-	
+
 	/**
 	 * Gets the export location for the given project assuming that the given
 	 * project is a valid SQDev project
@@ -93,8 +96,10 @@ public class ProjectUtil {
 			linkFile.processAttribute(ESQDevFileAttribute.EXPORTDIRECTORY);
 			String expPath = ESQDevFileAttribute.EXPORTDIRECTORY.getValue().trim();
 
-			// create the path according to the gathered path and name; Use SQDevPath in order to handle placeholders
-			exportPath = new SQDevPath(expPath, ESQDevFileAttribute.PROFILE.getValue()).toPath().append(projectFolderName);
+			// create the path according to the gathered path and name; Use SQDevPath in
+			// order to handle placeholders
+			exportPath = new SQDevPath(expPath, ESQDevFileAttribute.PROFILE.getValue()).toPath()
+					.append(projectFolderName);
 		} catch (SQDevFileIsInvalidException | SQDevFileNoSuchAttributeException | IOException e) {
 			throw new SQDevCoreException(e);
 		}
@@ -121,8 +126,7 @@ public class ProjectUtil {
 	 *         <li>ProjectUtil.CANCELED</li>
 	 *         <li>ProjectUtil.FAILED</li>
 	 */
-	public static String export(IProject project, IPath destination, Pattern ignorePattern,
-			Pattern preservePattern) {
+	public static String export(IProject project, IPath destination, Pattern ignorePattern, Pattern preservePattern) {
 		if (!new File(destination.toOSString()).exists()) {
 			// check how many folders have to be created
 			IPath copy = new Path(destination.toOSString());
@@ -198,7 +202,7 @@ public class ProjectUtil {
 					// skip non-existent files
 					continue;
 				}
-				
+
 				FileSystemUtil.copyFilesWithExceptions(currentFile, destination, ignorePattern, true);
 			}
 		} catch (CoreException e) {
@@ -228,6 +232,15 @@ public class ProjectUtil {
 	 * @return
 	 */
 	public static boolean isSQDevProject(IProject project) {
+		try {
+			if (project.hasNature(SQDevProjectNature.SQDEV_NATURE_ID)) {
+				return true;
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+
+		// use presence of link.sqdev as a fallback-check
 		IFile testFile = project.getFile(ESQDevFileType.LINK.toString() + EFileType.SQDEV.getExtension());
 
 		return testFile.exists();
@@ -488,5 +501,57 @@ public class ProjectUtil {
 		project.close(new NullProgressMonitor());
 
 		return project;
+	}
+
+	/**
+	 * Gets the project.sqdev from the given project
+	 * 
+	 * @param project
+	 *            The project to process
+	 * @return The {@linkplain SQDevFile} or <code>null</code> if it couldn't be
+	 *         found
+	 */
+	public static SQDevFile getProjectFile(IProject project) {
+		IResource file = project.findMember(ESQDevFileType.PROJECT + EFileType.SQDEV.getExtension());
+		if (file != null && file.exists() && file instanceof IFile) {
+			try {
+				return new SQDevFile((IFile) file);
+			} catch (IllegalAccessStateException | IOException e) {
+				e.printStackTrace();
+
+				SQDevInfobox info = new SQDevInfobox("Failed at retrieving project.sqdev!!", e);
+				info.open(false);
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets the names of the mods that are set as a dependency for the given project
+	 * 
+	 * @param project
+	 *            The {@linkplain IProject} to check
+	 * @return A {@linkplain List} containing the names of all mods that are
+	 *         specified as a dependency in the given project
+	 */
+	public static List<String> getProjectModNames(IProject project) {
+		SQDevFile projectFile = getProjectFile(project);
+
+		if (projectFile != null) {
+			try {
+				projectFile.processAnnotation(ESQDevFileAnnotation.MOD);
+
+				return ESQDevFileAnnotation.MOD.getValues();
+			} catch (SQDevFileIsInvalidException | IOException e) {
+				e.printStackTrace();
+
+				SQDevInfobox info = new SQDevInfobox("Failed at retrieving project-mods!", e);
+				info.open(false);
+			}
+
+		}
+
+		return new ArrayList<>();
 	}
 }

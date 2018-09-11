@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -18,6 +19,7 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 
 import dataStructures.AbstractSQFTokenFactory;
 import raven.sqdev.constants.Constants;
@@ -572,5 +574,18 @@ public class SQF_Editor extends BasicCodeEditor
 		}
 
 		return functions;
+	}
+
+	@Override
+	protected void doSetInput(IEditorInput input) throws CoreException {
+		super.doSetInput(input);
+
+		if (input instanceof FileEditorInput) {
+			IProject project = ((FileEditorInput) input).getFile().getProject();
+
+			if (project != null) {
+				functionProvider.setProject(project);
+			}
+		}
 	}
 }

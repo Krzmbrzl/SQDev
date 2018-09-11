@@ -494,7 +494,7 @@ public class FileSystemUtil {
 	}
 
 	/**
-	 * Gets all files in a directory and it's subdirectories
+	 * Gets all files in a directory and it's sub-directories
 	 * 
 	 * @param parentDir
 	 *            The parent directory whose files should be obtained

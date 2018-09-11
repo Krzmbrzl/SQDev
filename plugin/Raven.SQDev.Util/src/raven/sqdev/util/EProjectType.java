@@ -113,6 +113,12 @@ public enum EProjectType {
 		file.setPath(project.getFullPath().toOSString());
 		file.setInformation(getInformation());
 		file.create(ESQDevFileType.LINK.toString(), false);
+		
+		// create project.sqdev
+		file = EFileType.SQDEV;
+		file.setPath(project.getFullPath().toOSString());
+		file.setInformation(getInformation());
+		file.create(ESQDevFileType.PROJECT.toString(), false);
 	}
 	
 	/**
@@ -164,6 +170,12 @@ public enum EProjectType {
 		file.setPath(project.getFullPath().toOSString());
 		file.setInformation(getInformation());
 		file.create(ESQDevFileType.LINK.toString(), false);
+		
+		// create project.sqdev
+		file = EFileType.SQDEV;
+		file.setPath(project.getFullPath().toOSString());
+		file.setInformation(getInformation());
+		file.create(ESQDevFileType.PROJECT.toString(), false);
 		
 		// create the mission.sqm file
 		file = EFileType.SQM;

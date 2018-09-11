@@ -103,5 +103,5 @@ Bundle-ClassPath: ANTLR/antlr-runtime-4.7.jar,
  SQFParser/SQFParser.jar,
  Abego/AbegoSWT.jar,
  Abego/org.abego.treelayout.core-1.0.3.jar,
- ArmaFiles/ArmaFiles_1.0.jar,
+ ArmaFiles/ArmaFiles_1.1.jar,
  .
