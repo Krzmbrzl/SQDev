@@ -226,6 +226,8 @@ public class KeywordScanner extends RuleBasedScanner implements IKeywordListChan
 		updateRules(true);
 
 		notifyKeywordListChangeListeners(IKeywordListChangeListener.CTX_LIST_REMOVED);
+		
+		provider.addKeywordListChangeListener(this);
 	}
 
 	/**

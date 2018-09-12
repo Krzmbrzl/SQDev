@@ -73,10 +73,13 @@ public class Function extends Keyword {
 	 * 
 	 * @param func
 	 *            The {@linkplain ConfigFunction} to transform
+	 * @param description
+	 *            The description of the function or <code>null</code> if this
+	 *            function does not have a description
 	 * @return The created function
 	 */
-	public static Function from(ConfigFunction func) {
-		return new Function(func.name, null, func.path, func.attributes);
+	public static Function from(ConfigFunction func, String description) {
+		return new Function(func.name, description, func.path, func.attributes);
 	}
 
 	/**

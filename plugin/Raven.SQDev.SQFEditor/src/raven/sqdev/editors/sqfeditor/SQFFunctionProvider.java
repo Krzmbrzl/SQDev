@@ -43,5 +43,9 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 		for (String currentMod : configuredMods) {
 			list.addKeywords(ModUtils.getFunctionsFor(currentMod));
 		}
+		
+		if(configuredMods.size() > 0) {
+			this.notifyKeywordListChangeListener();
+		}
 	}
 }

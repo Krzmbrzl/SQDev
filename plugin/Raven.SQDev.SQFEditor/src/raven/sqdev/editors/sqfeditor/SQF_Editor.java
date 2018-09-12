@@ -127,7 +127,6 @@ public class SQF_Editor extends BasicCodeEditor
 		keywordScanner.setKeywordProvider(commandProvider);
 
 		// configure this editor as a keyword list listener
-		commandProvider.addKeywordListChangeListener(this);
 		keywordScanner.addKeywordListChangeListener(this);
 
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_LOCALVARIABLEHIGHLIGHTING_COLOR_KEY,
@@ -585,6 +584,7 @@ public class SQF_Editor extends BasicCodeEditor
 
 			if (project != null) {
 				functionProvider.setProject(project);
+				update(false);
 			}
 		}
 	}

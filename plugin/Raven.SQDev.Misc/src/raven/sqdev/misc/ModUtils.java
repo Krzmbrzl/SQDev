@@ -2,6 +2,7 @@ package raven.sqdev.misc;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import raven.misc.TextReader;
 import raven.pbo.PBO;
 import raven.pbo.PBOEntry;
 import raven.sqdev.infoCollection.base.Function;
+import raven.sqdev.interfaces.IStreamProvider;
 
 public class ModUtils {
 
@@ -79,6 +81,26 @@ public class ModUtils {
 	public static void getFunctionsFor(PBO pbo, Collection<Function> functions) {
 		try {
 			ConfigClass config = null;
+			final String pboPrefix = pbo.getPrefix();
+			SQFFunctionDescriptionProvider descriptionProvider = new SQFFunctionDescriptionProvider(
+					new IStreamProvider() {
+
+						@Override
+						public InputStream getStreamFor(String path) throws IOException {
+							if (pboPrefix != null && path.toLowerCase().startsWith("\\" + pboPrefix.toLowerCase())
+									&& path.length() >= pboPrefix.length() + 2) {
+								path = path.substring(pboPrefix.length() + 2);
+							}
+
+							PBOEntry entry = pbo.getEntry(path);
+
+							if (entry == null) {
+								return null;
+							} else {
+								return entry.toStream();
+							}
+						}
+					});
 
 			PBOEntry configEntry = pbo.getEntry("config.bin");
 			if (configEntry != null) {
@@ -104,7 +126,7 @@ public class ModUtils {
 				cfg.init();
 
 				for (ConfigFunction current : cfg.getDefinedFunctions().values()) {
-					functions.add(Function.from(current));
+					functions.add(Function.from(current, descriptionProvider.getDescription(current)));
 				}
 			}
 		} catch (IOException | RapificationException | ConfigException e) {

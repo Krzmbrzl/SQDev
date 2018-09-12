@@ -45,9 +45,8 @@ import raven.sqdev.miscellaneous.AdditionalKeywordProposalInformation;
  *
  * @since 3.4
  */
-public class BasicInformationControl extends AbstractInformationControl
-		implements IInformationControlExtension2 {
-	
+public class BasicInformationControl extends AbstractInformationControl implements IInformationControlExtension2 {
+
 	/**
 	 * The <code>TabFolder</code> used to display information
 	 */
@@ -61,11 +60,10 @@ public class BasicInformationControl extends AbstractInformationControl
 	 */
 	private IAdditionalProposalInformation info;
 	/**
-	 * Indicates whether the enriched version of this InformationControl is
-	 * desired
+	 * Indicates whether the enriched version of this InformationControl is desired
 	 */
 	private boolean enriched;
-	
+
 	/**
 	 * The compsoite uniquely used for this info popup
 	 *
@@ -75,8 +73,8 @@ public class BasicInformationControl extends AbstractInformationControl
 			super(parent, style);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Creates a basic information control with the given shell as parent.
 	 *
@@ -88,7 +86,7 @@ public class BasicInformationControl extends AbstractInformationControl
 	public BasicInformationControl(Shell parentShell) {
 		this(parentShell, false);
 	}
-	
+
 	/**
 	 * Creates a basic information control with the given shell as parent.
 	 *
@@ -97,44 +95,43 @@ public class BasicInformationControl extends AbstractInformationControl
 	 * @param isResizable
 	 *            <code>true</code> if the control should be resizable
 	 * @param enriched
-	 *            Indicates whether the enriched version of this
-	 *            InformationControl is desired
+	 *            Indicates whether the enriched version of this InformationControl
+	 *            is desired
 	 */
 	public BasicInformationControl(Shell parentShell, boolean enriched) {
 		super(parentShell, new ToolBarManager());
-		
+
 		this.enriched = enriched;
-		
+
 		create();
 	}
-	
+
 	@Override
 	public boolean hasContents() {
-		return (info == null
-				|| ((isEnriched()) ? folder != null : infoComp != null));
+		return (info == null || ((isEnriched()) ? folder != null : infoComp != null));
 	}
-	
+
 	@Override
 	protected void createContent(Composite parent) {
 		infoComp = new InfoComposite(parent, SWT.NONE);
 		infoComp.setBackground(parent.getBackground());
 		infoComp.setForeground(parent.getForeground());
-		
+
 		parent.setLayout(new FillLayout());
 		infoComp.setLayout(new FillLayout());
-		
+
 		if (isEnriched()) {
 			folder = new TabFolder(infoComp, SWT.TOP);
-			
+
 			// inherit color scheme
 			folder.setForeground(infoComp.getForeground());
 			folder.setBackground(infoComp.getBackground());
 		}
 	}
-	
+
 	/**
-	 * Adds an <code>TabItem</code> to the <code>TabFolder</code> used to
-	 * display information
+	 * Adds an <code>TabItem</code> to the <code>TabFolder</code> used to display
+	 * information
 	 * 
 	 * @param name
 	 *            The displayed name of the <code>TabItem</code>
@@ -147,14 +144,14 @@ public class BasicInformationControl extends AbstractInformationControl
 			// don't add null elements
 			return null;
 		}
-		
+
 		TabItem item = new TabItem(folder, SWT.NULL);
 		item.setText(name);
 		item.setControl(control);
-		
+
 		return item;
 	}
-	
+
 	/**
 	 * Sets the info for this control
 	 * 
@@ -163,24 +160,33 @@ public class BasicInformationControl extends AbstractInformationControl
 	 */
 	protected void setInfo(IAdditionalProposalInformation info) {
 		this.info = info;
-		
+
+		if (isEnriched() && info.getCategoryCount() <= 1) {
+			// show basic info for infos that don't have more than one category
+			if (folder != null && !folder.isDisposed()) {
+				folder.dispose();
+				folder = null;
+			}
+
+			enriched = false;
+		}
+
 		if (isEnriched()) {
 			updateTabFolder();
 		} else {
 			showBasicInfo();
 		}
 	}
-	
+
 	private void showBasicInfo() {
 		String[] categoryNames = info.getCategoryNames();
 		Control[] categoryControls = info.getCategoryControls(infoComp);
-		
+
 		int found = -1;
-		
+
 		for (int i = 0; i < info.getCategoryCount(); i++) {
 			// dispose all unneeded controls
-			if (!categoryNames[i]
-					.equals(AdditionalKeywordProposalInformation.OVERVIEW)) {
+			if (!categoryNames[i].equals(AdditionalKeywordProposalInformation.OVERVIEW)) {
 				if (i != 0) { // leave on alive as a fall-back
 					categoryControls[i].dispose();
 				}
@@ -188,74 +194,74 @@ public class BasicInformationControl extends AbstractInformationControl
 				found = i;
 			}
 		}
-		
-		if (found != 0 && categoryControls.length > 0) {
+
+		if (found != 0 && categoryControls.length > 1) {
 			categoryControls[0].dispose();
 		}
 	}
-	
+
 	private void updateTabFolder() {
 		String[] categoryNames = info.getCategoryNames();
 		Control[] categoryControls = info.getCategoryControls(folder);
-		
+
 		for (int i = 0; i < info.getCategoryCount(); i++) {
 			addTabItem(categoryNames[i], categoryControls[i]);
 		}
 	}
-	
+
 	@Override
 	public IInformationControlCreator getInformationPresenterControlCreator() {
 		return new IInformationControlCreator() {
-			
+
 			@Override
 			public IInformationControl createInformationControl(Shell parent) {
 				return new BasicInformationControl(parent, true);
 			}
 		};
 	}
-	
+
 	@Override
 	public void setInput(Object input) {
 		if (input instanceof IAdditionalProposalInformation) {
 			setInfo((IAdditionalProposalInformation) input);
-			
+
 			if (input instanceof AdditionalKeywordProposalInformation) {
 				// add the respective toolbar action this info does provide
-				
-				Action action = ((AdditionalKeywordProposalInformation) input)
-						.getToolbarAction();
-				
+
+				Action action = ((AdditionalKeywordProposalInformation) input).getToolbarAction();
+
 				if (action != null) {
 					// add action if available
 					getToolBarManager().add(action);
-					
+
 					getToolBarManager().update(false);
 				}
 			}
 		} else {
 			setInfo(new AbstractAdditionalProposalInformation(true) {
-				
+
 				@Override
 				protected ArrayList<IProposalInformationCategory> computeCategories(
 						ArrayList<IProposalInformationCategory> categories) {
-					categories.add(new StringProposalInformationCategory(
-							"General", input.toString()));
-					
+					categories.add(new StringProposalInformationCategory("General", input.toString()));
+
 					return categories;
 				}
 			});
 		}
 	}
-	
+
 	@Override
-	public void setVisible(boolean visible) {		
+	public void setVisible(boolean visible) {
 		super.setVisible(visible);
-		
+
 		if (isEnriched()) {
 			configureScrolledComposite(folder);
+		} else {
+			configureScrolledComposite(infoComp);
 		}
 	}
-	
+
 	/**
 	 * Configures the minSize of the first occurance of a
 	 * <code>ScrolledComposite</code> in the children of the given parenr
@@ -269,29 +275,26 @@ public class BasicInformationControl extends AbstractInformationControl
 		for (Control currentControl : parent.getChildren()) {
 			if (currentControl instanceof ScrolledComposite) {
 				ScrolledComposite scroller = (ScrolledComposite) currentControl;
-				
+
 				if (scroller.getContent() != null) {
 					Control content = scroller.getContent();
-					
+
 					// adjust the scroller to the proper size
 					int border = scroller.getBorderWidth();
 					int width = scroller.getSize().x - 2 * border;
-					int height = content.computeSize(scroller.getSize().x,
-							SWT.DEFAULT, true).y
-							+ getToolBarManager().createControl(getShell())
-									.getSize().y;
-					
+					int height = content.computeSize(scroller.getSize().x, SWT.DEFAULT, true).y
+							+ getToolBarManager().createControl(getShell()).getSize().y;
+
 					scroller.setMinSize(width, height);
-					
+
 					ScrollBar scrollBar = scroller.getVerticalBar();
-					
+
 					if (scrollBar != null) {
 						// if there is a vertical scrollBar adjust the
 						// scroller's minWidth to make sure the horizontal
 						// Scrollbar does not have to appear when the vertical
 						// on does
-						scroller.setMinWidth(
-								scroller.getMinWidth() - scrollBar.getSize().x);
+						scroller.setMinWidth(scroller.getMinWidth() - scrollBar.getSize().x);
 					}
 				}
 			} else {
@@ -302,7 +305,7 @@ public class BasicInformationControl extends AbstractInformationControl
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets highest parent shell of this InformationControl.<br>
 	 * If the topmost parent is not a <code>Shell</code> an exception is thrown
@@ -311,20 +314,20 @@ public class BasicInformationControl extends AbstractInformationControl
 	 */
 	public Shell getParentShell() {
 		Composite comp = getShell();
-		
+
 		if (comp.getParent() != null) {
 			while (comp.getParent().getParent() != null) {
 				comp = comp.getParent();
 			}
 		}
-		
+
 		if (!(comp instanceof Shell)) {
 			throw new SQDevCoreException("Expected shell!");
 		}
-		
+
 		return (Shell) comp;
 	}
-	
+
 	public boolean isEnriched() {
 		return enriched;
 	}
