@@ -158,7 +158,7 @@ public class RPTViewer extends ViewPart implements IPropertyChangeListener,
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		// Create the fin/replace Action
+		// Create the find/replace Action
 		ResourceBundle bundle = ResourceBundle
 				.getBundle("raven.sqdev.bundles.rptViewerFindDialog");
 		findReplaceAction = new FindReplaceAction(bundle,

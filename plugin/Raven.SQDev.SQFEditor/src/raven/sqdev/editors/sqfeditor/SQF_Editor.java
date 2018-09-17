@@ -139,7 +139,7 @@ public class SQF_Editor extends BasicCodeEditor
 		// configure function-support
 		KeywordScanner functionScanner = configuration
 				.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_FUNCTIONHIGHLIGHTING_COLOR_KEY, false);
-		functionProvider = new SQFFunctionProvider();
+		functionProvider = new SQFFunctionProvider(this);
 		functionScanner.setKeywordProvider(functionProvider);
 
 		// get PartitionScanner
@@ -563,7 +563,7 @@ public class SQF_Editor extends BasicCodeEditor
 
 	@Override
 	public Map<String, Function> getFunctions() {
-		if (functions == null) {
+		if (functions == null || functions.size() != functionProvider.getKeywordList().getKeywords().size()) {
 			Map<String, Keyword> functionMap = functionProvider.getKeywordList().getKeywords();
 			functions = new HashMap<>(functionMap.size());
 
@@ -584,7 +584,6 @@ public class SQF_Editor extends BasicCodeEditor
 
 			if (project != null) {
 				functionProvider.setProject(project);
-				update(false);
 			}
 		}
 	}

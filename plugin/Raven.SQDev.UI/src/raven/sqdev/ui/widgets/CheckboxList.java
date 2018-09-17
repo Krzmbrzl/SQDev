@@ -308,6 +308,7 @@ public class CheckboxList extends LayedOutComposite {
 				Button btn = new Button(checkBoxComp, SWT.CHECK);
 				btn.setText(currentLabel);
 				btn.setSelection(isSelected);
+				btn.setEnabled(this.isEnabled());
 
 				// keep track of selections
 				btn.addSelectionListener(new SelectionAdapter() {
@@ -349,6 +350,7 @@ public class CheckboxList extends LayedOutComposite {
 	public void setText(String text) {
 		if (titleWidget != null && !titleWidget.isDisposed()) {
 			titleWidget.setText(text);
+			topComp.layout();
 
 			((ScrolledComposite) titleWidget.getParent().getParent()).setMinSize(new GC(titleWidget).textExtent(text));
 		}
@@ -371,6 +373,46 @@ public class CheckboxList extends LayedOutComposite {
 	 */
 	public ArrayList<String> getSelection() {
 		return new ArrayList<>(selectedLabels);
+	}
+
+	/**
+	 * Clears the current selection
+	 */
+	public void clearSelection() {
+		selectedLabels.clear();
+		updateCheckBoxList();
+	}
+
+	/**
+	 * Sets the selection for this list without sending a change-event. Note that
+	 * providing any labels that have not previously been set via
+	 * {@link #setLabels(Collection)} will not have any effect.
+	 * 
+	 * @param selection
+	 *            The labels of the checkboxes that should be selected
+	 */
+	public void setSelection(Collection<String> selection) {
+		this.selectedLabels = selection;
+		updateCheckBoxList();
+	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		
+		for(Control current : getChildren()) {
+			propagateEnablement(current, enabled);
+		}
+	}
+	
+	private void propagateEnablement(Control ctrl, boolean enabled) {
+		ctrl.setEnabled(enabled);
+		
+		if(ctrl instanceof Composite) {
+			for(Control current : ((Composite)ctrl).getChildren()) {
+				propagateEnablement(current, enabled);
+			}
+		}
 	}
 
 	public static void main(String[] args) {
@@ -398,6 +440,8 @@ public class CheckboxList extends LayedOutComposite {
 				System.out.println("Selection changed for " + event.text + " - " + event.data);
 			}
 		});
+		
+		list.setEnabled(false);
 
 		shell.open();
 		shell.forceFocus();

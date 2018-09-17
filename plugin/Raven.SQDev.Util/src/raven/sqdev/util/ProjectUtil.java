@@ -1,5 +1,6 @@
 package raven.sqdev.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -525,6 +526,29 @@ public class ProjectUtil {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Creates a new project.sqdev-file in the given project if it doesn't exist yet
+	 * 
+	 * @param project
+	 *            The project to create the file in
+	 * @return The created {@linkplain SQDevFile}
+	 * @throws IllegalAccessStateException
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public static SQDevFile createProjectFile(IProject project)
+			throws IllegalAccessStateException, IOException, CoreException {
+		IFile file = project.getFile(ESQDevFileType.PROJECT + EFileType.SQDEV.getExtension());
+
+		if (file.exists()) {
+			return new SQDevFile(file);
+		}
+
+		file.create(new ByteArrayInputStream(ESQDevFileType.PROJECT.getInitialInput().getBytes()), false, null);
+
+		return new SQDevFile(file);
 	}
 
 	/**

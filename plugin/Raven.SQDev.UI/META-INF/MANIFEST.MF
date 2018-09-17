@@ -27,5 +27,8 @@ Export-Package: raven.sqdev.ui
 Require-Bundle: org.eclipse.ui.workbench,
  org.eclipse.jface,
  org.eclipse.swt,
+ org.eclipse.core.resources,
  raven.sqdev.misc,
- raven.sqdev.util
+ org.eclipse.ui.navigator;bundle-version="3.7.0",
+ raven.sqdev.util,
+ org.eclipse.ui.ide;bundle-version="3.13.1"

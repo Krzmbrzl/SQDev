@@ -143,10 +143,11 @@
             restorable="true">
       </view>
       <view
+            allowMultiple="false"
             category="raven.sqdev.ui.sqdevCategory"
-            class="org.eclipse.ui.navigator.CommonNavigator"
-            id="raven.sqdev.views.sqdevnavigator"
-            name="SQDevNavigator"
+            class="raven.sqdev.ui.views.ModDependencyView"
+            id="raven.sqdev.ui.modDependencyView"
+            name="Mod-Dependency View"
             restorable="true">
       </view>
    </extension>

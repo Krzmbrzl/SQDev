@@ -226,7 +226,15 @@ public enum ESQDevFileVersion {
 					content = fragment1 + "\n" + builder + fragment2;
 				} else {
 					// append to end of content, leaving a blank line in between
-					content = content + "\n\n" + builder;
+					if (content.length() >= 2 && content.charAt(content.length() - 1) == '\n'
+							&& (content.charAt(content.length() - 1) == '\n'
+									|| (content.length() >= 3 && content.charAt(content.length() - 2) == '\r'
+											&& content.charAt(content.length() - 3) == '\n'))) {
+						// there already is a blank line in between -> only insert one NL
+						content = content + "\n" + builder;
+					} else {
+						content = content + "\n\n" + builder;
+					}
 				}
 			}
 

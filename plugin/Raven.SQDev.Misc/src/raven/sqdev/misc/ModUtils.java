@@ -55,6 +55,7 @@ public class ModUtils {
 
 			for (File currentAddon : addonFolder.listFiles()) {
 				if (currentAddon.getName().toLowerCase().endsWith(".pbo")) {
+					// TODO: store serialized copy that can be used if the addon-file hasn't changed
 					try {
 						PBO pbo = new PBO(currentAddon);
 

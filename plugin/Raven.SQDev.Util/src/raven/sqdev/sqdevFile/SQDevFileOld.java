@@ -534,7 +534,7 @@ public class SQDevFileOld extends File {
 		
 		try {
 			String content = getContent();
-			String insertedAnnotation = "@" + annotation + " " + value + "\n";
+			String insertedAnnotation = "@" + annotation + " \"" + value + "\"\n";
 			
 			if (content.contains("@" + annotation + " ")) {
 				// add right after the last annotation of this type

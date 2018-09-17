@@ -10,6 +10,9 @@ import java.net.URI;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import raven.sqdev.exceptions.IllegalAccessStateException;
@@ -354,6 +357,23 @@ public class SQDevFile extends File {
 			for (String currentValue : annotation.getValues()) {
 				fallback.addAnnotation(annotation, currentValue);
 			}
+		}
+	}
+
+	/**
+	 * Removes all content that matches the given pattern from this file
+	 * 
+	 * @param p
+	 *            The {@linkplain Pattern} describing the content that should get
+	 *            removed
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void removeAll(Pattern p) throws FileNotFoundException, IOException {
+		Matcher m = p.matcher(getContent());
+
+		if (m.find()) {
+			Files.write(this.toPath(), m.replaceAll("").getBytes(), new OpenOption[] {});
 		}
 	}
 }
