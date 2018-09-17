@@ -10,36 +10,147 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 
+/**
+ * A {@linkplain Layout} that displays its content in a grid with columns of
+ * equal width and rows of equal height. The number of columns (or rows if
+ * {@link #verticalOverflow} is false) is chosen so that as many elements fit on
+ * the given space.
+ * 
+ * @author Raven
+ *
+ */
 public class DynamicGridLayout extends Layout {
 
+	/**
+	 * A {@linkplain Map} containing all cached sizes
+	 */
 	Map<Control, Point> cachedSizes;
+	/**
+	 * A {@linkplain Map} containing all cached locations
+	 */
 	Map<Control, Point> cachedLocations;
+	/**
+	 * The {@linkplain Point} describing the size {@link #cachedLocations} and
+	 * {@link #cachedSizes} have been calculated for
+	 */
 	Point cacheComputedForSize;
-	int rowHeight, columnWidth;
+	/**
+	 * The height of the displayed rows
+	 */
+	int rowHeight;
+	/**
+	 * The width of the displayed columns
+	 */
+	int columnWidth;
+	/**
+	 * A flag indicating whether overflowing content should be added vertically
+	 * instead of horizontally
+	 */
 	boolean verticalOverflow;
+	/**
+	 * The fixed margin (top and bottom if {@link #verticalOverflow} is true, left
+	 * and right otherwise)
+	 */
+	int fixedMargin;
+	/**
+	 * The maximum value for the dynamic margin (left if {@link #verticalOverflow}
+	 * is true, top otherwise)
+	 */
+	int dynamicMarginHint;
+	/**
+	 * The horizontal spacing between the elements in the grid
+	 */
+	int horizontalSpacing;
+	/**
+	 * The vertical spacing between the elements
+	 */
+	int verticalSpacing;
 
-	int fixedMargin, dynamicMarginHint, horizontalSpacing, verticalSpacing;
-
+	/**
+	 * Creates a new instance of this layout in vertical-overflow-mode and with
+	 * default values
+	 */
 	public DynamicGridLayout() {
 		this(true, SWT.DEFAULT, SWT.DEFAULT, SWT.DEFAULT, SWT.DEFAULT);
 	}
 
+	/**
+	 * Creates a new instance of this layout with default values
+	 * 
+	 * @param verticalOverflow
+	 *            Whether to use vertical overflow for elements that don't fit on
+	 *            the given space. If this is <code>false</code> horizontal overflow
+	 *            is being used
+	 */
 	public DynamicGridLayout(boolean verticalOverflow) {
 		this(verticalOverflow, SWT.DEFAULT, SWT.DEFAULT, SWT.DEFAULT, SWT.DEFAULT);
 	}
 
+	/**
+	 * Creates a new instance of this layout with default spacing between elements
+	 * 
+	 * @param verticalOverflow
+	 *            fixedMargin Whether to use vertical overflow for elements that
+	 *            don't fit on the given space. If this is <code>false</code>
+	 *            horizontal overflow is being used
+	 * @param fixedMargin
+	 *            The size of the fixed margin. See {@link #fixedMargin}
+	 * @param dynamicMarginHint
+	 *            The maximum value for the dynamic margin. See
+	 *            {@link #dynamicMarginHint}
+	 */
 	public DynamicGridLayout(boolean verticalOverflow, int fixedMargin, int dynamicMarginHint) {
 		this(verticalOverflow, fixedMargin, dynamicMarginHint, SWT.DEFAULT, SWT.DEFAULT);
 	}
 
+	/**
+	 * Creates a new instance of this layout in vertical-overflow-mode and with
+	 * default spacing between elements
+	 * 
+	 * @param fixedMargin
+	 *            The size of the fixed margin. See {@link #fixedMargin}
+	 * @param dynamicMarginHint
+	 *            The maximum value for the dynamic margin. See
+	 *            {@link #dynamicMarginHint}
+	 */
 	public DynamicGridLayout(int fixedMargin, int dynamicMarginHint) {
 		this(true, fixedMargin, dynamicMarginHint, SWT.DEFAULT, SWT.DEFAULT);
 	}
 
+	/**
+	 * Creates a new instance of this layout in vertical-overflow-mode
+	 * 
+	 * @param fixedMargin
+	 *            The size of the fixed margin. See {@link #fixedMargin}
+	 * @param dynamicMarginHint
+	 *            The maximum value for the dynamic margin. See
+	 *            {@link #dynamicMarginHint}
+	 * @param horizontalSpacing
+	 *            The value for the horizontal spacing between elements
+	 * @param verticalSpacing
+	 *            The value for horizontal spacing between elements
+	 */
 	public DynamicGridLayout(int fixedMargin, int dynamicMarginHint, int horizontalSpacing, int verticalSpacing) {
 		this(true, fixedMargin, dynamicMarginHint, horizontalSpacing, verticalSpacing);
 	}
 
+	/**
+	 * Creates a new instance of this layout
+	 * 
+	 * @param verticalOverflow
+	 *            fixedMargin Whether to use vertical overflow for elements that
+	 *            don't fit on the given space. If this is <code>false</code>
+	 *            horizontal overflow is being used
+	 * @param fixedMargin
+	 *            The size of the fixed margin. See {@link #fixedMargin}
+	 * @param dynamicMarginHint
+	 *            The maximum value for the dynamic margin. See
+	 *            {@link #dynamicMarginHint}
+	 * @param horizontalSpacing
+	 *            The value for the horizontal spacing between elements
+	 * @param verticalSpacing
+	 *            The value for horizontal spacing between elements
+	 */
 	public DynamicGridLayout(boolean verticalOverflow, int fixedMargin, int dynamicMarginHint, int horizontalSpacing,
 			int verticalSpacing) {
 		cachedSizes = new HashMap<>();
@@ -94,6 +205,19 @@ public class DynamicGridLayout extends Layout {
 		}
 	}
 
+	/**
+	 * Computes the layout for the given available space and populates
+	 * {@link #cachedLocations} and {@link #cachedSizes}. If
+	 * {@link #cacheComputedForSize} is equal to the given total size and
+	 * {@link #cachedLocations} contains the given {@linkplain Composite} this
+	 * method immediately returns assuming that the cached values are appropriate
+	 * already
+	 * 
+	 * @param composite
+	 *            The {@linkplain Composite} to layout
+	 * @param totalSize
+	 *            The total available space
+	 */
 	protected void computeLayout(Composite composite, Point totalSize) {
 		if (cacheComputedForSize.equals(totalSize)
 				&& cachedLocations.keySet().containsAll(Arrays.asList(composite.getChildren()))) {
@@ -123,6 +247,17 @@ public class DynamicGridLayout extends Layout {
 		cacheComputedForSize = new Point(totalSize.x, totalSize.y);
 	}
 
+	/**
+	 * Computes the layout in vertical-overflow-mode for the given available space
+	 * and populates {@link #cachedLocations} and {@link #cachedSizes}.
+	 * 
+	 * @param composite
+	 *            The {@linkplain Composite} to layout
+	 * @param totalSize
+	 *            The total available space
+	 * @return A {@linkplain Point} describing the total size needed for the layout
+	 *         content
+	 */
 	protected Point computeLayoutWithVerticalOverflow(Composite composite, Point totalSize) {
 		// don't compute for more columns than there are actual children
 		int colNum = Math.min(Math.max(1, totalSize.x / columnWidth), composite.getChildren().length);
@@ -148,6 +283,17 @@ public class DynamicGridLayout extends Layout {
 		return new Point(Math.max(totalSize.x, columnWidth), currentRow * rowHeight + 2 * fixedMargin);
 	}
 
+	/**
+	 * Computes the layout in horizontal-overflow-mode for the given available space
+	 * and populates {@link #cachedLocations} and {@link #cachedSizes}.
+	 * 
+	 * @param composite
+	 *            The {@linkplain Composite} to layout
+	 * @param totalSize
+	 *            The total available space
+	 * @return A {@linkplain Point} describing the total size needed for the layout
+	 *         content
+	 */
 	protected Point computeLayoutWithHorizontalOverflow(Composite composite, Point totalSize) {
 		// don't compute for more rows than there are actual children
 		int rowNum = Math.min(Math.max(1, totalSize.y / rowHeight), composite.getChildren().length);
@@ -173,10 +319,36 @@ public class DynamicGridLayout extends Layout {
 		return new Point(currentCol * columnWidth + 2 * fixedMargin, Math.max(totalSize.y, rowHeight));
 	}
 
+	/**
+	 * Gets the size of the given control. If {@link #cachedSizes} contains an entry
+	 * for it, the cached value will be returned. Otherwise the control is asked to
+	 * compute its size without implying size-restrictions which is then stored in
+	 * {@link #cachedSizes}.
+	 * 
+	 * @param ctrl
+	 *            The {@linkplain Control} whose size should be determined
+	 * @return The size of the control
+	 */
 	protected Point getSize(Control ctrl) {
 		return getSize(ctrl, SWT.DEFAULT, SWT.DEFAULT);
 	}
 
+	/**
+	 * Gets the size of the given control. If {@link #cachedSizes} contains an entry
+	 * for it, the cached value will be returned. Otherwise the control is asked to
+	 * compute its size for the given size-restrictions which is then stored in
+	 * {@link #cachedSizes}.
+	 * 
+	 * @param ctrl
+	 *            The {@linkplain Control} whose size should be determined
+	 * @param wHint
+	 *            The width-hint for the control if it is being asked to compute its
+	 *            size
+	 * @param hHint
+	 *            The height-hint for the control if it is being asked to compute
+	 *            its size
+	 * @return The size of the control
+	 */
 	protected Point getSize(Control ctrl, int wHint, int hHint) {
 		if (!cachedSizes.containsKey(ctrl)) {
 			cachedSizes.put(ctrl, ctrl.computeSize(wHint, hHint));
@@ -185,6 +357,9 @@ public class DynamicGridLayout extends Layout {
 		return cachedSizes.get(ctrl);
 	}
 
+	/**
+	 * Clears all cached values in this layout
+	 */
 	protected void flushCache() {
 		cachedSizes.clear();
 		cachedLocations.clear();

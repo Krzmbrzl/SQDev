@@ -6,11 +6,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 
-public class CheckboxListLayout extends Layout {
+import raven.sqdev.ui.widgets.CheckboxList;
 
-	public CheckboxListLayout() {
-		// TODO Auto-generated constructor stub
-	}
+/**
+ * A {@linkplain Layout} specifically designed for the use by
+ * {@linkplain CheckboxList}
+ * 
+ * @author Raven
+ *
+ */
+public class CheckboxListLayout extends Layout {
 
 	@Override
 	protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
