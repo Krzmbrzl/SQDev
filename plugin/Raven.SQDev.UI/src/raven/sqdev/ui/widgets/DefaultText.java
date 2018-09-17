@@ -139,12 +139,12 @@ public class DefaultText extends Text implements FocusListener {
 
 	@Override
 	public Point computeSize(int wHint, int hHint) {
-		if (getText().trim().isEmpty()) {
-			Point p = super.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		if (isShowingDefaultText) {
+			Point p = super.computeSize(SWT.DEFAULT, hHint);
 
 			Point extend = new GC(this).stringExtent(defaultText);
 
-			return new Point(extend.x, Math.max(extend.y, p.y));
+			return new Point(extend.x + this.getBorderWidth() * 2, Math.max(extend.y, p.y));
 		} else {
 			return super.computeSize(wHint, hHint);
 		}

@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.Widget;
 
 import raven.sqdev.ui.layouts.CheckboxListLayout;
 import raven.sqdev.ui.layouts.DynamicGridLayout;
+import raven.sqdev.ui.layouts.WeightedRowData;
+import raven.sqdev.ui.layouts.WeightedRowLayout;
 
 /**
  * A custom widget that is basically a fancy wrapper for a list of checkboxes
@@ -169,23 +171,24 @@ public class CheckboxList extends LayedOutComposite {
 	protected void createTopBar() {
 		topComp = new Composite(this, SWT.NONE);
 
-		GridLayout layout = new GridLayout(2, false);
-		topComp.setLayout(layout);
+		topComp.setLayout(new WeightedRowLayout(false, 5, 5, 3));
 
 		ScrolledComposite scroller = new ScrolledComposite(topComp, SWT.H_SCROLL);
-		titleWidget = new Label(scroller, SWT.NONE);
-		scroller.setContent(titleWidget);
+
+		Composite centerer = new Composite(scroller, SWT.NONE);
+		centerer.setLayout(new GridLayout(1, true));
+
+		titleWidget = new Label(centerer, SWT.NONE);
+		titleWidget.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+
+		scroller.setContent(centerer);
 		scroller.setExpandHorizontal(true);
 		scroller.setExpandVertical(true);
-		scroller.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		scroller.setLayoutData(new WeightedRowData(0.8, true));
 
 		searchField = new DefaultText(topComp, SWT.BORDER);
 		searchField.setDefaultText("Enter search string...");
-		GridData data = new GridData(SWT.CENTER, SWT.CENTER, false, true);
-		// Point size = text.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		// data.minimumHeight = size.y;
-		// data.minimumWidth = size.x;
-		searchField.setLayoutData(data);
+		searchField.setLayoutData(new WeightedRowData(0.2, true));
 		searchField.setToolTipText("Enter a search string and start the search by hitting return.");
 
 		// add key-listener that will start the search on hitting return
@@ -315,7 +318,7 @@ public class CheckboxList extends LayedOutComposite {
 						} else {
 							selectedLabels.remove(currentLabel);
 						}
-						
+
 						// notify listener about selection-change
 						Event event = new Event();
 						event.item = btn;
@@ -347,7 +350,7 @@ public class CheckboxList extends LayedOutComposite {
 		if (titleWidget != null && !titleWidget.isDisposed()) {
 			titleWidget.setText(text);
 
-			((ScrolledComposite) titleWidget.getParent()).setMinSize(new GC(titleWidget).textExtent(text));
+			((ScrolledComposite) titleWidget.getParent().getParent()).setMinSize(new GC(titleWidget).textExtent(text));
 		}
 	}
 
@@ -387,9 +390,9 @@ public class CheckboxList extends LayedOutComposite {
 		}
 
 		list.setLabels(labels);
-		
+
 		list.addListener(SWT.Selection, new Listener() {
-			
+
 			@Override
 			public void handleEvent(Event event) {
 				System.out.println("Selection changed for " + event.text + " - " + event.data);
