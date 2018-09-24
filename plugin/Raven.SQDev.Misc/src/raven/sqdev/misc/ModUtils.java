@@ -1,13 +1,22 @@
 package raven.sqdev.misc;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.eclipse.swt.SWT;
 
 import raven.config.CfgFunctions;
 import raven.config.ConfigClass;
@@ -22,9 +31,9 @@ import raven.sqdev.infoCollection.base.Function;
 import raven.sqdev.interfaces.IStreamProvider;
 
 public class ModUtils {
-
 	/**
-	 * Gets all functions defined in the mod with the given name
+	 * Gets all functions defined in the mod with the given name. If possible this
+	 * method will read the functions from chache instead from file.
 	 * 
 	 * @param modName
 	 *            The name of the respective mod or <code>null</code> if all found
@@ -55,7 +64,6 @@ public class ModUtils {
 
 			for (File currentAddon : addonFolder.listFiles()) {
 				if (currentAddon.getName().toLowerCase().endsWith(".pbo")) {
-					// TODO: store serialized copy that can be used if the addon-file hasn't changed
 					try {
 						PBO pbo = new PBO(currentAddon);
 
@@ -81,6 +89,13 @@ public class ModUtils {
 	 */
 	public static void getFunctionsFor(PBO pbo, Collection<Function> functions) {
 		try {
+			// check if the cache is applicable
+			if (isFunctionsCacheApplicable(pbo.toFile())) {
+				// retrieve functions from cache
+				functions.addAll(getCachedFunctions(pbo.toFile()));
+				return;
+			}
+
 			ConfigClass config = null;
 			final String pboPrefix = pbo.getPrefix();
 			SQFFunctionDescriptionProvider descriptionProvider = new SQFFunctionDescriptionProvider(
@@ -98,6 +113,7 @@ public class ModUtils {
 							if (entry == null) {
 								return null;
 							} else {
+								entry.toStream();
 								return entry.toStream();
 							}
 						}
@@ -128,11 +144,130 @@ public class ModUtils {
 
 				for (ConfigFunction current : cfg.getDefinedFunctions().values()) {
 					functions.add(Function.from(current, descriptionProvider.getDescription(current)));
+					// functions.add(Function.from(current, null));
 				}
 			}
+
+			// cache read functions
+			cacheFunctions(pbo.toFile(), functions);
 		} catch (IOException | RapificationException | ConfigException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Checks whether there is an applicable functions-cache-file for the given one
+	 * 
+	 * @param file
+	 *            The file to search a cache for
+	 * @return Whether or not there is an applicable cache
+	 */
+	protected static boolean isFunctionsCacheApplicable(File file) {
+		if (!file.exists()) {
+			return false;
+		}
+
+		File cacheFile = getFunctionsCacheFile(file);
+
+		return cacheFile.exists() && cacheFile.lastModified() > file.lastModified();
+	}
+
+	/**
+	 * Reads the functions from the functions-cache for the given file
+	 * 
+	 * @param file
+	 *            The file whose cached functions should be returned
+	 * @return The respective functions or an empty list if something went wrong
+	 *         (though an empty list doesn't mean that something has gone wrong)
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	protected static Collection<Function> getCachedFunctions(File file) throws FileNotFoundException, IOException {
+		File cacheFile = getFunctionsCacheFile(file);
+
+		if (!cacheFile.exists()) {
+			throw new IllegalArgumentException("No functions cache available for " + file.getAbsolutePath() + "!");
+		}
+
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream(cacheFile));
+
+
+		Collection<Function> functions;
+		try {
+			functions = (Collection<Function>) in.readObject();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+
+			SQDevInfobox info = new SQDevInfobox(
+					"Failed at de-serializing functions-cache for " + file.getAbsolutePath(), e);
+			info.open(false);
+
+			// create empty list as fall-back
+			functions = new ArrayList<>();
+		} catch (NotSerializableException e) {
+			// delete cache-file
+			cacheFile.delete();
+
+			// create empty list as fall-back
+			functions = new ArrayList<>();
+		}
+
+		in.close();
+
+		return functions;
+	}
+
+	/**
+	 * Writes the given collection of functions in a functions-cache associated with
+	 * the given file
+	 * 
+	 * @param file
+	 *            The {@linkplain File} to associate the created cache with
+	 * @param functions
+	 *            The collection of functions to cache
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	protected static void cacheFunctions(File file, Collection<Function> functions)
+			throws FileNotFoundException, IOException {
+		if (!(functions instanceof Serializable)) {
+			throw new IllegalArgumentException("The given collection must be serializable");
+		}
+
+		File cacheFile = getFunctionsCacheFile(file);
+
+		// make sure cache-dir exists
+		if (!cacheFile.getParentFile().exists()) {
+			if (!cacheFile.getParentFile().mkdir()) {
+				SQDevInfobox info = new SQDevInfobox("Failed at creating folder for functions-cache!", SWT.ICON_ERROR);
+				info.open(false);
+
+				return;
+			}
+		}
+
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(cacheFile));
+
+		try {
+			out.writeObject(functions);
+		} catch (NotSerializableException e) {
+			throw new IllegalArgumentException("The given collection must be serializable!", e);
+		} finally {
+			out.close();
+		}
+	}
+
+	/**
+	 * Gets the functions-cache-file that is corresponding to the given file
+	 * 
+	 * @param file
+	 *            The file whose cache-file should be obtained
+	 * @return The respective file. Note that this file may not exist (yet)
+	 */
+	protected static File getFunctionsCacheFile(File file) {
+		return new File(System.getProperty("user.home") + File.separator + ".SQDevFunctionsCache" + File.separator
+				+ file.getAbsolutePath().replace(File.separator, "-").replaceAll("^[A-Za-z]:", "") + ".ser");
 	}
 
 	/**
@@ -176,7 +311,8 @@ public class ModUtils {
 	}
 
 	/**
-	 * Gets all vanilla functions
+	 * Gets all vanilla functions. If available this method will read the requested
+	 * functions from cache instead of from file.
 	 * 
 	 * @param file
 	 *            The {@linkplain File} to search for functions. If this is a file
@@ -211,5 +347,4 @@ public class ModUtils {
 			}
 		}
 	}
-
 }

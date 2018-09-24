@@ -8,10 +8,12 @@ import raven.config.ConfigFunction;
 
 public class Function extends Keyword {
 
+	private static final long serialVersionUID = -864426102104726694L;
+
 	/**
 	 * The path to the source file of this function (relative to mission/game root)
 	 */
-	protected Path path;
+	protected String path;
 	/**
 	 * The attributes set in CfgFunctions for this function
 	 */
@@ -59,7 +61,7 @@ public class Function extends Keyword {
 	public Function(String name, String description, String path, String[] attributes) {
 		super(name, description);
 
-		this.path = path == null ? null : new Path(path);
+		this.path = path;
 		this.attributes = attributes;
 	}
 
@@ -94,7 +96,7 @@ public class Function extends Keyword {
 	 * <code>null</code> if there is none
 	 */
 	public Path getSourcePath() {
-		return path;
+		return path == null ? null : new Path(path);
 	}
 
 	/**

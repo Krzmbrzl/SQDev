@@ -8,6 +8,8 @@ package raven.sqdev.infoCollection.base;
  */
 public class Variable extends Keyword {
 	
+	private static final long serialVersionUID = -7476785836679689767L;
+
 	/**
 	 * Creates an empty variable
 	 */

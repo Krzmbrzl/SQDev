@@ -43,8 +43,6 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 	}
 
 	public void setProject(IProject project) {
-		System.out.println("Project-Start: " + System.currentTimeMillis());
-
 		KeywordList list = getKeywordList();
 
 		// get mod-dependencies for the project
@@ -54,6 +52,8 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
+				long start = System.currentTimeMillis();
+				
 				monitor.beginTask("Extracting functions from PBOs", configuredMods.size());
 				for (String currentMod : configuredMods) {
 					list.addKeywords(ModUtils.getFunctionsFor(currentMod));
@@ -63,6 +63,8 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 						return Status.CANCEL_STATUS;
 					}
 				}
+				
+				System.out.println("\n\n Function load time:" + (System.currentTimeMillis() - start + "\n"));
 
 				if (configuredMods.size() > 0) {
 					SQFFunctionProvider.this.notifyKeywordListChangeListener();
@@ -78,7 +80,5 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 		};
 
 		getFunctionsJob.schedule();
-
-		System.out.println("Project-End: " + System.currentTimeMillis());
 	}
 }

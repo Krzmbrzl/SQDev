@@ -1,5 +1,7 @@
 package raven.sqdev.infoCollection.base;
 
+import java.io.Serializable;
+
 import org.eclipse.core.runtime.Assert;
 
 import raven.sqdev.exceptions.BadSyntaxException;
@@ -12,7 +14,9 @@ import raven.sqdev.interfaces.ISaveable;
  * @author Raven
  * 
  */
-public class Keyword implements Comparable<Keyword>, ISaveable {
+public class Keyword implements Comparable<Keyword>, ISaveable, Serializable {
+	
+	private static final long serialVersionUID = -2975038074702562868L;
 	
 	/**
 	 * The sequence indicating the start of the keyword attribute in the

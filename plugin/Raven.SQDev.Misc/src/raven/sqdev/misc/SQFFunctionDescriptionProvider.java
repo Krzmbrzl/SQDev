@@ -21,7 +21,7 @@ import raven.sqdev.interfaces.IStreamProvider;
  */
 public class SQFFunctionDescriptionProvider {
 
-	class DescriptionTokenFactory implements ITokenFactory<SQFToken> {
+	static class DescriptionTokenFactory implements ITokenFactory<SQFToken> {
 		ICharacterBuffer buffer;
 		public String description;
 
@@ -46,6 +46,9 @@ public class SQFFunctionDescriptionProvider {
 			return produce(type, start, end, buffer);
 		}
 	}
+	
+	protected static SQFLexer lexer = new SQFLexer();
+	protected static DescriptionTokenFactory factory = new DescriptionTokenFactory();
 
 
 	/**
@@ -63,6 +66,8 @@ public class SQFFunctionDescriptionProvider {
 	 */
 	public SQFFunctionDescriptionProvider(IStreamProvider provider) {
 		this.provider = provider;
+		
+		lexer.setTokenFactory(factory);
 	}
 
 	/**
@@ -90,21 +95,20 @@ public class SQFFunctionDescriptionProvider {
 	 *         there is none
 	 * @throws IOException
 	 */
-	public String getDescription(String path) throws IOException {
+	public String getDescription(String path) throws IOException {		
 		InputStream in = provider.getStreamFor(path);
 
 		if (in == null) {
 			return null;
 		}
 
-		DescriptionTokenFactory factory = new DescriptionTokenFactory();
-
-		SQFLexer lexer = new SQFLexer();
-		lexer.setTokenFactory(factory);
 		lexer.lex(new CharacterInputStream(in) {
 			@Override
 			public boolean hasNext() throws IOException {
 				// stop lexing as soon as the description has been found
+//				if(!(factory.description == null && super.hasNext())) {
+//					System.out.println("Stopping lexing");
+//				}
 				return factory.description == null && super.hasNext();
 			}
 		});

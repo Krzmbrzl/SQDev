@@ -16,6 +16,8 @@ import raven.sqdev.exceptions.SQDevException;
  */
 public class SQFElement extends Keyword {
 	
+	private static final long serialVersionUID = -9161651282252533709L;
+	
 	/**
 	 * The sequence indicating the start of the wikiPage attribute in the
 	 * saveable String format of this class

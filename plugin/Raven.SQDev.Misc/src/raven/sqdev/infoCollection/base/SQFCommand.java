@@ -26,6 +26,8 @@ import raven.sqdev.syntax.Syntax;
  */
 public class SQFCommand extends SQFElement {
 	
+	private static final long serialVersionUID = 6194505426999494532L;
+	
 	/**
 	 * The seperator used to seperate different data types. this field has been
 	 * relocated to {@link EDataType} as it makes more sense to specify it
