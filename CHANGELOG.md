@@ -10,7 +10,7 @@
 | Improved: Annotations in SQDevFiles can now make use of regular expressions
 | Improved: SQDevFileEditor now validates its input and provides error messages (new format only)
 | Improved: Dummy-files now also include mission- and profile-directories
-| Changed: Errors for missing semicolons will always have length 1
+| Changed: Errors for missing semicolons will now always have length 1
 | Rewrote: SQDevFile format specification and handling
 | Fixed: Semicolon-error at wrong position if brackets are being used
 | Fixed: No error message for missing semicolons if following statement is wrapped in curly or square brackets
