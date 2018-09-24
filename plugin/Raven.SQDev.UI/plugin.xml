@@ -147,7 +147,7 @@
             category="raven.sqdev.ui.sqdevCategory"
             class="raven.sqdev.ui.views.ModDependencyView"
             id="raven.sqdev.ui.modDependencyView"
-            name="Mod-Dependency View"
+            name="Mod-Dependencies"
             restorable="true">
       </view>
    </extension>
