@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Misc
 Bundle-SymbolicName: raven.sqdev.misc;singleton:=true
-Bundle-Version: 0.8.0.dev2
+Bundle-Version: 0.8.0.dev4
 Bundle-Activator: raven.sqdev.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.swt,
@@ -103,5 +103,5 @@ Bundle-ClassPath: ANTLR/antlr-runtime-4.7.jar,
  SQFParser/SQFParser.jar,
  Abego/AbegoSWT.jar,
  Abego/org.abego.treelayout.core-1.0.3.jar,
- ArmaFiles/ArmaFiles_1.2.jar,
+ ArmaFiles/ArmaFiles_1.3.jar,
  .
