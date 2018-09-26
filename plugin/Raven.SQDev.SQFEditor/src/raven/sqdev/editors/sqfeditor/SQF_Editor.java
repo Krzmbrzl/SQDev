@@ -367,8 +367,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Sets the local variables for this editor. If there is a change compared to
-	 * the current set of local variables the editor will update itself
+	 * Sets the local variables for this editor. If there is a change compared
+	 * to the current set of local variables the editor will update itself
 	 * 
 	 * @param variables
 	 *            The local variables to add
@@ -404,8 +404,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Gets all defined local and all available magic variables for this editor in
-	 * one list
+	 * Gets all defined local and all available magic variables for this editor
+	 * in one list
 	 */
 	public List<Variable> getLocalAndMagicVariables() {
 		List<Variable> variables = new ArrayList<Variable>(localVariables.values());
@@ -415,8 +415,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Sets the magic variables for this editor. If there is a change compared to
-	 * the current set of local variables the editor will update itself
+	 * Sets the magic variables for this editor. If there is a change compared
+	 * to the current set of local variables the editor will update itself
 	 * 
 	 * @param variables
 	 *            The magic variables to add
@@ -452,8 +452,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Sets the global variables for this editor. If there is a change compared to
-	 * the current set of global variables the editor will update itself
+	 * Sets the global variables for this editor. If there is a change compared
+	 * to the current set of global variables the editor will update itself
 	 * 
 	 * @param variables
 	 *            The gloabl variables to add
@@ -489,8 +489,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Sets the variables for this editor. If there are any changes in comparison to
-	 * the current set of variables the editor will updates itself
+	 * Sets the variables for this editor. If there are any changes in
+	 * comparison to the current set of variables the editor will updates itself
 	 * 
 	 * @param localVariables
 	 *            The new set of local variables
@@ -582,9 +582,10 @@ public class SQF_Editor extends BasicCodeEditor
 		if (input instanceof FileEditorInput) {
 			IProject project = ((FileEditorInput) input).getFile().getProject();
 
-			if (project != null) {
-				functionProvider.setProject(project);
-			}
+			functionProvider.init(project);
+		} else {
+			// at least add support for vanilla-functions
+			functionProvider.init(null);
 		}
 	}
 }

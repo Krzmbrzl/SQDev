@@ -1,6 +1,7 @@
 package raven.sqdev.editors.sqfeditor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,22 +23,30 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 		this.editor = editor;
 	}
 
-	public void setProject(IProject project) {
+	/**
+	 * Initializes this provider on the given project. This will cause the
+	 * vanilla functions plus the ones from the project-specific mods to be
+	 * loaded.
+	 * 
+	 * @param project
+	 *            The {@linkplain IProject} to initialize this provider on or
+	 *            <code>null</code> if there is none
+	 */
+	public void init(IProject project) {
 		KeywordList list = getKeywordList();
 
 		// get mod-dependencies for the project
-		List<String> configuredMods = ProjectUtil.getProjectModNames(project);
+		List<String> configuredMods = project != null ? ProjectUtil.getProjectModNames(project)
+				: Collections.emptyList();
 
 		Job getFunctionsJob = new Job("Retrieving SQF-functions") {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				long start = System.currentTimeMillis();
-				
 				List<Function> vanillaFunctions = new ArrayList<>();
 				ModUtils.getVanillaFunctions(vanillaFunctions);
 				list.addKeywords(vanillaFunctions);
-				
+
 				monitor.beginTask("Extracting functions from PBOs", configuredMods.size());
 				for (String currentMod : configuredMods) {
 					list.addKeywords(ModUtils.getFunctionsFor(currentMod));
@@ -47,15 +56,10 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 						return Status.CANCEL_STATUS;
 					}
 				}
-				
-				System.out.println("\n\n Function load time:" + (System.currentTimeMillis() - start + "\n"));
 
-				if (configuredMods.size() > 0) {
-					SQFFunctionProvider.this.notifyKeywordListChangeListener();
-				}
+				// notify about changed keywords
+				SQFFunctionProvider.this.notifyKeywordListChangeListener();
 
-				// update editor
-				editor.update(true);
 				// re-parse with loaded functions
 				editor.parseInput();
 

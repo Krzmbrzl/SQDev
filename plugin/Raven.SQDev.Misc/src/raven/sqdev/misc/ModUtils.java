@@ -102,7 +102,6 @@ public class ModUtils {
 			// added entries
 			List<Function> functions = new ArrayList<>();
 
-			ConfigClass config = null;
 			final String pboPrefix = pbo.getPrefix();
 			SQFFunctionDescriptionProvider descriptionProvider = new SQFFunctionDescriptionProvider(
 					new IStreamProvider() {
@@ -125,35 +124,26 @@ public class ModUtils {
 						}
 					});
 
-			PBOEntry configEntry = pbo.getEntry("config.bin");
-			if (configEntry != null) {
-				config = ConfigClass.fromRapifiedFile(new ByteReader(configEntry.toStream()));
-			} else {
-				configEntry = pbo.getEntry("config.cpp");
-				if (configEntry == null) {
-					configEntry = pbo.getEntry("config.hpp");
+			// get all config files in this PBO
+			Collection<PBOEntry> configFiles = pbo.getFile("config.bin");
+			configFiles.addAll(pbo.getFile("config.cpp"));
+			configFiles.addAll(pbo.getFile("config.hpp"));
 
-					if (configEntry == null) {
-						// there seems to be no config-entry for this mod
-						// cache nevertheless in order to save read-time during
-						// the next processing
-						cacheFunctions(pbo.toFile(), functions);
-						return;
+			for (PBOEntry currentConfigEntry : configFiles) {
+				try {
+					ConfigClass config = null;
+
+					// check which method has to be applied to read the
+					// ConfigClass
+					if (currentConfigEntry.getFileName().toLowerCase().endsWith(".bin")) {
+						config = ConfigClass.fromRapifiedFile(new ByteReader(currentConfigEntry.toStream()));
+					} else {
+						config = ConfigClass.fromTextFile(new TextReader(currentConfigEntry.toStream()));
 					}
 
-					config = ConfigClass.fromTextFile(new TextReader(configEntry.toStream()));
-				}
-			}
-
-			ConfigClass functionsConfig = config.getSubclass(CfgFunctions.NAME, false);
-
-			if (functionsConfig != null) {
-				CfgFunctions cfg = new CfgFunctions(functionsConfig);
-				cfg.init();
-
-				for (ConfigFunction current : cfg.getDefinedFunctions().values()) {
-					functions.add(Function.from(current, descriptionProvider.getDescription(current)));
-					// functions.add(Function.from(current, null));
+					extractFunctionsFromConfig(config, functions, descriptionProvider);
+				} catch (IOException | RapificationException | ConfigException e) {
+					e.printStackTrace();
 				}
 			}
 
@@ -162,8 +152,38 @@ public class ModUtils {
 
 			// add read functions to provided collection
 			functionCollection.addAll(functions);
-		} catch (IOException | RapificationException | ConfigException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Tries to extract all functions defined in a CfgFunctions inside the given
+	 * config class
+	 * 
+	 * @param config
+	 *            The {@linkplain ConfigClass} to extract the functions from
+	 * @param functions
+	 *            The {@linkplain Collection} to add the found functions to
+	 * @param descriptionProvider
+	 *            The {@linkplain SQFFunctionDescriptionProvider} that is
+	 *            responsible for extracting the function's description from the
+	 *            source-file
+	 * @throws ConfigException
+	 * @throws IOException
+	 */
+	protected static void extractFunctionsFromConfig(ConfigClass config, Collection<Function> functions,
+			SQFFunctionDescriptionProvider descriptionProvider) throws ConfigException, IOException {
+		ConfigClass functionsConfig = config.getSubclass(CfgFunctions.NAME, false);
+
+		if (functionsConfig != null) {
+			CfgFunctions cfg = new CfgFunctions(functionsConfig);
+			cfg.init();
+
+			for (ConfigFunction current : cfg.getDefinedFunctions().values()) {
+				functions.add(Function.from(current, descriptionProvider.getDescription(current)));
+				// functions.add(Function.from(current, null));
+			}
 		}
 	}
 
