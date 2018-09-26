@@ -313,7 +313,7 @@ public enum EFileType {
 						IContainer container = (IContainer) resource;
 						
 						// get the file that has to be created
-						IFile file = container.getFile(new Path(getFileName()));
+						IFile file = container.getFile(new Path(name + getExtension()));
 						
 						if (!file.exists()) {
 							try {

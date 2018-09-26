@@ -1,9 +1,7 @@
 package raven.sqdev.editors.sqfeditor;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -21,25 +19,7 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 	SQF_Editor editor;
 
 	public SQFFunctionProvider(SQF_Editor editor) {
-		this(editor, null);
-	}
-
-	public SQFFunctionProvider(SQF_Editor editor, IProject project) {
 		this.editor = editor;
-
-		KeywordList list = new KeywordList();
-
-		// add vanilla functions
-		Set<Function> vanillaFunctions = new HashSet<>();
-		ModUtils.getVanillaFunctions(vanillaFunctions);
-
-		list.addKeywords(vanillaFunctions);
-
-		setKeywordList(list);
-
-		if (project != null) {
-			setProject(project);
-		}
 	}
 
 	public void setProject(IProject project) {
@@ -53,6 +33,10 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				long start = System.currentTimeMillis();
+				
+				List<Function> vanillaFunctions = new ArrayList<>();
+				ModUtils.getVanillaFunctions(vanillaFunctions);
+				list.addKeywords(vanillaFunctions);
 				
 				monitor.beginTask("Extracting functions from PBOs", configuredMods.size());
 				for (String currentMod : configuredMods) {
@@ -70,6 +54,8 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 					SQFFunctionProvider.this.notifyKeywordListChangeListener();
 				}
 
+				// update editor
+				editor.update(true);
 				// re-parse with loaded functions
 				editor.parseInput();
 

@@ -1,5 +1,6 @@
 package raven.sqdev.misc;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,12 +33,12 @@ import raven.sqdev.interfaces.IStreamProvider;
 
 public class ModUtils {
 	/**
-	 * Gets all functions defined in the mod with the given name. If possible this
-	 * method will read the functions from chache instead from file.
+	 * Gets all functions defined in the mod with the given name. If possible
+	 * this method will read the functions from chache instead from file.
 	 * 
 	 * @param modName
-	 *            The name of the respective mod or <code>null</code> if all found
-	 *            mods should be processed
+	 *            The name of the respective mod or <code>null</code> if all
+	 *            found mods should be processed
 	 * @return A {@linkplain Set} containing all functions defined in the mod's
 	 *         config
 	 */
@@ -64,13 +65,7 @@ public class ModUtils {
 
 			for (File currentAddon : addonFolder.listFiles()) {
 				if (currentAddon.getName().toLowerCase().endsWith(".pbo")) {
-					try {
-						PBO pbo = new PBO(currentAddon);
-
-						getFunctionsFor(pbo, functions);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					getFunctionsFor(currentAddon, functions);
 				}
 			}
 		}
@@ -82,19 +77,30 @@ public class ModUtils {
 	 * Gets all functions defined inside the given PBO
 	 * 
 	 * @param pbo
-	 *            The {@linkplain PBO} to extract the functions from
-	 * @param functions
-	 *            The {@linkplain Collection} to which the found functions should be
-	 *            added
+	 *            The {@linkplain File} to extract the functions from. This file
+	 *            has to point to a PBO on disk
+	 * @param functionCollection
+	 *            The {@linkplain Collection} to which the found functions
+	 *            should be added
 	 */
-	public static void getFunctionsFor(PBO pbo, Collection<Function> functions) {
+	public static void getFunctionsFor(File file, Collection<Function> functionCollection) {
 		try {
 			// check if the cache is applicable
-			if (isFunctionsCacheApplicable(pbo.toFile())) {
+			if (isFunctionsCacheApplicable(file)) {
 				// retrieve functions from cache
-				functions.addAll(getCachedFunctions(pbo.toFile()));
+				functionCollection.addAll(getCachedFunctions(file));
 				return;
 			}
+
+			if (!file.getName().toLowerCase().endsWith(".pbo")) {
+				throw new IllegalArgumentException("The given file hsa to be a PBO!");
+			}
+
+			PBO pbo = new PBO(file);
+
+			// create new collection to feed on in order to not cache previously
+			// added entries
+			List<Function> functions = new ArrayList<>();
 
 			ConfigClass config = null;
 			final String pboPrefix = pbo.getPrefix();
@@ -129,6 +135,9 @@ public class ModUtils {
 
 					if (configEntry == null) {
 						// there seems to be no config-entry for this mod
+						// cache nevertheless in order to save read-time during
+						// the next processing
+						cacheFunctions(pbo.toFile(), functions);
 						return;
 					}
 
@@ -150,13 +159,17 @@ public class ModUtils {
 
 			// cache read functions
 			cacheFunctions(pbo.toFile(), functions);
+
+			// add read functions to provided collection
+			functionCollection.addAll(functions);
 		} catch (IOException | RapificationException | ConfigException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Checks whether there is an applicable functions-cache-file for the given one
+	 * Checks whether there is an applicable functions-cache-file for the given
+	 * one
 	 * 
 	 * @param file
 	 *            The file to search a cache for
@@ -190,8 +203,7 @@ public class ModUtils {
 			throw new IllegalArgumentException("No functions cache available for " + file.getAbsolutePath() + "!");
 		}
 
-		ObjectInputStream in = new ObjectInputStream(new FileInputStream(cacheFile));
-
+		ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(cacheFile)));
 
 		Collection<Function> functions;
 		try {
@@ -219,8 +231,8 @@ public class ModUtils {
 	}
 
 	/**
-	 * Writes the given collection of functions in a functions-cache associated with
-	 * the given file
+	 * Writes the given collection of functions in a functions-cache associated
+	 * with the given file
 	 * 
 	 * @param file
 	 *            The {@linkplain File} to associate the created cache with
@@ -311,14 +323,14 @@ public class ModUtils {
 	}
 
 	/**
-	 * Gets all vanilla functions. If available this method will read the requested
-	 * functions from cache instead of from file.
+	 * Gets all vanilla functions. If available this method will read the
+	 * requested functions from cache instead of from file.
 	 * 
 	 * @param file
-	 *            The {@linkplain File} to search for functions. If this is a file
-	 *            it is checked whether it is a {@linkplain PBO} that contains
-	 *            functions. If it is a folder, all its sub-files are being checked.
-	 *            All folders starting with "@" are ignored.
+	 *            The {@linkplain File} to search for functions. If this is a
+	 *            file it is checked whether it is a {@linkplain PBO} that
+	 *            contains functions. If it is a folder, all its sub-files are
+	 *            being checked. All folders starting with "@" are ignored.
 	 * @param functions
 	 *            The {@linkplain Collection} to add the found functions to
 	 */
@@ -329,7 +341,9 @@ public class ModUtils {
 
 		if (file.isDirectory()) {
 			if (!file.getName().startsWith("@")) {
-				for (File currentFile : file.listFiles()) {
+				File[] files = file.listFiles();
+
+				for (File currentFile : files) {
 					if (!currentFile.getName().startsWith("@")) {
 						getVanillaFunctions(currentFile, functions);
 					}
@@ -340,11 +354,7 @@ public class ModUtils {
 				return;
 			}
 
-			try {
-				getFunctionsFor(new PBO(file), functions);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			getFunctionsFor(file, functions);
 		}
 	}
 }
