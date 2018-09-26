@@ -103,6 +103,10 @@ public class ModUtils {
 			List<Function> functions = new ArrayList<>();
 
 			final String pboPrefix = pbo.getPrefix();
+
+			// TODO: All functions get the same description applied to them ->
+			// The path for all of them is probably the same
+
 			SQFFunctionDescriptionProvider descriptionProvider = new SQFFunctionDescriptionProvider(
 					new IStreamProvider() {
 
@@ -326,7 +330,7 @@ public class ModUtils {
 					}
 				} else {
 					// do a recursive search
-					getModFolders(null, modFolders);
+					getModFolders(currentFile, modFolders);
 				}
 			}
 		}

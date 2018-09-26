@@ -39,8 +39,10 @@ import raven.sqdev.misc.ModUtils;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.sqdevFile.ESQDevFileAnnotation;
+import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.sqdevFile.SQDevFile;
 import raven.sqdev.ui.widgets.CheckboxList;
+import raven.sqdev.util.EFileType;
 import raven.sqdev.util.ProjectUtil;
 
 /**
@@ -123,7 +125,8 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 			modList.setLabels(projectMods);
 			modList.setSelection(selectedMods);
 
-			// disable if the active project's project.sqdev is currently opened in the
+			// disable if the active project's project.sqdev is currently opened
+			// in the
 			// active editor
 			// re-enable otherwise
 			IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
@@ -133,7 +136,8 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 				IPath location = file.getRawLocation();
 				SQDevFile projectFile = ProjectUtil.getProjectFile(activeProject);
 
-				// the user is currently editing the project.sqdev-file manually -> disable the
+				// the user is currently editing the project.sqdev-file manually
+				// -> disable the
 				// list
 				modList.setEnabled(!(location != null && location.toFile().equals(projectFile)));
 			} else {
@@ -154,8 +158,10 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 	public void partActivated(IWorkbenchPart part) {
 		if (part == this) {
 			// ignore focus on self
-			// the list has been set to display no-project selected on deactivation though
-			// -> pretend that the previously selected par is being "re-selected"
+			// the list has been set to display no-project selected on
+			// deactivation though
+			// -> pretend that the previously selected par is being
+			// "re-selected"
 			if (previouslyActivePart != null) {
 				part = previouslyActivePart;
 			} else {
@@ -293,7 +299,9 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 						Pattern.compile("(\\r?\\n|^)" + Pattern.quote("@" + ESQDevFileAnnotation.MOD) + "\\h*\".*\""));
 			}
 
-			activeProject.refreshLocal(IProject.DEPTH_ONE, null);
+			// refresh the respective file so Eclipse won't complain
+			activeProject.findMember(ESQDevFileType.PROJECT + EFileType.SQDEV.getExtension())
+					.refreshLocal(IProject.DEPTH_ONE, null);
 		} catch (IOException | SQDevException | CoreException e) {
 			SQDevInfobox info = new SQDevInfobox("Failed at modifying project.sqdev", e);
 			info.open();
