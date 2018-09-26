@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 public class SQDevProjectNature implements IProjectNature {
 	
 	// ID of the natures, which consists of Bundle-SymbolicName + ID
-	public static final String SQDEV_NATURE_ID = "raven.sqdev.misc.SQDevProjectNature";
+	public static final String ID = "raven.sqdev.misc.SQDevProjectNature";
 	
 	private IProject project;
 	

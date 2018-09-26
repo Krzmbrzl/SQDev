@@ -177,7 +177,7 @@ public class SQDevStarter implements IStartup, IVersionListener {
 
 
 						// set project nature
-						description.setNatureIds(new String[] { SQDevProjectNature.SQDEV_NATURE_ID });
+						description.setNatureIds(new String[] { SQDevProjectNature.ID });
 
 						project.setDescription(description, new NullProgressMonitor());
 						

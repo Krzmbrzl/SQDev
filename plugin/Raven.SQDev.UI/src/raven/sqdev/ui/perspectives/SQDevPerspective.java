@@ -22,6 +22,7 @@ public class SQDevPerspective implements IPerspectiveFactory {
 
 		folder.addView("raven.sqdev.ui.rptViewer");
 		folder.addView("org.eclipse.ui.views.ProblemView");
+		folder.addView("raven.sqdev.ui.modDependencyView");
 		folder.addView("org.eclipse.ui.views.ProgressView");
 
 		// add new default new file wizards
@@ -35,6 +36,7 @@ public class SQDevPerspective implements IPerspectiveFactory {
 		layout.addShowViewShortcut("raven.sqdev.ui.rptViewer");
 		layout.addShowViewShortcut("org.eclipse.ui.views.ProblemView");
 		layout.addShowViewShortcut("org.eclipse.ui.views.ProgressView");
+		layout.addShowViewShortcut("raven.sqdev.ui.modDependencyView");
 	}
 
 }

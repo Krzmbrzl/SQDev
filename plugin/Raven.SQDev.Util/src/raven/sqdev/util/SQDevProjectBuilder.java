@@ -31,6 +31,8 @@ import raven.sqdev.parser.preprocessor.PreprocessorParseResult;
 import raven.sqdev.parser.sqf.SQFInformation;
 
 public class SQDevProjectBuilder extends IncrementalProjectBuilder {
+	
+	public static final String ID = "raven.sqdev.builder.sqdevprojectbuilder";
 
 	@Override
 	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {

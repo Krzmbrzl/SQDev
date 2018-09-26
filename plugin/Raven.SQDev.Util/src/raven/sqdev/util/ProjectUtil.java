@@ -234,7 +234,7 @@ public class ProjectUtil {
 	 */
 	public static boolean isSQDevProject(IProject project) {
 		try {
-			if (project.hasNature(SQDevProjectNature.SQDEV_NATURE_ID)) {
+			if (project.hasNature(SQDevProjectNature.ID)) {
 				return true;
 			}
 		} catch (CoreException e) {
@@ -467,7 +467,7 @@ public class ProjectUtil {
 
 		// add builder to project
 		ICommand command = description.newCommand();
-		command.setBuilderName("raven.sqdev.builder.sqdevprojectbuilder");
+		command.setBuilderName(SQDevProjectBuilder.ID);
 		ICommand[] nc = new ICommand[commands.length + 1];
 		// Add it before other builders.
 		System.arraycopy(commands, 0, nc, 1, commands.length);
@@ -475,7 +475,7 @@ public class ProjectUtil {
 		description.setBuildSpec(nc);
 
 		// set project nature
-		description.setNatureIds(new String[] { SQDevProjectNature.SQDEV_NATURE_ID });
+		description.setNatureIds(new String[] { SQDevProjectNature.ID });
 
 		description.setLocation(externalLocation);
 
