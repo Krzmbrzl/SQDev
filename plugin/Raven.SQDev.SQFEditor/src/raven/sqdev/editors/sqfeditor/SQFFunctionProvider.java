@@ -43,11 +43,19 @@ public class SQFFunctionProvider extends BasicKeywordProvider {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
+				monitor.beginTask("Extracting functions from PBOs", configuredMods.size() + 1);
+				
 				List<Function> vanillaFunctions = new ArrayList<>();
+				
+				monitor.subTask("Extracting vanilla functions");
+				
 				ModUtils.getVanillaFunctions(vanillaFunctions);
 				list.addKeywords(vanillaFunctions);
+				
+				monitor.worked(1);
+				
+				monitor.subTask("Extracting mod functions");
 
-				monitor.beginTask("Extracting functions from PBOs", configuredMods.size());
 				for (String currentMod : configuredMods) {
 					list.addKeywords(ModUtils.getFunctionsFor(currentMod));
 					monitor.worked(1);

@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.swt.SWT;
 
@@ -112,9 +113,15 @@ public class ModUtils {
 
 						@Override
 						public InputStream getStreamFor(String path) throws IOException {
-							if (pboPrefix != null && path.toLowerCase().startsWith("\\" + pboPrefix.toLowerCase())
-									&& path.length() >= pboPrefix.length() + 2) {
-								path = path.substring(pboPrefix.length() + 2);
+							// remove leading prefix
+							if (pboPrefix != null && path.toLowerCase().startsWith(pboPrefix.toLowerCase())
+									|| path.toLowerCase().startsWith("\\" + pboPrefix.toLowerCase())) {
+								if (path.toLowerCase().startsWith(pboPrefix.toLowerCase())) {
+									path = path.substring(pboPrefix.length() + 1);
+								} else {
+									// also remove the leading backslash
+									path = path.substring(pboPrefix.length() + 2);
+								}
 							}
 
 							PBOEntry entry = pbo.getEntry(path);
@@ -122,7 +129,6 @@ public class ModUtils {
 							if (entry == null) {
 								return null;
 							} else {
-								entry.toStream();
 								return entry.toStream();
 							}
 						}

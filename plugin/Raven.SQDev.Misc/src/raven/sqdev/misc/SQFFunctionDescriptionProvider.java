@@ -101,6 +101,9 @@ public class SQFFunctionDescriptionProvider {
 		if (in == null) {
 			return null;
 		}
+		
+		// reset previously found descriptions
+		factory.description = null;
 
 		lexer.lex(new CharacterInputStream(in) {
 			@Override
