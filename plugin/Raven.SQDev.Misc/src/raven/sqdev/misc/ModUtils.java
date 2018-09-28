@@ -104,9 +104,6 @@ public class ModUtils {
 
 			final String pboPrefix = pbo.getPrefix();
 
-			// TODO: All functions get the same description applied to them ->
-			// The path for all of them is probably the same
-
 			SQFFunctionDescriptionProvider descriptionProvider = new SQFFunctionDescriptionProvider(
 					new IStreamProvider() {
 
