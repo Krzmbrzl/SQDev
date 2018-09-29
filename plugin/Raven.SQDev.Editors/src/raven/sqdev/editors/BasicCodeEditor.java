@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -13,9 +15,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -106,13 +106,14 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 */
 	protected List<CharacterPair> characterPairs;
 	/**
-	 * The <code>Job</code> used to parse if no suspension is wished
+	 * A flag indicating whether the current parsing is being canceled
 	 */
-	private Job parseJob;
+	private AtomicBoolean parsingIsCancelled;
 	/**
-	 * Indicates whether the current parsing should be cancelled
+	 * The lock used for parsing processes
 	 */
-	private Boolean parsingIsCancelled;
+	private ReentrantLock parseLock;
+
 
 	public BasicCodeEditor() {
 		super();
@@ -125,7 +126,8 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 
 		managerList = new ArrayList<IManager>();
 		characterPairs = getCharacterPairs();
-		parsingIsCancelled = false;
+		parsingIsCancelled = new AtomicBoolean(false);
+		parseLock = new ReentrantLock();
 
 		// set up key handlers
 		configureKeyHandler();
@@ -343,8 +345,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	/**
 	 * Gets the {@linkplain IParseResult} representing the input of this editor
 	 * 
-	 * @return The result or <code>null</code> if none has been set
-	 *         so far
+	 * @return The result or <code>null</code> if none has been set so far
 	 */
 	public IParseResult getParseResult() {
 		return parseResult;
@@ -369,43 +370,50 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 * @return The result of the parsing in form of an IStatus
 	 */
 	private IStatus startParsingInput(String input) {
-		// preprocess
-		doPreprocessorParsing(new ByteArrayInputStream(input.getBytes()));
+		try {
+			// acquire the lock -> Ensure that not more than one thread at once is
+			// parsing/processing this editor's content
+			parseLock.lock();
 
-		// check if this parsing should be cancelled
-		synchronized (parsingIsCancelled) {
-			if (parsingIsCancelled) {
-				parsingIsCancelled = false;
+			// preprocess
+			doPreprocessorParsing(new ByteArrayInputStream(input.getBytes()));
+
+			// check if this parsing should be cancelled
+			if (parsingIsCancelled.get()) {
+				parsingIsCancelled.set(false);
 				return Status.CANCEL_STATUS;
 			}
-		}
 
-		// parse
-		IParseResult output = doParse(new ByteArrayInputStream(input.getBytes()));
+			// parse
+			IParseResult output = doParse(new ByteArrayInputStream(input.getBytes()));
 
-		// check if this parsing should be cancelled
-		synchronized (parsingIsCancelled) {
-			if (parsingIsCancelled) {
-				parsingIsCancelled = false;
+			// check if this processing should be cancelled
+			if (parsingIsCancelled.get()) {
+				parsingIsCancelled.set(false);
+
 				return Status.CANCEL_STATUS;
 			}
-		}
 
-		if (output == null
-				|| output.getMarkers().stream().filter((element) -> element.getSeverity() == IMarker.SEVERITY_ERROR)
-						.collect(Collectors.toList()).size() > 0) {
-			// don't process the parse tree if errors came up during lexing/parsing
-			applyParseChanges();
-
-			return Status.CANCEL_STATUS;
-		} else {
-			parseResult = output;
-
-			if (!processParseTree(parseResult)) {
+			if (output == null
+					|| output.getMarkers().stream().filter((element) -> element.getSeverity() == IMarker.SEVERITY_ERROR)
+							.collect(Collectors.toList()).size() > 0) {
+				// don't process the parse tree if errors came up during lexing/parsing
 				applyParseChanges();
-			}
 
-			return Status.OK_STATUS;
+				return Status.CANCEL_STATUS;
+			} else {
+				parseResult = output;
+
+				if (!processParseTree(parseResult)) {
+					applyParseChanges();
+				}
+
+				return Status.OK_STATUS;
+			}
+		} finally {
+			// release the lock so that another thread may start parsing this editor's
+			// content
+			parseLock.unlock();
 		}
 	}
 
@@ -442,34 +450,15 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 			return false;
 		}
 
-		synchronized (parsingIsCancelled) {
-			if (parsingIsCancelled && (parseJob == null || parseJob.getResult() != null)) {
-				// There is no other parsing in progress that should be
-				// cancelled and canceling is only possible after having
-				// initialized it
-				parsingIsCancelled = false;
-			}
-		}
-
-		if (parseJob != null && parseJob.getState() != Job.NONE) {
-			// The previous Job is still running -> reschedule
-			parseJob.addJobChangeListener(new JobChangeAdapter() {
-
-				@Override
-				public void done(IJobChangeEvent event) {
-					// As there has been a request to parse the input again
-					// do  it now as the old parsing process is finished
-					parseInput();
-				}
-			});
-
-			return false;
+		if (parsingIsCancelled.get() && !parseLock.isLocked()) {
+			// the cancel-flag is still set from another run -> reset to false
+			parsingIsCancelled.set(false);
 		}
 
 		if (suspend) {
 			startParsingInput(content);
 		} else {
-			parseJob = new Job("Parsing \"" + getEditorInput().getName() + "\"...") {
+			Job parseJob = new Job("Parsing \"" + getEditorInput().getName() + "\"...") {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -491,7 +480,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 * If you need to specify a custom preprocessor parser or disable it you have to
 	 * overwrite that method.<br>
 	 * This method will not wait until the parsing is done. If you need the parsing
-	 * to be done when this method returns youo can use {@link #parseInput(boolean)}
+	 * to be done when this method returns you can use {@link #parseInput(boolean)}
 	 * instead
 	 * 
 	 * @return <code>True</code> if the parsing could be done successfully and
@@ -506,8 +495,10 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	 * processing of the parse result
 	 */
 	public void cancelParsing() {
-		synchronized (parsingIsCancelled) {
-			parsingIsCancelled = true;
+		if (parseLock.isLocked()) {
+			// there is currently a thread parsing the editor's content -> request it to
+			// cancel
+			parsingIsCancelled.set(true);
 		}
 	}
 

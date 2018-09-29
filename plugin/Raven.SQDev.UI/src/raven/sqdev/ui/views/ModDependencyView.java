@@ -287,8 +287,11 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 		}
 
 		ESQDevFileAnnotation.MOD.clear();
+		
 		// remove the @ before setting the value
-		ESQDevFileAnnotation.MOD.addValue(event.text.substring(1));
+		String value = event.text.substring(1);
+		
+		ESQDevFileAnnotation.MOD.addValue(value);
 
 		try {
 			if (((boolean) event.data)) {
@@ -296,7 +299,7 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 				projectFile.addAnnotation(ESQDevFileAnnotation.MOD);
 			} else {
 				projectFile.removeAll(
-						Pattern.compile("(\\r?\\n|^)" + Pattern.quote("@" + ESQDevFileAnnotation.MOD) + "\\h*\".*\""));
+						Pattern.compile("(\\r?\\n|^)" + Pattern.quote("@" + ESQDevFileAnnotation.MOD) + "\\h*\"" + value + "\""));
 			}
 
 			// refresh the respective file so Eclipse won't complain

@@ -20,6 +20,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 
 import dataStructures.CharacterInputStream;
+import dataStructures.ITokenFactory;
+import dataStructures.SQFToken;
 import dataStructures.SQFTreeWalker;
 import lexer.SQFLexer;
 import parser.SQFParser;
@@ -81,7 +83,10 @@ public class ParseUtil {
 
 		sqfLexer.reset(false);
 		sqfLexer.setMacros(supplier.getMacros().keySet());
-		sqfLexer.setTokenFactory(supplier.getTokenFactory());
+		
+		ITokenFactory<SQFToken> factory  = supplier.getTokenFactory();
+		Assert.isNotNull(factory);
+		sqfLexer.setTokenFactory(factory);
 		errorListener.setMarkerStorage(result);
 		result.setLineIndices(sqfLexer.getNewlineIndices());
 
