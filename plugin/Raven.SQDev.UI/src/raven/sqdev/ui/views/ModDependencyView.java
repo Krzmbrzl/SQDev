@@ -85,6 +85,17 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 		modList.addListener(SWT.Selection, this);
 	}
 
+	/**
+	 * Updates the displayed labels in this view
+	 * 
+	 * @param project
+	 *            The project the view should be configured to or <code>null</code>
+	 *            if no project is currently active. This will cause this view to
+	 *            display the {@link #NO_ACTIVE_PROJECT} message.
+	 * @param refreshInstalledMods
+	 *            Whether the cached list installed of local mods should be
+	 *            refreshed
+	 */
 	protected void updateList(IProject project, boolean refreshInstalledMods) {
 		if (project != null) {
 			modList.setText("Select the mod-dependencies of the \"" + project.getName() + "\" project.");
@@ -124,25 +135,6 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 
 			modList.setLabels(projectMods);
 			modList.setSelection(selectedMods);
-
-			// disable if the active project's project.sqdev is currently opened
-			// in the
-			// active editor
-			// re-enable otherwise
-			IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-			if (editor != null && editor.getEditorInput() instanceof IFileEditorInput) {
-				IFile file = ((IFileEditorInput) editor.getEditorInput()).getFile();
-
-				IPath location = file.getRawLocation();
-				SQDevFile projectFile = ProjectUtil.getProjectFile(activeProject);
-
-				// the user is currently editing the project.sqdev-file manually
-				// -> disable the
-				// list
-				modList.setEnabled(!(location != null && location.toFile().equals(projectFile)));
-			} else {
-				modList.setEnabled(true);
-			}
 		} else {
 			modList.clearSelection();
 			modList.setText(NO_ACTIVE_PROJECT);
@@ -160,7 +152,7 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 			// ignore focus on self
 			// the list has been set to display no-project selected on
 			// deactivation though
-			// -> pretend that the previously selected par is being
+			// -> pretend that the previously selected part is being
 			// "re-selected"
 			if (previouslyActivePart != null) {
 				part = previouslyActivePart;
@@ -218,6 +210,8 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 			activePart = part;
 			updateList(activeProject, true);
 		}
+		
+		manageEnablement();
 	}
 
 	@Override
@@ -264,6 +258,8 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 				if (associatedProject != null && associatedProject != activeProject) {
 					activeProject = associatedProject;
 					updateList(associatedProject, false);
+
+					manageEnablement();
 				}
 			}
 		}
@@ -287,10 +283,10 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 		}
 
 		ESQDevFileAnnotation.MOD.clear();
-		
+
 		// remove the @ before setting the value
 		String value = event.text.substring(1);
-		
+
 		ESQDevFileAnnotation.MOD.addValue(value);
 
 		try {
@@ -298,8 +294,8 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 				// Add to SQDevFile
 				projectFile.addAnnotation(ESQDevFileAnnotation.MOD);
 			} else {
-				projectFile.removeAll(
-						Pattern.compile("(\\r?\\n|^)" + Pattern.quote("@" + ESQDevFileAnnotation.MOD) + "\\h*\"" + value + "\""));
+				projectFile.removeAll(Pattern.compile(
+						"(\\r?\\n|^)" + Pattern.quote("@" + ESQDevFileAnnotation.MOD) + "\\h*\"" + value + "\""));
 			}
 
 			// refresh the respective file so Eclipse won't complain
@@ -315,6 +311,29 @@ public class ModDependencyView extends ViewPart implements IPartListener, ISelec
 	public void dispose() {
 		getSite().getPage().removePartListener(this);
 		super.dispose();
+	}
+
+	/**
+	 * Manages the enablement of this view's controls according to whether the
+	 * currently active editor is opened on the project.sqdev file that is also
+	 * edited by this view
+	 */
+	protected void manageEnablement() {
+		// disable if the active project's project.sqdev is currently opened
+		// in the active editor - re-enable otherwise
+		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		if (activeProject != null && editor != null && editor.getEditorInput() instanceof IFileEditorInput) {
+			IFile file = ((IFileEditorInput) editor.getEditorInput()).getFile();
+
+			IPath location = file.getRawLocation();
+			SQDevFile projectFile = ProjectUtil.getProjectFile(activeProject);
+
+			// the user is currently editing the project.sqdev-file manually
+			// -> disable the list
+			modList.setEnabled(!(location != null && location.toFile().equals(projectFile)));
+		} else {
+			modList.setEnabled(true);
+		}
 	}
 
 }
