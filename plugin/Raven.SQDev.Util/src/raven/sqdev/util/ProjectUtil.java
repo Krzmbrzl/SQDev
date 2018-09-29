@@ -316,7 +316,13 @@ public class ProjectUtil {
 			return null;
 		}
 
-		return new SQDevInformation(getLinkFile(project));
+		SQDevFile linkFile = getLinkFile(project);
+
+		if (linkFile == null) {
+			return null;
+		}
+
+		return new SQDevInformation(linkFile);
 	}
 
 	/**

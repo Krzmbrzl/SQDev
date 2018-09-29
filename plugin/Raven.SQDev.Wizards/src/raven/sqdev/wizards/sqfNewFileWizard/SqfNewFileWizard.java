@@ -35,7 +35,6 @@ public class SqfNewFileWizard extends Wizard implements INewWizard {
 	/**
 	 * Adding the page to the wizard.
 	 */
-	
 	@Override
 	public void addPages() {
 		page = new SqfNewFileWizardPage(selection);

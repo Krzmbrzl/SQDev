@@ -10,15 +10,13 @@
       <wizard
             category="raven.sqdev.wizards.sqdevcategory"
             class="raven.sqdev.wizards.sqfNewFileWizard.SqfNewFileWizard"
+            finalPerspective="raven.sqdev.ui.perspectives.sqdevperspective"
             icon="platform:plugin/raven.sqdev.misc/resources/icons/SQFIcon.png"
             id="raven.sqdev.wizards.sqfNewFileWizard"
             name="SQF file"
             preferredPerspectives="raven.sqdev.ui.perspectives.sqdevperspective"
             project="false">
       </wizard>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
       <wizard
             category="raven.sqdev.wizards.sqdevcategory"
             class="raven.sqdev.wizards.sqdevProject.SQDevProjectWizard"
@@ -28,6 +26,26 @@
             name="SQDev Project"
             preferredPerspectives="raven.sqdev.ui.perspectives.sqdevperspective"
             project="true">
+      </wizard>
+      <wizard
+            category="raven.sqdev.wizards.sqdevcategory"
+            class="raven.sqdev.wizards.stringtable.StringTableWizard"
+            finalPerspective="raven.sqdev.ui.perspectives.sqdevperspective"
+            icon="platform:plugin/raven.sqdev.misc/resources/icons/StringTableIcon.png"
+            id="raven.sqdev.wizards.stringtable"
+            name="StringTable"
+            preferredPerspectives="raven.sqdev.ui.perspectives.sqdevperspective"
+            project="false">
+      </wizard>
+      <wizard
+            category="raven.sqdev.wizards.sqdevcategory"
+            class="raven.sqdev.wizards.sqdevFile.SQDevFileWizard"
+            finalPerspective="raven.sqdev.ui.perspectives.sqdevperspective"
+            icon="platform:plugin/raven.sqdev.misc/resources/icons/sqdevFileIcon.png"
+            id="raven.sqdev.wizards.sqdevFile"
+            name="SQDevFile"
+            preferredPerspectives="raven.sqdev.ui.perspectives.sqdevperspective"
+            project="false">
       </wizard>
    </extension>
    <extension
@@ -56,19 +74,6 @@
             icon="platform:plugin/raven.sqdev.misc/resources/icons/sqdevImportIcon.png"
             id="raven.sqdev.wizards.importAsSQDevProject"
             name="Import as SQDevProject">
-      </wizard>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <wizard
-            category="raven.sqdev.wizards.sqdevcategory"
-            class="raven.sqdev.wizards.stringtable.StringTableWizard"
-            finalPerspective="raven.sqdev.ui.perspectives.sqdevperspective"
-            icon="platform:plugin/raven.sqdev.misc/resources/icons/StringTableIcon.png"
-            id="raven.sqdev.wizards.stringtable"
-            name="StringTable"
-            preferredPerspectives="raven.sqdev.ui.perspectives.sqdevperspective"
-            project="false">
       </wizard>
    </extension>
 

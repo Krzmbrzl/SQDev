@@ -31,6 +31,7 @@ public class SQDevPerspective implements IPerspectiveFactory {
 		layout.addNewWizardShortcut("raven.sqdev.wizards.sqdevproject");
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");
+		layout.addNewWizardShortcut("raven.sqdev.wizards.sqdevFile");
 
 		// add default views
 		layout.addShowViewShortcut("raven.sqdev.ui.rptViewer");
