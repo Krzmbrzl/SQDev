@@ -41,10 +41,15 @@ public class ResourceManager {
 	 */
 	public static final String VERSION_RESOURCE = "versions.txt";
 	/**
-	 * The name of the resource containing the stored keywords and the
+	 * The name of the resource containing the stored SQF keywords and the
 	 * respective information about them
 	 */
-	public static final String KEYWORDS_RESOURCE = "SQFKeywords.txt";
+	public static final String SQF_KEYWORDS_RESOURCE = "SQFKeywords.txt";
+	/**
+	 * The name of the resource containing the stored O2Script keywords and the
+	 * respective information about them
+	 */
+	public static final String O2SCRIPT_KEYWORDS_RESOURCE = "O2ScriptKeywords.txt";
 	/**
 	 * The internal path to the icons folder
 	 */

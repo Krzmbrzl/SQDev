@@ -5,15 +5,28 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.util.EFileType;
 
+/**
+ * A wizard for creating a SQDevFile
+ * 
+ * @author Raven
+ *
+ */
 public class SQDevFileWizard extends Wizard implements INewWizard {
 
+	/**
+	 * The {@linkplain WizardPage} corresponding to this wizard
+	 */
 	private SQDevFileWizardPage page;
+	/**
+	 * The {@linkplain IProject} this wizard is being invoked on
+	 */
 	private IProject project;
 
 	@Override

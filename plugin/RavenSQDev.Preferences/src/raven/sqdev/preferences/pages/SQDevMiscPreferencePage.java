@@ -218,7 +218,7 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 					monitor.beginTask("Storing keywords...", IProgressMonitor.UNKNOWN);
 
 					ResourceManager manager = ResourceManager.getManager();
-					manager.updateResource(ResourceManager.KEYWORDS_RESOURCE, list.getSaveableFormat());
+					manager.updateResource(ResourceManager.SQF_KEYWORDS_RESOURCE, list.getSaveableFormat());
 
 					if (failedKeywordURLs.length() > 0) {
 						// inform user about all failed keywords

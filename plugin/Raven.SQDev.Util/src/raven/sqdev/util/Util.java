@@ -245,7 +245,7 @@ public class Util {
 		out.write(logContent.getBytes());
 		out.closeEntry();
 
-		String keywords = ResourceManager.getManager().getResourceContent(ResourceManager.KEYWORDS_RESOURCE);
+		String keywords = ResourceManager.getManager().getResourceContent(ResourceManager.SQF_KEYWORDS_RESOURCE);
 		out.putNextEntry(new ZipEntry("SQFKeywords.txt"));
 		out.write(keywords.getBytes());
 		out.closeEntry();

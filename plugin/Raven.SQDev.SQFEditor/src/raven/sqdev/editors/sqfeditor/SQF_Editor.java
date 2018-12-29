@@ -67,7 +67,7 @@ public class SQF_Editor extends BasicCodeEditor
 	/**
 	 * The KeywordProvider for the SQF keywords
 	 */
-	private SQFKeywordProvider commandProvider;
+	protected SQFKeywordProvider commandProvider;
 	/**
 	 * The KeywordProvider for the functions
 	 */
@@ -116,8 +116,34 @@ public class SQF_Editor extends BasicCodeEditor
 	public SQF_Editor() {
 		super();
 
-		BasicSourceViewerConfiguration configuration = getBasicConfiguration();
+		// get PartitionScanner
+		BasicPartitionScanner partitionScanner = getBasicProvider().getPartitionScanner();
 
+		// exchange the string rule of the partitionScanner
+		partitionScanner.removeRule(BasicPartitionScanner.DOUBLE_QUOTE_STRING_RULE);
+		partitionScanner.addRule(new SQFStringPartitionRule(new Token(BasicPartitionScanner.BASIC_STRING)));
+
+		binaryCommands = new HashMap<String, SQFCommand>();
+		unaryCommands = new HashMap<String, SQFCommand>();
+		nularCommands = new HashMap<String, SQFCommand>();
+		localVariables = new HashMap<String, Variable>();
+		globalVariables = new HashMap<String, Variable>();
+		magicVariables = new HashMap<String, Variable>();
+
+		macros = new HashMap<String, Macro>();
+		macroNames = new ArrayList<String>();
+		
+		setKeywords(getBasicConfiguration());
+		categorizeCommands();
+	}
+
+	/**
+	 * Sets up the keywords for this editor#
+	 * 
+	 * @param The
+	 *            {@linkplain BasicSourceViewerConfiguration} of the editor.
+	 */
+	protected void setKeywords(BasicSourceViewerConfiguration configuration) {
 		// create respective keywordScanners
 		configuration.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_MACROHIGHLIGHTING_COLOR_KEY, true);
 
@@ -141,28 +167,9 @@ public class SQF_Editor extends BasicCodeEditor
 				.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_FUNCTIONHIGHLIGHTING_COLOR_KEY, false);
 		functionProvider = new SQFFunctionProvider(this);
 		functionScanner.setKeywordProvider(functionProvider);
-
-		// get PartitionScanner
-		BasicPartitionScanner partitionScanner = getBasicProvider().getPartitionScanner();
-
-		// exchange the string rule of the partitionScanner
-		partitionScanner.removeRule(BasicPartitionScanner.DOUBLE_QUOTE_STRING_RULE);
-		partitionScanner.addRule(new SQFStringPartitionRule(new Token(BasicPartitionScanner.BASIC_STRING)));
-
-		binaryCommands = new HashMap<String, SQFCommand>();
-		unaryCommands = new HashMap<String, SQFCommand>();
-		nularCommands = new HashMap<String, SQFCommand>();
-		localVariables = new HashMap<String, Variable>();
-		globalVariables = new HashMap<String, Variable>();
-		magicVariables = new HashMap<String, Variable>();
-
+		
 		// populate the magic vars with the standard ones
 		setMagicVariables(ParseUtil.getDefaultMagicVars(), false);
-
-		macros = new HashMap<String, Macro>();
-		macroNames = new ArrayList<String>();
-
-		categorizeCommands();
 	}
 
 	@Override
@@ -367,8 +374,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Sets the local variables for this editor. If there is a change compared
-	 * to the current set of local variables the editor will update itself
+	 * Sets the local variables for this editor. If there is a change compared to
+	 * the current set of local variables the editor will update itself
 	 * 
 	 * @param variables
 	 *            The local variables to add
@@ -404,8 +411,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Gets all defined local and all available magic variables for this editor
-	 * in one list
+	 * Gets all defined local and all available magic variables for this editor in
+	 * one list
 	 */
 	public List<Variable> getLocalAndMagicVariables() {
 		List<Variable> variables = new ArrayList<Variable>(localVariables.values());
@@ -415,8 +422,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Sets the magic variables for this editor. If there is a change compared
-	 * to the current set of local variables the editor will update itself
+	 * Sets the magic variables for this editor. If there is a change compared to
+	 * the current set of local variables the editor will update itself
 	 * 
 	 * @param variables
 	 *            The magic variables to add
@@ -452,8 +459,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Sets the global variables for this editor. If there is a change compared
-	 * to the current set of global variables the editor will update itself
+	 * Sets the global variables for this editor. If there is a change compared to
+	 * the current set of global variables the editor will update itself
 	 * 
 	 * @param variables
 	 *            The gloabl variables to add
@@ -489,8 +496,8 @@ public class SQF_Editor extends BasicCodeEditor
 	}
 
 	/**
-	 * Sets the variables for this editor. If there are any changes in
-	 * comparison to the current set of variables the editor will updates itself
+	 * Sets the variables for this editor. If there are any changes in comparison to
+	 * the current set of variables the editor will updates itself
 	 * 
 	 * @param localVariables
 	 *            The new set of local variables

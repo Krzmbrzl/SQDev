@@ -15,11 +15,29 @@ import org.eclipse.swt.widgets.Listener;
 import raven.sqdev.sqdevFile.ESQDevFileType;
 import raven.sqdev.util.EFileType;
 
+/**
+ * The wizard page for the {@linkplain SQDevFileWizard}
+ * 
+ * @author Raven
+ *
+ */
 public class SQDevFileWizardPage extends WizardPage {
 
+	/**
+	 * The Combo-Box for selecting the SQDevFile-type
+	 */
 	private Combo combo;
+	/**
+	 * The project this wizard is being invoked on
+	 */
 	private IProject project;
 
+	/**
+	 * Creates a new instance of this wizard page
+	 * 
+	 * @param container
+	 *            The {@linkplain IProject} this wizard is being invoked on
+	 */
 	protected SQDevFileWizardPage(IProject container) {
 		super("SQDevFileWizardPage");
 
@@ -95,6 +113,9 @@ public class SQDevFileWizardPage extends WizardPage {
 		setPageComplete(message == null);
 	}
 
+	/**
+	 * Gets the file type as set in this page
+	 */
 	public ESQDevFileType getType() {
 		return ESQDevFileType.resolve(combo.getText());
 	}

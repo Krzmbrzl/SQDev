@@ -12,5 +12,15 @@
             name="sqfEditor">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+     <editor
+            class="raven.sqdev.editors.o2scriptEditor.O2Script_Editor"
+            default="true"
+            extensions="bio2s"
+            id="raven.sqdev.o2scriptEditor"
+            name="O2ScriptEditor">
+      </editor>
+   </extension>
 
 </plugin>

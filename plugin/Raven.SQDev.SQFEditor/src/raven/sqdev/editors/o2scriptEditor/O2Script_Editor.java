@@ -1,0 +1,42 @@
+package raven.sqdev.editors.o2scriptEditor;
+
+import java.io.InputStream;
+
+import raven.sqdev.constants.SQDevPreferenceConstants;
+import raven.sqdev.editors.BasicSourceViewerConfiguration;
+import raven.sqdev.editors.KeywordScanner;
+import raven.sqdev.editors.sqfeditor.SQF_Editor;
+import raven.sqdev.interfaces.IParseResult;
+
+/**
+ * An editor for O2Script scripts
+ * 
+ * @author Raven
+ *
+ */
+public class O2Script_Editor extends SQF_Editor {
+
+	public O2Script_Editor() {
+		super();
+	}
+
+	@Override
+	protected void setKeywords(BasicSourceViewerConfiguration configuration) {
+		commandProvider = new O2ScriptKeywordProvider();
+		KeywordScanner keywordScanner = configuration
+				.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_KEYWORDHIGHLIGHTING_COLOR_KEY, false);
+		keywordScanner.setKeywordProvider(commandProvider);
+	}
+	
+	@Override
+	protected void doPreprocessorParsing(InputStream input) {
+		// disable preprocessing
+	}
+	
+	@Override
+	protected IParseResult doParse(InputStream input) {
+		// disable parsing
+		return null;
+	}
+
+}
