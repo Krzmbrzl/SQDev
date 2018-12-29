@@ -139,7 +139,7 @@ public class SQDevStarter implements IStartup, IVersionListener {
 
 			try {
 				manager.updateResource(ResourceManager.SQF_KEYWORDS_RESOURCE,
-						FileSystemUtil.readAll(manager.getInternalResourceStream(ResourceManager.INTERNAL_KEYWORDS)));
+						FileSystemUtil.readAll(manager.getInternalResourceStream(ResourceManager.INTERNAL_SQF_KEYWORDS)));
 			} catch (IOException | SQDevException e) {
 				throw new SQDevCoreException("Failed at updating local keywords", e);
 			}

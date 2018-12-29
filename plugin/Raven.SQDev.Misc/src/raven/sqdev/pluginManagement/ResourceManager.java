@@ -99,9 +99,13 @@ public class ResourceManager {
 	 */
 	public static final String STRINGTABLE_ICON = ICON_FOLDER + "/StringTableIcon.png";
 	/**
-	 * The internal path to the keyword file
+	 * The internal path to the SQF keyword file
 	 */
-	public static final String INTERNAL_KEYWORDS = "/resources/sqf/SQFKeywords.txt";
+	public static final String INTERNAL_SQF_KEYWORDS = "/resources/sqf/SQFKeywords.txt";
+	/**
+	 * The internal path to the O2Script keyword file
+	 */
+	public static final String INTERNAL_O2SCRIPT_KEYWORDS = "/resources/o2script/O2ScriptKeywords.txt";
 	
 	private ClassLoader loader;
 	private URL locationURL;
@@ -349,17 +353,31 @@ public class ResourceManager {
 			
 			// initialize necessary resources
 			try {
-				createResource("SQFKeywords.txt");
+				createResource(SQF_KEYWORDS_RESOURCE);
 				
 				String content = FileSystemUtil
-						.readAll(getInternalResourceStream(INTERNAL_KEYWORDS));
+						.readAll(getInternalResourceStream(INTERNAL_SQF_KEYWORDS));
 				
 				// put content in respective resource files
-				FileWriter writer = new FileWriter(getResource("SQFKeywords.txt").toFile());
+				FileWriter writer = new FileWriter(getResource(SQF_KEYWORDS_RESOURCE).toFile());
 				writer.write(content);
 				writer.close();
 				
-				writer = new FileWriter(getBackupResource("SQFKeywords.txt").toFile());
+				writer = new FileWriter(getBackupResource(SQF_KEYWORDS_RESOURCE).toFile());
+				writer.write(content);
+				writer.close();
+				
+				
+				createResource(O2SCRIPT_KEYWORDS_RESOURCE);
+				content = FileSystemUtil
+						.readAll(getInternalResourceStream(INTERNAL_O2SCRIPT_KEYWORDS));
+				
+				// put content in respective resource files
+				writer = new FileWriter(getResource(O2SCRIPT_KEYWORDS_RESOURCE).toFile());
+				writer.write(content);
+				writer.close();
+				
+				writer = new FileWriter(getBackupResource(O2SCRIPT_KEYWORDS_RESOURCE).toFile());
 				writer.write(content);
 				writer.close();
 				
