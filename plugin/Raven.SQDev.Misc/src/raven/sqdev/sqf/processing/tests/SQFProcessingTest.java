@@ -19,7 +19,7 @@ import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.interfaces.ISQFParseSupplier;
 import raven.sqdev.interfaces.ITreeProcessingResult;
 import raven.sqdev.misc.DataTypeList;
-import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.ESQFDataType;
 import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.Marker;
@@ -636,8 +636,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
-		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.CODE),
-				new DataTypeList(EDataType.STRING)), marker.getMessage());
+		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(ESQFDataType.CODE),
+				new DataTypeList(ESQFDataType.STRING)), marker.getMessage());
 		assertEquals(25, marker.getOffset());
 		assertEquals(2, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_i"));
@@ -648,8 +648,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
-		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.CODE),
-				new DataTypeList(EDataType.STRING)), marker.getMessage());
+		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(ESQFDataType.CODE),
+				new DataTypeList(ESQFDataType.STRING)), marker.getMessage());
 		assertEquals(25, marker.getOffset());
 		assertEquals(2, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_i"));
@@ -819,8 +819,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
-		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.STRING),
-				new DataTypeList(EDataType.NUMBER)), marker.getMessage());
+		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(ESQFDataType.STRING),
+				new DataTypeList(ESQFDataType.NUMBER)), marker.getMessage());
 		assertEquals(9, marker.getOffset());
 		assertEquals(1, marker.getLength());
 
@@ -830,8 +830,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 1);
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
-		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.ARRAY),
-				new DataTypeList(EDataType.NUMBER)), marker.getMessage());
+		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(ESQFDataType.ARRAY),
+				new DataTypeList(ESQFDataType.NUMBER)), marker.getMessage());
 		assertEquals(26, marker.getOffset());
 		assertEquals(1, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_testvar"));
@@ -843,8 +843,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
-				new DataTypeList(new EDataType[] { EDataType.NUMBER, EDataType.ARRAY }),
-				new DataTypeList(EDataType.STRING)), marker.getMessage());
+				new DataTypeList(new ESQFDataType[] { ESQFDataType.NUMBER, ESQFDataType.ARRAY }),
+				new DataTypeList(ESQFDataType.STRING)), marker.getMessage());
 		assertEquals(30, marker.getOffset());
 		assertEquals(2, marker.getLength());
 		assertTrue(result.getDeclaredLocalVariables().keySet().contains("_testvar"));
@@ -954,8 +954,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		Marker marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
-				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.NUMBER)), marker.getMessage());
+				new DataTypeList(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.STRUCTURED_TEXT }),
+				new DataTypeList(ESQFDataType.NUMBER)), marker.getMessage());
 		assertEquals(5, marker.getOffset());
 		assertEquals(1, marker.getLength());
 
@@ -965,8 +965,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
-				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.ARRAY)), result.getMarkers().iterator().next().getMessage());
+				new DataTypeList(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.STRUCTURED_TEXT }),
+				new DataTypeList(ESQFDataType.ARRAY)), result.getMarkers().iterator().next().getMessage());
 		assertEquals(5, marker.getOffset());
 		assertEquals(2, marker.getLength());
 
@@ -976,8 +976,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
-				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.CODE)), marker.getMessage());
+				new DataTypeList(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.STRUCTURED_TEXT }),
+				new DataTypeList(ESQFDataType.CODE)), marker.getMessage());
 		assertEquals(5, marker.getOffset());
 		assertEquals(2, marker.getLength());
 
@@ -987,8 +987,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
-				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.CODE)), marker.getMessage());
+				new DataTypeList(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.STRUCTURED_TEXT }),
+				new DataTypeList(ESQFDataType.CODE)), marker.getMessage());
 		assertEquals(6, marker.getOffset());
 		assertEquals(2, marker.getLength());
 
@@ -998,8 +998,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
-				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.CODE)), marker.getMessage());
+				new DataTypeList(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.STRUCTURED_TEXT }),
+				new DataTypeList(ESQFDataType.CODE)), marker.getMessage());
 		assertEquals(6, marker.getOffset());
 		assertEquals(2, marker.getLength());
 
@@ -1009,8 +1009,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
-				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.OBJECT)), marker.getMessage());
+				new DataTypeList(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.STRUCTURED_TEXT }),
+				new DataTypeList(ESQFDataType.OBJECT)), marker.getMessage());
 		assertEquals(5, marker.getOffset());
 		assertEquals(6, marker.getLength());
 	}
@@ -1050,8 +1050,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
 		Marker marker = result.getMarkers().iterator().next();
-		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.ARRAY),
-				new DataTypeList(EDataType.NUMBER)), marker.getMessage());
+		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(ESQFDataType.ARRAY),
+				new DataTypeList(ESQFDataType.NUMBER)), marker.getMessage());
 		assertEquals(14, marker.getOffset());
 		assertEquals(1, marker.getLength());
 
@@ -1061,8 +1061,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
-		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.ARRAY),
-				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(ESQFDataType.ARRAY),
+				new DataTypeList(ESQFDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
 		assertEquals(14, marker.getOffset());
 		assertEquals(4, marker.getLength());
 
@@ -1072,8 +1072,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
-		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.OBJECT),
-				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(ESQFDataType.OBJECT),
+				new DataTypeList(ESQFDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
 		assertEquals(0, marker.getOffset());
 		assertEquals(4, marker.getLength());
 
@@ -1083,8 +1083,8 @@ public class SQFProcessingTest {
 		assertTrue(result.getDeclaredLocalVariables().size() == 0);
 		assertTrue(result.getMarkers().size() == 1);
 		marker = result.getMarkers().iterator().next();
-		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(EDataType.OBJECT),
-				new DataTypeList(EDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
+		assertEquals(ProblemMessages.expectedTypeButGot(new DataTypeList(ESQFDataType.OBJECT),
+				new DataTypeList(ESQFDataType.NUMBER)), result.getMarkers().iterator().next().getMessage());
 		assertEquals(1, marker.getOffset());
 		assertEquals(4, marker.getLength());
 
@@ -1100,8 +1100,8 @@ public class SQFProcessingTest {
 		assertEquals(6, marker.getLength());
 		marker = it.next();
 		assertEquals(ProblemMessages.expectedTypeButGot(
-				new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-				new DataTypeList(EDataType.NOTHING)), marker.getMessage());
+				new DataTypeList(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.STRUCTURED_TEXT }),
+				new DataTypeList(ESQFDataType.NOTHING)), marker.getMessage());
 		assertEquals(5, marker.getOffset());
 		assertEquals(14, marker.getLength());
 	}

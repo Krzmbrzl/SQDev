@@ -8,7 +8,7 @@ import raven.sqdev.exceptions.SQDevCoreException;
 import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.misc.DataTypeList;
-import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.ESQFDataType;
 import raven.sqdev.syntax.Syntax;
 import raven.sqdev.syntax.SyntaxElement;
 
@@ -21,11 +21,11 @@ public class SQFSyntaxProcessor {
 	/**
 	 * The potential datatypes of the left argument
 	 */
-	private Iterable<EDataType> leftArgumentTypes;
+	private Iterable<ESQFDataType> leftArgumentTypes;
 	/**
 	 * The potential datatypes of the right argument
 	 */
-	private Iterable<EDataType> rightArgumentTypes;
+	private Iterable<ESQFDataType> rightArgumentTypes;
 	/**
 	 * Indicates whether the command has been validated with the provided argument
 	 * types
@@ -59,7 +59,7 @@ public class SQFSyntaxProcessor {
 	 * @param types
 	 *            The potential <code>EDataTypes</code>
 	 */
-	public void setLeftArgumentTypes(Iterable<EDataType> types) {
+	public void setLeftArgumentTypes(Iterable<ESQFDataType> types) {
 		leftArgumentTypes = types;
 		validated = false;
 	}
@@ -70,7 +70,7 @@ public class SQFSyntaxProcessor {
 	 * @param types
 	 *            The potential <code>EDataTypes</code>
 	 */
-	public void setRightArgumentTypes(Iterable<EDataType> types) {
+	public void setRightArgumentTypes(Iterable<ESQFDataType> types) {
 		rightArgumentTypes = types;
 		validated = false;
 	}
@@ -176,7 +176,7 @@ public class SQFSyntaxProcessor {
 				validGeneralLeftTypes.addAllUnique(validLeftArgTypes);
 
 				// compare the provided types with the valid type
-				for (EDataType currentType : leftArgumentTypes) {
+				for (ESQFDataType currentType : leftArgumentTypes) {
 					if (validLeftArgTypes.containsExchangableType(currentType, true)) {
 						matched = true;
 						validProvidedLeftTypes.addUnique(currentType);
@@ -219,7 +219,7 @@ public class SQFSyntaxProcessor {
 			validGeneralRightTypes.addAllUnique(validRightTypes);
 
 			// check provided arguments
-			for (EDataType currentType : rightArgumentTypes) {
+			for (ESQFDataType currentType : rightArgumentTypes) {
 				if (validRightTypes.containsExchangableType(currentType, true)) {
 					// The syntax has matched completely
 					errorMessage = null;
@@ -312,7 +312,7 @@ public class SQFSyntaxProcessor {
 				continue;
 			}
 
-			EDataType type = EDataType.resolve(currentType);
+			ESQFDataType type = ESQFDataType.resolve(currentType);
 
 			if (type == null) {
 				try {

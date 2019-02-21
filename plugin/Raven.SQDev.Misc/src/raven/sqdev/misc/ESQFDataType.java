@@ -8,7 +8,7 @@ import raven.sqdev.interfaces.IReplaceTester;
  * @author Raven
  *
  */
-public enum EDataType implements IReplaceTester {
+public enum ESQFDataType implements IReplaceTester {
 	ANY_VALUE {
 		@Override
 		public String[] getStringRepresentations() {
@@ -16,7 +16,7 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			return true;
 		}
 	},
@@ -27,7 +27,7 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			return true;
 		}
 	},
@@ -38,18 +38,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(POSITION) || type.equals(POSITION2D)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD)
+					|| type.equals(ESQFDataType.POSITION_WORLD)
 					|| type.equals(WAYPOINT);
 		}
 	},
@@ -99,7 +99,7 @@ public enum EDataType implements IReplaceTester {
 	EDITOR_OBJECT {
 		@Override
 		public String[] getStringRepresentations() {
-			return new String[] { "Ediotor_Object", "Editor Object", "Editor",
+			return new String[] { "Editor_Object", "Editor Object", "Editor",
 					"EditorObject" };
 		}
 	},
@@ -166,7 +166,7 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
@@ -182,7 +182,7 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			return type == OBJECT || super.canBeUsedAs(type);
 		}
 		
@@ -200,19 +200,19 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
 					|| type.equals(POSITION2D)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION2D {
@@ -222,18 +222,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION3D {
@@ -243,18 +243,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_CONFIG {
@@ -264,18 +264,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_AGL) || type.equals(POSITION_AGLS)
 					|| type.equals(POSITION_ASL) || type.equals(POSITION_ASLW)
 					|| type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_AGL {
@@ -285,18 +285,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_AGLS {
@@ -306,18 +306,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_ASL {
@@ -327,18 +327,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_ASLW {
@@ -348,18 +348,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_ATL {
@@ -369,18 +369,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_WORLD {
@@ -390,18 +390,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	POSITION_RELATIVE {
@@ -411,18 +411,18 @@ public enum EDataType implements IReplaceTester {
 		}
 		
 		@Override
-		public boolean canBeUsedAs(EDataType type) {
+		public boolean canBeUsedAs(ESQFDataType type) {
 			if (super.canBeUsedAs(type)) {
 				return true;
 			}
 			
 			return type.equals(ARRAY) || type.equals(POSITION)
-					|| type.equals(EDataType.POSITION3D)
+					|| type.equals(ESQFDataType.POSITION3D)
 					|| type.equals(POSITION_CONFIG) || type.equals(POSITION_AGL)
 					|| type.equals(POSITION_AGLS) || type.equals(POSITION_ASL)
 					|| type.equals(POSITION_ASLW) || type.equals(POSITION_ATL)
 					|| type.equals(POSITION_RELATIVE)
-					|| type.equals(EDataType.POSITION_WORLD);
+					|| type.equals(ESQFDataType.POSITION_WORLD);
 		}
 	},
 	SCRIPT_HANDLE {
@@ -535,7 +535,7 @@ public enum EDataType implements IReplaceTester {
 	 * @param type
 	 *            The data type to test this one against
 	 */
-	public boolean canBeUsedAs(EDataType type) {
+	public boolean canBeUsedAs(ESQFDataType type) {
 		if (type == null) {
 			return false;
 		}
@@ -555,10 +555,10 @@ public enum EDataType implements IReplaceTester {
 	 * @return The corresponding <code>EDataType</code> or <code>null</code> if
 	 *         none could be found
 	 */
-	public static EDataType resolve(String str) {
+	public static ESQFDataType resolve(String str) {
 		str = str.toLowerCase().trim();
 		
-		for (EDataType currentType : values()) {
+		for (ESQFDataType currentType : values()) {
 			for (String currentRepresentation : currentType
 					.getStringRepresentations()) {
 				if (currentRepresentation.toLowerCase().equals(str)) {
@@ -583,7 +583,7 @@ public enum EDataType implements IReplaceTester {
 	
 	/**
 	 * Checks whether the given set of dataTypes are valid. If this set should
-	 * contain more than one datatYpe they have to be sepearted with
+	 * contain more than one dataType they have to be separated with
 	 * {@link DataTypeList#TYPE_SEPERATOR}
 	 * 
 	 * @param types
@@ -592,7 +592,7 @@ public enum EDataType implements IReplaceTester {
 	 */
 	public static boolean isValidDataTypeSet(String types) {
 		for (String currentType : types.split(DataTypeList.TYPE_SEPERATOR)) {
-			if (isValidDataType(currentType)) {
+			if (!isValidDataType(currentType)) {
 				return false;
 			}
 		}
@@ -602,7 +602,7 @@ public enum EDataType implements IReplaceTester {
 	
 	@Override
 	public boolean canBeReplacedBy(Object obj) {
-		if (obj == null || !(obj instanceof EDataType)) {
+		if (obj == null || !(obj instanceof ESQFDataType)) {
 			return false;
 		}
 		
@@ -610,7 +610,7 @@ public enum EDataType implements IReplaceTester {
 			return true;
 		}
 		
-		return canBeUsedAs((EDataType) obj);
+		return canBeUsedAs((ESQFDataType) obj);
 	}
 	
 	@Override

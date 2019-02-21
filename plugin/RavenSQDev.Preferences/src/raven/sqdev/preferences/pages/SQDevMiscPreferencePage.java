@@ -47,7 +47,7 @@ import raven.sqdev.infoCollection.base.ELocality;
 import raven.sqdev.infoCollection.base.KeywordList;
 import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.misc.DataTypeList;
-import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.ESQFDataType;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.pluginManagement.ResourceManager;
@@ -637,7 +637,7 @@ public class SQDevMiscPreferencePage extends SQDevPreferencePage {
 									.trim();
 							String[] values = returnValues.split(DataTypeList.TYPE_SEPERATOR);
 							for (String returnValue : values) {
-								if (!EDataType.isValidDataType(returnValue)) {
+								if (!ESQFDataType.isValidDataType(returnValue)) {
 									syntaxText.setBackground(display.getSystemColor(SWT.COLOR_RED));
 									syntaxText.setToolTipText(
 											"Unknown data type \"" + returnValue + "\" on line " + line + "!");

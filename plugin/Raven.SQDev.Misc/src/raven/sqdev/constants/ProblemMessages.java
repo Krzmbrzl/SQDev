@@ -1,6 +1,6 @@
 package raven.sqdev.constants;
 
-import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.ESQFDataType;
 
 /**
  * A class providing all problem messages that can be displayed in the editor
@@ -142,11 +142,11 @@ public class ProblemMessages {
 	 *            The set of given types
 	 * @return the generated error message
 	 */
-	public static final String expectedTypeButGot(Iterable<EDataType> expected, Iterable<EDataType> got) {
+	public static final String expectedTypeButGot(Iterable<ESQFDataType> expected, Iterable<ESQFDataType> got) {
 		StringBuilder builder = new StringBuilder("Expected type ");
 		boolean multipleTypes = false;
 
-		for (EDataType currentType : expected) {
+		for (ESQFDataType currentType : expected) {
 			if (!multipleTypes) {
 				builder.append("\"" + currentType + "\"");
 				multipleTypes = true;
@@ -164,7 +164,7 @@ public class ProblemMessages {
 		builder.append(" but got ");
 
 		multipleTypes = false;
-		for (EDataType currentType : got) {
+		for (ESQFDataType currentType : got) {
 			if (!multipleTypes) {
 				builder.append("\"" + currentType + "\"");
 				multipleTypes = true;
@@ -192,7 +192,7 @@ public class ProblemMessages {
 	 *            be used)
 	 * @return The generated error message
 	 */
-	public static final String expectedType(EDataType type) {
+	public static final String expectedType(ESQFDataType type) {
 		return expectedType(type.toString());
 	}
 
@@ -203,11 +203,11 @@ public class ProblemMessages {
 	 *            A list of types that were expected
 	 * @return The generated error message
 	 */
-	public static final String expectedTypes(EDataType[] types) {
+	public static final String expectedTypes(ESQFDataType[] types) {
 		StringBuilder builder = new StringBuilder("Expected ");
 
 		for (int i = 0; i < types.length; i++) {
-			EDataType currentType = types[i];
+			ESQFDataType currentType = types[i];
 
 			if (i == 0) {
 				builder.append("\"" + currentType + "\"");

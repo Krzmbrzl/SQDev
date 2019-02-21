@@ -132,7 +132,7 @@ public class SQF_Editor extends BasicCodeEditor
 
 		macros = new HashMap<String, Macro>();
 		macroNames = new ArrayList<String>();
-		
+
 		setKeywords(getBasicConfiguration());
 		categorizeCommands();
 	}
@@ -167,7 +167,7 @@ public class SQF_Editor extends BasicCodeEditor
 				.createKeywordScanner(SQDevPreferenceConstants.SQDEV_EDITOR_FUNCTIONHIGHLIGHTING_COLOR_KEY, false);
 		functionProvider = new SQFFunctionProvider(this);
 		functionScanner.setKeywordProvider(functionProvider);
-		
+
 		// populate the magic vars with the standard ones
 		setMagicVariables(ParseUtil.getDefaultMagicVars(), false);
 	}
@@ -586,6 +586,16 @@ public class SQF_Editor extends BasicCodeEditor
 	protected void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
 
+		setupFunctionSupport(input);
+	}
+
+	/**
+	 * Sets up functions support for SQF functions
+	 * 
+	 * @param input
+	 *            The {@linkplain IEditorInput} of this editor
+	 */
+	protected void setupFunctionSupport(IEditorInput input) {
 		if (input instanceof FileEditorInput) {
 			IProject project = ((FileEditorInput) input).getFile().getProject();
 

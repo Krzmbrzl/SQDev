@@ -1,0 +1,8753 @@
+		<name>([^<]+)</name>
+		<loper>([^<]+)</loper>
+		<lopertype>([^<]+)</lopertype>
+		<roper>([^<]+)</roper>
+		<ropertype>([^<]+)</ropertype>
+		<returntype>([^<]+)</returntype>
+		<description>([^<]+)</description>
+		<example>([^<]+)</example>
+		<exResult>([^<]+)</exResult>
+		<category>([^<]+)</category>
+
+---
+
+	<Keyword>
+		\1
+	</Keyword>
+	<Description>
+		\7
+	</Description>
+	<Syntax>
+		\3 \1 \5
+	</Syntax>
+	<RawSyntax>
+		\2 \1 \4
+	</RawSyntax>
+	<Example>
+		$Code$\8$/Code$
+	</Example>
+	<ExamlpleResult>
+		\9
+	</ExamlpleResult>
+	<Note>
+		\10
+	</Note>
+	<ReturnValue>
+		\6
+	</ReturnValue>
+
+###
+
+
+<KeywordList>
+<KeywordType>
+	O2ScriptCommand
+</KeywordType>
+
+	<Keyword>
+		!
+	</Keyword>
+	<Description>
+		not a
+		Returns true, if an error has been reported during operation with stream.
+	</Description>
+	<Syntax>
+		! Boolean
+	</NextSyntax>
+		! IOStream
+	</Syntax>
+	<RawSyntax>
+		! a
+	</NextRawSyntax>
+		! stream
+	</RawSyntax>
+	<Example>
+		$Code$!true$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		false
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		!=
+	</Keyword>
+	<Description>
+		a is not equal to b
+		a is not equal to b (case insensitive)
+	</Description>
+	<Syntax>
+		Number != Number
+	</NextSyntax>
+		String != String
+	</Syntax>
+	<RawSyntax>
+		a != b
+	</NextRawSyntax>
+		a != b
+	</RawSyntax>
+	<Example>
+		$Code$counter != 4$/Code$
+		$Code$nameOfPlayer != "John Doe"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		%
+	</Keyword>
+	<Description>
+		The remainder of a divided by b. Note that the remainder is calculated in the real domain.
+	</Description>
+	<Syntax>
+		Number % Number
+	</Syntax>
+	<RawSyntax>
+		a % b
+	</RawSyntax>
+	<Example>
+		$Code$4.5 % 3$/Code$
+	</Example>
+	<ExamlpleResult>
+		1.5
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		&&
+	</Keyword>
+	<Description>
+		a and b
+	</Description>
+	<Syntax>
+		Boolean && Boolean
+	</Syntax>
+	<RawSyntax>
+		a && b
+	</RawSyntax>
+	<Example>
+		$Code$alive player && alive leader player$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		&=
+	</Keyword>
+	<Description>
+		Create intersection of selection 'a' and selection 'b'. Result is stored into selection 'a'.
+	</Description>
+	<Syntax>
+		Selection &= Selection
+	</Syntax>
+	<RawSyntax>
+		a &= b
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		*
+	</Keyword>
+	<Description>
+		a multiplied by b
+		Multiplies two matrices. It means, that two transformations is combined into one matrix in order. Note: a*b is not same as b*a, both creates different transformations
+	</Description>
+	<Syntax>
+		Number * Number
+	</NextSyntax>
+		Matrix * Matrix
+	</Syntax>
+	<RawSyntax>
+		a * b
+	</NextRawSyntax>
+		a * b
+	</RawSyntax>
+	<Example>
+		$Code$iCounter*3$/Code$
+		$Code$_t=_a*_b;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+		Matrix
+	</Note>
+	<ReturnValue>
+		Number - Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		+
+	</Keyword>
+	<Description>
+		unary plus: returns a
+		unary plus: returns a copy of the array
+		Creates new LODObject as copy of referenced object
+		Same as copy
+		Creates copy of object. It constructs copy with new owner
+		a plus b
+		arrayA and arrayB are concatenated.
+		stringA and stringB are concatenated.
+	</Description>
+	<Syntax>
+		+ Number
+	</NextSyntax>
+		+ Array
+	</NextSyntax>
+		+ LODObject
+	</NextSyntax>
+		+ ObjectData
+	</NextSyntax>
+		+ ObjectData
+	</NextSyntax>
+		Number + Number
+	</NextSyntax>
+		Array + Array
+	</NextSyntax>
+		String + String
+	</Syntax>
+	<RawSyntax>
+		+ a
+	</NextRawSyntax>
+		+ a
+	</NextRawSyntax>
+		+ LODObject
+	</NextRawSyntax>
+		+ sel
+	</NextRawSyntax>
+		+ mesh
+	</NextRawSyntax>
+		a + b
+	</NextRawSyntax>
+		arrayA + arrayB
+	</NextRawSyntax>
+		stringA + stringB
+	</RawSyntax>
+	<Example>
+		$Code$+4$/Code$
+		$Code$+ [0, 1, 2]$/Code$
+		$Code$_copy=copyLODObject _object$/Code$
+		$Code$_newsel= +_sel$/Code$
+		$Code$$/Code$
+		$Code$counter + 1$/Code$
+		$Code$[0, 1, 2] + [1, 2, 3]$/Code$
+		$Code$"I" + " am" + " blind"$/Code$
+	</Example>
+	<ExamlpleResult>
+		4
+		[0, 1, 2]
+		copy of object created
+		
+		
+		
+		[0, 1, 2, 1, 2, 3]
+		"I am blind"
+	</ExamlpleResult>
+	<Note>
+		Default
+		Default
+		O2ScriptLib::LODObjects
+		O2ScriptLib::Selection
+		O2ScriptLib::ObjectData
+		Default
+		Default
+		Default
+	</Note>
+	<ReturnValue>
+		Number - Array - LODObject - Selection - ObjectData - Number - Array - String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		+=
+	</Keyword>
+	<Description>
+		Adds b to a. Selection 'a' is changed
+	</Description>
+	<Syntax>
+		Selection += Selection
+	</Syntax>
+	<RawSyntax>
+		a += b
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		-
+	</Keyword>
+	<Description>
+		unary minus: zero minus a
+		a minus b
+		All elements in arrayB are removed from arrayA.
+	</Description>
+	<Syntax>
+		- Number
+	</NextSyntax>
+		Number - Number
+	</NextSyntax>
+		Array - Array
+	</Syntax>
+	<RawSyntax>
+		- a
+	</NextRawSyntax>
+		a - b
+	</NextRawSyntax>
+		arrayA - arrayB
+	</RawSyntax>
+	<Example>
+		$Code$- - 3$/Code$
+		$Code$counter - 1$/Code$
+		$Code$[0, 1, 2, 4, 0, 1, 2, 3, 4, 5] - [1, 2, 3]$/Code$
+	</Example>
+	<ExamlpleResult>
+		3
+		
+		[0, 4, 0, 4, 5]
+	</ExamlpleResult>
+	<Note>
+		Default
+		Default
+		Default
+	</Note>
+	<ReturnValue>
+		Number - Number - Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		-=
+	</Keyword>
+	<Description>
+		Removes b from a. Selection 'a' is changed
+	</Description>
+	<Syntax>
+		Selection -= Selection
+	</Syntax>
+	<RawSyntax>
+		a -= b
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		/
+	</Keyword>
+	<Description>
+		a divided by b
+	</Description>
+	<Syntax>
+		Number / Number
+	</Syntax>
+	<RawSyntax>
+		a / b
+	</RawSyntax>
+	<Example>
+		$Code$enemyStrenght/3$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		:
+	</Keyword>
+	<Description>
+		see switch
+	</Description>
+	<Syntax>
+		Switch Type : String
+	</Syntax>
+	<RawSyntax>
+		a : b
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		:=
+	</Keyword>
+	<Description>
+		Copies content of second object to first object
+		Copy object to another. Content of trg is replaced by copy of src.
+		Copies content of second object to first object
+	</Description>
+	<Syntax>
+		LODObject := LODObject
+	</NextSyntax>
+		ObjectData := ObjectData
+	</NextSyntax>
+		ObjectData := ObjectData
+	</Syntax>
+	<RawSyntax>
+		LODObject := LODObject
+	</NextRawSyntax>
+		trg := src
+	</NextRawSyntax>
+		object := object
+	</RawSyntax>
+	<Example>
+		$Code$this:=_object$/Code$
+		$Code$_b=getActiveObject newLODObject;_b:=_a; //_b is copy of _a$/Code$
+		$Code$this:=_object$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+		O2ScriptLib::ObjectData
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		LODObject - ObjectData - ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		<
+	</Keyword>
+	<Description>
+		a lesser than b
+	</Description>
+	<Syntax>
+		Number < Number
+	</Syntax>
+	<RawSyntax>
+		a < b
+	</RawSyntax>
+	<Example>
+		$Code$counter < 4$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		<<
+	</Keyword>
+	<Description>
+		Writes text into the stream.
+	</Description>
+	<Syntax>
+		IOStream << String
+	</Syntax>
+	<RawSyntax>
+		stream << text
+	</RawSyntax>
+	<Example>
+		$Code$stream<<"Hello "<<"world."$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		<=
+	</Keyword>
+	<Description>
+		a lesser or equal than b
+	</Description>
+	<Syntax>
+		Number <= Number
+	</Syntax>
+	<RawSyntax>
+		a <= b
+	</RawSyntax>
+	<Example>
+		$Code$player distance redCar <= 100$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		==
+	</Keyword>
+	<Description>
+		a equal to b
+		a equal to b (case insensitive)
+	</Description>
+	<Syntax>
+		Number == Number
+	</NextSyntax>
+		String == String
+	</Syntax>
+	<RawSyntax>
+		a == b
+	</NextRawSyntax>
+		a == b
+	</RawSyntax>
+	<Example>
+		$Code$counter == 4$/Code$
+		$Code$nameOfPlayer == "John Doe"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		>
+	</Keyword>
+	<Description>
+		a greater than b
+	</Description>
+	<Syntax>
+		Number > Number
+	</Syntax>
+	<RawSyntax>
+		a > b
+	</RawSyntax>
+	<Example>
+		$Code$counter > 4$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		>=
+	</Keyword>
+	<Description>
+		a greater or equal than b
+	</Description>
+	<Syntax>
+		Number >= Number
+	</Syntax>
+	<RawSyntax>
+		a >= b
+	</RawSyntax>
+	<Example>
+		$Code$player distance redCar < 100$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		@
+	</Keyword>
+	<Description>
+		Shortcut for select: array @ 1 is the same as array select 1
+		Various methods how to select subarray of array. Selection is defined from ,to but last element of array is excluded. Second parameter is optional, if not specified, remain of array is selected. If first parameter is negative, index is counted from end of array. If second parameter is negative, it specified length of subarray (in absolute form)
+		Select one character from string identified by index
+		Various methods how to select substring of string. It use the same style as selecting subarrays.Note: If you selecting abslute range, last character is excluded, see example:
+	</Description>
+	<Syntax>
+		Array @ Number
+	</NextSyntax>
+		Array @ Array
+	</NextSyntax>
+		String @ Number
+	</NextSyntax>
+		String @ Array
+	</Syntax>
+	<RawSyntax>
+		array @ idx
+	</NextRawSyntax>
+		array @ [from,to]
+	</NextRawSyntax>
+		string @ idx
+	</NextRawSyntax>
+		string @ [from,to]
+	</RawSyntax>
+	<Example>
+		$Code$["a","b",true,3,8] @ 1$/Code$
+		$Code$["a","b",true,3,8] @ [1,-3]$/Code$
+		$Code$"Hello" @ 2$/Code$
+		$Code$"Hello world" @ [2,7]$/Code$
+	</Example>
+	<ExamlpleResult>
+		"b"
+		["b",true,3]
+		"l"
+		llo w
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+		StringsArrays
+		StringsArrays
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		Anything - Array - String - String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		^
+	</Keyword>
+	<Description>
+		a raised to the power of b
+	</Description>
+	<Syntax>
+		Number ^ Number
+	</Syntax>
+	<RawSyntax>
+		a ^ b
+	</RawSyntax>
+	<Example>
+		$Code$count^4$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		|=
+	</Keyword>
+	<Description>
+		Create union of selection 'a' and selection 'b'. Result is stored into selection 'a'. There is little difference between |= and +=. |= takes maximum from two weights, += takes suma of two weights.
+	</Description>
+	<Syntax>
+		Selection |= Selection
+	</Syntax>
+	<RawSyntax>
+		a |= b
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		||
+	</Keyword>
+	<Description>
+		a or b
+	</Description>
+	<Syntax>
+		Boolean || Boolean
+	</Syntax>
+	<RawSyntax>
+		a || b
+	</RawSyntax>
+	<Example>
+		$Code$!alive player || !alive leader player$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		abs
+	</Keyword>
+	<Description>
+		The absolute value of x.
+	</Description>
+	<Syntax>
+		abs Number
+	</Syntax>
+	<RawSyntax>
+		abs x
+	</RawSyntax>
+	<Example>
+		$Code$abs -3$/Code$
+	</Example>
+	<ExamlpleResult>
+		3
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		acos
+	</Keyword>
+	<Description>
+		The arccosine of x, the result is in degrees.
+	</Description>
+	<Syntax>
+		acos Number
+	</Syntax>
+	<RawSyntax>
+		acos x
+	</RawSyntax>
+	<Example>
+		$Code$acos 0.5$/Code$
+	</Example>
+	<ExamlpleResult>
+		60
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		activeLevel
+	</Keyword>
+	<Description>
+		Gets index  of active level
+	</Description>
+	<Syntax>
+		activeLevel LODObject
+	</Syntax>
+	<RawSyntax>
+		activeLevel object
+	</RawSyntax>
+	<Example>
+		$Code$_level=activeLevel _object$/Code$
+	</Example>
+	<ExamlpleResult>
+		1.0
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		activeResolution
+	</Keyword>
+	<Description>
+		Gets resolution (or special level id)  of active level
+	</Description>
+	<Syntax>
+		activeResolution LODObject
+	</Syntax>
+	<RawSyntax>
+		activeResolution LODObject
+	</RawSyntax>
+	<Example>
+		$Code$_level=activeResolution _object; if (_level==LOD_VIEW_CARGO_GEOMETRY) echo "cargo"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		addAnimFrame
+	</Keyword>
+	<Description>
+		Creates new animation frame and assign it time. Returns index of created frame. It reindexes frames, so update all your variables that contain frame index.
+	</Description>
+	<Syntax>
+		ObjectData addAnimFrame Number
+	</Syntax>
+	<RawSyntax>
+		mesh addAnimFrame time
+	</RawSyntax>
+	<Example>
+		$Code$_newframe=_mesh addAnimFrame 0.5$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		addFace
+	</Keyword>
+	<Description>
+		Returns index of new face
+	</Description>
+	<Syntax>
+		addFace ObjectData
+	</Syntax>
+	<RawSyntax>
+		addFace object
+	</RawSyntax>
+	<Example>
+		$Code$_nwfc=face addFace _object;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		addLevel
+	</Keyword>
+	<Description>
+		Creates new level and returns it. Added level becomes active
+	</Description>
+	<Syntax>
+		addLevel LODObject
+	</Syntax>
+	<RawSyntax>
+		addLevel LODObject
+	</RawSyntax>
+	<Example>
+		$Code$_object=AddLevel _p3d;$/Code$
+	</Example>
+	<ExamlpleResult>
+		ObjectData
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		addPoint
+	</Keyword>
+	<Description>
+		Creates new points and returns its index.
+	</Description>
+	<Syntax>
+		ObjectData addPoint Array
+	</Syntax>
+	<RawSyntax>
+		object addPoint vector
+	</RawSyntax>
+	<Example>
+		$Code$_mesh addPoint [0,0,0]$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		and
+	</Keyword>
+	<Description>
+		a and b
+	</Description>
+	<Syntax>
+		Boolean and Boolean
+	</Syntax>
+	<RawSyntax>
+		a and b
+	</RawSyntax>
+	<Example>
+		$Code$alive player and alive leader player$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		as
+	</Keyword>
+	<Description>
+		Returns clone of object but with another name
+		Returns selection with name
+	</Description>
+	<Syntax>
+		LODObject as String
+	</NextSyntax>
+		Selection as String
+	</Syntax>
+	<RawSyntax>
+		LODObject as String
+	</NextRawSyntax>
+		sel as name
+	</RawSyntax>
+	<Example>
+		$Code$_copy=copyLODObject _object as "test.p3d";$/Code$
+		$Code$_object save _sel as "my selection";$/Code$
+	</Example>
+	<ExamlpleResult>
+		LODObject
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		LODObject - Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		asc
+	</Keyword>
+	<Description>
+		Returns ascii code of first character
+	</Description>
+	<Syntax>
+		asc String
+	</Syntax>
+	<RawSyntax>
+		asc a
+	</RawSyntax>
+	<Example>
+		$Code$asc "A"$/Code$
+	</Example>
+	<ExamlpleResult>
+		65
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		asin
+	</Keyword>
+	<Description>
+		The arcsine of x, the result is in degrees.
+	</Description>
+	<Syntax>
+		asin Number
+	</Syntax>
+	<RawSyntax>
+		asin x
+	</RawSyntax>
+	<Example>
+		$Code$asin 0.5$/Code$
+	</Example>
+	<ExamlpleResult>
+		30
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		assert
+	</Keyword>
+	<Description>
+		Tests a condition and if the condition is false, halts the program.
+	</Description>
+	<Syntax>
+		assert Boolean
+	</Syntax>
+	<RawSyntax>
+		assert codition
+	</RawSyntax>
+	<Example>
+		$Code$assert (_x>0)$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		atan
+	</Keyword>
+	<Description>
+		The arctangens of x, the result is in degrees.
+	</Description>
+	<Syntax>
+		atan Number
+	</Syntax>
+	<RawSyntax>
+		atan x
+	</RawSyntax>
+	<Example>
+		$Code$atan 1$/Code$
+	</Example>
+	<ExamlpleResult>
+		45
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		atan2
+	</Keyword>
+	<Description>
+		Returns the arctangens of x/y. The returned value is in degrees, in the range from -180 to +180, using the signs of both parameters to determine the quadrant of the returned value.
+	</Description>
+	<Syntax>
+		Number atan2 Number
+	</Syntax>
+	<RawSyntax>
+		x atan2 y
+	</RawSyntax>
+	<Example>
+		$Code$5 atan2 3$/Code$
+	</Example>
+	<ExamlpleResult>
+		59.0362
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		atg
+	</Keyword>
+	<Description>
+		The arctangens of x, the result is in degrees.
+	</Description>
+	<Syntax>
+		atg Number
+	</Syntax>
+	<RawSyntax>
+		atg x
+	</RawSyntax>
+	<Example>
+		$Code$atg 1$/Code$
+	</Example>
+	<ExamlpleResult>
+		45
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		backupFile
+	</Keyword>
+	<Description>
+		Renames file to file.bak. It useful before saving new version of file.Returns name of backup file. Note: It returns backup name even if original file doesn't exists (this means when there is nothing to backup). Operator returns empty string, when backup cannot be created due an error (file is R/O, cannot delete old backup, cannot move original file, disk integrity error etc.)
+	</Description>
+	<Syntax>
+		backupFile String
+	</Syntax>
+	<RawSyntax>
+		backupFile file
+	</RawSyntax>
+	<Example>
+		$Code$_backup= backupFile nameOf object;if (_backup!=) then {save object;};$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		breakOut
+	</Keyword>
+	<Description>
+		Breaks block out scope named 'name'. Nil is returned.
+	</Description>
+	<Syntax>
+		breakOut String
+	</Syntax>
+	<RawSyntax>
+		breakOut name
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		breakTo
+	</Keyword>
+	<Description>
+		Breaks block to scope named 'name'. Nil is returned.
+	</Description>
+	<Syntax>
+		breakTo String
+	</Syntax>
+	<RawSyntax>
+		breakTo name
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		call
+	</Keyword>
+	<Description>
+		Executes the function body. Argument pars is passed as _this.
+		Executes the given code.
+	</Description>
+	<Syntax>
+		Any Value call String
+	</NextSyntax>
+		call String
+	</Syntax>
+	<RawSyntax>
+		pars call body
+	</NextRawSyntax>
+		call code
+	</RawSyntax>
+	<Example>
+		$Code$[1,2] call {(_this select 0)+(_this select 1)}$/Code$
+		$Code$call {"x=2"}$/Code$
+	</Example>
+	<ExamlpleResult>
+		3
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+		Default
+	</Note>
+	<ReturnValue>
+		Anything - Anything
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		callRuntime
+	</Keyword>
+	<Description>
+		Call a O2 runtime procedure. `name` specified name of procedure
+	</Description>
+	<Syntax>
+		ObjectData callRuntime String
+	</Syntax>
+	<RawSyntax>
+		mesh callRuntime name
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Anything
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		case
+	</Keyword>
+	<Description>
+		see switch
+	</Description>
+	<Syntax>
+		case Anything
+	</Syntax>
+	<RawSyntax>
+		case b
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Switch - Type
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		catch
+	</Keyword>
+	<Description>
+		processes code, when exception is thrown in try block
+	</Description>
+	<Syntax>
+		catch String
+	</Syntax>
+	<RawSyntax>
+		try-Block catch code
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Anything
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		ceil
+	</Keyword>
+	<Description>
+		The ceil value of x.
+	</Description>
+	<Syntax>
+		ceil Number
+	</Syntax>
+	<RawSyntax>
+		ceil x
+	</RawSyntax>
+	<Example>
+		$Code$ceil 5.25$/Code$
+	</Example>
+	<ExamlpleResult>
+		6
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		centerOf
+	</Keyword>
+	<Description>
+		Calculates center of selection
+	</Description>
+	<Syntax>
+		centerOf Selection
+	</Syntax>
+	<RawSyntax>
+		centerOf sel
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		CEsc
+	</Keyword>
+	<Description>
+		Creates string from source usign C/C++ escapes
+	</Description>
+	<Syntax>
+		CEsc String
+	</Syntax>
+	<RawSyntax>
+		CEsc string
+	</RawSyntax>
+	<Example>
+		$Code$CEsc "\r\n$/Code$
+	</Example>
+	<ExamlpleResult>
+		new line
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		checkSelectionName
+	</Keyword>
+	<Description>
+		Checks that selection 'name' exists in 'object'
+	</Description>
+	<Syntax>
+		ObjectData checkSelectionName String
+	</Syntax>
+	<RawSyntax>
+		object checkSelectionName name
+	</RawSyntax>
+	<Example>
+		$Code$_result=_object checkSelectionName "machine gun";$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		chr
+	</Keyword>
+	<Description>
+		Returns character identified by ascii code
+	</Description>
+	<Syntax>
+		chr Number
+	</Syntax>
+	<RawSyntax>
+		chr a
+	</RawSyntax>
+	<Example>
+		$Code$chr 65$/Code$
+	</Example>
+	<ExamlpleResult>
+		"A"
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		cleanDoublePoly
+	</Keyword>
+	<Description>
+		Removes all currently selected double polygons (polygons are chosen without respect to mapping).
+	</Description>
+	<Syntax>
+		cleanDoublePoly ObjectData
+	</Syntax>
+	<RawSyntax>
+		cleanDoublePoly object
+	</RawSyntax>
+	<Example>
+		$Code$cleanDoublePoly _level;$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if no error
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ObjToolJoinProxy
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		comment
+	</Keyword>
+	<Description>
+		This function does nothing. It's used to create comments.
+	</Description>
+	<Syntax>
+		comment String
+	</Syntax>
+	<RawSyntax>
+		comment comment
+	</RawSyntax>
+	<Example>
+		$Code$comment "This is a comment."$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		copy
+	</Keyword>
+	<Description>
+		Creates copy of selection
+	</Description>
+	<Syntax>
+		copy ObjectData
+	</Syntax>
+	<RawSyntax>
+		copy sel
+	</RawSyntax>
+	<Example>
+		$Code$_newsel=copy _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		copyFileTo
+	</Keyword>
+	<Description>
+		Copies one file into another. Function will fail, if target file exists. Use deleteFile, to delete target file, or use backupFile to create backup of target file.
+	</Description>
+	<Syntax>
+		String copyFileTo String
+	</Syntax>
+	<RawSyntax>
+		file1 copyFileTo file2
+	</RawSyntax>
+	<Example>
+		$Code$_result="test1.txt" copyFileTo "test2.txt"$/Code$
+	</Example>
+	<ExamlpleResult>
+		Returns true, if successful.
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		copyFrame
+	</Keyword>
+	<Description>
+		Copies srcframe frame into trgframe frame.
+	</Description>
+	<Syntax>
+		ObjectData copyFrame Array
+	</Syntax>
+	<RawSyntax>
+		mesh copyFrame [trgframe,srcframe]
+	</RawSyntax>
+	<Example>
+		$Code$_mesh copyFrame [2,1]; //copy frame 1 into frame 2$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		copyLODObject
+	</Keyword>
+	<Description>
+		Creates new LODObject as copy of referenced object
+	</Description>
+	<Syntax>
+		copyLODObject LODObject
+	</Syntax>
+	<RawSyntax>
+		copyLODObject LODObject
+	</RawSyntax>
+	<Example>
+		$Code$_copy=copyLODObject _object$/Code$
+	</Example>
+	<ExamlpleResult>
+		copy of object created
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		LODObject
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		cos
+	</Keyword>
+	<Description>
+		The cosine of x, the argument is in degrees.
+	</Description>
+	<Syntax>
+		cos Number
+	</Syntax>
+	<RawSyntax>
+		cos x
+	</RawSyntax>
+	<Example>
+		$Code$cos 60$/Code$
+	</Example>
+	<ExamlpleResult>
+		0.5
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		count
+	</Keyword>
+	<Description>
+		The number of elements in the array.
+		Returns count of characters in string.
+		Returns number of levels in object
+		Counts the elements in the array for which the given condition is true. It is calculated as follows: 1) Set the count to 0. 2) For each element in the array assign an element as _x and evaluate the condition expression. If it's true, increase the count.
+	</Description>
+	<Syntax>
+		count Array
+	</NextSyntax>
+		count String
+	</NextSyntax>
+		count LODObject
+	</NextSyntax>
+		String count Array
+	</Syntax>
+	<RawSyntax>
+		count array
+	</NextRawSyntax>
+		count string
+	</NextRawSyntax>
+		count LODObject
+	</NextRawSyntax>
+		condition count array
+	</RawSyntax>
+	<Example>
+		$Code$count [0,0,1,2]$/Code$
+		$Code$count "Test"$/Code$
+		$Code$$/Code$
+		$Code$"_x > 2" count [0, 1, 1, 2, 3, 3]$/Code$
+	</Example>
+	<ExamlpleResult>
+		4
+		4
+		
+		2
+	</ExamlpleResult>
+	<Note>
+		Default
+		StringsArrays
+		O2ScriptLib::LODObjects
+		Default
+	</Note>
+	<ReturnValue>
+		Number - Number - Number - Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		countAnimations
+	</Keyword>
+	<Description>
+		Counts animations in object
+	</Description>
+	<Syntax>
+		countAnimations ObjectData
+	</Syntax>
+	<RawSyntax>
+		countAnimations object
+	</RawSyntax>
+	<Example>
+		$Code$_nanims=countAnimations _object$/Code$
+	</Example>
+	<ExamlpleResult>
+		count of animations in objects
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		countFaces
+	</Keyword>
+	<Description>
+		Counts  faces in object
+		Returns count of selected faces
+	</Description>
+	<Syntax>
+		countFaces ObjectData
+	</NextSyntax>
+		countFaces Selection
+	</Syntax>
+	<RawSyntax>
+		countFaces object
+	</NextRawSyntax>
+		countFaces sel
+	</RawSyntax>
+	<Example>
+		$Code$_nfaces=countFaces _object$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		count of faces in object
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Number - Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		countPoints
+	</Keyword>
+	<Description>
+		Counts points in object
+		Returns count of selected points
+	</Description>
+	<Syntax>
+		countPoints ObjectData
+	</NextSyntax>
+		countPoints Selection
+	</Syntax>
+	<RawSyntax>
+		countPoints object
+	</NextRawSyntax>
+		countPoints sel
+	</RawSyntax>
+	<Example>
+		$Code$_npoints=countPoints _object$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		count of points in objects
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Number - Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		createFolder
+	</Keyword>
+	<Description>
+		Creates new folde. You can specify full pathname for new folder, but all referenced folders specified in path must exist (of course, except last - name of folder)
+	</Description>
+	<Syntax>
+		createFolder String
+	</Syntax>
+	<RawSyntax>
+		createFolder folderName
+	</RawSyntax>
+	<Example>
+		$Code$_result = createFolder "p:\ofp\testing\"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		createFolderEx
+	</Keyword>
+	<Description>
+		Creates new folder. You can specify full pathname for new folder. If specified path doesn't exists, creates it
+	</Description>
+	<Syntax>
+		createFolderEx String
+	</Syntax>
+	<RawSyntax>
+		createFolderEx folderName
+	</RawSyntax>
+	<Example>
+		$Code$_result = createFolderEx "p:\ofp\testing\"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		createLODObject
+	</Keyword>
+	<Description>
+		Creates new LODObject, by merging all proxies specified by their names. The result object will be created in the coordinate system of the object owning proxies if "allow shift" is false. Otherwise the result object will be created in the coordinate system of the first proxy.
+	</Description>
+	<Syntax>
+		ObjectData createLODObject Array
+	</Syntax>
+	<RawSyntax>
+		object createLODObject [proxies, project root, allow shift]
+	</RawSyntax>
+	<Example>
+		$Code$_object createLODObject [["proxy:\model.01","proxy:\model.02"], "P:\", false];$/Code$
+	</Example>
+	<ExamlpleResult>
+		created LODObject
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ObjToolJoinProxy
+	</Note>
+	<ReturnValue>
+		LODObject
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		createProxiesFromGroups
+	</Keyword>
+	<Description>
+		Creates LODObjects by merging proxies in groups (a named selections containing proxies). Each group is replaced by the proxy referencing to the created LODObjects. The LODObjects are saved into file defined by "project root" and the group name without the group prefix path. Only groups with name starting with "group prefix" are processed.
+	</Description>
+	<Syntax>
+		ObjectData createProxiesFromGroups Array
+	</Syntax>
+	<RawSyntax>
+		object createProxiesFromGroups [group prefix, project root]
+	</RawSyntax>
+	<Example>
+		$Code$_object createProxiesFromGroups ["-sbp.","P:\"];$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if no error
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ObjToolJoinProxy
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		createProxy
+	</Keyword>
+	<Description>
+		Function creates
+	</Description>
+	<Syntax>
+		ObjectData createProxy Array
+	</Syntax>
+	<RawSyntax>
+		mesh createProxy [proxyname,pin]
+	</RawSyntax>
+	<Example>
+		$Code$_newobj=_mesh selectionToProxy ["hlava","\data\hlava\hlava.p3d"]$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		createProxyGroups
+	</Keyword>
+	<Description>
+		Creates selections containing currently selected proxies. Those selections are called groups. Functions tries to create compact groups, where proxies in group are close to each other.
+	</Description>
+	<Syntax>
+		ObjectData createProxyGroups Array
+	</Syntax>
+	<RawSyntax>
+		object createProxyGroups [group name,min members in group, max members in group]
+	</RawSyntax>
+	<Example>
+		$Code$_object createProxyGroups ["-sbp.group",5,10];$/Code$
+	</Example>
+	<ExamlpleResult>
+		number of created groups
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ObjToolJoinProxy
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		default
+	</Keyword>
+	<Description>
+		see switch
+	</Description>
+	<Syntax>
+		default String
+	</Syntax>
+	<RawSyntax>
+		default a
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		deg
+	</Keyword>
+	<Description>
+		Converts x from radians to degrees.
+	</Description>
+	<Syntax>
+		deg Number
+	</Syntax>
+	<RawSyntax>
+		deg x
+	</RawSyntax>
+	<Example>
+		$Code$deg 1$/Code$
+	</Example>
+	<ExamlpleResult>
+		57.295
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		deleteAllFrames
+	</Keyword>
+	<Description>
+		Deletes all frames in object.
+	</Description>
+	<Syntax>
+		deleteAllFrames ObjectData
+	</Syntax>
+	<RawSyntax>
+		deleteAllFrames mesh
+	</RawSyntax>
+	<Example>
+		$Code$deleteAllFrames _mesh;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		deleteAnimFrame
+	</Keyword>
+	<Description>
+		Deletes frame specified by index. Returns new count of animations in mesh. It reindexes frames, so update all your variables that contain frame index
+	</Description>
+	<Syntax>
+		ObjectData deleteAnimFrame Number
+	</Syntax>
+	<RawSyntax>
+		mesh deleteAnimFrame frame
+	</RawSyntax>
+	<Example>
+		$Code$_mesh deleteAnimFrame 5;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		deleteFile
+	</Keyword>
+	<Description>
+		Deletes file. Returns true, if operation was successful
+	</Description>
+	<Syntax>
+		deleteFile String
+	</Syntax>
+	<RawSyntax>
+		deleteFile file
+	</RawSyntax>
+	<Example>
+		$Code$deleteFile "test.txt"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		deleteLevel
+	</Keyword>
+	<Description>
+		Deletes specified level. After it, levels are reindexed
+	</Description>
+	<Syntax>
+		LODObject deleteLevel Number
+	</Syntax>
+	<RawSyntax>
+		LODObject deleteLevel Scalar
+	</RawSyntax>
+	<Example>
+		$Code$while "_p3d DeleteLevel 0" {};$/Code$
+	</Example>
+	<ExamlpleResult>
+		true
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		deleteSelected
+	</Keyword>
+	<Description>
+		Deletes points and faces on source model
+	</Description>
+	<Syntax>
+		deleteSelected Selection
+	</Syntax>
+	<RawSyntax>
+		deleteSelected sel
+	</RawSyntax>
+	<Example>
+		$Code$_arr=getSelectedPoints _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		deleteSelection
+	</Keyword>
+	<Description>
+		Deletes selection with name in object. It does'n affect selections in variables
+	</Description>
+	<Syntax>
+		ObjectData deleteSelection String
+	</Syntax>
+	<RawSyntax>
+		object deleteSelection name
+	</RawSyntax>
+	<Example>
+		$Code$_result=_object deleteSelection "machine gun";$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dialogBox
+	</Keyword>
+	<Description>
+		Starts dialog. Returns ID of button that closes dialog
+	</Description>
+	<Syntax>
+		dialogBox Array
+	</Syntax>
+	<RawSyntax>
+		dialogBox desc
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dlgClose
+	</Keyword>
+	<Description>
+		Closes dialogs. 'res' specified result of dialog. 1 often means OK button, 2 means Cancel button. This command should be the last command in event procedure.
+	</Description>
+	<Syntax>
+		dlgClose Number
+	</Syntax>
+	<RawSyntax>
+		dlgClose res
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dlgEnableControl
+	</Keyword>
+	<Description>
+		Enables control in dialog. 'controlID' specified a control identifier, that can be optained by dlgGetControl function. 'enable' can be true=control is enabled or false=control is disabled
+	</Description>
+	<Syntax>
+		Number dlgEnableControl Boolean
+	</Syntax>
+	<RawSyntax>
+		controlID dlgEnableControl enable
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dlgGetControls
+	</Keyword>
+	<Description>
+		Returns array of controls' IDs for specified name of variable. One variable can be attached with more controls. If control is named, name is specified starting with '#'
+	</Description>
+	<Syntax>
+		dlgGetControls String
+	</Syntax>
+	<RawSyntax>
+		dlgGetControls controlName/variable
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dlgSetFocus
+	</Keyword>
+	<Description>
+		Sets focus to another control. It triggers 'onexit'('onexitchanged') and 'onenter' events
+	</Description>
+	<Syntax>
+		dlgSetFocus Number
+	</Syntax>
+	<RawSyntax>
+		dlgSetFocus controlID
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dlgUpdate
+	</Keyword>
+	<Description>
+		Updates the dialog to reflect value of 'variable'. It is usefull to update dialog before event procedure reach its end. There are little disadvantages: Updating may slow script processing, some events may be triggered in reaction that controls are updated.
+	</Description>
+	<Syntax>
+		dlgUpdate String
+	</Syntax>
+	<RawSyntax>
+		dlgUpdate variable
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dlgUpdateList
+	</Keyword>
+	<Description>
+		Updates list in control - applicable with comboboxes or listboxes. Completly removes all strings from list and loads new list from _newlist variable. NOTE: Current selection will be remove, so don't forget call dlgUpdate.
+	</Description>
+	<Syntax>
+		String dlgUpdateList Array
+	</Syntax>
+	<RawSyntax>
+		controlName dlgUpdateList _newlist
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dlgUpdateMCList
+	</Keyword>
+	<Description>
+		Function updates block of items in multi-collumn list. Parameters are:<br /><br />newitems - array of items. Each item is array of fields, and each field is assigned to column. Example: [[col1,col2,col3],[col1,col2,col3],...,[col1,col2,col3]]<br />firstItem - index of first item to update<br />count - count of items to update. The count don't need match the count of new items. List will remove or add extra items. Count=0 - Only inserts new items, Count=-1 replaces all items from firstItem till end. If you specify positive count and newitems is empty, function deletes count items.
+	</Description>
+	<Syntax>
+		String dlgUpdateMCList Array
+	</Syntax>
+	<RawSyntax>
+		controlName dlgUpdateMCList [newitems,firstItem,count]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		Count if items in listView
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+
+
+	<Keyword>
+		dlgVisibleControl
+	</Keyword>
+	<Description>
+		Changes visibility of a control. 'controlID' specified a control identifier, that can be optained by dlgGetControl function. 'visible' can be true=control is visible or false=control is hidden
+	</Description>
+	<Syntax>
+		Number dlgVisibleControl Boolean
+	</Syntax>
+	<RawSyntax>
+		controlID dlgVisibleControl visible
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		dlgWaitCursor
+	</Keyword>
+	<Description>
+		Shows wait cursor during long operation is processed. Wait cursor is changed to normal when event procedure is finished
+	</Description>
+	<Syntax>
+		dlgWaitCursor
+	</Syntax>
+	<RawSyntax>
+		dlgWaitCursor
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		do
+	</Keyword>
+	<Description>
+		Repeats the code while the condition is true. Note: the maximum repeat count for the loop is 10000. If the condition is still true after the loop was repeated 10000 times, the loop will be terminated and an error message is shown.
+		End of for command, starts cycle
+		Switch form
+	</Description>
+	<Syntax>
+		While Type do String
+	</NextSyntax>
+		for type do String
+	</NextSyntax>
+		Switch Type do String
+	</Syntax>
+	<RawSyntax>
+		while do code
+	</NextRawSyntax>
+		forCommand do code
+	</NextRawSyntax>
+		switch do block
+	</RawSyntax>
+	<Example>
+		$Code$while "a>b" do {a=a+1}$/Code$
+		$Code$for "_x" from 20 to 10 step -2 do {..code..}$/Code$
+		$Code$switch (_a) do { case 1: {block}; case 2 : {block}; default {block};}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+		Default
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing - Anything - Anything
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		eatWS
+	</Keyword>
+	<Description>
+		Ignores all waitspace (spaces, tabs, new-lines etc), unitil any other character found, or end of file reached.
+	</Description>
+	<Syntax>
+		eatWS IOStream
+	</Syntax>
+	<RawSyntax>
+		eatWS stream
+	</RawSyntax>
+	<Example>
+		$Code$eatWS stream exploreFor "[_a-zA-Z][_a-zA-Z0-9]*"$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if stream contain identifier. Before test, all waitspaces is skipped
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		eatWSEOL
+	</Keyword>
+	<Description>
+		Ignores all waitspace u(spaces, tabs, etc), unitil any other character found, or end of line or end of file reached. End of line delimiter is not skipped, but it can be skipped by ignore command
+	</Description>
+	<Syntax>
+		eatWSEOL IOStream
+	</Syntax>
+	<RawSyntax>
+		eatWSEOL stream
+	</RawSyntax>
+	<Example>
+		$Code$eatWSEOL stream exploreFor ignore 0$/Code$
+	</Example>
+	<ExamlpleResult>
+		eats whitespace until new line, then new line delimiter is skipped
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		echo
+	</Keyword>
+	<Description>
+		Sends any text into the debugger console or the logfile.
+	</Description>
+	<Syntax>
+		echo String
+	</Syntax>
+	<RawSyntax>
+		echo text
+	</RawSyntax>
+	<Example>
+		$Code$echo "Text in logfile"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		else
+	</Keyword>
+	<Description>
+		Constructs an array that can be processed by <f>then</f>.
+	</Description>
+	<Syntax>
+		String else String
+	</Syntax>
+	<RawSyntax>
+		ifCode else elseCode
+	</RawSyntax>
+	<Example>
+		$Code$if (a>b) then {c=0} else {c=1}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+
+
+	<Keyword>
+		eof
+	</Keyword>
+	<Description>
+		Returns true, if stream reached end.
+	</Description>
+	<Syntax>
+		eof IOStream
+	</Syntax>
+	<RawSyntax>
+		eof stream
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		eoln
+	</Keyword>
+	<Description>
+		Returns end of line for streams. It also can be used with strings. Result is \r\n
+	</Description>
+	<Syntax>
+		eoln
+	</Syntax>
+	<RawSyntax>
+		eoln
+	</RawSyntax>
+	<Example>
+		$Code$stream << "line1" << eoln << "line2" << eoln$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		exitWith
+	</Keyword>
+	<Description>
+		if result of condition is true, evaluates code, and current block with result of code
+	</Description>
+	<Syntax>
+		If Type exitWith String
+	</Syntax>
+	<RawSyntax>
+		if exitWith code
+	</RawSyntax>
+	<Example>
+		$Code$if (_x>5) exitWith {echo "_x is too big";_x}$/Code$
+	</Example>
+	<ExamlpleResult>
+		[when _x is greater then 5, outputs message and terminates code in current level with value of _x
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Anything
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		exp
+	</Keyword>
+	<Description>
+		The exponential value of x.
+	</Description>
+	<Syntax>
+		exp Number
+	</Syntax>
+	<RawSyntax>
+		exp x
+	</RawSyntax>
+	<Example>
+		$Code$exp 1$/Code$
+	</Example>
+	<ExamlpleResult>
+		2.7182
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		exploreFor
+	</Keyword>
+	<Description>
+		Explores input stream for pattern. Regular expression is used. It doesn't affect state of input stream, so multiple explores can be called, until request pattern match. More informations about regular expressions at www.regexp.cz
+	</Description>
+	<Syntax>
+		IOStream exploreFor String
+	</Syntax>
+	<RawSyntax>
+		stream exploreFor "pattern"
+	</RawSyntax>
+	<Example>
+		$Code$stream exploreFor "-?[0-9]+"$/Code$
+	</Example>
+	<ExamlpleResult>
+		returns true, if streams contain any integer number
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		exportBiTXT_Edges
+	</Keyword>
+	<Description>
+		Saves (exports) LODObject to BiTXT file. Sharp edges are exported as list of edges. It doesn't change internal name of object.
+	</Description>
+	<Syntax>
+		LODObject exportBiTXT_Edges String
+	</Syntax>
+	<RawSyntax>
+		p3d exportBiTXT_Edges name
+	</RawSyntax>
+	<Example>
+		$Code$p3d exportBiTXT<SG> "shape.txt";$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if file has been successfully exported.
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ImportBiTXT
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		exportBiTXT_Normals
+	</Keyword>
+	<Description>
+		Saves (exports) LODObject to BiTXT file. Each face also contain normal vectors. It doesn't change internal name of object.
+	</Description>
+	<Syntax>
+		LODObject exportBiTXT_Normals String
+	</Syntax>
+	<RawSyntax>
+		p3d exportBiTXT_Normals name
+	</RawSyntax>
+	<Example>
+		$Code$p3d exportBiTXT<SG> "shape.txt";$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if file has been successfully exported.
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ImportBiTXT
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		exportBiTXT_SG
+	</Keyword>
+	<Description>
+		Saves (exports) LODObject to BiTXT file. Sharp edges are exported as smoothgroups. It doesn't change internal name of object.
+	</Description>
+	<Syntax>
+		LODObject exportBiTXT_SG String
+	</Syntax>
+	<RawSyntax>
+		p3d exportBiTXT_SG name
+	</RawSyntax>
+	<Example>
+		$Code$p3d exportBiTXT<SG> "shape.txt";$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if file has been successfully exported.
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ImportBiTXT
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		exportRTM
+	</Keyword>
+	<Description>
+		Exports RTM from animation. Returns true, when success. Function excepted normalized animation and properties step and XStep defined
+	</Description>
+	<Syntax>
+		ObjectData exportRTM String
+	</Syntax>
+	<RawSyntax>
+		mesh exportRTM filename
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		face
+	</Keyword>
+	<Description>
+		Returns face indexed by index.
+	</Description>
+	<Syntax>
+		ObjectData face Number
+	</Syntax>
+	<RawSyntax>
+		object face index
+	</RawSyntax>
+	<Example>
+		$Code$_object face 10 setTexture "example.paa";$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		FaceT
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		false
+	</Keyword>
+	<Description>
+		Always false.
+	</Description>
+	<Syntax>
+		false
+	</Syntax>
+	<RawSyntax>
+		false
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		find
+	</Keyword>
+	<Description>
+		Finds substring in string.
+	</Description>
+	<Syntax>
+		String find String
+	</Syntax>
+	<RawSyntax>
+		string find what
+	</RawSyntax>
+	<Example>
+		$Code$"one two three" find "two"$/Code$
+	</Example>
+	<ExamlpleResult>
+		4
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		findi
+	</Keyword>
+	<Description>
+		Finds substring in string case insensitive.
+	</Description>
+	<Syntax>
+		String findi String
+	</Syntax>
+	<RawSyntax>
+		string findi what
+	</RawSyntax>
+	<Example>
+		$Code$"one two three" findi "TWO"$/Code$
+	</Example>
+	<ExamlpleResult>
+		4
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		findLevel
+	</Keyword>
+	<Description>
+		Finds level by resolution. If resolution doesn't exists, finds nearest
+	</Description>
+	<Syntax>
+		LODObject findLevel Number
+	</Syntax>
+	<RawSyntax>
+		LODObject findLevel Scalar
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		findLevelSpecial
+	</Keyword>
+	<Description>
+		Finds special level. use LOD_ constants to specify special level
+	</Description>
+	<Syntax>
+		LODObject findLevelSpecial Number
+	</Syntax>
+	<RawSyntax>
+		LODObject findLevelSpecial Scalar
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		finite
+	</Keyword>
+	<Description>
+		True, if number is finite (not infinite and valid number)
+	</Description>
+	<Syntax>
+		finite Number
+	</Syntax>
+	<RawSyntax>
+		finite x
+	</RawSyntax>
+	<Example>
+		$Code$finite 10/0$/Code$
+	</Example>
+	<ExamlpleResult>
+		false
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		floor
+	</Keyword>
+	<Description>
+		The floor value of x.
+	</Description>
+	<Syntax>
+		floor Number
+	</Syntax>
+	<RawSyntax>
+		floor x
+	</RawSyntax>
+	<Example>
+		$Code$floor 5.25 $/Code$
+	</Example>
+	<ExamlpleResult>
+		5
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		for
+	</Keyword>
+	<Description>
+		creates cycle, using C like style. See example.
+		Starts for sequence, use in complette form(see example).
+	</Description>
+	<Syntax>
+		for Array
+	</NextSyntax>
+		for String
+	</Syntax>
+	<RawSyntax>
+		for forspec
+	</NextRawSyntax>
+		for var
+	</RawSyntax>
+	<Example>
+		$Code$for ["_x=1";"_x<=10";"_x=_x+1"] do {echo str _x+",";}$/Code$
+		$Code$for "_x" from 1 to 10 do {echo str _x+",";}$/Code$
+	</Example>
+	<ExamlpleResult>
+		1,2,3,4,5,6,7,8,9,10
+		1,2,3,4,5,6,7,8,9,10
+	</ExamlpleResult>
+	<Note>
+		Default
+		Default
+	</Note>
+	<ReturnValue>
+		for type - for type
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		forEach
+	</Keyword>
+	<Description>
+		Executes the given command for each element in array. It's executed as follows: for each element of array an element is assigned as _x and the command is executed.
+	</Description>
+	<Syntax>
+		String forEach Array
+	</Syntax>
+	<RawSyntax>
+		command forEach array
+	</RawSyntax>
+	<Example>
+		$Code$"_x setdammage 1" forEach units group player$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		forEachFace
+	</Keyword>
+	<Description>
+		Call 'operation' for each face in object. 'condition' string that is evaluated for each face. If 'condition' returns true, 'operation' is evaluated. 'back' is optional (default false). If true, enumeration is processed from end to begin
+	</Description>
+	<Syntax>
+		ObjectData forEachFace Array
+	</Syntax>
+	<RawSyntax>
+		object forEachFace [condition,operation,back]
+	</RawSyntax>
+	<Example>
+		$Code$same kind as forEachPoint$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Anything
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		forEachPoint
+	</Keyword>
+	<Description>
+		Call 'operation' for each point in object. 'condition' string that is evaluated for each point. If 'condition' returns true, 'operation' is evaluated. 'back' is optional (default false). If true, enumeration is processed from end to begin
+	</Description>
+	<Syntax>
+		ObjectData forEachPoint Array
+	</Syntax>
+	<RawSyntax>
+		object forEachPoint [condition,operation,back]
+	</RawSyntax>
+	<Example>
+		$Code$_mesh forEachPoint ["_this isPointSelected _x","_vector=_this getPoint _x;_this setPoint [_x,[_vector @ 0,_vector @ 1, _vector @ 2+0.5]]"];nil$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Anything
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		FrameFromTime
+	</Keyword>
+	<Description>
+		Retruns frame index of nearest time
+	</Description>
+	<Syntax>
+		ObjectData FrameFromTime Number
+	</Syntax>
+	<RawSyntax>
+		mesh FrameFromTime time
+	</RawSyntax>
+	<Example>
+		$Code$_frame = _mesh frameFromTime 0.5$/Code$
+	</Example>
+	<ExamlpleResult>
+		frame index nearest to time 0.5
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		from
+	</Keyword>
+	<Description>
+		Continue sequence of 'for' command.
+	</Description>
+	<Syntax>
+		for type from Number
+	</Syntax>
+	<RawSyntax>
+		for "_var" from b
+	</RawSyntax>
+	<Example>
+		$Code$for "_x" from 10 to 20 do {..code..}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		for - type
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		fromHex
+	</Keyword>
+	<Description>
+		Converts hex number in string into Number type. Doesn't evaluates any expression. Returns 0 if error
+	</Description>
+	<Syntax>
+		fromHex String
+	</Syntax>
+	<RawSyntax>
+		fromHex a
+	</RawSyntax>
+	<Example>
+		$Code$hex "12EC7"$/Code$
+	</Example>
+	<ExamlpleResult>
+		77511.0
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		get
+	</Keyword>
+	<Description>
+		Get count of characters from stream. If count <=0 than gets 'last tested characters'+count. For example, -1 will get 5 characters, if 6 characters was tested.
+	</Description>
+	<Syntax>
+		IOStream get Number
+	</Syntax>
+	<RawSyntax>
+		stream get count
+	</RawSyntax>
+	<Example>
+		$Code$if (stream exploreFor "-?[0-9]+") then {result=stream get 0;}; $/Code$
+	</Example>
+	<ExamlpleResult>
+		number in stream
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getActiveFrame
+	</Keyword>
+	<Description>
+		Returns index of animation currently mapped to vertices. Returns nil, if no animation is mapped
+	</Description>
+	<Syntax>
+		getActiveFrame ObjectData
+	</Syntax>
+	<RawSyntax>
+		getActiveFrame mesh
+	</RawSyntax>
+	<Example>
+		$Code$_mesh setActiveFrame 1;getActiveFrame _mesh$/Code$
+	</Example>
+	<ExamlpleResult>
+		1
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getActiveObject
+	</Keyword>
+	<Description>
+		Returns active object
+	</Description>
+	<Syntax>
+		getActiveObject LODObject
+	</Syntax>
+	<RawSyntax>
+		getActiveObject LODObject
+	</RawSyntax>
+	<Example>
+		$Code$_object=getActiveObject _p3d;$/Code$
+	</Example>
+	<ExamlpleResult>
+		ObjectData
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getAnimPoint
+	</Keyword>
+	<Description>
+		Gets vertex in animation frame as array [x,y,z]
+	</Description>
+	<Syntax>
+		ObjectData getAnimPoint Array
+	</Syntax>
+	<RawSyntax>
+		mesh getAnimPoint [frame,index]
+	</RawSyntax>
+	<Example>
+		$Code$_vertex=_mesh getAnimPoint [1,10];$/Code$
+	</Example>
+	<ExamlpleResult>
+		vertex with index 10 in frame 1
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getBuffer
+	</Keyword>
+	<Description>
+		Retrieves buffer output from memory stream. Data sent through memory stream are stored in buffer. The buffer can be converted to the String using this command. Note: Function returns NIL if parameter is not memory stream
+	</Description>
+	<Syntax>
+		getBuffer IOStream
+	</Syntax>
+	<RawSyntax>
+		getBuffer stream
+	</RawSyntax>
+	<Example>
+		$Code$_data=getBuffer stream$/Code$
+	</Example>
+	<ExamlpleResult>
+		content of buffer of the memory stream
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getFaceFlags
+	</Keyword>
+	<Description>
+		Gets face flag. Argument is flag's index. Use predefined constants to get meanful flags
+		Gets face flags. Argument is range of flags in form [l,h]. Use predefined constants to get meanful flags
+	</Description>
+	<Syntax>
+		FaceT getFaceFlags Number
+	</NextSyntax>
+		FaceT getFaceFlags Array
+	</Syntax>
+	<RawSyntax>
+		face getFaceFlags index
+	</NextRawSyntax>
+		face getFaceFlags [range]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+		$Code$_face getFaceFlags FLAG_FACE_USERVALUE;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number - Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getFaceFlagsStr
+	</Keyword>
+	<Description>
+		Gets code-string represents flags of face.
+	</Description>
+	<Syntax>
+		ObjectData getFaceFlagsStr Number
+	</Syntax>
+	<RawSyntax>
+		mesh getFaceFlagsStr index
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getLastBiTXTImportError
+	</Keyword>
+	<Description>
+		Returns error string of last error of importBiTXT.
+	</Description>
+	<Syntax>
+		getLastBiTXTImportError
+	</Syntax>
+	<RawSyntax>
+		getLastBiTXTImportError
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ImportBiTXT
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getLine
+	</Keyword>
+	<Description>
+		Reads whole line. Return string without new-line delimiter.
+	</Description>
+	<Syntax>
+		getLine IOStream
+	</Syntax>
+	<RawSyntax>
+		getLine stream
+	</RawSyntax>
+	<Example>
+		$Code$_line=getLine console;$/Code$
+	</Example>
+	<ExamlpleResult>
+		whole line
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getMaterial
+	</Keyword>
+	<Description>
+		Returns current face material
+	</Description>
+	<Syntax>
+		getMaterial FaceT
+	</Syntax>
+	<RawSyntax>
+		getMaterial face
+	</RawSyntax>
+	<Example>
+		$Code$_material=getMaterial _face;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getObject
+	</Keyword>
+	<Description>
+		Sets resolution of active level.You can use special constants declared in LODObject.inc
+	</Description>
+	<Syntax>
+		LODObject getObject Number
+	</Syntax>
+	<RawSyntax>
+		LODObject getObject Scalar
+	</RawSyntax>
+	<Example>
+		$Code$_success=_object setResolution LOD_VIEW_COMMANDER$/Code$
+	</Example>
+	<ExamlpleResult>
+		always true, operation was successfull
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getObjects
+	</Keyword>
+	<Description>
+		Returns an array of objects in LODObject
+	</Description>
+	<Syntax>
+		getObjects LODObject
+	</Syntax>
+	<RawSyntax>
+		getObjects LODObject
+	</RawSyntax>
+	<Example>
+		$Code${echo (NFaces _x)} forEach getObjects _p3d$/Code$
+	</Example>
+	<ExamlpleResult>
+		Array
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getPoint
+	</Keyword>
+	<Description>
+		Gets point in object.
+	</Description>
+	<Syntax>
+		ObjectData getPoint Number
+	</Syntax>
+	<RawSyntax>
+		object getPoint index
+	</RawSyntax>
+	<Example>
+		$Code$_vector=_mesh getPoint _index;$/Code$
+	</Example>
+	<ExamlpleResult>
+		vector or NIL if error
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getPointFlags
+	</Keyword>
+	<Description>
+		Gets point flag(s). Use predefined constants to get meanful flags
+	</Description>
+	<Syntax>
+		ObjectData getPointFlags Array
+	</Syntax>
+	<RawSyntax>
+		mesh getPointFlags [point_index,flag_index/range]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getPointFlagsStr
+	</Keyword>
+	<Description>
+		Gets code-string represents flags of point.
+	</Description>
+	<Syntax>
+		ObjectData getPointFlagsStr Number
+	</Syntax>
+	<RawSyntax>
+		mesh getPointFlagsStr index
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getPointMass
+	</Keyword>
+	<Description>
+		Gets vertex's mass. Mass is valid only for Gemometry Level
+	</Description>
+	<Syntax>
+		ObjectData getPointMass Number
+	</Syntax>
+	<RawSyntax>
+		mesh getPointMass index
+	</RawSyntax>
+	<Example>
+		$Code$_mesh getMassPoint 10;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getPointWeights
+	</Keyword>
+	<Description>
+		Creates array with contain weight for each point by index. NOTE: not all values may be assigned to valid points. If index is unused, weight is set to zero
+	</Description>
+	<Syntax>
+		getPointWeights Selection
+	</Syntax>
+	<RawSyntax>
+		getPointWeights sel
+	</RawSyntax>
+	<Example>
+		$Code$_weights=getPointWeights _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getProperty
+	</Keyword>
+	<Description>
+		Gets property of object.
+	</Description>
+	<Syntax>
+		ObjectData getProperty String
+	</Syntax>
+	<RawSyntax>
+		object getProperty property
+	</RawSyntax>
+	<Example>
+		$Code$_object getProperty "XStep";$/Code$
+	</Example>
+	<ExamlpleResult>
+		for.ex: "0.520"
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getProxies
+	</Keyword>
+	<Description>
+		Returns array with the names of proxies selected by the selection.
+	</Description>
+	<Syntax>
+		getProxies Selection
+	</Syntax>
+	<RawSyntax>
+		getProxies selection
+	</RawSyntax>
+	<Example>
+		$Code$getProxies _sel;$/Code$
+	</Example>
+	<ExamlpleResult>
+		array with name of proxies selected by the selection
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ObjToolJoinProxy
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getResolution
+	</Keyword>
+	<Description>
+		Gets resolution of object by index
+	</Description>
+	<Syntax>
+		LODObject getResolution Number
+	</Syntax>
+	<RawSyntax>
+		LODObject getResolution index
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getResolutions
+	</Keyword>
+	<Description>
+		Returns an array of objects in LODObject
+	</Description>
+	<Syntax>
+		getResolutions LODObject
+	</Syntax>
+	<RawSyntax>
+		getResolutions LODObject
+	</RawSyntax>
+	<Example>
+		$Code${echo (NFaces _x)} forEach getObjects _p3d$/Code$
+	</Example>
+	<ExamlpleResult>
+		Array
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getSelectedFaces
+	</Keyword>
+	<Description>
+		Creates array with contain indicies with selected faces
+	</Description>
+	<Syntax>
+		getSelectedFaces Selection
+	</Syntax>
+	<RawSyntax>
+		getSelectedFaces sel
+	</RawSyntax>
+	<Example>
+		$Code$_arr=getSelectedFaces _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getSelectedPoints
+	</Keyword>
+	<Description>
+		Creates array with contain indicies with selected points
+	</Description>
+	<Syntax>
+		getSelectedPoints Selection
+	</Syntax>
+	<RawSyntax>
+		getSelectedPoints sel
+	</RawSyntax>
+	<Example>
+		$Code$_arr=getSelectedPoints _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getSelections
+	</Keyword>
+	<Description>
+		Returns array of selections exists in object'
+	</Description>
+	<Syntax>
+		getSelections ObjectData
+	</Syntax>
+	<RawSyntax>
+		getSelections object
+	</RawSyntax>
+	<Example>
+		$Code${..code...} forEach getSelections _object;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getTexture
+	</Keyword>
+	<Description>
+		Returns current face texture
+	</Description>
+	<Syntax>
+		getTexture FaceT
+	</Syntax>
+	<RawSyntax>
+		getTexture face
+	</RawSyntax>
+	<Example>
+		$Code$_texture=getTexture _face;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getUVSet
+	</Keyword>
+	<Description>
+		Returns array of UV coordinates of current stage in order U,V,U,V..etc
+	</Description>
+	<Syntax>
+		getUVSet FaceT
+	</Syntax>
+	<RawSyntax>
+		getUVSet face
+	</RawSyntax>
+	<Example>
+		$Code$_uvset=getUVSet _face;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getVertices
+	</Keyword>
+	<Description>
+		Returns array of vertices at face.
+	</Description>
+	<Syntax>
+		getVertices FaceT
+	</Syntax>
+	<RawSyntax>
+		getVertices face
+	</RawSyntax>
+	<Example>
+		$Code${..code _x...} forEach getVertices (_object face 10) $/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		getXMLTag
+	</Keyword>
+	<Description>
+		Return parsed XML tag. Before using this function, you must test stream for presence of tag! use testXMLTag function.
+	</Description>
+	<Syntax>
+		getXMLTag IOStream
+	</Syntax>
+	<RawSyntax>
+		getXMLTag stream
+	</RawSyntax>
+	<Example>
+		$Code$if (stream testXMLTag "name") then {tag=getXMLTag stream;}$/Code$
+	</Example>
+	<ExamlpleResult>
+		array ["nameOfTag","firstAttrib","firstAttribValue","secondAttrib","secondAtrribValue", ... etc.]
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		halt
+	</Keyword>
+	<Description>
+		Stops the program into a debugger.
+	</Description>
+	<Syntax>
+		halt
+	</Syntax>
+	<RawSyntax>
+		halt
+	</RawSyntax>
+	<Example>
+		$Code$halt$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		homeFolder
+	</Keyword>
+	<Description>
+		Returns path of hosting module
+	</Description>
+	<Syntax>
+		homeFolder
+	</Syntax>
+	<RawSyntax>
+		homeFolder
+	</RawSyntax>
+	<Example>
+		$Code$homeFolder$/Code$
+	</Example>
+	<ExamlpleResult>
+		c:\bis\Oxygen\
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		hostingApp
+	</Keyword>
+	<Description>
+		Returns filename of hosting application. It useful with shell commands etc.
+	</Description>
+	<Syntax>
+		hostingApp
+	</Syntax>
+	<RawSyntax>
+		hostingApp
+	</RawSyntax>
+	<Example>
+		$Code$hostingApp$/Code$
+	</Example>
+	<ExamlpleResult>
+		c:\bis\Oxygen\Objektiv2.exe
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		if
+	</Keyword>
+	<Description>
+		The first part of the if command.
+	</Description>
+	<Syntax>
+		if Boolean
+	</Syntax>
+	<RawSyntax>
+		if condition
+	</RawSyntax>
+	<Example>
+		$Code$if (a>b) then {a=b}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		If - Type
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		ignore
+	</Keyword>
+	<Description>
+		ignores count of characters from stream. If count <=0 than ignores 'last tested characters'+count. For example, -1 will ignores 5 characters, if 6 characters was tested.
+	</Description>
+	<Syntax>
+		IOStream ignore Number
+	</Syntax>
+	<RawSyntax>
+		stream ignore count
+	</RawSyntax>
+	<Example>
+		$Code$if (stream exploreFor "-?[0-9]+") then {stream ignore 0;}; //ignore number $/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		importBiFXT
+	</Keyword>
+	<Description>
+		Loads (imports) BiFXT file into LODObject. It doesn't change internal name of object.
+	</Description>
+	<Syntax>
+		LODObject importBiFXT String
+	</Syntax>
+	<RawSyntax>
+		p3d importBiFXT name
+	</RawSyntax>
+	<Example>
+		$Code$p3d=newLODObject;result=p3d importBiFXT "shape.fxt";$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if file has been successfully parsed and imported. false, if there was an error.
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ImportBiFXT
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		importBiTXT
+	</Keyword>
+	<Description>
+		Loads (imports) BiTXT file into LODObject. It doesn't change internal name of object.
+	</Description>
+	<Syntax>
+		LODObject importBiTXT String
+	</Syntax>
+	<RawSyntax>
+		p3d importBiTXT name
+	</RawSyntax>
+	<Example>
+		$Code$p3d=newLODObject;result=p3d importBiTXT "shape.txt";$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if file has been successfully parsed and imported. false, if there was an error. Use getLastBiTXTImportError to get reason of fail.
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ImportBiTXT
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		importRTM
+	</Keyword>
+	<Description>
+		Imports RTM to animation. Returns true, when success.
+	</Description>
+	<Syntax>
+		ObjectData importRTM String
+	</Syntax>
+	<RawSyntax>
+		mesh importRTM filename
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		in
+	</Keyword>
+	<Description>
+		Checks whether x is equal to any element in the array.
+	</Description>
+	<Syntax>
+		Any Value in Array
+	</Syntax>
+	<RawSyntax>
+		x in array
+	</RawSyntax>
+	<Example>
+		$Code$1 in [0, 1, 2]$/Code$
+	</Example>
+	<ExamlpleResult>
+		true
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		inForm
+	</Keyword>
+	<Description>
+		Formats number to string. format is string, and use the same form as format in printf function in C/C++ language (format specification for %f)
+		Formats string to string. format is string, and use the same form as format in printf function in C/C++ language (format specification for %s)
+	</Description>
+	<Syntax>
+		Number inForm String
+	</NextSyntax>
+		String inForm String
+	</Syntax>
+	<RawSyntax>
+		number inForm "format"
+	</NextRawSyntax>
+		text inForm "format"
+	</RawSyntax>
+	<Example>
+		$Code$3.15 inForm "10.3"$/Code$
+		$Code$"Ahoj" inForm "-10.3"$/Code$
+	</Example>
+	<ExamlpleResult>
+		"000003.150"
+		"Aho       "
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String - String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		isFaceSelected
+	</Keyword>
+	<Description>
+		Returns true, if face is selected. If index is out of range, reports error
+	</Description>
+	<Syntax>
+		Selection isFaceSelected Number
+	</Syntax>
+	<RawSyntax>
+		sel isFaceSelected index
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		isnil
+	</Keyword>
+	<Description>
+		Tests whether the variable is null. The function returns true if the variable is null and false if it's not.
+	</Description>
+	<Syntax>
+		isnil String
+	</Syntax>
+	<RawSyntax>
+		isnil variable
+	</RawSyntax>
+	<Example>
+		$Code$if (isnil("_pokus")) then {_pokus=0;}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		isPointSelected
+	</Keyword>
+	<Description>
+		Returns true, if point is selected. If index is out of range, reports error. Points with weight>0 are selected
+	</Description>
+	<Syntax>
+		Selection isPointSelected Number
+	</Syntax>
+	<RawSyntax>
+		sel isPointSelected index
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		ln
+	</Keyword>
+	<Description>
+		The natural logarithm of x.
+	</Description>
+	<Syntax>
+		ln Number
+	</Syntax>
+	<RawSyntax>
+		ln x
+	</RawSyntax>
+	<Example>
+		$Code$ln 10$/Code$
+	</Example>
+	<ExamlpleResult>
+		2.302
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		loadP3D
+	</Keyword>
+	<Description>
+		Loads file into object
+	</Description>
+	<Syntax>
+		LODObject loadP3D String
+	</Syntax>
+	<RawSyntax>
+		LOObject loadP3D String
+	</RawSyntax>
+	<Example>
+		$Code$_object=newLODObject;_result=_object loadP3D "example.p3d"$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if load has been successful
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		loadSelection
+	</Keyword>
+	<Description>
+		Loads selection from object with name. If selection doesn't exists, returns nil.There are three special selections named: _current, _hidden, _locked. Use this names to select current selection, current hidden selection, or current locked selection.
+	</Description>
+	<Syntax>
+		ObjectData loadSelection String
+	</Syntax>
+	<RawSyntax>
+		object loadSelection name
+	</RawSyntax>
+	<Example>
+		$Code$_sel=_object loadSelection "Component1";$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		log
+	</Keyword>
+	<Description>
+		The base-10 logarithm of x.
+	</Description>
+	<Syntax>
+		log Number
+	</Syntax>
+	<RawSyntax>
+		log x
+	</RawSyntax>
+	<Example>
+		$Code$log 10$/Code$
+	</Example>
+	<ExamlpleResult>
+		1
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		massCenterOf
+	</Keyword>
+	<Description>
+		Calculates center of mass
+	</Description>
+	<Syntax>
+		massCenterOf ObjectData
+	</Syntax>
+	<RawSyntax>
+		massCenterOf mesh
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mergeObject
+	</Keyword>
+	<Description>
+		Merges one object (src) into another (trg). You can specify selection name(selName), that will contain new object.Works same way as File->Merge in Objectiv menu.
+		Merges one object (src) into another (trg). Works same way as File->Merge in Objectiv menu.
+	</Description>
+	<Syntax>
+		ObjectData mergeObject Array
+	</NextSyntax>
+		ObjectData mergeObject ObjectData
+	</Syntax>
+	<RawSyntax>
+		trg mergeObject [src,selName]
+	</NextRawSyntax>
+		trg mergeObject src
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData - ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mergePoints
+	</Keyword>
+	<Description>
+		Merges points in selection. Parameter distance specified distance between points to merge. Specify some BIG value to merge all points in selection into one
+	</Description>
+	<Syntax>
+		Selection mergePoints Number
+	</Syntax>
+	<RawSyntax>
+		sel mergePoints distance
+	</RawSyntax>
+	<Example>
+		$Code$_selection mergePoints 0.0001;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		messageBox
+	</Keyword>
+	<Description>
+		Shows message box with text and buttons. Returns ID of pressed button
+	</Description>
+	<Syntax>
+		messageBox Array
+	</Syntax>
+	<RawSyntax>
+		messageBox [text,flags]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		dialogs
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mod
+	</Keyword>
+	<Description>
+		The remainder of a divided by b. Note that the remainer is calculated in the real domain.
+	</Description>
+	<Syntax>
+		Number mod Number
+	</Syntax>
+	<RawSyntax>
+		a mod b
+	</RawSyntax>
+	<Example>
+		$Code$3 mod 2$/Code$
+	</Example>
+	<ExamlpleResult>
+		1
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxCalculateHierarchy
+	</Keyword>
+	<Description>
+		Calculates hierarchy. parents is array of scalar values contains indicies to parent matrices. If -1 is used, matrix has no parent. It recomended use it on root parent, it enables you transform whole hierarchy by modifiing one matrix
+	</Description>
+	<Syntax>
+		Array mxCalculateHierarchy Array
+	</Syntax>
+	<RawSyntax>
+		parents mxCalculateHierarchy matrices
+	</RawSyntax>
+	<Example>
+		$Code$_matrices = [-1,0,0,2,3] mxInterpolate _relmx;//hierarchy (0,(1,2,(3,(4)))$/Code$
+	</Example>
+	<ExamlpleResult>
+		array _matrices contains transforms in world space.
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxGet
+	</Keyword>
+	<Description>
+		Creates array from matrix
+	</Description>
+	<Syntax>
+		mxGet Matrix
+	</Syntax>
+	<RawSyntax>
+		mxGet matrix
+	</RawSyntax>
+	<Example>
+		$Code$_array=mxGet _mx$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxInterpolate
+	</Keyword>
+	<Description>
+		Creates interpolation between two matrices (most recent in stack). factor is value in range <0,1> or <-1,0>. If factor is negative, absolute value is get, and interpolation will normalize rotation vectors in matrix
+	</Description>
+	<Syntax>
+		Array mxInterpolate Number
+	</Syntax>
+	<RawSyntax>
+		stack mxInterpolate factor
+	</RawSyntax>
+	<Example>
+		$Code$_stack mxInterpolate -0.5$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxInverse
+	</Keyword>
+	<Description>
+		Calculates inversion for matrix
+	</Description>
+	<Syntax>
+		mxInverse Matrix
+	</Syntax>
+	<RawSyntax>
+		mxInverse mx
+	</RawSyntax>
+	<Example>
+		$Code$_inv=mxInverse _mx$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxLoad
+	</Keyword>
+	<Description>
+		Loads matrix from array
+	</Description>
+	<Syntax>
+		mxLoad Array
+	</Syntax>
+	<RawSyntax>
+		mxLoad matrix
+	</RawSyntax>
+	<Example>
+		$Code$_mx=mxLoad [[2,0,0],[0,1,0],[0,0,2]]$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxMove
+	</Keyword>
+	<Description>
+		Creates matrix represents trasnlation by offset [x,y,z]
+	</Description>
+	<Syntax>
+		mxMove Array
+	</Syntax>
+	<RawSyntax>
+		mxMove vector
+	</RawSyntax>
+	<Example>
+		$Code$_mx=mxMove [0.5,-1.2,0.2]$/Code$
+	</Example>
+	<ExamlpleResult>
+		[0,0,0][0,0,0][0,0,0][0.5,-1.2,0.2]
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxPivot
+	</Keyword>
+	<Description>
+		Creates matrix that enables you to use all other trasnforms about pivot
+	</Description>
+	<Syntax>
+		mxPivot Array
+	</Syntax>
+	<RawSyntax>
+		mxPivot pivot
+	</RawSyntax>
+	<Example>
+		$Code$see mxUnpivot example$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxPivotRotate
+	</Keyword>
+	<Description>
+		Creates matrix that represents rotation about axis relative to pin. Two forms are possible: [[axis_x,axis_y,axis_z],angle] or [axis_x,axis_y,axis_z,angle]
+	</Description>
+	<Syntax>
+		Array mxPivotRotate Array
+	</Syntax>
+	<RawSyntax>
+		pivot mxPivotRotate array
+	</RawSyntax>
+	<Example>
+		$Code$_mx=[1,2,3] mxPivotRotate [0,1,0,90]$/Code$
+	</Example>
+	<ExamlpleResult>
+		... rotation relative to [1,2,3]
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxPivotScale
+	</Keyword>
+	<Description>
+		Creates matrix that represents scaling object relative to pin
+		Creates matrix that represents scaling object relative to pin
+	</Description>
+	<Syntax>
+		Array mxPivotScale Number
+	</NextSyntax>
+		Array mxPivotScale Array
+	</Syntax>
+	<RawSyntax>
+		pivot mxPivotScale factor
+	</NextRawSyntax>
+		pivot mxPivotScale vector
+	</RawSyntax>
+	<Example>
+		$Code$_mx=[1,2,3] mxPivotScale [2,2,2]$/Code$
+		$Code$_mx=[1,2,3] mxPivotScale [2,2,2]$/Code$
+	</Example>
+	<ExamlpleResult>
+		... resizition twice relative to [1,2,3]
+		... resizition twice relative to [1,2,3]
+	</ExamlpleResult>
+	<Note>
+		Matrix
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix - Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxPop
+	</Keyword>
+	<Description>
+		Removes most recent matrix from stack. If stack is empty, do nothing and returns identity. You can use it to get identity matrix _ident=mxPop []
+	</Description>
+	<Syntax>
+		mxPop Array
+	</Syntax>
+	<RawSyntax>
+		mxPop stack
+	</RawSyntax>
+	<Example>
+		$Code$_mx=mxPop _stack$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxPush
+	</Keyword>
+	<Description>
+		Pushes matrix into stack. Stack is represented as array. New matrix is inserted at the end of array
+	</Description>
+	<Syntax>
+		Array mxPush Matrix
+	</Syntax>
+	<RawSyntax>
+		a mxPush b
+	</RawSyntax>
+	<Example>
+		$Code$_stack _mxPush (_mxTop _stack * _mxScale 5);$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxRotate
+	</Keyword>
+	<Description>
+		Creates rotation matrix. Rotation is represented as axis and angle. Two forms are possible: [[axis_x,axis_y,axis_z],angle] or [axis_x,axis_y,axis_z,angle]
+	</Description>
+	<Syntax>
+		mxRotate Array
+	</Syntax>
+	<RawSyntax>
+		mxRotate array
+	</RawSyntax>
+	<Example>
+		$Code$_mx=mxRotate [0,1,0,90]$/Code$
+	</Example>
+	<ExamlpleResult>
+		rotation about Y using angle 90*
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxScale
+	</Keyword>
+	<Description>
+		Creates matrix represents uniform scale
+		Creates matrix represents scale by vector [x,y,z]
+	</Description>
+	<Syntax>
+		mxScale Number
+	</NextSyntax>
+		mxScale Array
+	</Syntax>
+	<RawSyntax>
+		mxScale scale
+	</NextRawSyntax>
+		mxScale vector
+	</RawSyntax>
+	<Example>
+		$Code$_mx=mxScale 2$/Code$
+		$Code$_mx=mxScale [2,-2,1]$/Code$
+	</Example>
+	<ExamlpleResult>
+		[2,0,0][0,2,0][0,0,2][0,0,0]
+		[2,0,0][0,-2,0][0,0,1][0,0,0]
+	</ExamlpleResult>
+	<Note>
+		Matrix
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix - Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxTop
+	</Keyword>
+	<Description>
+		Returns most recent matrix in stack. If stack is empty, do nothing and returns identity. You can use it to get identity matrix _ident=mxTop []
+	</Description>
+	<Syntax>
+		mxTop Array
+	</Syntax>
+	<RawSyntax>
+		mxTop stack
+	</RawSyntax>
+	<Example>
+		$Code$_mx=mxTop _stack$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		mxUnpivot
+	</Keyword>
+	<Description>
+		Creates matrix that closes all pivot transforms. mxPivot and mxUnpivot is useful if used in transform stream or transform stack
+	</Description>
+	<Syntax>
+		mxUnpivot Array
+	</Syntax>
+	<RawSyntax>
+		mxUnpivot vector
+	</RawSyntax>
+	<Example>
+		$Code$_mx=mxPivot _pivot * mxScale _scale * mxRotate _rotate * mxUnpivot _pivot$/Code$
+	</Example>
+	<ExamlpleResult>
+		... create scaling and rotation about pivot
+	</ExamlpleResult>
+	<Note>
+		Matrix
+	</Note>
+	<ReturnValue>
+		Matrix
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		nameOf
+	</Keyword>
+	<Description>
+		Return full name of object
+		Returns name of selection.
+	</Description>
+	<Syntax>
+		nameOf LODObject
+	</NextSyntax>
+		nameOf Selection
+	</Syntax>
+	<RawSyntax>
+		nameOf obj
+	</NextRawSyntax>
+		nameOf sel
+	</RawSyntax>
+	<Example>
+		$Code$nameOf _p3d$/Code$
+		$Code$_name=nameof _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		String - String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		newLODObject
+	</Keyword>
+	<Description>
+		Creates new empty object. Best usage is assign result to the variable. New object is shared between variables.
+	</Description>
+	<Syntax>
+		newLODObject
+	</Syntax>
+	<RawSyntax>
+		newLODObject
+	</RawSyntax>
+	<Example>
+		$Code$_object = newLODObject$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		LODObject
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		newSelection
+	</Keyword>
+	<Description>
+		Creates selection at object
+	</Description>
+	<Syntax>
+		newSelection ObjectData
+	</Syntax>
+	<RawSyntax>
+		newSelection object
+	</RawSyntax>
+	<Example>
+		$Code$_newsel=newSelection _object$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		nil
+	</Keyword>
+	<Description>
+		Nil value. This value can be used to undefine an existing variable.
+	</Description>
+	<Syntax>
+		nil
+	</Syntax>
+	<RawSyntax>
+		nil
+	</RawSyntax>
+	<Example>
+		$Code$variableToDestroy = nil$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Any - Value
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		normAnimation
+	</Keyword>
+	<Description>
+		Normalizes animation. Animation will start at time 0 and ends at time 1
+	</Description>
+	<Syntax>
+		normAnimation ObjectData
+	</Syntax>
+	<RawSyntax>
+		normAnimation mesh
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		not
+	</Keyword>
+	<Description>
+		not a
+	</Description>
+	<Syntax>
+		not Boolean
+	</Syntax>
+	<RawSyntax>
+		not a
+	</RawSyntax>
+	<Example>
+		$Code$not false$/Code$
+	</Example>
+	<ExamlpleResult>
+		true
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		o2EditMaterial
+	</Keyword>
+	<Description>
+		Opens material 'name' in MAT editor, if available.
+	</Description>
+	<Syntax>
+		o2EditMaterial String
+	</Syntax>
+	<RawSyntax>
+		o2EditMaterial name
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Objektiv2::Internal
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		o2GetConfig
+	</Keyword>
+	<Description>
+		Gets O2 configuration. ID is constant from std/o2config.inc
+	</Description>
+	<Syntax>
+		o2GetConfig Number
+	</Syntax>
+	<RawSyntax>
+		o2GetConfig id
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Objektiv2::Internal
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		o2GetConfigBool
+	</Keyword>
+	<Description>
+		Gets O2 configuration. ID is constant from std/o2config.inc
+	</Description>
+	<Syntax>
+		o2GetConfigBool Number
+	</Syntax>
+	<RawSyntax>
+		o2GetConfigBool id
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Objektiv2::Internal
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		o2GetConfigScalar
+	</Keyword>
+	<Description>
+		Gets O2 configuration. ID is constant from std/o2config.inc
+	</Description>
+	<Syntax>
+		o2GetConfigScalar Number
+	</Syntax>
+	<RawSyntax>
+		o2GetConfigScalar id
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Objektiv2::Internal
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		o2InputBox
+	</Keyword>
+	<Description>
+		Opens o2 standard input box. 'content' is string that initialize text line. When _browse field if true, browse button is available. 'title' is displayed as title of dialog. 'filters' is optional, and is valid when _browse is true.
+	</Description>
+	<Syntax>
+		o2InputBox Array
+	</Syntax>
+	<RawSyntax>
+		o2InputBox ["content",_browse,"title","filters",]
+	</RawSyntax>
+	<Example>
+		$Code$_file=o2InputBox [_file,true,"Select a P3D file","P3D Files|*.p3d|All files|*.*|"];$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Objektiv2::Internal
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		o2MenuCommand
+	</Keyword>
+	<Description>
+		Process any menu command. ID is constant from std/o2commands.inc. Remember: Changes in object by menu commands doesn't affect 'this' object. Use o2UpdateThis to update 'this'.
+	</Description>
+	<Syntax>
+		o2MenuCommand Number
+	</Syntax>
+	<RawSyntax>
+		o2MenuCommand id
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Objektiv2::Internal
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		o2NoRunScriptDialog
+	</Keyword>
+	<Description>
+		Function hides "Run Script" dialog. User will cannot debug or stop script processing. Useful only when script has own dialog (for example, in options)
+	</Description>
+	<Syntax>
+		o2NoRunScriptDialog
+	</Syntax>
+	<RawSyntax>
+		o2NoRunScriptDialog
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Objektiv2::Internal
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		o2UpdateThisObject
+	</Keyword>
+	<Description>
+		Function updates 'this' object from editor. All changes made in 'this' will be discarded. Script cannot update editor's object from 'this'. It is done after script successfully exits.
+	</Description>
+	<Syntax>
+		o2UpdateThisObject
+	</Syntax>
+	<RawSyntax>
+		o2UpdateThisObject
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Objektiv2::Internal
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		onProgressEvent
+	</Keyword>
+	<Description>
+		Sets function to display progress status
+	</Description>
+	<Syntax>
+		onProgressEvent String
+	</Syntax>
+	<RawSyntax>
+		onProgressEvent Code
+	</RawSyntax>
+	<Example>
+		$Code$onProgressEvent {echo ("progress"+str(_x*100)+"%");}$/Code$
+	</Example>
+	<ExamlpleResult>
+		Nothing
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		openErrorIO
+	</Keyword>
+	<Description>
+		Opens stream for standard input and error output . If no standard I/O is assigned, creates console, and redirect I/O into console. Note: Always assign result to variable, and access stream with variable.Use error stream to displaying error messages, that shouldn't be included in standard output
+	</Description>
+	<Syntax>
+		openErrorIO
+	</Syntax>
+	<RawSyntax>
+		openErrorIO
+	</RawSyntax>
+	<Example>
+		$Code$errorcons=openErrorIO; errorcons<<"An error has occured."$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		openFile
+	</Keyword>
+	<Description>
+		Opens or creates a file specified by filename. Mode contain one of following values: 0 - test existence of file (no open), 1 - open existing file for reading, 2 - create new file for writting, 3 - open existing file for reading and writting, 4 - open (create if not exists) file for reading and writting
+	</Description>
+	<Syntax>
+		openFile Array
+	</Syntax>
+	<RawSyntax>
+		openFile ["filename",mode]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		openHybridStream
+	</Keyword>
+	<Description>
+		Creates stream that combines two other streams. Data readed using this stream is readed from `input` stream, and data written to this stream is written to the `output` stream.
+	</Description>
+	<Syntax>
+		openHybridStream Array
+	</Syntax>
+	<RawSyntax>
+		openHybridStream [input,output]
+	</RawSyntax>
+	<Example>
+		$Code$file=openFile ["pokus",1];console=openStandardIO;hybrid=openHybridStream [file,console]$/Code$
+	</Example>
+	<ExamlpleResult>
+		bidirectional stream that reads data from file a writes data to standard output
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		openMemoryStream
+	</Keyword>
+	<Description>
+		Creates stream in memory, but acts as any other I/O device. You can specify input text, that will be read. Data written into the stream may be later read using getStreamBuffer function.
+	</Description>
+	<Syntax>
+		openMemoryStream String
+	</Syntax>
+	<RawSyntax>
+		openMemoryStream "input"
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		openNetworkServer
+	</Keyword>
+	<Description>
+		Creates server for accepting connection. Another computer may connect to the current computer. Script halts processing for timeout period and waits for connection. Timeout also specified any other waitings
+	</Description>
+	<Syntax>
+		openNetworkServer Array
+	</Syntax>
+	<RawSyntax>
+		openNetworkServer [port,timeout]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		openNetworkStream
+	</Keyword>
+	<Description>
+		Creates network stream to another computer, server is string in format address:port. Timeout specified waiting for connection/data in miliseconds.
+	</Description>
+	<Syntax>
+		openNetworkStream Array
+	</Syntax>
+	<RawSyntax>
+		openNetworkStream ["server",timeout]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		openStandardIO
+	</Keyword>
+	<Description>
+		Opens stream for standard input and output. If no standard I/O is assigned, creates console, and redirect I/O into console. Note: Always assign result to variable, and access stream with variable.
+	</Description>
+	<Syntax>
+		openStandardIO
+	</Syntax>
+	<RawSyntax>
+		openStandardIO
+	</RawSyntax>
+	<Example>
+		$Code$console=openStandardIO; console<<"Hallo world"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		or
+	</Keyword>
+	<Description>
+		a or b
+	</Description>
+	<Syntax>
+		Boolean or Boolean
+	</Syntax>
+	<RawSyntax>
+		a or b
+	</RawSyntax>
+	<Example>
+		$Code$not alive player or not alive leader player$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		ownerOf
+	</Keyword>
+	<Description>
+		Returns owner LODObject of this object
+	</Description>
+	<Syntax>
+		ownerOf ObjectData
+	</Syntax>
+	<RawSyntax>
+		ownerOf mesh
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		LODObject
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		pi
+	</Keyword>
+	<Description>
+		pi (180 degrees converted to radians)
+	</Description>
+	<Syntax>
+		pi
+	</Syntax>
+	<RawSyntax>
+		pi
+	</RawSyntax>
+	<Example>
+		$Code$pi$/Code$
+	</Example>
+	<ExamlpleResult>
+		3.1415
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		private
+	</Keyword>
+	<Description>
+		Introduces one or more local variables in the innermost scope.
+	</Description>
+	<Syntax>
+		private String or Array
+	</Syntax>
+	<RawSyntax>
+		private variable
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		properties
+	</Keyword>
+	<Description>
+		Returns array of properties. Array is organised into pairs, each pair contain property name and its value. If you want to get count of array, divide the result twice
+	</Description>
+	<Syntax>
+		properties ObjectData
+	</Syntax>
+	<RawSyntax>
+		properties object
+	</RawSyntax>
+	<Example>
+		$Code$_numprop=count properties _object /2$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		rad
+	</Keyword>
+	<Description>
+		Converts x from degrees to radians.
+	</Description>
+	<Syntax>
+		rad Number
+	</Syntax>
+	<RawSyntax>
+		rad x
+	</RawSyntax>
+	<Example>
+		$Code$rad 180$/Code$
+	</Example>
+	<ExamlpleResult>
+		3.1415
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		random
+	</Keyword>
+	<Description>
+		The random real value from 0 to x.
+	</Description>
+	<Syntax>
+		random Number
+	</Syntax>
+	<RawSyntax>
+		random x
+	</RawSyntax>
+	<Example>
+		$Code$random 1$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		renameFileTo
+	</Keyword>
+	<Description>
+		Renames one file into another.
+	</Description>
+	<Syntax>
+		String renameFileTo String
+	</Syntax>
+	<RawSyntax>
+		a renameFileTo b
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		resize
+	</Keyword>
+	<Description>
+		Changes the array size. This function can be used to add or remove elements from the array.
+	</Description>
+	<Syntax>
+		Array resize Number
+	</Syntax>
+	<RawSyntax>
+		array resize count
+	</RawSyntax>
+	<Example>
+		$Code$array resize 2$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		round
+	</Keyword>
+	<Description>
+		The round value of x.
+	</Description>
+	<Syntax>
+		round Number
+	</Syntax>
+	<RawSyntax>
+		round x
+	</RawSyntax>
+	<Example>
+		$Code$round -5.25$/Code$
+	</Example>
+	<ExamlpleResult>
+		-6
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		save
+	</Keyword>
+	<Description>
+		Saves object into the disk. It used assigned file name. To specify new filename, use as operator
+		Saves selection. Selection must have name. If selection with name exists, it is replaced.There are three special selections named: _current, _hidden, _locked. Use this names to save as current selection, current hidden selection, or current locked selection.
+	</Description>
+	<Syntax>
+		save LODObject
+	</NextSyntax>
+		ObjectData save Selection
+	</Syntax>
+	<RawSyntax>
+		save LODObject
+	</NextRawSyntax>
+		object save selection
+	</RawSyntax>
+	<Example>
+		$Code$save (_object as "test.p3d");$/Code$
+		$Code$_object save _sel as "my selection";$/Code$
+	</Example>
+	<ExamlpleResult>
+		true means no error
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Boolean - Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		scopeName
+	</Keyword>
+	<Description>
+		defines name of current scope. Name is visible in debugger, and name is also used as reference in some commands. Scope name can be defined only once per scope.
+	</Description>
+	<Syntax>
+		scopeName String
+	</Syntax>
+	<RawSyntax>
+		scopeName name
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		seekInput
+	</Keyword>
+	<Description>
+		This command moves reading pointer (current reading position) in static stream (file or memory stream) at specified position. Position is calculated in bytes from the beginning of stream. Note: File-streams shares one pointer for both directions. Moving reading pointer will also move reading pointer. Note: non-static stream doesn't support this command. If it used, sets stream into error state.
+	</Description>
+	<Syntax>
+		IOStream seekInput Number
+	</Syntax>
+	<RawSyntax>
+		stream seekInput position
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		seekOutput
+	</Keyword>
+	<Description>
+		This command moves writting pointer (current writting position) in static stream (file or memory stream) at specified position. Position is calculated in bytes from the beginning of stream. Note: File-streams shares one pointer for both directions. Moving writting pointer will also move reading pointer. Note: non-static stream doesn't support this command. If it used, sets stream into error state.
+	</Description>
+	<Syntax>
+		IOStream seekOutput Number
+	</Syntax>
+	<RawSyntax>
+		stream seekOutput position
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		select
+	</Keyword>
+	<Description>
+		Selects index element of the array. Index 0 denotes the first element, 1 the second, etc.
+		If the index is false, this selects the first element of the array. If it is true, it selects the second one.
+	</Description>
+	<Syntax>
+		Array select Number
+	</NextSyntax>
+		Array select Boolean
+	</Syntax>
+	<RawSyntax>
+		array select index
+	</NextRawSyntax>
+		array select index
+	</RawSyntax>
+	<Example>
+		$Code$[1, 2, 3] select 1$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		2
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+		Default
+	</Note>
+	<ReturnValue>
+		Any Value - Any Value
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		selectAll
+	</Keyword>
+	<Description>
+		Select everything in selection.
+	</Description>
+	<Syntax>
+		selectAll Selection
+	</Syntax>
+	<RawSyntax>
+		selectAll sel
+	</RawSyntax>
+	<Example>
+		$Code$selectAll _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		selectFace
+	</Keyword>
+	<Description>
+		Selects face
+	</Description>
+	<Syntax>
+		Selection selectFace Number
+	</Syntax>
+	<RawSyntax>
+		sel selectFace index
+	</RawSyntax>
+	<Example>
+		$Code$_sel selectFace _index$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		selectFaces
+	</Keyword>
+	<Description>
+		Select faces specified by indices in array
+	</Description>
+	<Syntax>
+		Selection selectFaces Array
+	</Syntax>
+	<RawSyntax>
+		sel selectFaces indices
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		selectFacesFromPoints
+	</Keyword>
+	<Description>
+		Select points from selected faces.
+	</Description>
+	<Syntax>
+		selectFacesFromPoints Selection
+	</Syntax>
+	<RawSyntax>
+		selectFacesFromPoints sel
+	</RawSyntax>
+	<Example>
+		$Code$selectPointFromFaces _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		selectionToProxy
+	</Keyword>
+	<Description>
+		Function extracts selection, and replaces it with proxy. Specify name of selection, and proxyname without "proxy:" word. Pin is vector [x,y,z] and specifies location of new proxy.<p>Note: Object is not saved, script may use ownerOf to get owning LODObject, and call save itself</p>
+	</Description>
+	<Syntax>
+		ObjectData selectionToProxy Array
+	</Syntax>
+	<RawSyntax>
+		mesh selectionToProxy [selection,proxyname,pin]
+	</RawSyntax>
+	<Example>
+		$Code$_newobj=_mesh selectionToProxy ["hlava","\data\hlava\hlava.p3d",[0,0,0]]$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+
+
+	<Keyword>
+		selectPoint
+	</Keyword>
+	<Description>
+		Selects point
+		Select point and sets point's weight
+	</Description>
+	<Syntax>
+		Selection selectPoint Number
+	</NextSyntax>
+		Selection selectPoint Array
+	</Syntax>
+	<RawSyntax>
+		sel selectPoint index
+	</NextRawSyntax>
+		sel selectPoint index weight value
+	</RawSyntax>
+	<Example>
+		$Code$_sel selectPoint _index$/Code$
+		$Code$_sel selectPoint _index weight _value$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection - Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		selectPoints
+	</Keyword>
+	<Description>
+		Select points specified by indices in array
+	</Description>
+	<Syntax>
+		Selection selectPoints Array
+	</Syntax>
+	<RawSyntax>
+		sel selectPoints indices
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		selectPointsFromFaces
+	</Keyword>
+	<Description>
+		Select points from selected faces.
+	</Description>
+	<Syntax>
+		selectPointsFromFaces Selection
+	</Syntax>
+	<RawSyntax>
+		selectPointsFromFaces sel
+	</RawSyntax>
+	<Example>
+		$Code$selectPointFromFaces _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		set
+	</Keyword>
+	<Description>
+		Format of element is [index, value]. Changes an element of the given array. If the element does not exist, index+1 is called to create it.
+	</Description>
+	<Syntax>
+		Array set Array
+	</Syntax>
+	<RawSyntax>
+		array set element
+	</RawSyntax>
+	<Example>
+		$Code$array set [0, "Hello"]$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setActive
+	</Keyword>
+	<Description>
+		Selects active LOD from LOD array. Scalar is zero based integer number
+	</Description>
+	<Syntax>
+		LODObject setActive Number
+	</Syntax>
+	<RawSyntax>
+		LODObject setActive Scalar
+	</RawSyntax>
+	<Example>
+		$Code$_success=_object setActive 5.0$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, operation was successfull
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setActiveFrame
+	</Keyword>
+	<Description>
+		Sets active frame. Active frame is mapped into vertices in model, so you can use setPoint and getPoint to manipulate with vertices in frame. Changes is not reflected in animation untilactive frame is changed or saveActiveFrame is called or object is saved. Do not try change active frame using setAnimVertex, all changes may be discarded. If you want change active frame, use -1 as frame number to unset active frame. But changes made using setPoint after may be discarded
+	</Description>
+	<Syntax>
+		ObjectData setActiveFrame Number
+	</Syntax>
+	<RawSyntax>
+		mesh setActiveFrame frame
+	</RawSyntax>
+	<Example>
+		$Code$_mesh setActiveFrame 1;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setActiveSpecial
+	</Keyword>
+	<Description>
+		Selects active LOD from LOD array. Scalar one of constants declared in LODObject.inc
+	</Description>
+	<Syntax>
+		LODObject setActiveSpecial Number
+	</Syntax>
+	<RawSyntax>
+		LODObject setActiveSpecial Scalar
+	</RawSyntax>
+	<Example>
+		$Code$_success=_object setActiveSpecial LOD_VIEW_COMMANDER$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, operation was successfull
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setAnimPoint
+	</Keyword>
+	<Description>
+		Sets vertex in animation frame. Vertex is array [x,y,z]
+	</Description>
+	<Syntax>
+		ObjectData setAnimPoint Array
+	</Syntax>
+	<RawSyntax>
+		mesh setAnimPoint [frame,index,vertex]
+	</RawSyntax>
+	<Example>
+		$Code$_mesh setAnimPoint [1,10,[2,3,4]];$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setFaceFlags
+	</Keyword>
+	<Description>
+		Sets face flag(s). First argument can be number of flags, or range of flags in form [l,h]. Second argument is value. Use predefined constants to set meanful flags
+	</Description>
+	<Syntax>
+		FaceT setFaceFlags Array
+	</Syntax>
+	<RawSyntax>
+		face setFaceFlags [index/range,value]
+	</RawSyntax>
+	<Example>
+		$Code$_face setFaceFlags [FLAG_FACE_USERVALUE,10];$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		FaceT
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setFrameTime
+	</Keyword>
+	<Description>
+		sets time of specified frame
+	</Description>
+	<Syntax>
+		ObjectData setFrameTime Array
+	</Syntax>
+	<RawSyntax>
+		mesh setFrameTime [frame,time]
+	</RawSyntax>
+	<Example>
+		$Code$_mesh setFrameTime [10,0.5];$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setMaterial
+	</Keyword>
+	<Description>
+		Sets material to the face.
+	</Description>
+	<Syntax>
+		FaceT setMaterial String
+	</Syntax>
+	<RawSyntax>
+		face setMaterial file
+	</RawSyntax>
+	<Example>
+		$Code$_face setMaterial "example.rvmat"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		FaceT
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setPoint
+	</Keyword>
+	<Description>
+		Sets point in object.
+	</Description>
+	<Syntax>
+		ObjectData setPoint Array
+	</Syntax>
+	<RawSyntax>
+		object setPoint [index,vector]
+	</RawSyntax>
+	<Example>
+		$Code$_mesh setPoint [_index,[_x,_y,_z]];$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if success
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setPointFlags
+	</Keyword>
+	<Description>
+		Sets point flag(s). Use predefined constants to get meanful flags
+	</Description>
+	<Syntax>
+		ObjectData setPointFlags Array
+	</Syntax>
+	<RawSyntax>
+		mesh setPointFlags [point_index,flag_index/range,value]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setPointMass
+	</Keyword>
+	<Description>
+		Sets vertex's mass. Mass is valid only for Gemometry Level
+	</Description>
+	<Syntax>
+		ObjectData setPointMass Array
+	</Syntax>
+	<RawSyntax>
+		mesh setPointMass [index,value]
+	</RawSyntax>
+	<Example>
+		$Code$_mesh setMassPoint [10,1200];$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setPointsWeights
+	</Keyword>
+	<Description>
+		Copies weights in array into selection from index 0
+	</Description>
+	<Syntax>
+		Selection setPointsWeights Array
+	</Syntax>
+	<RawSyntax>
+		sel setPointsWeights weights
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setProperty
+	</Keyword>
+	<Description>
+		Sets property in object. Property is representes as array with two field (second argument can be anyType): [name,value]. If value is nil, property is deleted
+	</Description>
+	<Syntax>
+		ObjectData setProperty Array
+	</Syntax>
+	<RawSyntax>
+		object setProperty [property,value]
+	</RawSyntax>
+	<Example>
+		$Code$_object setProperty ["XStep",0.520]$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if no error
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setResolution
+	</Keyword>
+	<Description>
+		Sets resolution of active level.You can use special constants declared in LODObject.inc
+	</Description>
+	<Syntax>
+		LODObject setResolution Number
+	</Syntax>
+	<RawSyntax>
+		LODObject setResolution Scalar
+	</RawSyntax>
+	<Example>
+		$Code$_success=_object setResolution LOD_VIEW_COMMANDER$/Code$
+	</Example>
+	<ExamlpleResult>
+		always true, operation was successfull
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::LODObjects
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setTexture
+	</Keyword>
+	<Description>
+		Sets texture to the face.
+	</Description>
+	<Syntax>
+		FaceT setTexture String
+	</Syntax>
+	<RawSyntax>
+		face setTexture file
+	</RawSyntax>
+	<Example>
+		$Code$_face setTexture "example.paa"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		FaceT
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setUVSet
+	</Keyword>
+	<Description>
+		Assign new uv coordinates to face. If array is to short, missing values is assumed as zero
+	</Description>
+	<Syntax>
+		FaceT setUVSet Array
+	</Syntax>
+	<RawSyntax>
+		face setUVSet set
+	</RawSyntax>
+	<Example>
+		$Code$_face setUVSet [0,0, 1,0, 1,1, 1,0];$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		FaceT
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		setVertices
+	</Keyword>
+	<Description>
+		Sets new vertices to face. Array contains new vertices.
+	</Description>
+	<Syntax>
+		FaceT setVertices Array
+	</Syntax>
+	<RawSyntax>
+		face setVertices array
+	</RawSyntax>
+	<Example>
+		$Code$_object face 10 setVertices [1,8,15,11]$/Code$
+	</Example>
+	<ExamlpleResult>
+		true if operation succesed
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		FaceT
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		sharpEdges
+	</Keyword>
+	<Description>
+		Sets edges sharp
+	</Description>
+	<Syntax>
+		ObjectData sharpEdges Array
+	</Syntax>
+	<RawSyntax>
+		mesh sharpEdges [a,b,a,b,a,b ...]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		shell
+	</Keyword>
+	<Description>
+		Executes command on shell with specified file (URLs is also allowed). `command` is command defined in registers. Use empty string "" for default ("open"). Return is true, if shell executes command without error
+	</Description>
+	<Syntax>
+		String shell String
+	</Syntax>
+	<RawSyntax>
+		file1 shell command
+	</RawSyntax>
+	<Example>
+		$Code$"note.txt" shell "print";$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if successfull. Prints note.txt on printer, using application registered in explorer.
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		shellCmd
+	</Keyword>
+	<Description>
+		Executes shell command as if were written in shell's command line. Function waits until command is finished
+	</Description>
+	<Syntax>
+		shellCmd String
+	</Syntax>
+	<RawSyntax>
+		shellCmd command
+	</RawSyntax>
+	<Example>
+		$Code$_result = shellCmd "notepad.exe"$/Code$
+	</Example>
+	<ExamlpleResult>
+		-1 if file not found, or cannot be started, otherwise returns application's exit code
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		shellCmdNoWait
+	</Keyword>
+	<Description>
+		Executes shell command as if were written in shell's command line. Function continues immediatelly
+	</Description>
+	<Syntax>
+		shellCmdNoWait String
+	</Syntax>
+	<RawSyntax>
+		shellCmdNoWait command
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		-1 if file not found, or cannot be started, otherwise returns application's exit code
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		shellCmdOpenPipe
+	</Keyword>
+	<Description>
+		Executes shell command as if were written in shell's command line. Creates bi-directional pipe to the new process. Script can use this pipe to send commands to child process and read its results
+	</Description>
+	<Syntax>
+		shellCmdOpenPipe String
+	</Syntax>
+	<RawSyntax>
+		shellCmdOpenPipe command
+	</RawSyntax>
+	<Example>
+		$Code$_pipe=shellCmdOpenPipe "dir /b"$/Code$
+	</Example>
+	<ExamlpleResult>
+		stream contains files in current folder, each on new line
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		IOStream
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		simplifyPoly
+	</Keyword>
+	<Description>
+		Re-tesellates all currently selected regions. It respects mapping and polygons are simplified by removing of the unnecessary points.
+	</Description>
+	<Syntax>
+		simplifyPoly ObjectData
+	</Syntax>
+	<RawSyntax>
+		simplifyPoly object
+	</RawSyntax>
+	<Example>
+		$Code$simplifyPoly _level;$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if no error
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ObjToolJoinProxy
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		sin
+	</Keyword>
+	<Description>
+		The sine of x, the argument is in degrees.
+	</Description>
+	<Syntax>
+		sin Number
+	</Syntax>
+	<RawSyntax>
+		sin x
+	</RawSyntax>
+	<Example>
+		$Code$sin 30$/Code$
+	</Example>
+	<ExamlpleResult>
+		0.5
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		skipUntil
+	</Keyword>
+	<Description>
+		Explores input stream for pattern. Regular expression is used. It doesn't affect state of input stream, so multiple explores can be called, until request pattern match. More informations about regular expressions at www.regexp.cz
+	</Description>
+	<Syntax>
+		IOStream skipUntil String
+	</Syntax>
+	<RawSyntax>
+		stream skipUntil "pattern"
+	</RawSyntax>
+	<Example>
+		$Code$stream exploreFor "-?[0-9]+"$/Code$
+	</Example>
+	<ExamlpleResult>
+		returns true, if streams contain any integer number
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		smoothEdges
+	</Keyword>
+	<Description>
+		Sets edges smooth
+	</Description>
+	<Syntax>
+		ObjectData smoothEdges Array
+	</Syntax>
+	<RawSyntax>
+		mesh smoothEdges [a,b,a,b,a,b ...]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		splitPath
+	</Keyword>
+	<Description>
+		Splits path into araay
+	</Description>
+	<Syntax>
+		splitPath String
+	</Syntax>
+	<RawSyntax>
+		splitPath path
+	</RawSyntax>
+	<Example>
+		$Code$splitPath "C:\test\anFile.txt"$/Code$
+	</Example>
+	<ExamlpleResult>
+		["c:","\test\","anFile",".txt"]
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		sqrt
+	</Keyword>
+	<Description>
+		The square root of x.
+	</Description>
+	<Syntax>
+		sqrt Number
+	</Syntax>
+	<RawSyntax>
+		sqrt x
+	</RawSyntax>
+	<Example>
+		$Code$sqrt 9$/Code$
+	</Example>
+	<ExamlpleResult>
+		3
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSAdd
+	</Keyword>
+	<Description>
+		Adds file to source control. Returns true, if it was successful
+		Adds files to source control. Returns true, if it was successful
+	</Description>
+	<Syntax>
+		SSAdd Array
+	</NextSyntax>
+		SSAdd String
+	</Syntax>
+	<RawSyntax>
+		SSAdd [fnames]
+	</NextRawSyntax>
+		SSAdd fname
+	</RawSyntax>
+	<Example>
+		$Code$SSAdd ["file1.txt","file1.txt"]$/Code$
+		$Code$SSAdd "file.txt"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSBrowse
+	</Keyword>
+	<Description>
+		Opens source save browser. Function returns selected path or empty string, if dialog has been canceled. Parameter path is default path selected in browser
+	</Description>
+	<Syntax>
+		SSBrowse String
+	</Syntax>
+	<RawSyntax>
+		SSBrowse path
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSCheckIn
+	</Keyword>
+	<Description>
+		Checks in files. Returns true, if it was successful
+		Checks in file. Returns true, if it was successful
+	</Description>
+	<Syntax>
+		SSCheckIn Array
+	</NextSyntax>
+		SSCheckIn String
+	</Syntax>
+	<RawSyntax>
+		SSCheckIn [fnames]
+	</NextRawSyntax>
+		SSCheckIn fname
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSCheckOut
+	</Keyword>
+	<Description>
+		Checks out files. Returns true, if it was successful
+		Checks out file. Returns true, if it was successful
+	</Description>
+	<Syntax>
+		SSCheckOut Array
+	</NextSyntax>
+		SSCheckOut String
+	</Syntax>
+	<RawSyntax>
+		SSCheckOut [fnames]
+	</NextRawSyntax>
+		SSCheckOut fname
+	</RawSyntax>
+	<Example>
+		$Code$SSCheckOut ["file1.txt","file1.txt"]$/Code$
+		$Code$SSCheckOut "file.txt"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSComment
+	</Keyword>
+	<Description>
+		Sets comment for next CheckIn/CheckOut operation. Comment is reset after CheckIn/CheckOut
+	</Description>
+	<Syntax>
+		SSComment String
+	</Syntax>
+	<RawSyntax>
+		SSComment comment
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSGetLatestVersion
+	</Keyword>
+	<Description>
+		Gets latest version of files
+		Gets latest version of file
+	</Description>
+	<Syntax>
+		SSGetLatestVersion Array
+	</NextSyntax>
+		SSGetLatestVersion String
+	</Syntax>
+	<RawSyntax>
+		SSGetLatestVersion [fname]
+	</NextRawSyntax>
+		SSGetLatestVersion fname
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSGetLatestVersionDir
+	</Keyword>
+	<Description>
+		Gets latest version of directory
+	</Description>
+	<Syntax>
+		SSGetLatestVersionDir String
+	</Syntax>
+	<RawSyntax>
+		SSGetLatestVersionDir directory
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSGetLatestVersionDirRecursive
+	</Keyword>
+	<Description>
+		Gets latest version of directory and all subdirectories
+	</Description>
+	<Syntax>
+		SSGetLatestVersionDirRecursive String
+	</Syntax>
+	<RawSyntax>
+		SSGetLatestVersionDirRecursive directory
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSGetProjectFolder
+	</Keyword>
+	<Description>
+		Returns default Source Safe project folder.
+	</Description>
+	<Syntax>
+		SSGetProjectFolder
+	</Syntax>
+	<RawSyntax>
+		SSGetProjectFolder
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSHistory
+	</Keyword>
+	<Description>
+		Function shows history of file. Returns true, if user select another version of file
+		Function shows history of files. Returns true, if user select another version of file
+	</Description>
+	<Syntax>
+		SSHistory Array
+	</NextSyntax>
+		SSHistory String
+	</Syntax>
+	<RawSyntax>
+		SSHistory file
+	</NextRawSyntax>
+		SSHistory [files]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSIsActive
+	</Keyword>
+	<Description>
+		Returns true, SourceControl is initialized
+	</Description>
+	<Syntax>
+		SSIsActive
+	</Syntax>
+	<RawSyntax>
+		SSIsActive
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSIsCanceled
+	</Keyword>
+	<Description>
+		Returns true, if SourceControl is canceled. In this state, all SS commands are ignored
+	</Description>
+	<Syntax>
+		SSIsCanceled
+	</Syntax>
+	<RawSyntax>
+		SSIsCanceled
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSIsCheckedOut
+	</Keyword>
+	<Description>
+		Returns true, if file is checked out
+	</Description>
+	<Syntax>
+		SSIsCheckedOut String
+	</Syntax>
+	<RawSyntax>
+		SSIsCheckedOut file
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSIsControled
+	</Keyword>
+	<Description>
+		Returns true, if file is controled
+	</Description>
+	<Syntax>
+		SSIsControled String
+	</Syntax>
+	<RawSyntax>
+		SSIsControled file
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSIsDeleted
+	</Keyword>
+	<Description>
+		Returns true, if file is deleted
+	</Description>
+	<Syntax>
+		SSIsDeleted String
+	</Syntax>
+	<RawSyntax>
+		SSIsDeleted file
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSRemove
+	</Keyword>
+	<Description>
+		Removes files form source control
+		Removes file form source control
+	</Description>
+	<Syntax>
+		SSRemove Array
+	</NextSyntax>
+		SSRemove String
+	</Syntax>
+	<RawSyntax>
+		SSRemove [files]
+	</NextRawSyntax>
+		SSRemove file
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSTestRO
+	</Keyword>
+	<Description>
+		Function returns true, if file is R/W. If file is R/O, it popups dialog for user action, also enables to user Check Out the file.
+	</Description>
+	<Syntax>
+		SSTestRO String
+	</Syntax>
+	<RawSyntax>
+		SSTestRO fname
+	</RawSyntax>
+	<Example>
+		$Code$SSTestRO "file.txt"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSTestROSave
+	</Keyword>
+	<Description>
+		Function returns parameter, if file is R/W. If file is R/O, it popups dialog for user action, also enables to user Check Out the file. This funcion is designed to Save operation. If user cancels dialog, result is empty string. If user select SaveAs, it returns entered name.
+	</Description>
+	<Syntax>
+		SSTestROSave String
+	</Syntax>
+	<RawSyntax>
+		SSTestROSave fname
+	</RawSyntax>
+	<Example>
+		$Code$SSTestROSave "file.txt"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		SSUndoCheckOut
+	</Keyword>
+	<Description>
+		Undoes check out
+		Undoes check out
+	</Description>
+	<Syntax>
+		SSUndoCheckOut Array
+	</NextSyntax>
+		SSUndoCheckOut String
+	</Syntax>
+	<RawSyntax>
+		SSUndoCheckOut [files]
+	</NextRawSyntax>
+		SSUndoCheckOut file
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		SourceSafe
+		SourceSafe
+	</Note>
+	<ReturnValue>
+		Boolean - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		step
+	</Keyword>
+	<Description>
+		Optionaly can set step. If you want to count down, step must be specified, and set negative. Default value is 1.
+	</Description>
+	<Syntax>
+		for type step Number
+	</Syntax>
+	<RawSyntax>
+		for /.../ step step
+	</RawSyntax>
+	<Example>
+		$Code$for "_x" from 20 to 10 step -2 do {..code..}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		for - type
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		str
+	</Keyword>
+	<Description>
+		Converts any variable to a string.
+	</Description>
+	<Syntax>
+		str Anything
+	</Syntax>
+	<RawSyntax>
+		str any value
+	</RawSyntax>
+	<Example>
+		$Code$str(2+3)$/Code$
+	</Example>
+	<ExamlpleResult>
+		"5"
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+
+
+	<Keyword>
+		supportInfo
+	</Keyword>
+	<Description>
+		Creates list of supported operators and type. Each field of array has format: "x:name" where x is 't' - type, 'n' - nullary operator, 'u' - unary operator, 'b' - binary operator. 'name' is operator's/type's name (in case operator, type of input operands is included). `mask` parameter can be empty string, or one of field. In this case, function returns empty array, if operator is not included in list. `mask` can contain wildcards, for example: *:name, t:*, t:name* or *:*.
+	</Description>
+	<Syntax>
+		supportInfo String
+	</Syntax>
+	<RawSyntax>
+		supportInfo mask
+	</RawSyntax>
+	<Example>
+		$Code$supportInfo "b:select*"$/Code$
+	</Example>
+	<ExamlpleResult>
+		["b:ARRAY select SCALAR","b:ARRAY select BOOL"]
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Array
+	</ReturnValue>
+
+
+
+	<Keyword>
+		switch
+	</Keyword>
+	<Description>
+		Begins switch form
+	</Description>
+	<Syntax>
+		switch Anything
+	</Syntax>
+	<RawSyntax>
+		switch exp
+	</RawSyntax>
+	<Example>
+		$Code$switch (_a) do { case 1: {block}; case 2 : {block}; default {block};}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Switch - Type
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		tan
+	</Keyword>
+	<Description>
+		The tangens of x, the argument is in degrees.
+	</Description>
+	<Syntax>
+		tan Number
+	</Syntax>
+	<RawSyntax>
+		tan x
+	</RawSyntax>
+	<Example>
+		$Code$tan 45$/Code$
+	</Example>
+	<ExamlpleResult>
+		1
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		tellInput
+	</Keyword>
+	<Description>
+		Retrieves current reading pointer for static stream. Returns -1, if stream is non-static
+	</Description>
+	<Syntax>
+		tellInput IOStream
+	</Syntax>
+	<RawSyntax>
+		tellInput stream
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		tellOutput
+	</Keyword>
+	<Description>
+		Retrieves current writting pointer for static stream. Returns -1, if stream is non-static
+	</Description>
+	<Syntax>
+		tellOutput IOStream
+	</Syntax>
+	<RawSyntax>
+		tellOutput stream
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		testIdentifier
+	</Keyword>
+	<Description>
+		Tests input stream for identifier. Identitfier is world starting with alpha character or underscore '_' and can contain any alphanumeric characters or underscores
+	</Description>
+	<Syntax>
+		testIdentifier IOStream
+	</Syntax>
+	<RawSyntax>
+		testIdentifier stream
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		testNumber
+	</Keyword>
+	<Description>
+		Tests input stream for number, returns true, if input stream contains number. It doesn't read the number, so if script calls this function repeatly, always return last same result, until number is readed by function get
+	</Description>
+	<Syntax>
+		testNumber IOStream
+	</Syntax>
+	<RawSyntax>
+		testNumber stream
+	</RawSyntax>
+	<Example>
+		$Code$if (testNumber stream) then {_value=val (_stream get 0);}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		testNumberInt
+	</Keyword>
+	<Description>
+		Tests input stream for integer number, returns true, if input stream contains number. It doesn't read the number, so if script calls this function repeatly, always return last same result, until number is readed by function get
+	</Description>
+	<Syntax>
+		testNumberInt IOStream
+	</Syntax>
+	<RawSyntax>
+		testNumberInt stream
+	</RawSyntax>
+	<Example>
+		$Code$if (testNumberInt stream) then {_value=val (_stream get 0);}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		testSharpEdges
+	</Keyword>
+	<Description>
+		Test edges to sharpness. Result is -1, 0 or 1. Result -1: all edges has been smooth. Result 1 all edges has been sharp. Result 0 some edges has been smooth and some edges has been sharp
+	</Description>
+	<Syntax>
+		ObjectData testSharpEdges Array
+	</Syntax>
+	<RawSyntax>
+		mesh testSharpEdges [a,b,a,b,a,b ...]
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		testXMLTag
+	</Keyword>
+	<Description>
+		Test, if input contains xml tag <tag [param="value"]> If tag starts with '/', it will test for end tag. Return is integer with defined meaning: 0 - test failed, 1 - test passed, and result is open or close tag, 2 - test passed, and result is single tag (not for close tag)
+	</Description>
+	<Syntax>
+		IOStream testXMLTag String
+	</Syntax>
+	<RawSyntax>
+		stream testXMLTag tag
+	</RawSyntax>
+	<Example>
+		$Code$res=testXMLTag "name"$/Code$
+	</Example>
+	<ExamlpleResult>
+		1 = stream contains <name ... >
+	</ExamlpleResult>
+	<Note>
+		O2Script:IOStream
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		tg
+	</Keyword>
+	<Description>
+		The tangens of x, the argument is in degrees.
+	</Description>
+	<Syntax>
+		tg Number
+	</Syntax>
+	<RawSyntax>
+		tg x
+	</RawSyntax>
+	<Example>
+		$Code$tg 45$/Code$
+	</Example>
+	<ExamlpleResult>
+		1
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		then
+	</Keyword>
+	<Description>
+		The first or second element of the array is executed depending on the result of the if condition. The result of the executed expression is returned as a result (the result may be <t>nothing</t>).
+	</Description>
+	<Syntax>
+		If Type then Array
+	</Syntax>
+	<RawSyntax>
+		if then else
+	</RawSyntax>
+	<Example>
+		$Code$if (a>b) then {c=1} else {c=2};if (a>b) then [{c=1},{c=2}]$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Anything
+	</ReturnValue>
+
+
+
+	<Keyword>
+		then
+	</Keyword>
+	<Description>
+		The code is executed when the if condition is met. If the code is executed, the last value calculated in the code is returned. If the code is not executed, <t>nothing</t> is returned.
+	</Description>
+	<Syntax>
+		If Type then String
+	</Syntax>
+	<RawSyntax>
+		if then codeToExecute
+	</RawSyntax>
+	<Example>
+		$Code$if (a>b) then {c=1}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Anything
+	</ReturnValue>
+
+
+
+	<Keyword>
+		throw
+	</Keyword>
+	<Description>
+		Throws an exception. The exception is processed by first catch block. See <f>try</f>.
+	</Description>
+	<Syntax>
+		throw Anything
+	</Syntax>
+	<RawSyntax>
+		throw expression
+	</RawSyntax>
+	<Example>
+		$Code$throw "invalid argument"$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		TimeFromFrame
+	</Keyword>
+	<Description>
+		Retusn time of specified frame
+	</Description>
+	<Syntax>
+		ObjectData TimeFromFrame Number
+	</Syntax>
+	<RawSyntax>
+		mesh TimeFromFrame frame
+	</RawSyntax>
+	<Example>
+		$Code$_time = _mesh timeFromFrame 10$/Code$
+	</Example>
+	<ExamlpleResult>
+		time of frame 10
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		to
+	</Keyword>
+	<Description>
+		Continue sequence of 'for' command.
+	</Description>
+	<Syntax>
+		for type to Number
+	</Syntax>
+	<RawSyntax>
+		for "_var" from a to b
+	</RawSyntax>
+	<Example>
+		$Code$for "_x" from 10 to 20 do {..code..}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		for - type
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		toHex
+	</Keyword>
+	<Description>
+		Converts number into hexadecimal string.
+	</Description>
+	<Syntax>
+		toHex Number
+	</Syntax>
+	<RawSyntax>
+		toHex a
+	</RawSyntax>
+	<Example>
+		$Code$tohex 77511 $/Code$
+	</Example>
+	<ExamlpleResult>
+		"12EC7"
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		transform
+	</Keyword>
+	<Description>
+		Transforms selection by matrix
+	</Description>
+	<Syntax>
+		Selection transform Matrix
+	</Syntax>
+	<RawSyntax>
+		sel transform mx
+	</RawSyntax>
+	<Example>
+		$Code$_selection transform _matrix;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		transformFrame
+	</Keyword>
+	<Description>
+		Transforms selection by matrix. Transform is applied to the specified. frame is Number, mx is Matrix
+	</Description>
+	<Syntax>
+		Selection transformFrame Array
+	</Syntax>
+	<RawSyntax>
+		sel transformFrame [frame,mx]
+	</RawSyntax>
+	<Example>
+		$Code$_selection transformFrame [2,_matrix];$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		true
+	</Keyword>
+	<Description>
+		Always true.
+	</Description>
+	<Syntax>
+		true
+	</Syntax>
+	<RawSyntax>
+		true
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		try
+	</Keyword>
+	<Description>
+		Defines try-catch structure. This is structured exception block. Any thrown exception in try block is catched in catch block. The structured exception block has following formXXXpre>try   //begin of try-catch block //block, that can throw exception}catch{//block, that process an exception. Exception is descriped in _exception variable}</pre>;
+	</Description>
+	<Syntax>
+		try String
+	</Syntax>
+	<RawSyntax>
+		try code
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		Nothing
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		typeName
+	</Keyword>
+	<Description>
+		Returns type-name of expression. Type is returned as string
+	</Description>
+	<Syntax>
+		typeName Anything
+	</Syntax>
+	<RawSyntax>
+		typeName any
+	</RawSyntax>
+	<Example>
+		$Code$typeName "hello"$/Code$
+	</Example>
+	<ExamlpleResult>
+		"string"
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		String
+	</ReturnValue>
+
+
+
+	<Keyword>
+		unselectAll
+	</Keyword>
+	<Description>
+		Unselect all in selection.
+	</Description>
+	<Syntax>
+		unselectAll Selection
+	</Syntax>
+	<RawSyntax>
+		unselectAll sel
+	</RawSyntax>
+	<Example>
+		$Code$selectAll _sel$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		unselectFace
+	</Keyword>
+	<Description>
+		Unselects face
+	</Description>
+	<Syntax>
+		Selection unselectFace Number
+	</Syntax>
+	<RawSyntax>
+		sel unselectFace index
+	</RawSyntax>
+	<Example>
+		$Code$_sel unselectFace _index$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		unselectPoint
+	</Keyword>
+	<Description>
+		Selects point
+	</Description>
+	<Syntax>
+		Selection unselectPoint Number
+	</Syntax>
+	<RawSyntax>
+		sel unselectPoint index
+	</RawSyntax>
+	<Example>
+		$Code$_sel unselectPoint _index$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Selection
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		updateActiveFrame
+	</Keyword>
+	<Description>
+		Updates animation. All changes made using setPoint is copied to vertices in active animation.
+	</Description>
+	<Syntax>
+		updateActiveFrame ObjectData
+	</Syntax>
+	<RawSyntax>
+		updateActiveFrame mesh
+	</RawSyntax>
+	<Example>
+		$Code$_mesh setActiveFrame 1;_mesh setPoint [1,[1,2,3]];updateActiveFrame _mesh;$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::ObjectData
+	</Note>
+	<ReturnValue>
+		ObjectData
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		UVFromPoly
+	</Keyword>
+	<Description>
+		Shifts UV on selected faces. UVs are shifted by integer number. It tries to build the largest polygon with continuous UV.
+	</Description>
+	<Syntax>
+		UVFromPoly ObjectData
+	</Syntax>
+	<RawSyntax>
+		UVFromPoly object
+	</RawSyntax>
+	<Example>
+		$Code$UVFromPoly _level;$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if no error
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ObjToolJoinProxy
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		UVInto01
+	</Keyword>
+	<Description>
+		Shifts UV on selected faces. UVs are shifted by integer number so that minimum for U or V is in interval <0,1).
+	</Description>
+	<Syntax>
+		UVInto01 ObjectData
+	</Syntax>
+	<RawSyntax>
+		UVInto01 object
+	</RawSyntax>
+	<Example>
+		$Code$UVInto01 _level;$/Code$
+	</Example>
+	<ExamlpleResult>
+		true, if no error
+	</ExamlpleResult>
+	<Note>
+		O2Scripts::ObjToolJoinProxy
+	</Note>
+	<ReturnValue>
+		Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		val
+	</Keyword>
+	<Description>
+		Converts number in string into Number type. Doesn't evaluates any expression. Returns 0 if error
+	</Description>
+	<Syntax>
+		val String
+	</Syntax>
+	<RawSyntax>
+		val a
+	</RawSyntax>
+	<Example>
+		$Code$val "124"$/Code$
+	</Example>
+	<ExamlpleResult>
+		124.0
+	</ExamlpleResult>
+	<Note>
+		StringsArrays
+	</Note>
+	<ReturnValue>
+		Number
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		weight
+	</Keyword>
+	<Description>
+		See select point
+		Returns weight of point. If index is out of range, reports error
+	</Description>
+	<Syntax>
+		Number weight Number
+	</NextSyntax>
+		Selection weight Number
+	</Syntax>
+	<RawSyntax>
+		index weight weight
+	</NextRawSyntax>
+		sel weight index
+	</RawSyntax>
+	<Example>
+		$Code$$/Code$
+		$Code$$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+		
+	</ExamlpleResult>
+	<Note>
+		O2ScriptLib::Selection
+		O2ScriptLib::Selection
+	</Note>
+	<ReturnValue>
+		Array - Boolean
+	</ReturnValue>
+
+</NextListItem>
+
+	<Keyword>
+		while
+	</Keyword>
+	<Description>
+		The first part of the while contruct.
+	</Description>
+	<Syntax>
+		while String
+	</Syntax>
+	<RawSyntax>
+		while condition
+	</RawSyntax>
+	<Example>
+		$Code$while "x<10" do {x=x+1}$/Code$
+	</Example>
+	<ExamlpleResult>
+		
+	</ExamlpleResult>
+	<Note>
+		Default
+	</Note>
+	<ReturnValue>
+		While - Type
+	</ReturnValue>
+
+
+
+</KeywordList>
+
+###
+
+<typelist>
+	<type>
+		<name>Number</name>
+		<description>A real number.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Boolean</name>
+		<description>Boolean (<f>true</f> or <f>false</f>).</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Array</name>
+		<description>An array of items, each may be of any type.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>String</name>
+		<description>An ASCII string.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Nothing</name>
+		<description>Nothing - no value.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>If Type</name>
+		<description>A helper type used in <f>if</f>..<f>then</f> constructs.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>While Type</name>
+		<description>A helper type used in <f>while</f>..<f>do</f> constructs.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>for type</name>
+		<description>This type handles for cycles. Usage of this type: for "_var" from :expr: to :expr: [step <expr>] do {..code..};Second usage: for [":initPhase:",":condition:",":updatePhase:"] do {...code...};</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Switch Type</name>
+		<description>A helper type used in <f>switch</f> constructs.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Exception Type</name>
+		<description>A helper type used in <f>try</f>-<f>catch</f> constructs.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Anything</name>
+		<description>Anything, including nothing.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Any Value</name>
+		<description>Any value.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>String or Array</name>
+		<description><t>String</t> or <t>Array</t>.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Number or Nothing</name>
+		<description><t>Number</t> or <t>Nothing</t>.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>Anything or if</name>
+		<description><t>Anything</t> or <t>if</t>.</description>
+		<category>Default</category>
+	</type>
+	<type>
+		<name>LODObject</name>
+		<description>This type represents whole P3D object. It is set of levels which is organised same way like in Objektiv2</description>
+		<category>O2ScriptLib::LODObjects</category>
+	</type>
+	<type>
+		<name>ObjectData</name>
+		<description>This type represents one level of P3D.</description>
+		<category>O2ScriptLib::ObjectData</category>
+	</type>
+	<type>
+		<name>FaceT</name>
+		<description>This type represents one face in object.</description>
+		<category>O2ScriptLib::ObjectData</category>
+	</type>
+	<type>
+		<name>Selection</name>
+		<description>This object represents general selection on mesh</description>
+		<category>O2ScriptLib::Selection</category>
+	</type>
+	<type>
+		<name>Matrix</name>
+		<description>This type represents general transformation matrix 4x3 (for 3D transforms)</description>
+		<category>Matrix</category>
+	</type>
+	<type>
+		<name>IOStream</name>
+		<description>Handles various input/output streams, such as file, network, memory and console streams and also enables simple text file parsing</description>
+		<category>O2Script:IOStream</category>
+	</type>
+</typelist>
+

@@ -12,7 +12,7 @@ import raven.sqdev.exceptions.SQDevException;
  * @author Raven
  *
  */
-public class DataTypeList extends ArrayList<EDataType> {
+public class DataTypeList extends ArrayList<ESQFDataType> {
 
 	private static final long serialVersionUID = -3449702221130512936L;
 
@@ -35,7 +35,7 @@ public class DataTypeList extends ArrayList<EDataType> {
 	 * @param type
 	 *            The entry to directly add
 	 */
-	public DataTypeList(EDataType type) {
+	public DataTypeList(ESQFDataType type) {
 		super();
 
 		add(type);
@@ -47,7 +47,7 @@ public class DataTypeList extends ArrayList<EDataType> {
 	 * @param types
 	 *            The entries to add directly
 	 */
-	public DataTypeList(Collection<EDataType> types) {
+	public DataTypeList(Collection<ESQFDataType> types) {
 		super(types);
 	}
 
@@ -57,8 +57,8 @@ public class DataTypeList extends ArrayList<EDataType> {
 	 * @param types
 	 *            The entries to add directly
 	 */
-	public DataTypeList(EDataType[] types) {
-		for (EDataType current : types) {
+	public DataTypeList(ESQFDataType[] types) {
+		for (ESQFDataType current : types) {
 			add(current);
 		}
 	}
@@ -73,7 +73,7 @@ public class DataTypeList extends ArrayList<EDataType> {
 	 *            means that the respective list entry is checked whether it can be
 	 *            replaced by the given type instead of only the other way round
 	 */
-	public boolean containsExchangableType(EDataType type, boolean reverseChecking) {
+	public boolean containsExchangableType(ESQFDataType type, boolean reverseChecking) {
 		return findExchangableDataType(type, reverseChecking) != -1;
 	}
 
@@ -89,7 +89,7 @@ public class DataTypeList extends ArrayList<EDataType> {
 	 * @return The index of the found entry or <code>-1</code> if none could be
 	 *         found
 	 */
-	public int findExchangableDataType(EDataType type, boolean reverseChecking) {
+	public int findExchangableDataType(ESQFDataType type, boolean reverseChecking) {
 		return findExchangableDataType(type, reverseChecking, 0);
 	}
 
@@ -107,9 +107,9 @@ public class DataTypeList extends ArrayList<EDataType> {
 	 * @return The index of the found entry or <code>-1</code> if none could be
 	 *         found
 	 */
-	public int findExchangableDataType(EDataType type, boolean reverseChecking, int startIndex) {
+	public int findExchangableDataType(ESQFDataType type, boolean reverseChecking, int startIndex) {
 		for (int i = startIndex; i < size(); i++) {
-			EDataType currentType = get(i);
+			ESQFDataType currentType = get(i);
 
 			if (currentType == type) {
 				// a data type is exchangable with itself
@@ -136,7 +136,7 @@ public class DataTypeList extends ArrayList<EDataType> {
 	 * @param type
 	 *            The data type to add
 	 */
-	public void addUnique(EDataType type) {
+	public void addUnique(ESQFDataType type) {
 		if (!contains(type)) {
 			add(type);
 		}
@@ -149,8 +149,8 @@ public class DataTypeList extends ArrayList<EDataType> {
 	 * @param collection
 	 *            The collection of data types to add
 	 */
-	public void addAllUnique(Collection<EDataType> collection) {
-		for (EDataType currentType : collection) {
+	public void addAllUnique(Collection<ESQFDataType> collection) {
+		for (ESQFDataType currentType : collection) {
 			addUnique(currentType);
 		}
 	}
@@ -159,7 +159,7 @@ public class DataTypeList extends ArrayList<EDataType> {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 
-		for (EDataType currentType : this) {
+		for (ESQFDataType currentType : this) {
 			builder.append(currentType + TYPE_SEPERATOR);
 		}
 
@@ -184,7 +184,7 @@ public class DataTypeList extends ArrayList<EDataType> {
 
 		// extract all types out of this and add them to the list
 		for (String currentStringType : types.split(TYPE_SEPERATOR)) {
-			EDataType currentType = EDataType.resolve(currentStringType);
+			ESQFDataType currentType = ESQFDataType.resolve(currentStringType);
 
 			if (currentType == null) {
 				try {
@@ -205,8 +205,8 @@ public class DataTypeList extends ArrayList<EDataType> {
 	/**
 	 * Converts this list into a respective array
 	 */
-	public EDataType[] toArray() {
-		EDataType[] types = new EDataType[size()];
+	public ESQFDataType[] toArray() {
+		ESQFDataType[] types = new ESQFDataType[size()];
 
 		for (int i = 0; i < types.length; i++) {
 			types[i] = get(i);

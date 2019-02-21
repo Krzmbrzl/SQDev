@@ -30,10 +30,20 @@ public class KeywordList implements ISaveable {
 	 */
 	public static final String LIST_END_SAVESEQUENCE = "</KeywordList>";
 	/**
-	 * The sequence seperating the single keywords in the saveable String format of
+	 * The sequence separating the single keywords in the saveable String format of
 	 * this class
 	 */
 	public static final String LIST_SEPERATOR_SAVESEQUENCE = "</NextListItem>";
+	/**
+	 * The sequence indicating the start of the keyword-type specification in the
+	 * saveable String format of this class
+	 */
+	public static final String LIST_KEYWORDTYPE_START_SAVESEQUENCE = "<KeywordType>";
+	/**
+	 * The sequence indicating the end of the keyword-type specification in the
+	 * saveable String format of this class
+	 */
+	public static final String LIST_KEYWORDTYPE_END_SAVESEQUENCE = "</KeywordType>";
 
 	/**
 	 * The list of keywords where every starting letter has it's own list. Therefore
@@ -44,6 +54,10 @@ public class KeywordList implements ISaveable {
 	 * A list of keywords this list has failed to recreate
 	 */
 	private List<Throwable> failures;
+	/**
+	 * A flag indicating whether this list contains mixed keyword types
+	 */
+	private boolean mixed;
 
 
 	/**
@@ -53,6 +67,8 @@ public class KeywordList implements ISaveable {
 		keywords = new HashMap<String, Keyword>();
 
 		failures = new ArrayList<Throwable>();
+
+		mixed = false;
 	}
 
 	/**
@@ -67,7 +83,10 @@ public class KeywordList implements ISaveable {
 		this();
 
 		if (isSaveFormat(saveFormat)) {
-			recreateFrom(saveFormat);
+			if (!recreateFrom(saveFormat)) {
+				System.err.println("Invalid format for keywordlist!");
+				// TODO: log
+			}
 		}
 	}
 
@@ -83,7 +102,7 @@ public class KeywordList implements ISaveable {
 
 		addKeywords(keywords);
 	}
-	
+
 	/**
 	 * Creates a <code>KeywordList</code> out of the given list of keywords
 	 * 
@@ -93,7 +112,7 @@ public class KeywordList implements ISaveable {
 	 */
 	public KeywordList(Map<String, Keyword> keywords) {
 		this();
-		
+
 		this.keywords = keywords;
 	}
 
@@ -104,6 +123,14 @@ public class KeywordList implements ISaveable {
 	 *            The keyword to add
 	 */
 	public void addKeyword(Keyword keyword) {
+		if (!mixed && !keywords.isEmpty()) {
+			mixed = !keywords.entrySet().iterator().next().getClass().equals(keyword.getClass());
+		} else {
+			if (keywords.isEmpty()) {
+				mixed = false;
+			}
+		}
+
 		keywords.put(keyword.getKeyword().toLowerCase(), keyword);
 	}
 
@@ -116,7 +143,7 @@ public class KeywordList implements ISaveable {
 	public void addKeywords(Collection<? extends Keyword> keywords) {
 		// add all keywords
 		for (Keyword currentKeyword : keywords) {
-			this.keywords.put(currentKeyword.getKeyword().toLowerCase(), currentKeyword);
+			addKeyword(currentKeyword);
 		}
 	}
 
@@ -175,53 +202,112 @@ public class KeywordList implements ISaveable {
 
 	@Override
 	public String getSaveableFormat() {
-		String saveableFormat = LIST_START_SAVESEQUENCE + "\n\n";
+		StringBuilder saveableFormat = new StringBuilder();
+		saveableFormat.append(LIST_START_SAVESEQUENCE + "\n");
+
+		if (!mixed && !keywords.isEmpty()) {
+			String keywordType = keywords.entrySet().iterator().next().getClass().getSimpleName();
+
+			if (!keywordType.isEmpty()) {
+				saveableFormat.append(LIST_KEYWORDTYPE_START_SAVESEQUENCE + "\n\t" + keywordType + "\n"
+						+ LIST_KEYWORDTYPE_END_SAVESEQUENCE);
+			}
+		}
 
 		Iterator<Entry<String, Keyword>> it = keywords.entrySet().iterator();
 
 		while (it.hasNext()) {
 			Keyword currentKeyword = it.next().getValue();
 
-			saveableFormat += "\n\t" + currentKeyword.getSaveableFormat().replace("\n", "\n\t");
+			saveableFormat.append("\n\t" + currentKeyword.getSaveableFormat().replace("\n", "\n\t"));
 
-			saveableFormat += "\n\n" + LIST_SEPERATOR_SAVESEQUENCE + "\n";
+			saveableFormat.append("\n\n" + LIST_SEPERATOR_SAVESEQUENCE + "\n");
 		}
 
 		if (getKeywords().size() > 0) {
 			// remove last seperator
-			saveableFormat = saveableFormat.substring(0,
-					saveableFormat.length() - (LIST_SEPERATOR_SAVESEQUENCE.length() + 1));
+			saveableFormat.setLength(saveableFormat.length() - (LIST_SEPERATOR_SAVESEQUENCE.length() + 1));
 		}
 
-		saveableFormat += "\n\n" + LIST_END_SAVESEQUENCE;
+		saveableFormat.append("\n\n" + LIST_END_SAVESEQUENCE);
 
-		return saveableFormat.replace("\n", "\r\n");
+		return saveableFormat.toString().replace("\n", "\r\n");
 	}
 
 	@Override
 	public boolean recreateFrom(String savedFormat) {
 		savedFormat = savedFormat.replace("\r\n", "\n");
+		String keywordType = null;
 
 		String listContent = savedFormat
 				.substring(savedFormat.indexOf(LIST_START_SAVESEQUENCE) + LIST_START_SAVESEQUENCE.length(),
 						savedFormat.indexOf(LIST_END_SAVESEQUENCE))
 				.trim();
 
+		// check for keyword-type specification
+		if (listContent.contains(LIST_KEYWORDTYPE_START_SAVESEQUENCE)) {
+			keywordType = listContent.substring(
+					listContent.indexOf(LIST_KEYWORDTYPE_START_SAVESEQUENCE)
+							+ LIST_KEYWORDTYPE_START_SAVESEQUENCE.length(),
+					listContent.indexOf(LIST_KEYWORDTYPE_END_SAVESEQUENCE)).trim();
+
+			if (keywordType.isEmpty()) {
+				keywordType = null;
+			}
+
+			// trim list content
+			listContent = listContent.substring(
+					listContent.indexOf(LIST_KEYWORDTYPE_END_SAVESEQUENCE) + LIST_KEYWORDTYPE_END_SAVESEQUENCE.length())
+					.trim();
+		}
+
 		for (String currentKeywordContent : listContent.split(LIST_SEPERATOR_SAVESEQUENCE)) {
 			currentKeywordContent = currentKeywordContent.trim();
 
-			Keyword currentKeyword;
+			Keyword currentKeyword = null;
 
-			if (currentKeywordContent.contains(SQFCommand.SYNTAX_START_SAVESEQUENCE)) {
-				// if the info corresponds to a SQF command
-				currentKeyword = new SQFCommand();
-			} else {
-				if (currentKeywordContent.contains(SQFElement.WIKI_START_SAVESEQUENCE)) {
-					// if the info corresponds to a SQFElement
-					currentKeyword = new SQFElement();
-				} else {
-					// else it's just a normal Keyword
+			if (keywordType != null) {
+				// use specified type
+				boolean found = false;
+
+				if (keywordType.equals(Keyword.class.getSimpleName())) {
 					currentKeyword = new Keyword();
+					found = true;
+				}
+
+				if (!found && keywordType.equals(SQFElement.class.getSimpleName())) {
+					currentKeyword = new SQFElement();
+					found = true;
+				}
+
+				if (!found && keywordType.equals(SQFCommand.class.getSimpleName())) {
+					currentKeyword = new SQFCommand();
+					found = true;
+				}
+
+				if (!found && keywordType.equals(O2ScriptCommand.class.getSimpleName())) {
+					currentKeyword = new O2ScriptCommand();
+					found = true;
+				}
+
+				if (!found) {
+					System.err.println("Unknown keyword-type: \"" + keywordType + "\"!");
+					// TODO: log
+					return false;
+				}
+			} else {
+				// Try to guess based on the given content as a fallback
+				if (currentKeywordContent.contains(SQFCommand.SYNTAX_START_SAVESEQUENCE)) {
+					// if the info corresponds to a SQF command
+					currentKeyword = new SQFCommand();
+				} else {
+					if (currentKeywordContent.contains(SQFElement.WIKI_START_SAVESEQUENCE)) {
+						// if the info corresponds to a SQFElement
+						currentKeyword = new SQFElement();
+					} else {
+						// else it's just a normal Keyword
+						currentKeyword = new Keyword();
+					}
 				}
 			}
 
@@ -250,6 +336,16 @@ public class KeywordList implements ISaveable {
 
 		if (endPos < startPos) {
 			return false;
+		}
+
+		// check for keyword-type specification
+		if (format.contains(LIST_KEYWORDTYPE_START_SAVESEQUENCE)) {
+			startPos = format.indexOf(LIST_KEYWORDTYPE_START_SAVESEQUENCE);
+			endPos = format.indexOf(LIST_KEYWORDTYPE_END_SAVESEQUENCE);
+
+			if (endPos < startPos) {
+				return false;
+			}
 		}
 
 		return true;

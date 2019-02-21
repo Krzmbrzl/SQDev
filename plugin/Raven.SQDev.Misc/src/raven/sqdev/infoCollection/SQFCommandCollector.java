@@ -25,7 +25,7 @@ import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.SQFElement;
 import raven.sqdev.misc.ArrayUtils;
 import raven.sqdev.misc.DataTypeList;
-import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.ESQFDataType;
 import raven.sqdev.misc.SQDev;
 import raven.sqdev.misc.TextUtils;
 import raven.sqdev.syntax.Syntax;
@@ -120,21 +120,21 @@ public class SQFCommandCollector {
 	/**
 	 * The corresponding syntaxes to {@link #MANUAL_COMMANDS}
 	 */
-	public static final String[][] MANUAL_COMMANDS_SYNTAX = { { "! " + EDataType.BOOLEAN },
-			{ EDataType.ANYTHING + " == " + EDataType.ANYTHING }, { EDataType.ANYTHING + " != " + EDataType.ANYTHING },
-			{ EDataType.NUMBER + " < " + EDataType.NUMBER }, { EDataType.NUMBER + " <= " + EDataType.NUMBER },
-			{ EDataType.NUMBER + " > " + EDataType.NUMBER }, { EDataType.NUMBER + " >= " + EDataType.NUMBER },
-			{ EDataType.BOOLEAN + " && " + EDataType.BOOLEAN + DataTypeList.TYPE_SEPERATOR + EDataType.CODE },
-			{ EDataType.BOOLEAN + " || " + EDataType.BOOLEAN + DataTypeList.TYPE_SEPERATOR + EDataType.CODE },
-			{ EDataType.NUMBER + " + " + EDataType.NUMBER, EDataType.STRING + " + " + EDataType.STRING,
-					EDataType.ARRAY + " + " + EDataType.ARRAY, "+ " + EDataType.NUMBER, "+ " + EDataType.ARRAY,
-					"+ " + EDataType.STRING },
-			{ EDataType.NUMBER + " - " + EDataType.NUMBER, EDataType.ARRAY + " - " + EDataType.ARRAY,
-					"- " + EDataType.NUMBER },
-			{ EDataType.NUMBER + " * " + EDataType.NUMBER },
-			{ EDataType.NUMBER + " / " + EDataType.NUMBER, EDataType.CONFIG + " / " + EDataType.STRING },
-			{ EDataType.NUMBER + " ^ " + EDataType.NUMBER }, { EDataType.NUMBER + " % " + EDataType.NUMBER },
-			{ EDataType.CONFIG + " >> " + EDataType.STRING }, { EDataType.SWITCH_TYPE + " : " + EDataType.CODE } };
+	public static final String[][] MANUAL_COMMANDS_SYNTAX = { { "! " + ESQFDataType.BOOLEAN },
+			{ ESQFDataType.ANYTHING + " == " + ESQFDataType.ANYTHING }, { ESQFDataType.ANYTHING + " != " + ESQFDataType.ANYTHING },
+			{ ESQFDataType.NUMBER + " < " + ESQFDataType.NUMBER }, { ESQFDataType.NUMBER + " <= " + ESQFDataType.NUMBER },
+			{ ESQFDataType.NUMBER + " > " + ESQFDataType.NUMBER }, { ESQFDataType.NUMBER + " >= " + ESQFDataType.NUMBER },
+			{ ESQFDataType.BOOLEAN + " && " + ESQFDataType.BOOLEAN + DataTypeList.TYPE_SEPERATOR + ESQFDataType.CODE },
+			{ ESQFDataType.BOOLEAN + " || " + ESQFDataType.BOOLEAN + DataTypeList.TYPE_SEPERATOR + ESQFDataType.CODE },
+			{ ESQFDataType.NUMBER + " + " + ESQFDataType.NUMBER, ESQFDataType.STRING + " + " + ESQFDataType.STRING,
+					ESQFDataType.ARRAY + " + " + ESQFDataType.ARRAY, "+ " + ESQFDataType.NUMBER, "+ " + ESQFDataType.ARRAY,
+					"+ " + ESQFDataType.STRING },
+			{ ESQFDataType.NUMBER + " - " + ESQFDataType.NUMBER, ESQFDataType.ARRAY + " - " + ESQFDataType.ARRAY,
+					"- " + ESQFDataType.NUMBER },
+			{ ESQFDataType.NUMBER + " * " + ESQFDataType.NUMBER },
+			{ ESQFDataType.NUMBER + " / " + ESQFDataType.NUMBER, ESQFDataType.CONFIG + " / " + ESQFDataType.STRING },
+			{ ESQFDataType.NUMBER + " ^ " + ESQFDataType.NUMBER }, { ESQFDataType.NUMBER + " % " + ESQFDataType.NUMBER },
+			{ ESQFDataType.CONFIG + " >> " + ESQFDataType.STRING }, { ESQFDataType.SWITCH_TYPE + " : " + ESQFDataType.CODE } };
 
 	/**
 	 * The corresponding wiki page adresses for {@link #MANUAL_COMMANDS}
@@ -153,16 +153,16 @@ public class SQFCommandCollector {
 	/**
 	 * The corresponding return values to {@link #MANUAL_COMMANDS}
 	 */
-	public static final String[][] MANUAL_COMMANDS_RETURN_TYPE = { { EDataType.BOOLEAN.toString() },
-			{ EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() },
-			{ EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() },
-			{ EDataType.BOOLEAN.toString() }, { EDataType.BOOLEAN.toString() },
-			{ EDataType.NUMBER.toString(), EDataType.STRING.toString(), EDataType.ARRAY.toString(),
-					EDataType.NUMBER.toString(), EDataType.ARRAY.toString(), EDataType.STRING.toString() },
-			{ EDataType.NUMBER.toString(), EDataType.ARRAY.toString(), EDataType.NUMBER.toString() },
-			{ EDataType.NUMBER.toString() }, { EDataType.NUMBER.toString(), EDataType.CONFIG.toString() },
-			{ EDataType.NUMBER.toString() }, { EDataType.NUMBER.toString() }, { EDataType.CONFIG.toString() },
-			{ EDataType.NOTHING.toString() } };
+	public static final String[][] MANUAL_COMMANDS_RETURN_TYPE = { { ESQFDataType.BOOLEAN.toString() },
+			{ ESQFDataType.BOOLEAN.toString() }, { ESQFDataType.BOOLEAN.toString() }, { ESQFDataType.BOOLEAN.toString() },
+			{ ESQFDataType.BOOLEAN.toString() }, { ESQFDataType.BOOLEAN.toString() }, { ESQFDataType.BOOLEAN.toString() },
+			{ ESQFDataType.BOOLEAN.toString() }, { ESQFDataType.BOOLEAN.toString() },
+			{ ESQFDataType.NUMBER.toString(), ESQFDataType.STRING.toString(), ESQFDataType.ARRAY.toString(),
+					ESQFDataType.NUMBER.toString(), ESQFDataType.ARRAY.toString(), ESQFDataType.STRING.toString() },
+			{ ESQFDataType.NUMBER.toString(), ESQFDataType.ARRAY.toString(), ESQFDataType.NUMBER.toString() },
+			{ ESQFDataType.NUMBER.toString() }, { ESQFDataType.NUMBER.toString(), ESQFDataType.CONFIG.toString() },
+			{ ESQFDataType.NUMBER.toString() }, { ESQFDataType.NUMBER.toString() }, { ESQFDataType.CONFIG.toString() },
+			{ ESQFDataType.NOTHING.toString() } };
 
 	/**
 	 * The string represnetation of the webadress to the BIKI API
@@ -911,7 +911,7 @@ public class SQFCommandCollector {
 
 			// replace all array constructs with Array type keyword
 			while (arrayMatcher.find()) {
-				syntax = arrayMatcher.replaceAll(EDataType.ARRAY.toString());
+				syntax = arrayMatcher.replaceAll(ESQFDataType.ARRAY.toString());
 
 				arrayMatcher = arrayPattern.matcher(syntax);
 			}
@@ -1516,7 +1516,7 @@ public class SQFCommandCollector {
 				continue;
 			}
 
-			EDataType dataType = EDataType.resolve(currentType);
+			ESQFDataType dataType = ESQFDataType.resolve(currentType);
 
 			if (dataType == null) {
 				throw new SQDevException("Unknown dataType \"" + currentType + "\" in command \"" + commandName + "\"");

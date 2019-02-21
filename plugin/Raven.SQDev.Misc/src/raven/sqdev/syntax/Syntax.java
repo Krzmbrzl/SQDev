@@ -25,7 +25,7 @@ public class Syntax {
 	private String commandName;
 	
 	/**
-	 * A list of all SyntaxElements this syntax conatains
+	 * A list of all SyntaxElements this syntax contains
 	 */
 	private ArrayList<SyntaxElement> elements;
 	

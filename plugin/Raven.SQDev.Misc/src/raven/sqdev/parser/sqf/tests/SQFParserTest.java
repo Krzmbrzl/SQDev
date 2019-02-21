@@ -18,7 +18,7 @@ import raven.sqdev.exceptions.SQDevException;
 import raven.sqdev.infoCollection.base.Keyword;
 import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.misc.DataTypeList;
-import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.ESQFDataType;
 import raven.sqdev.misc.FileSystemUtil;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.Marker;
@@ -108,8 +108,8 @@ public class SQFParserTest {
 		result = process(input);
 		expectedMarker = createErrorMarker(5, 1,
 				ProblemMessages.expectedTypeButGot(
-						new DataTypeList(new EDataType[] { EDataType.STRING, EDataType.STRUCTURED_TEXT }),
-						new DataTypeList(new EDataType[] { EDataType.NUMBER })));
+						new DataTypeList(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.STRUCTURED_TEXT }),
+						new DataTypeList(new ESQFDataType[] { ESQFDataType.NUMBER })));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
@@ -118,7 +118,7 @@ public class SQFParserTest {
 		input = "\"\" append []";
 		result = process(input);
 		expectedMarker = createErrorMarker(0, 2,
-				ProblemMessages.expectedTypeButGotDifferent(EDataType.ARRAY.toString(), EDataType.STRING.toString()));
+				ProblemMessages.expectedTypeButGotDifferent(ESQFDataType.ARRAY.toString(), ESQFDataType.STRING.toString()));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
@@ -127,7 +127,7 @@ public class SQFParserTest {
 		input = "[] append \"\"";
 		result = process(input);
 		expectedMarker = createErrorMarker(10, 2,
-				ProblemMessages.expectedTypeButGotDifferent(EDataType.ARRAY.toString(), EDataType.STRING.toString()));
+				ProblemMessages.expectedTypeButGotDifferent(ESQFDataType.ARRAY.toString(), ESQFDataType.STRING.toString()));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
@@ -137,8 +137,8 @@ public class SQFParserTest {
 		result = process(input);
 		expectedMarker = createErrorMarker(1, 7,
 				ProblemMessages.expectedTypeButGot(
-						new DataTypeList(new EDataType[] { EDataType.NUMBER, EDataType.ARRAY, EDataType.STRING }),
-						new DataTypeList(new EDataType[] { EDataType.OBJECT })));
+						new DataTypeList(new ESQFDataType[] { ESQFDataType.NUMBER, ESQFDataType.ARRAY, ESQFDataType.STRING }),
+						new DataTypeList(new ESQFDataType[] { ESQFDataType.OBJECT })));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
@@ -147,7 +147,7 @@ public class SQFParserTest {
 		input = "'hello' + objNull";
 		result = process(input);
 		expectedMarker = createErrorMarker(10, 7,
-				ProblemMessages.expectedTypeButGotDifferent(EDataType.STRING.toString(), EDataType.OBJECT.toString()));
+				ProblemMessages.expectedTypeButGotDifferent(ESQFDataType.STRING.toString(), ESQFDataType.OBJECT.toString()));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));
@@ -155,7 +155,7 @@ public class SQFParserTest {
 		input = "velocity ''";
 		result = process(input);
 		expectedMarker = createErrorMarker(9, 2,
-				ProblemMessages.expectedTypeButGotDifferent(EDataType.OBJECT.toString(), EDataType.STRING.toString()));
+				ProblemMessages.expectedTypeButGotDifferent(ESQFDataType.OBJECT.toString(), ESQFDataType.STRING.toString()));
 		// Do the checking
 		assertMarkerAmountEquals(result, 1);
 		assertMarkersEqual(expectedMarker, result.getMarkers().get(0));

@@ -187,7 +187,7 @@ public class BasicInformationControl extends AbstractInformationControl implemen
 		for (int i = 0; i < info.getCategoryCount(); i++) {
 			// dispose all unneeded controls
 			if (!categoryNames[i].equals(AdditionalKeywordProposalInformation.OVERVIEW)) {
-				if (i != 0) { // leave on alive as a fall-back
+				if (i != 0) { // leave one alive as a fall-back
 					categoryControls[i].dispose();
 				}
 			} else {

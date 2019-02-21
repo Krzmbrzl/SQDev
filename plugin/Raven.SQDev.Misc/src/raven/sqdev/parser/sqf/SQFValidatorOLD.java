@@ -25,7 +25,7 @@ import raven.sqdev.infoCollection.base.SQFCommand;
 import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.misc.DataTypeList;
-import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.ESQFDataType;
 import raven.sqdev.misc.Macro;
 import raven.sqdev.misc.SQDevInfobox;
 import raven.sqdev.parser.sqf.SQFParser.ArrayContext;
@@ -435,7 +435,7 @@ public class SQFValidatorOLD extends SQFBaseListener {
 			Macro macro = info.getMacros().get(operatorName);
 
 			if (macro != null) {
-				resolvedReturnValues.put(ctx, new DataTypeList(EDataType.ANYTHING));
+				resolvedReturnValues.put(ctx, new DataTypeList(ESQFDataType.ANYTHING));
 			}
 		}
 	}
@@ -586,25 +586,25 @@ public class SQFValidatorOLD extends SQFBaseListener {
 		}
 
 		if (element.getClass().equals(MacroContext.class)) {
-			return new DataTypeList(EDataType.ANYTHING);
+			return new DataTypeList(ESQFDataType.ANYTHING);
 		}
 
 		if (element.getClass().equals(AssignmentContext.class)) {
-			return new DataTypeList(EDataType.NOTHING);
+			return new DataTypeList(ESQFDataType.NOTHING);
 		}
 
 		if (element.getClass().equals(CodeContext.class) || element.getClass().equals(InlineCodeContext.class)) {
-			return new DataTypeList(EDataType.CODE);
+			return new DataTypeList(ESQFDataType.CODE);
 		}
 
 		if (element.getClass().equals(ArrayContext.class)) {
-			return new DataTypeList(EDataType.ARRAY);
+			return new DataTypeList(ESQFDataType.ARRAY);
 		}
 
 		if (element.getClass().equals(ParenthesisContext.class)) {
 			if (element.getChildCount() != 3) {
 				// no args in parenthesis
-				return new DataTypeList(EDataType.NOTHING);
+				return new DataTypeList(ESQFDataType.NOTHING);
 			}
 
 			return doGetReturnValues(element.getChild(1));
@@ -623,9 +623,9 @@ public class SQFValidatorOLD extends SQFBaseListener {
 		if (element instanceof TerminalNodeImpl) {
 			switch (((TerminalNodeImpl) element).getSymbol().getType()) {
 			case SQFParser.NUMBER:
-				return new DataTypeList(EDataType.NUMBER);
+				return new DataTypeList(ESQFDataType.NUMBER);
 			case SQFParser.STRING:
-				return new DataTypeList(EDataType.STRING);
+				return new DataTypeList(ESQFDataType.STRING);
 			default:
 				String varName = element.getText().toLowerCase();
 
@@ -652,19 +652,19 @@ public class SQFValidatorOLD extends SQFBaseListener {
 			}
 
 			// a variable can be anything
-			return new DataTypeList(EDataType.ANYTHING);
+			return new DataTypeList(ESQFDataType.ANYTHING);
 		}
 
 		if (element instanceof CommonErrorContext) {
 			// return values of errors are undefined
-			return new DataTypeList(EDataType.ANYTHING);
+			return new DataTypeList(ESQFDataType.ANYTHING);
 		}
 
 		if (element.getChildCount() != 1) {
 			// return values of errors are undefined
 			for (int i = 0; i < element.getChildCount(); i++) {
 				if (element.getChild(i) instanceof ErrorNode) {
-					return new DataTypeList(EDataType.ANYTHING);
+					return new DataTypeList(ESQFDataType.ANYTHING);
 				}
 			}
 
@@ -820,7 +820,7 @@ public class SQFValidatorOLD extends SQFBaseListener {
 						int offsets[] = getStartOffsetAndLength(currentElement);
 
 						parseResult.addMarker(IMarker.PROBLEM, offsets[0], offsets[1],
-								ProblemMessages.expectedTypes(new EDataType[] { EDataType.STRING, EDataType.ARRAY }),
+								ProblemMessages.expectedTypes(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.ARRAY }),
 								IMarker.SEVERITY_ERROR);
 					}
 				}
@@ -843,7 +843,7 @@ public class SQFValidatorOLD extends SQFBaseListener {
 						int offsets[] = getStartOffsetAndLength(currentElement);
 
 						parseResult.addMarker(IMarker.PROBLEM, offsets[0], offsets[1],
-								ProblemMessages.expectedTypes(new EDataType[] { EDataType.STRING, EDataType.ARRAY }),
+								ProblemMessages.expectedTypes(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.ARRAY }),
 								IMarker.SEVERITY_ERROR);
 					}
 				}
@@ -856,7 +856,7 @@ public class SQFValidatorOLD extends SQFBaseListener {
 					int offsets[] = getStartOffsetAndLength(argument);
 
 					parseResult.addMarker(IMarker.PROBLEM, offsets[0], offsets[1],
-							ProblemMessages.expectedTypes(new EDataType[] { EDataType.STRING, EDataType.ARRAY }),
+							ProblemMessages.expectedTypes(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.ARRAY }),
 							IMarker.SEVERITY_ERROR);
 				}
 			}
@@ -938,7 +938,7 @@ public class SQFValidatorOLD extends SQFBaseListener {
 			}
 		} else {
 			parseResult.addMarker(IMarker.PROBLEM, start, length,
-					ProblemMessages.expectedTypes(new EDataType[] { EDataType.STRING, EDataType.ARRAY }),
+					ProblemMessages.expectedTypes(new ESQFDataType[] { ESQFDataType.STRING, ESQFDataType.ARRAY }),
 					IMarker.SEVERITY_ERROR);
 		}
 	}

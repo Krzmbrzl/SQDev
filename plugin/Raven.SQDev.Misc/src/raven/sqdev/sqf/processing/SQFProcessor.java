@@ -23,7 +23,7 @@ import raven.sqdev.infoCollection.base.Variable;
 import raven.sqdev.interfaces.ISQFInformation;
 import raven.sqdev.interfaces.ITreeProcessingResult;
 import raven.sqdev.misc.DataTypeList;
-import raven.sqdev.misc.EDataType;
+import raven.sqdev.misc.ESQFDataType;
 import raven.sqdev.parser.misc.TreeProcessingResult;
 import raven.sqdev.parser.sqf.ERelativePosition;
 import raven.sqdev.parser.sqf.SQFSyntaxProcessor;
@@ -33,23 +33,23 @@ public class SQFProcessor implements ISQFTreeListener {
 	/**
 	 * A {@linkplain DataTypeList} containing the datatype ANYTHING
 	 */
-	public static final DataTypeList ANYTHING = new DataTypeList(EDataType.ANYTHING);
+	public static final DataTypeList ANYTHING = new DataTypeList(ESQFDataType.ANYTHING);
 	/**
 	 * A {@linkplain DataTypeList} containing the datatype CODE
 	 */
-	public static final DataTypeList CODE = new DataTypeList(EDataType.CODE);
+	public static final DataTypeList CODE = new DataTypeList(ESQFDataType.CODE);
 	/**
 	 * A {@linkplain DataTypeList} containing the datatype ARRAY
 	 */
-	public static final DataTypeList ARRAY = new DataTypeList(EDataType.ARRAY);
+	public static final DataTypeList ARRAY = new DataTypeList(ESQFDataType.ARRAY);
 	/**
 	 * A {@linkplain DataTypeList} containing the datatype STRING
 	 */
-	public static final DataTypeList STRING = new DataTypeList(EDataType.STRING);
+	public static final DataTypeList STRING = new DataTypeList(ESQFDataType.STRING);
 	/**
 	 * A {@linkplain DataTypeList} containing the datatype NUMBER
 	 */
-	public static final DataTypeList NUMBER = new DataTypeList(EDataType.NUMBER);
+	public static final DataTypeList NUMBER = new DataTypeList(ESQFDataType.NUMBER);
 
 	/**
 	 * The buffer holding all tokens
@@ -1005,7 +1005,7 @@ public class SQFProcessor implements ISQFTreeListener {
 			switch (i) {
 			case 1:
 				// first element has to be a String
-				if (types.findExchangableDataType(EDataType.STRING, true) < 0) {
+				if (types.findExchangableDataType(ESQFDataType.STRING, true) < 0) {
 					error(currentElement, ProblemMessages.expectedTypeButGot(STRING, types));
 				} else {
 					SQFToken varToken = tokenBuffer.get(currentElement.getIndex());
@@ -1017,16 +1017,16 @@ public class SQFProcessor implements ISQFTreeListener {
 				break;
 			case 5:
 				// third element (if present) has to be an array
-				if (types.findExchangableDataType(EDataType.ARRAY, true) < 0) {
+				if (types.findExchangableDataType(ESQFDataType.ARRAY, true) < 0) {
 					error(currentElement, ProblemMessages.expectedTypeButGot(ARRAY, types));
 				}
 				break;
 			case 7:
 				// forth element (if present) can either be an array or a number
-				if (types.findExchangableDataType(EDataType.ARRAY, true) < 0
-						&& types.findExchangableDataType(EDataType.NUMBER, true) < 0) {
+				if (types.findExchangableDataType(ESQFDataType.ARRAY, true) < 0
+						&& types.findExchangableDataType(ESQFDataType.NUMBER, true) < 0) {
 					error(currentElement, ProblemMessages.expectedTypeButGot(
-							new DataTypeList(new EDataType[] { EDataType.NUMBER, EDataType.ARRAY }), types));
+							new DataTypeList(new ESQFDataType[] { ESQFDataType.NUMBER, ESQFDataType.ARRAY }), types));
 				}
 				break;
 			}

@@ -2,6 +2,8 @@ package raven.sqdev.editors;
 
 import org.eclipse.jface.text.rules.IWordDetector;
 
+import raven.sqdev.misc.TextUtils;
+
 /**
  * A word detector for determining what is a word and what not
  * 
@@ -15,12 +17,12 @@ public class WordDetector implements IWordDetector {
 	
 	@Override
 	public boolean isWordStart(char c) {
-		return (Character.isLetter(c) || c == '_' || c == '@');
+		return TextUtils.isWordStart(c);
 	}
 	
 	@Override
 	public boolean isWordPart(char c) {
-		return (Character.isLetterOrDigit(c) || c == '_');
+		return TextUtils.isWordPart(c);
 	}
 	
 }

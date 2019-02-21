@@ -157,6 +157,16 @@ public class TextUtils {
 	}
 
 	/**
+	 * Checks whether the fiven character can be the start of a word
+	 * 
+	 * @param c
+	 *            The charcter to check
+	 */
+	public static boolean isWordStart(char c) {
+		return Character.isLetter(c) || c == '_' || c == '@';
+	}
+
+	/**
 	 * Checks whether the given character can be part of a word
 	 * 
 	 * @param c
