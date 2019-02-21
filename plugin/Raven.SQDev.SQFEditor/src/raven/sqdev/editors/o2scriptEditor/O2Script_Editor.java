@@ -50,17 +50,4 @@ public class O2Script_Editor extends SQF_Editor {
 		// prevent function-set-up from SQF
 	}
 
-	public static void main(String[] args) throws IOException {
-		String content = new String(Files.readAllBytes(new File(
-				"/home/robert/Documents/Git/SQDev/plugin//Raven.SQDev.Misc/resources/o2script/O2ScriptKeywords.txt")
-						.toPath()));
-
-		KeywordList list = new KeywordList();
-		if (!list.recreateFrom(content)) {
-			System.err.println("Error!");
-		}
-		
-		System.out.println(list.getFailures());
-	}
-
 }
