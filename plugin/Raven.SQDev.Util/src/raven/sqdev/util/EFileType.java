@@ -280,7 +280,7 @@ public enum EFileType {
 	 * 
 	 * @param name
 	 *            The name of the new file (<b>without extension!</b>)<br>
-	 *            Will be overriden in {@linkplain #EXT} and {@linkplain #SQM};
+	 *            Will be overridden in {@linkplain #EXT} and {@linkplain #SQM};
 	 *            <br>
 	 *            For {@linkplain #SQDEV} it has to be of type
 	 *            {@link ESQDevFileType}
