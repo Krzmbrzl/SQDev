@@ -218,9 +218,6 @@ public enum EFileType {
 		
 		@Override
 		public String getInitialContent() {
-			// make windows compatible
-			initialContent = initialContent.replace("\n", "\r\n");
-			
 			return initialContent;
 		}
 	},
