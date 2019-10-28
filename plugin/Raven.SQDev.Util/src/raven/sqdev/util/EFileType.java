@@ -42,6 +42,7 @@ import raven.sqdev.sqdevFile.ESQDevFileType;
  * @author Raven
  * 
  */
+@Deprecated
 public enum EFileType {
 	/**
 	 * Scriptfile with the extension ".sqf"
