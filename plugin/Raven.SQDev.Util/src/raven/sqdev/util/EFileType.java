@@ -427,6 +427,13 @@ public enum EFileType {
 		};
 		
 		creationJob.schedule();
+		// TODO: remove joining as this kinda destroys the whole purpose of an extra creator-thread
+		// it is a temporary fix for files of the same type not being able to have different initial content (happens for link + project.sqdev)
+		try {
+			creationJob.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
