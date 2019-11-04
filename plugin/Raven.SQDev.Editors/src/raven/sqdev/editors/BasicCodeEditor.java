@@ -684,7 +684,7 @@ public class BasicCodeEditor extends TextEditor implements IMarkerSupport {
 	}
 
 	/**
-	 * Confidures all KeyHandler for this editor
+	 * Configures all KeyHandler for this editor
 	 */
 	protected void configureKeyHandler() {
 		// set up character completion
