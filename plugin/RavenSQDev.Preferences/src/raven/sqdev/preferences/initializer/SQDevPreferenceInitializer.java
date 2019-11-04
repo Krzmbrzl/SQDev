@@ -92,8 +92,11 @@ public class SQDevPreferenceInitializer extends AbstractPreferenceInitializer {
 
 		// set autoClean
 		store.setDefault(SQDevPreferenceConstants.SQDEV_EXPORT_AUTOCLEAN, false);
+		
+		// autoCompletion of character pairs
+		store.setDefault(SQDevPreferenceConstants.SQDEV_AUTOCOMPLETE_CHARACTERPAIRS_KEY, true);
 
-		// set default API adress
+		// set default API address
 		store.setDefault(SQDevPreferenceConstants.SQDEV_COLLECTION_API_ADRESS,
 				"https://community.bistudio.com/wikidata/api.php");
 

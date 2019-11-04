@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.Point;
 
 import raven.sqdev.interfaces.IEditorKeyHandler;
 import raven.sqdev.misc.CharacterPair;
+import raven.sqdev.misc.SQDevPreferenceUtil;
 import raven.sqdev.misc.TextUtils;
 
 /**
@@ -58,6 +59,11 @@ public class CharacterPairHandler implements IEditorKeyHandler {
 	public boolean willHandle(VerifyEvent event) {
 		if (!(event.getSource() instanceof StyledText)) {
 			// Don't handle events that are not caused by StyledText
+			return false;
+		}
+		
+		if (!SQDevPreferenceUtil.isCharacterPairCompletionEnabled()) {
+			// The preferences specify that the CharacterPairHandler shouldn't be used
 			return false;
 		}
 

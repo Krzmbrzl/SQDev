@@ -27,7 +27,7 @@ import raven.sqdev.pluginManagement.SQDevPluginManager;
 public class SQDevPreferenceUtil {
 
 	/**
-	 * The seperator that is placed in between the different Strings in the
+	 * The separator that is placed in between the different Strings in the
 	 * Preferences
 	 */
 	public static final String STRING_SEPERATOR = "_#%NextString%#_";
@@ -252,6 +252,17 @@ public class SQDevPreferenceUtil {
 	 */
 	public static boolean isAutoCompleteEnabled() {
 		return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_EDITOR_ENABLE_AUTOCOMPLETE_KEY);
+	}
+	
+	/**
+	 * Gets the value of the
+	 * <code>SQDevPreferenceConstants.SQDEV_AUTOCOMPLETE_CHARACTERPAIRS_KEY</code>
+	 * preference that indicates whether the completion of character pairs should be enabled
+	 * 
+	 * @see {@linkplain SQDevPreferenceConstants}
+	 */
+	public static boolean isCharacterPairCompletionEnabled() {
+			return getPreferenceStore().getBoolean(SQDevPreferenceConstants.SQDEV_AUTOCOMPLETE_CHARACTERPAIRS_KEY);
 	}
 
 	/**

@@ -45,6 +45,10 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 				"Enables/Disables autoComplete meaning that content assist will insert the proposal automatically if there is only one choice",
 				behaviour));
 
+		addPreferenceEditor(new BooleanSQDevPreferenceEditor(
+				SQDevPreferenceConstants.SQDEV_AUTOCOMPLETE_CHARACTERPAIRS_KEY, "&Enable CharacterPair completion:",
+				"Enables/Disables the automatic completion of character pairs such as quotes and brackets", behaviour));
+
 		IntegerSQDevPreferenceEditor parseDelayEditor = new IntegerSQDevPreferenceEditor(
 				SQDevPreferenceConstants.SQDEV_EDITOR_PARSE_DELAY, "&Parse delay:",
 				"Specifies the delay in milliseconds between a user input in the editor and the actual parsing of the editor's content",
@@ -96,8 +100,7 @@ public class SQDevEditorPreferencePage extends SQDevPreferencePage {
 		addPreferenceEditor(currentLineHighlightingColorEditor);
 
 		ColorSQDevPreferenceEditor matchingBracketHighlightingColorEditor = new ColorSQDevPreferenceEditor(
-				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY,
-				"&Matching brackets:",
+				SQDevPreferenceConstants.SQDEV_EDITOR_MATCHING_BRACKETS_COLOR_KEY, "&Matching brackets:",
 				"Defines the color in which matching bracket pairs are being highlighted", colors);
 		addPreferenceEditor(matchingBracketHighlightingColorEditor);
 

@@ -96,7 +96,7 @@ public class SQDevPreferenceConstants {
 	public static final String SQDEV_EDITOR_MAGICVARIABLEHIGHLIGHTING_COLOR_KEY = "raven.sqdev.magicVariableHighlightingColor";
 	
 	/**
-	 * The preference indicating the color of the functionhighlighting
+	 * The preference indicating the color of the functionHighlighting
 	 */
 	public static final String SQDEV_EDITOR_FUNCTIONHIGHLIGHTING_COLOR_KEY = "raven.sqdev.functionHighlightingColor";
 
@@ -126,14 +126,19 @@ public class SQDevPreferenceConstants {
 	 * permission when exporting a project
 	 */
 	public static final String SQDEV_EXPORT_AUTOCLEAN = "raven.sqdev.autoClean";
+	
+	/**
+	 * The preference indicating whether character pairs (quotes and brackets) should be auto-completed
+	 */
+	public static final String SQDEV_AUTOCOMPLETE_CHARACTERPAIRS_KEY = "raven.sqdev.autocompleteCharacterPairs";
 
 	/**
-	 * The preference holding the web adress to the BIKI API
+	 * The preference holding the web address to the BIKI API
 	 */
 	public static final String SQDEV_COLLECTION_API_ADRESS = "raven.sqdev.collection.apiAdress";
 
 	/**
-	 * The preference holding the wname of the main page that lists all the SQF
+	 * The preference holding the name of the main page that lists all the SQF
 	 * commands
 	 */
 	public static final String SQDEV_COLLECTION_API_MAINPAGE = "raven.sqdev.collection.apiMainPage";
