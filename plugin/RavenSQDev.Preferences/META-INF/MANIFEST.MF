@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preferences
 Bundle-SymbolicName: raven.sqdev.preferences;singleton:=true
-Bundle-Version: 0.6.0.dev2
+Bundle-Version: 0.6.0.dev3
 Bundle-Activator: raven.sqdev.preferences.activator.Activator
 Bundle-Vendor: Raven
 Require-Bundle: org.eclipse.ui,
