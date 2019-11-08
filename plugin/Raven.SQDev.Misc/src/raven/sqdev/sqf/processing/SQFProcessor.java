@@ -431,7 +431,13 @@ public class SQFProcessor implements ISQFTreeListener {
 				error(variableNode, ProblemMessages.invalidExpression("assignment"));
 			}
 
-			SQFToken varOperatorToken = tokenBuffer.get(index);
+			SQFToken varOperatorToken;
+			try {
+				varOperatorToken = tokenBuffer.get(index);
+			} catch (IndexOutOfBoundsException e) {
+				// Something went wrong -> probably invalid syntax
+				return;
+			}
 
 			if (varOperatorToken.operatorType() == ESQFOperatorType.MACRO) {
 				// handle macros assembling the variable name -> can't really validate -> assume
@@ -713,7 +719,14 @@ public class SQFProcessor implements ISQFTreeListener {
 	 */
 	protected DataTypeList doGetReturnValues(IndexTreeElement node) {
 		if (node.getIndex() >= 0) {
-			SQFToken token = tokenBuffer.get(node.getIndex());
+			SQFToken token;
+			try {
+				token = tokenBuffer.get(node.getIndex());
+			} catch (IndexOutOfBoundsException e) {
+				// SOmething went wrong -> possibly invalid syntax
+				// return Anything for that case
+				return ANYTHING;
+			}
 
 			// handle primitives first
 			switch (token.type()) {
